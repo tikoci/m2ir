@@ -1,0 +1,60 @@
+{
+	"name": "m2ir",
+	"version": "0.1.0",
+	"packageManager": "bun@1.3.13",
+	"devDependencies": {
+		"@agent-lint/cli": "^0.8.1",
+		"@biomejs/biome": "2.4.14",
+		"@secretlint/secretlint-rule-preset-recommend": "^12.3.1",
+		"@tikoci/quickchr": "^0.2.0",
+		"@types/bun": "^1.3.13",
+		"cloc": "^2.6.0-cloc",
+		"cspell": "^10.0.0",
+		"has-flag": "4.0.0",
+		"markdownlint-cli2": "^0.22.1",
+		"secretlint": "^12.3.1",
+		"typedoc": "^0.28.19"
+	},
+	"optionalDependencies": {},
+	"peerDependencies": {
+		"typescript": "^6.0.3"
+	},
+	"exports": {},
+	"bin": {},
+	"description": "Unified schema for MikroTik RouterOS binary formats (\"nova\", `nv:message`, \"M2\", WinBox.app protocol, CDB files, MNDP, JSProxy, Dude)",
+	"engines": {
+		"bun": ">=1.3.11 <2"
+	},
+	"private": false,
+	"scripts": {
+		"ci": "bun run lint && bun run test && bun run build",
+		"git:pre-commit": "bun run hook:git:pre-commit",
+		"git:pre-push": "bun run hook:git:pre-push",
+		"hook:copilot": "bun src/tooling/log-repo-event.ts --source copilot-hook",
+		"hook:git:pre-commit": "bun run hook:log -- --source git-hook --event pre-commit --summary \"Running local pre-commit gate\" && bun run lint",
+		"hook:git:pre-push": "bun run hook:log -- --source git-hook --event pre-push --summary \"Running local pre-push gate\" && bun run ci",
+		"hook:log": "bun src/tooling/log-repo-event.ts",
+		"lint": "bun run lint:biome && bun run lint:typecheck",
+		"lint:git:commit": "bun run lint",
+		"lint:git:push": "bun run ci",
+		"lint:ci": "bun run lint && bun run lint:markdownlint && bun run lint:cspell && bun run lint:secretlint && bun run lint:agents",
+		"lint:cspell": "cspell lint . --gitignore",
+		"lint:cspell:all": "cspell lint . --no-gitignore",
+		"lint:markdownlint": "markdownlint-cli2 \"**/*.md\" \"!.scratch/**\"",
+		"lint:markdownlint:fix": "markdownlint-cli2 --fix \"**/*.md\"",
+		"lint:typecheck": "tsc --noEmit",
+		"lint:biome": "biome check .",
+		"lint:fix": "biome check --write .",
+		"lint:secretlint": "secretlint \"**/*\"",
+		"lint:agents": "agent-lint scan --stdout",
+		"audit:applyto": "bun src/tooling/audit-applyto.ts",
+		"test": "bun test",
+		"test:ci": "bun test --coverage",
+		"test:all": "bun run test:ci",
+		"build": "bun build src/**/*.ts --outdir dist --target bun",
+		"build:doc:api": "typedoc --out dist/docs/api src/index.ts",
+		"security": "bun run lint:secretlint && bun run lint:markdownlint"
+	},
+	"type": "module",
+	"types": "src/index.ts"
+}

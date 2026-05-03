@@ -1,0 +1,231 @@
+# WinBox M2 / nv::message semantic overlay (NOT a Kaitai .ksy)
+#
+# Kaitai Struct describes how to *parse* binary; it does not capture WHY a
+# field exists, what we KNOW vs what we GUESS, where a fact came from, or
+# what observed values constrain (but don't prove) about a field's nature.
+#
+# This file is a strawman for the additional metadata we'd want alongside
+# the bit-level schema. Conventions:
+#
+#   confidence: documented | inferred | observed-only | guessed
+#       documented    — named in a public source (Cisco-Talos dissector,
+#                       MarginResearch blog/repo, Mikrotik docs/source).
+#       inferred      — derivable from documented facts but not stated.
+#       observed-only — present in our captures with stable bytes, but no
+#                       source explains it.
+#       guessed       — best-effort name with no grounding.
+#
+#   evidence: list of {source, ref} pairs. `source` is `code | sample | doc | talk`.
+#
+#   width-note / endianness: explicit, even when "obvious". An "always-zero"
+#       4-byte field tells us nothing about its endianness — record that
+#       gap rather than silently assume LE.
+#
+#   apparent-magic: bytes that look magic but aren't proven so. We encode
+#       them as enums with a `still_magic: true` flag so future readers can
+#       see at a glance which constants are *understood* and which are just
+#       "the bytes have always been these".
+
+schema-version: 0.1
+target: WinBox M2 (RouterOS nv::message)
+
+# ── transport-layer constants (not part of M2, observed-only) ──────────────
+chunk-tags:
+  - value: 0x06
+    name: encrypted_m2
+    confidence: observed-only
+    apparent-magic: true
+    notes: |
+      Used as the first-chunk tag of EC-SRP5-encrypted streams AND as the
+      first byte of every EC-SRP5 handshake payload. Coincidence vs reuse
+      is unclear; not formally named anywhere public.
+  - value: 0x01
+    name: plaintext_m2
+    confidence: observed-only
+    apparent-magic: true
+  - value: 0xff
+    name: continuation
+    confidence: observed-only
+    apparent-magic: true
+    notes: Distinct from 0xFF used as the SYS_* namespace byte inside M2.
+
+# ── M2 magic ──────────────────────────────────────────────────────────────
+m2-magic:
+  bytes: [0x4d, 0x32]
+  ascii: "M2"
+  confidence: documented
+  apparent-magic: false   # this one is genuinely a magic, named in source
+  evidence:
+    - {source: doc, ref: "MarginResearch — distinguishes nv::message binary form from deprecated pseudo-JSON"}
+
+# ── type-byte encoding (the high byte of the 32-bit type word) ────────────
+type-byte:
+  layout:
+    bit-0: { name: compact_flag, role: "1 -> short length / 1-byte int; 0 -> long length / wider int" }
+    bits-3-7: { name: type_class, role: "selects parser" }
+  classes:
+    0x00: { name: bool,        confidence: documented,    payload: "(value lives in compact_flag)" }
+    0x08: { name: u32,         confidence: documented,    payload: "compact -> u1; wide -> u4le" }
+    0x10: { name: u64,         confidence: documented,    payload: "u8le; no compact variant defined" }
+    0x18: { name: ip6_addr,    confidence: documented,    payload: "16 bytes",
+            notes: "Surprise: NOT a signed integer despite sitting between u32 and u64. Per Cisco-Talos source." }
+    0x20: { name: string,      confidence: documented,    payload: "len-prefixed UTF-8" }
+    0x28: { name: message,     confidence: documented,    payload: "len-prefixed nested M2" }
+    0x30: { name: raw,         confidence: documented,    payload: "len-prefixed opaque bytes" }
+    0x80: { name: bool_array,  confidence: inferred,
+            notes: "Forward-declared in RouterOS source, never registered in dispatch table; not observed." }
+    0x88: { name: u32_array,   confidence: documented,    payload: "u2le count + count * u4le" }
+    0x90: { name: u64_array,   confidence: inferred,
+            notes: "Forward-declared, never wired up; sample sightings reported but no parse." }
+    0xa0: { name: string_array, confidence: documented }
+    0xa8: { name: msg_array,    confidence: documented }
+
+# ── 24-bit key catalog (full_key = (namespace<<16) | (key_high<<8) | key_low)
+# Names use Cisco-Talos canonical labels. Where this project's PROTOCOL.md
+# uses a divergent name, note it under `aka`.
+keys:
+  0xff0001:
+    name: SYS_TO
+    type: u32_array
+    role: "destination handler path; first element = process_id, rest = handler hierarchy"
+    confidence: documented
+    aka: [project-PROTOCOL.md uses same name]
+
+  0xff0002:
+    name: SYS_FROM
+    type: u32_array
+    role: "source handler path"
+    confidence: documented
+
+  0xff0003:
+    name: SYS_TYPE
+    type: u32
+    role: "1 = TYPE_REQUEST, 2 = TYPE_REPLY"
+    confidence: documented
+    notes: |
+      This is the canonical request/reply discriminant. This project's
+      PROTOCOL.md does not list 0xFF0003 at all and uses the boolean
+      0xFF0005 (SYS_REPLYEXP) for the same purpose — likely both fields
+      coexist with overlapping meaning.
+
+  0xff0004:
+    name: SYS_STATUS
+    type: u32
+    role: "1 = OK, 2 = ERROR"
+    confidence: documented
+    notes: |
+      Project-PROTOCOL.md mislabels 0xFF0008 as `SYS_STATUS`; per Cisco-Talos
+      that's actually `SYS_ERRNO`, and the real `SYS_STATUS` is at 0xFF0004.
+
+  0xff0005:
+    name: SYS_REPLYEXP
+    type: bool
+    role: "true = sender expects a reply"
+    confidence: documented
+    aka: [project-PROTOCOL.md "SYS_REQUEST"]
+
+  0xff0006: { name: SYS_REQID,       type: u8/u32,     confidence: documented }
+  0xff0007: { name: SYS_CMD,         type: u8/u32,     confidence: documented,
+              notes: "Encodes either a STD_CMD_* (0xFE0000-range) or a handler-private command (top byte = process_id)." }
+  0xff0008:
+    name: SYS_ERRNO
+    type: u32
+    role: "set on TYPE_REPLY when SYS_STATUS == ERROR; values from std_errno enum"
+    confidence: documented
+    aka: [project-PROTOCOL.md "SYS_STATUS"]
+
+  0xff0009: { name: SYS_ERRSTR,      type: string,     confidence: documented }
+  0xff000a: { name: SYS_USER,        type: string,     confidence: documented }
+  0xff000b: { name: SYS_POLICY,      type: u32,        confidence: documented,
+              notes: "Bitmask. 0x5FFFE = admin, 0xFFFFFFFF = super-admin (Margin)." }
+  0xff000d: { name: SYS_CTRL,        type: u32,        confidence: documented }
+  0xff000f: { name: SYS_CTRL_ARG,    type: "*",        confidence: documented }
+  0xff0010: { name: SYS_USER_ID,     type: u32,        confidence: documented }
+  0xff0011: { name: SYS_NOTIFYCMD,   type: u32,        confidence: documented }
+  0xff0012: { name: SYS_ORIGINATOR,  type: u32_array,  confidence: documented }
+  0xff0013: { name: SYS_RADDR6,      type: ip6_addr,   confidence: documented }
+  0xff0016: { name: SYS_DREASON,     type: u32,        confidence: documented }
+
+  # ── STD_* (object/session machinery, namespace 0xFE) ────────────────────
+  0xfe0001: { name: STD_ID,            type: "*",  confidence: documented,
+              role: "object id for SETOBJ/REMOVEOBJ/etc; ALSO used by this project as session id from the auth phase",
+              notes: "Project's `SESSION_ID = 0xFE0001` is `STD_ID` repurposed by mepty." }
+  0xfe0002: { name: STD_OBJS,          type: msg_array, confidence: documented }
+  0xfe0003: { name: STD_GETALLID,      type: u32, confidence: documented }
+  0xfe0004: { name: STD_GETALLNO,      type: u32, confidence: documented }
+  0xfe0005: { name: STD_NEXTID,        type: u32, confidence: documented }
+  0xfe000c: { name: STD_FILTER,        type: msg, confidence: documented,
+              notes: "Project's `FE000C` is STD_FILTER." }
+  0xfe0012: { name: STD_VERSION,       type: u32, confidence: documented }
+  # (full STD_* enum is in winbox_m2.ksy; only repeating ones with project notes here)
+
+# ── handler/process IDs (first element of SYS_TO/SYS_FROM arrays) ─────────
+processes:
+  0x0a:
+    name: mepty
+    confidence: documented
+    notes: "Terminal PTY proxy. Owns commands 0x0A0065 (login) and 0x0A0067 (data) per this project."
+  0x0d:
+    name: user-service-or-similar
+    confidence: observed-only
+    notes: |
+      Project uses path [13, 4] for sysinfo / capabilities / pre-auth and
+      MarginResearch mentions process 13 = "user service handler 4". Not
+      enumerated in Cisco-Talos process table.
+  0x18:
+    name: management
+    confidence: observed-only
+    notes: "Project observes [24,0], [24,1], [24,2]. Public sources do not enumerate."
+  0x4c:
+    name: mepty-handler-0x4c
+    confidence: observed-only
+    notes: "Project uses [76] as the mepty handler. Inconsistent with process_id 0x0a; likely [76] is a *handler id* under the mepty process, not a process id itself. Discrepancy unresolved — see schema/README.md."
+  0x78:
+    name: login-or-mgmt
+    confidence: observed-only
+    notes: "Project uses [120] as 'session/login handler'. No public reference."
+
+# ── command codes ────────────────────────────────────────────────────────
+# Two ranges: 0xFE0000-0xFE0016 are STD_CMD_* (universal). Anything else
+# uses the high byte = process_id convention.
+commands:
+  # Standard commands (full list in winbox_m2.ksy std_cmd enum)
+  0xfe0000: { name: CMD_NOOP,          confidence: documented }
+  0xfe0001: { name: CMD_GETPOLICIES,   confidence: documented }
+  0xfe0002: { name: CMD_GETOBJ,        confidence: documented }
+  0xfe000d: { name: CMD_GET,           confidence: documented,
+              notes: "Project labels its `cmdGet=7` as a u8 SYS_CMD; that's a *legacy* short form used pre-mepty, distinct from CMD_GET=0xFE000D." }
+  0xfe000f: { name: CMD_START,         confidence: documented }
+
+  # mepty handler-private (process_id 0x0a)
+  0x0a0065: { name: meptyLogin, confidence: documented,
+              notes: "Project-named; 'documented' here means the project's PROTOCOL.md and working code. Consistent with process_id=0x0a convention." }
+  0x0a0067: { name: meptyData,  confidence: documented }
+
+  # legacy short-form commands seen in the project's auth flow
+  0x07: { name: cmdGet,  confidence: observed-only,
+          notes: "Encoded as u8 (type 0x09). Not a STD_CMD_* (those start at 0xFE0000). Pre-handler 'shortcut' for the system-info path." }
+  0x05: { name: cmdOpen, confidence: observed-only,
+          notes: "u8-encoded. Used in the legacy MD5 auth handshake (cmdOpen / Step 2a)." }
+  0x04: { name: cmdChallenge, confidence: guessed,
+          notes: "Project uses u8 CMD=4 in the 'request challenge' step of legacy auth. No name in any source." }
+  0x01: { name: cmdLogin, confidence: guessed,
+          notes: "Project uses u8 CMD=1 in legacy login step." }
+
+# ── apparent-magic bytes inside M2-using flows ──────────────────────────
+apparent-magics:
+  - context: "EC-SRP5 client_phase1 first byte"
+    bytes: [0x06]
+    confidence: observed-only
+    notes: "Same value as the chunk tag, but appears INSIDE the assembled payload too. Could be a literal opcode or just legacy-coincidence."
+  - context: "Legacy MD5 login — 0x00 prefix on hashed password"
+    bytes: [0x00]
+    confidence: documented
+    notes: "MD5 input is `0x00 + password + salt`; the result is `0x00 + MD5(...)` — totaling 17 bytes. The leading 0x00 is a marker MikroTik's auth code expects."
+  - context: "HKDF magic strings (key derivation)"
+    confidence: documented
+    notes: |
+      The literal English sentences "On the client side, this is the send
+      key; on the server side, it is the receive key." (and its mirror)
+      are part of the wire-protocol spec. They are NOT magic numbers but
+      ARE magic constants and merit explicit recording.

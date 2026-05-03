@@ -1,0 +1,13 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "bun",
+			"request": "launch",
+			"name": "index.ts",
+			"program": "${workspaceFolder}/src/index.ts",
+			"args": ["--help"],
+			"cwd": "${workspaceFolder}"
+		}
+	]
+}

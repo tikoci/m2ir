@@ -1,0 +1,1 @@
+# TODO: unsure, but the traditional "code review" etc are not well-aligned, we have different groups of tasks.  we have a need for "correctness checker", "routeros test hardness runner" => not critical yet, but a "GP" agent can use both.  maybe skill but agent give some ability to use subagent to collect stuff, and 

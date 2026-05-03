@@ -1,0 +1,59 @@
+{
+	"version": 1,
+	"hooks": {
+		"sessionStart": [
+			{
+				"type": "command",
+				"bash": "bun run hook:copilot -- --event sessionStart",
+				"powershell": "bun run hook:copilot -- --event sessionStart",
+				"cwd": ".",
+				"timeoutSec": 10
+			}
+		],
+		"sessionEnd": [
+			{
+				"type": "command",
+				"bash": "bun run hook:copilot -- --event sessionEnd",
+				"powershell": "bun run hook:copilot -- --event sessionEnd",
+				"cwd": ".",
+				"timeoutSec": 10
+			}
+		],
+		"userPromptSubmitted": [
+			{
+				"type": "command",
+				"bash": "bun run hook:copilot -- --event userPromptSubmitted",
+				"powershell": "bun run hook:copilot -- --event userPromptSubmitted",
+				"cwd": ".",
+				"timeoutSec": 10
+			}
+		],
+		"preToolUse": [
+			{
+				"type": "command",
+				"bash": "bun run hook:copilot -- --event preToolUse",
+				"powershell": "bun run hook:copilot -- --event preToolUse",
+				"cwd": ".",
+				"timeoutSec": 10
+			}
+		],
+		"postToolUse": [
+			{
+				"type": "command",
+				"bash": "bun run hook:copilot -- --event postToolUse",
+				"powershell": "bun run hook:copilot -- --event postToolUse",
+				"cwd": ".",
+				"timeoutSec": 10
+			}
+		],
+		"errorOccurred": [
+			{
+				"type": "command",
+				"bash": "bun run hook:copilot -- --event errorOccurred",
+				"powershell": "bun run hook:copilot -- --event errorOccurred",
+				"cwd": ".",
+				"timeoutSec": 10
+			}
+		]
+	}
+}

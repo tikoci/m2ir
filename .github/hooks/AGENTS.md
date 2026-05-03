@@ -1,0 +1,1 @@
+# TODO: not as early action, remember that some sqlite db to track agent work outside local fs, likely not prompts but tool calls important data <-- tricky with git, not sure how to handle

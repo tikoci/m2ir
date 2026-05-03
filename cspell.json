@@ -1,0 +1,37 @@
+{
+	"version": "0.2",
+	"language": "en",
+	"enabled": true,
+	"enableGlobDot": true,
+	"ignorePaths": [
+		"node_modules",
+		".git",
+		".claude/**",
+		"cspell.json",
+		"coverage",
+		"dist",
+		"docs/api",
+		"scratch/**",
+		"test/fixtures",
+		"work/2026-05-m2ir-bootstrap/**",
+		"GLOSSARY.txt",
+		".claude/settings*.json"
+	],
+	"useGitignore": false,
+	"flagWords": ["hte"],
+	"ignoreWords": ["behaviour"],
+	"words": [],
+	"maxNumberOfProblems": 100,
+	"numSuggestions": 8,
+	"minWordLength": 3,
+	"enabledLanguageIds": ["*"],
+	"allowCompoundWords": false,
+	"dictionaryDefinitions": [
+		{
+			"name": "project-words",
+			"path": "./GLOSSARY.txt",
+			"addWords": true
+		}
+	],
+	"dictionaries": ["project-words"]
+}
