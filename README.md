@@ -73,7 +73,9 @@ next steps, roughly in order:
 
 The expected sources to drain (and why each matters) are listed in
 `work/2026-05-m2ir-bootstrap/m2ir-design-review.md` §"What is already
-known and ought to land in m2ir".
+known and ought to land in m2ir". Follow-on scouting for additional
+public leads, duplicates, and dead ends lives in
+`work/2026-05-winbox-nova-sources/winbox-nova-source-inventory.md`.
 
 ## License
 

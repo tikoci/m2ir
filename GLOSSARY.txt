@@ -184,8 +184,10 @@ GETOBJ
 GETPOLICIES
 HKDF
 hotplug
+hotspot
 kaitai
 Kaitai
+Kirils
 ksy
 lfs
 MAXOBJS
@@ -201,7 +203,9 @@ notallowed
 notimp
 OBJS
 PAGENO
+pckg
 poc # proof-of-concept, often appears lowercase in upstream paths
+fileread
 pppman
 Radv
 radv
@@ -217,7 +221,16 @@ sermgr
 setform
 SETOBJ
 setobj
+Solovjovs
 strz
+supout
+WBX
+wbx
+YATV
+alireza
+BASUCERT
+Chimay
+DEVCORE
 sysinfo
 mproxy
 tcodes
