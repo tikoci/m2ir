@@ -1,5 +1,5 @@
 ---
-applyTo: "physical/**,concepts/**,profiles/**,CREDITS.md"
+applyTo: "CREDITS.md"
 ---
 
 # Credits maintenance
