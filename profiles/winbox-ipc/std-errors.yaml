@@ -10,9 +10,19 @@ schema-version: 0.1
 profile: winbox-ipc
 appears-in: { field: 0xff0008, name: SYS_ERRNO }
 
+source-table:
+  name: errorCode
+  language: lua
+  file: Winbox_Dissector.lua
+  lines: { from: 182, to: 196 }
+  repo: "Cisco-Talos/Winbox_Protocol_Dissector"
+  url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L182-L196"
+  drained-on: 2026-05-03
+
 evidence:
   - source: code
-    ref: "Cisco-Talos Winbox_Protocol_Dissector"
+    ref: "Cisco-Talos Winbox_Dissector.lua:182-196 (errorCode)"
+    url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L182-L196"
 
 errors:
   0xfe0001: { canonical-name: ERROR_UNKNOWN,        confidence: documented }

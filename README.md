@@ -39,11 +39,15 @@ next steps, roughly in order:
    `profiles/winbox-ipc/` and `physical/nv-message.yaml`.~~ Done — see
    [`physical/nv-message.yaml`](physical/nv-message.yaml) and
    [`profiles/winbox-ipc/`](profiles/winbox-ipc/).
-2. Lift the Cisco-Talos `Winbox_Protocol_Dissector` Lua tables into the
+2. ~~Lift the Cisco-Talos `Winbox_Protocol_Dissector` Lua tables into the
    profile (SYS_*/STD_*/CMD_*/ERROR_* enums + the typeIDCode process-id
-   table) at `confidence: documented`. Partial — the strawman drain
-   already covers the canonical Cisco-Talos enums; the handler-private
-   command tables (mepty, mproxy, undo) still need coverage.
+   table) at `confidence: documented`.~~ Done — the dissector's five
+   tables (`commandCode`, `typeCode`, `statusCode`, `errorCode`,
+   `typeIDCode`) are drained with line-range citations in each of
+   `sys-keys.yaml`, `std-keys.yaml`, `std-commands.yaml`,
+   `std-errors.yaml`, and `processes.yaml`. The handler-private command
+   tables (mepty, mproxy, undo) are NOT in the Cisco-Talos dissector;
+   they belong to step 4 (this project's PROTOCOL.md + MarginResearch).
 3. Pull the donny `nova.ts` TAG/RANGE catalog into
    `profiles/dude-on-disk/` — the largest existing knowledge bank.
    Cross-check against [`german77/TheDudeToHuman`](https://github.com/german77/TheDudeToHuman),

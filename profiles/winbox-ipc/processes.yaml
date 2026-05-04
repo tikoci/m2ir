@@ -6,9 +6,10 @@
 # of handler-private SYS_CMD values (e.g. 0x0A0065 -> process 0x0A,
 # handler-local opcode 0x0065).
 #
-# Drained from strawman/winbox-m2.ksy `process_id` enum (Cisco-Talos
-# `typeIDCode` table) plus the project-observed entries from
-# winbox-m2-semantics.yaml.
+# Drained from Cisco-Talos `typeIDCode` (catch-all entries at lines
+# 246-269 of Winbox_Dissector.lua, used as "if no full SYS/STD match,
+# compare value & 0xFF0000"). Project-observed entries that don't appear
+# in Cisco-Talos are recorded with confidence: observed-only.
 ---
 m2ir-version: 0.1
 schema-version: 0.1
@@ -19,59 +20,89 @@ appears-in:
   - { field: 0xff0002, name: SYS_FROM, element-index: 0 }
   - { field: 0xff0007, name: SYS_CMD,  byte: top-byte-of-u32 }
 
+source-table:
+  name: typeIDCode
+  language: lua
+  file: Winbox_Dissector.lua
+  lines: { from: 246, to: 269 }
+  repo: "Cisco-Talos/Winbox_Protocol_Dissector"
+  url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L246-L269"
+  drained-on: 2026-05-03
+  notes: |
+    The catch-all section of `typeIDCode`. Each entry is a u32 of the
+    form `0xPP0000`; the dissector matches `value & 0xFF0000` after the
+    full SYS_*/STD_* lookup misses. The `0xPP` byte is the process id
+    used in the first element of SYS_TO / SYS_FROM and as the top byte
+    of handler-private SYS_CMD values.
+
 evidence:
   - source: code
-    ref: "Cisco-Talos Winbox_Protocol_Dissector — typeIDCode 'if no SYS/STD match, & 0xFF0000'"
+    ref: "Cisco-Talos Winbox_Dissector.lua:246-269 (typeIDCode process catch-alls)"
+    url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L246-L269"
 
 processes:
-  0x01: { canonical-name: net,        confidence: documented }
-  0x02: { canonical-name: moduler,    confidence: documented }
-  0x03: { canonical-name: sermgr,     confidence: documented }
-  0x04: { canonical-name: notify,     confidence: documented }
-  0x05: { canonical-name: radv,       confidence: documented }
-  0x06: { canonical-name: system,     confidence: documented }
-  0x07: { canonical-name: ping,       confidence: documented }
-  0x08: { canonical-name: undo,       confidence: documented }
-  0x09: { canonical-name: log,        confidence: documented }
+  0x01: { canonical-name: net,      confidence: documented }
+  0x02: { canonical-name: moduler,  confidence: documented }
+  0x03: { canonical-name: sermgr,   confidence: documented }
+  0x04: { canonical-name: notify,   confidence: documented }
+  0x05: { canonical-name: radv,     confidence: documented }
+  0x06: { canonical-name: system,   confidence: documented }
+  0x07: { canonical-name: ping,     confidence: documented }
+  0x08: { canonical-name: undo,     confidence: documented }
+  0x09: { canonical-name: log,      confidence: documented }
   0x0a:
     canonical-name: mepty
     confidence: documented
     notes: "Terminal PTY proxy. Owns commands 0x0A0065 (login) and 0x0A0067 (data) per this project."
-  0x0b: { canonical-name: pppman,     confidence: documented }
-  0x0c: { canonical-name: radius,     confidence: documented }
+  0x0b: { canonical-name: pppman,   confidence: documented }
+  0x0c: { canonical-name: radius,   confidence: documented }
   0x0d:
-    canonical-name: user-service
-    confidence: observed-only
+    canonical-name: hotplug
+    confidence: documented
     notes: |
-      Project uses path [13, 4] for sysinfo / capabilities / pre-auth.
-      MarginResearch mentions process 13 = "user service handler 4" but
-      this is not enumerated in the Cisco-Talos process table.
-    evidence:
-      - source: doc
-        ref: "MarginResearch — Pulling MikroTik into the Limelight"
-  0x0e: { canonical-name: bridge,     confidence: documented }
-  0x0f: { canonical-name: diskd,      confidence: documented }
-  0x10: { canonical-name: dude,       confidence: documented }
-  0x11: { canonical-name: console,    confidence: documented }
-  0x12: { canonical-name: cerm,       confidence: documented }
+      Per Cisco-Talos `typeIDCode` HOTPLUG = 0x0D0000. The project's
+      observed path [13, 4] is therefore handler 4 under the `hotplug`
+      process, not a separate "user-service" process.
+    revision-history:
+      - date: 2026-05-03
+        belief: "0x0D = user-service-or-similar (project observation [13,4]; loose attribution to MarginResearch)"
+        outcome: superseded
+        evidence:
+          - source: doc
+            ref: "winbox-m2-semantics.yaml processes.0x0d in strawman/"
+      - date: 2026-05-03
+        belief: "0x0D = hotplug; [13, 4] is hotplug subhandler 4"
+        outcome: current
+        evidence:
+          - source: code
+            ref: "Cisco-Talos Winbox_Dissector.lua:258 (HOTPLUG = 0X0d0000)"
+            url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L258"
+    open-questions:
+      - "What does hotplug subhandler 4 specifically cover (sysinfo / capabilities / pre-auth, per project)?"
+  0x0e: { canonical-name: bridge,   confidence: documented }
+  0x0f: { canonical-name: diskd,    confidence: documented }
+  0x10: { canonical-name: dude,     confidence: documented }
+  0x11: { canonical-name: console,  confidence: documented }
+  0x12: { canonical-name: cerm,     confidence: documented }
   0x18:
     canonical-name: management
     confidence: observed-only
-    notes: "Project observes paths [24,0], [24,1], [24,2]. Public sources do not enumerate."
-  0x2c: { canonical-name: route,      confidence: documented }
+    notes: "Project observes paths [24,0], [24,1], [24,2]. Not in Cisco-Talos typeIDCode."
+  0x2c: { canonical-name: route,    confidence: documented }
   0x4c:
     canonical-name: mepty-handler-0x4c
     confidence: observed-only
     notes: |
       Project uses [76] as the mepty handler path. Inconsistent with
       process_id=0x0a; likely [76] is a *handler id* under the mepty
-      process rather than a process id itself. Discrepancy unresolved.
+      process rather than a process id itself. Not in Cisco-Talos
+      typeIDCode.
     open-questions:
       - "Is [76] a handler under process 0x0a (mepty) or its own process?"
   0x78:
     canonical-name: login-or-mgmt
     confidence: observed-only
-    notes: "Project uses [120] as 'session/login handler'. No public reference."
+    notes: "Project uses [120] as 'session/login handler'. Not in Cisco-Talos typeIDCode."
   0xfd:
     canonical-name: local
     confidence: documented

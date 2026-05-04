@@ -11,9 +11,20 @@ profile: winbox-ipc
 namespace: 0xfe
 namespace-name: standard
 
+source-table:
+  name: typeIDCode
+  language: lua
+  file: Winbox_Dissector.lua
+  lines: { from: 217, to: 244 }
+  repo: "Cisco-Talos/Winbox_Protocol_Dissector"
+  url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L217-L244"
+  drained-on: 2026-05-03
+  notes: "STD_* portion of typeIDCode (0xFE0001–0xFE001B)."
+
 evidence:
   - source: code
-    ref: "Cisco-Talos Winbox_Protocol_Dissector"
+    ref: "Cisco-Talos Winbox_Dissector.lua:217-244 (typeIDCode STD_* portion)"
+    url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L217-L244"
 
 keys:
   0xfe0001:

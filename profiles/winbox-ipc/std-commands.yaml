@@ -11,9 +11,23 @@ profile: winbox-ipc
 appears-in: { field: 0xff0007, name: SYS_CMD }
 range: { from: 0xfe0000, to: 0xfe0016 }
 
+source-table:
+  name: commandCode
+  language: lua
+  file: Winbox_Dissector.lua
+  lines: { from: 149, to: 170 }
+  repo: "Cisco-Talos/Winbox_Protocol_Dissector"
+  url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L149-L170"
+  drained-on: 2026-05-03
+  notes: |
+    Every entry below is a verbatim transcription of the corresponding
+    `commandCode` member with confidence `documented`. The Lua identifiers
+    and hex values match exactly; no reinterpretation.
+
 evidence:
   - source: code
-    ref: "Cisco-Talos Winbox_Protocol_Dissector"
+    ref: "Cisco-Talos Winbox_Dissector.lua:149-170 (commandCode)"
+    url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L149-L170"
 
 commands:
   0xfe0000: { canonical-name: CMD_NOOP,         confidence: documented }

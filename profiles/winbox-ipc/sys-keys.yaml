@@ -12,9 +12,30 @@ profile: winbox-ipc
 namespace: 0xff
 namespace-name: system
 
+source-table:
+  name: typeIDCode
+  language: lua
+  file: Winbox_Dissector.lua
+  lines: { from: 198, to: 269 }
+  repo: "Cisco-Talos/Winbox_Protocol_Dissector"
+  url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L198-L269"
+  drained-on: 2026-05-03
+  notes: |
+    SYS_* portion of `typeIDCode` (the same Lua table also feeds STD_* into
+    std-keys.yaml and the process catch-alls into processes.yaml). Auxiliary
+    enums `typeCode` (lines 172-175) and `statusCode` (177-180) supply the
+    SYS_TYPE and SYS_STATUS value tables below.
+
 evidence:
   - source: code
-    ref: "Cisco-Talos Winbox_Protocol_Dissector"
+    ref: "Cisco-Talos Winbox_Dissector.lua:198-216 (typeIDCode SYS_* portion)"
+    url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L198-L216"
+  - source: code
+    ref: "Cisco-Talos Winbox_Dissector.lua:172-175 (typeCode → SYS_TYPE values)"
+    url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L172-L175"
+  - source: code
+    ref: "Cisco-Talos Winbox_Dissector.lua:177-180 (statusCode → SYS_STATUS values)"
+    url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L177-L180"
 
 keys:
   0xff0001:
