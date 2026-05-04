@@ -21,6 +21,50 @@ description: |
 physical-ref: ../../physical/nv-message.yaml
 magic: ["M2"]
 
+architecture:
+  loader:
+    binary: /nova/bin/loader
+    role: |
+      The "router's router": spawned by init, starts RouterOS processes,
+      proxies IPC between them, and can restart idle services on demand
+      when a message arrives for a terminated destination.
+    confidence: documented
+  looper:
+    canonical-name: nv::Looper
+    role: |
+      Each process constructs one Looper at startup. It owns the socket to
+      `loader`, runs the event loop for the process, and exposes a default
+      handler when SYS_TO is empty or has been fully consumed.
+    confidence: documented
+  handler:
+    canonical-name: nv::Handler
+    role: "Per-process handler registered at an integer index and addressed through SYS_TO."
+    confidence: documented
+  routing:
+    request-path:
+      - "Caller sets SYS_TO=[process_id, handler_id, ...] and sends via its local Looper."
+      - "`loader` strips the destination process id, prepends the caller process id to SYS_FROM, and forwards the message to the target process."
+      - "The target process's Looper strips the next handler id and dispatches to the matching nv::Handler, or to its default handler if SYS_TO is now empty."
+    response-path:
+      - "Replies swap SYS_TO and SYS_FROM."
+      - "Each hop prepends its own id to SYS_FROM while the message walks back toward the caller."
+    anti-forgery: |
+      SYS_FROM is assembled hop-by-hop by `loader` and each process Looper,
+      so child handlers do not get to inject an arbitrary full source path.
+  special-routing:
+    multicast:
+      sys-to-prefix: 0xff0002
+      role: "`loader` duplicates the message to each listed target."
+    broadcast:
+      sys-to: [0xff0001]
+      role: "`loader` forwards the message to all processes."
+  process-id-versioning:
+    source: /nova/etc/loader/system.x3
+    notes: |
+      Process ids are assigned by loader configuration and differ across
+      RouterOS versions. Cisco-Talos, MarginResearch, and Tenable agree on
+      the routing model but not on one universal numeric process-id map.
+
 structure:
   root: { repeat: tlv-entry, until: eos }
 
@@ -85,6 +129,8 @@ refs:
   std-errors: ./std-errors.yaml
   processes: ./processes.yaml
   commands: ./commands.yaml
+  mproxy: ./mproxy.yaml
+  undo: ./undo.yaml
 
 # ── evidence ────────────────────────────────────────────────────────────
 evidence:
@@ -97,6 +143,12 @@ evidence:
   - source: code
     ref: "MarginResearch mikrotik_authentication"
     url: "https://github.com/MarginResearch/mikrotik_authentication"
+  - source: code
+    ref: "tenable/routeros msg_re/parse_x3"
+    url: "https://github.com/tenable/routeros/blob/master/msg_re/parse_x3/README.md"
+  - source: code
+    ref: "tenable/routeros msg_re/find_handlers"
+    url: "https://github.com/tenable/routeros/blob/master/msg_re/find_handlers/README.md"
 
 investigation-trail:
   - date: 2026-05-03
@@ -106,3 +158,9 @@ investigation-trail:
       user-namespace key catalogs are NOT yet drained; pulling them in
       from the Cisco-Talos dissector + this project's PROTOCOL.md is the
       next step (README.md §Status step 2 + step 4).
+  - date: 2026-05-04
+    finding: |
+      Added MarginResearch/Tenable architecture facts: the loader/Looper/
+      Handler routing model, multicast/broadcast forms, and the explicit
+      warning that process ids are version-scoped through system.x3 rather
+      than fixed across all RouterOS releases.

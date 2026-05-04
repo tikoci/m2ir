@@ -45,6 +45,7 @@
 amazonq
 awk
 backpressure
+bytheway # Tenable's CVE-2018-14847 PoC directory name
 btest.exe # Mikrotik /tool/bandwidth-test client for windows
 bunfig
 bunx
@@ -71,6 +72,8 @@ ETL
 execa
 fat-chr
 figcaption
+Fois
+FoisHandler
 frontends
 haakonnessjoen
 Hammerspoon
@@ -198,6 +201,7 @@ notallowed
 notimp
 OBJS
 PAGENO
+poc # proof-of-concept, often appears lowercase in upstream paths
 pppman
 Radv
 radv
@@ -237,3 +241,4 @@ UTF
 enumerant
 unwired
 subhandler
+subixonfire

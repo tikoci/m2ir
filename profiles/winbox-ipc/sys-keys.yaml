@@ -134,13 +134,21 @@ keys:
     physical: { tcodes: [0x08, 0x09] }
     semantic: bitmask-u32
     confidence: documented
+    values:
+      0x0005fffe: admin
+      0x0007fffe: gui-max
+      0x80000000: super-admin-flag
+      0xffffffff: super-admin
     notes: |
-      Bitmask. Known values:
-        0x5FFFE    = admin
-        0xFFFFFFFF = super-admin
+      Permission bitmask attached to proxied messages. MarginResearch
+      documents 0x5FFFE as a standard admin mask, 0x7FFFE as the maximum
+      mask settable via the WinBox GUI, and bit 0x80000000 as the
+      super-admin gate checked by `www` handler 2 ("FoisHandler"). Internal
+      RouterOS messages may carry 0xFFFFFFFF.
     evidence:
       - source: doc
         ref: "MarginResearch — policy bitmask values"
+        url: "https://margin.re/2022/06/pulling-mikrotik-into-the-limelight/"
 
   0xff000d:
     canonical-name: SYS_CTRL

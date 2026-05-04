@@ -20,6 +20,11 @@ this profile names byte 2 as `namespace` (0xFF=system, 0xFE=session,
 - [`processes.yaml`](processes.yaml) — handler/process IDs.
 - [`commands.yaml`](commands.yaml) — handler-private and legacy
   short-form SYS_CMD values.
+- [`mproxy.yaml`](mproxy.yaml) — MarginResearch/Tenable seed for the
+  WinBox front-end proxy, including the documented handler-2 file-transfer
+  surface.
+- [`undo.yaml`](undo.yaml) — current undo seed: Cisco-Talos process-id
+  hint, STD_UNDOID cross-link, and explicit remaining gaps.
 
 The original Kaitai-style seed material (chunk frame, M2 TLV grammar,
 EC-SRP5 handshake, semantic overlay) is preserved in [`strawman/`](strawman/)

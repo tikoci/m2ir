@@ -1,0 +1,48 @@
+# undo seed — winbox-ipc
+#
+# Public sources confirm that undo exists as a protocol concept, but the
+# process/binary shape is still only partially grounded.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: winbox-ipc
+canonical-name: undo
+maturity: speculative
+
+process-id-observations:
+  - version-source: "Cisco-Talos reference version"
+    process-id: 0x08
+    confidence: documented
+    evidence:
+      - source: code
+        ref: "Cisco-Talos Winbox_Dissector.lua (UNDO = 0x080000)"
+        url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L260"
+
+protocol-links:
+  - { field: 0xfe0006, name: STD_UNDOID, file: ./std-keys.yaml, role: "undo transaction id in the standard namespace" }
+
+notes: |
+  The protocol clearly carries an undo transaction identifier through
+  STD_UNDOID, but public source material does not yet expose a command
+  catalog or a stable binary/handler mapping for an undo implementation.
+
+evidence:
+  - source: code
+    ref: "Cisco-Talos Winbox_Dissector.lua (UNDO process-id hint)"
+    url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L260"
+  - source: code
+    ref: "tenable/routeros msg_re/find_handlers (6.41.4 handler survey)"
+    url: "https://github.com/tenable/routeros/blob/master/msg_re/find_handlers/README.md"
+
+investigation-trail:
+  - date: 2026-05-04
+    finding: |
+      Tenable's 6.41.4 handler survey does not show a standalone
+      `/nova/bin/undo` binary, so this seed keeps the Cisco-Talos process-id
+      hint but marks the rest of the surface as unresolved.
+
+open-questions:
+  - "Is undo a standalone binary in some RouterOS versions, or only a handler family within another process?"
+  - "Which command flows actually populate STD_UNDOID in WinBox IPC?"
+  - "How should undo be modeled once fixture-backed command examples exist?"

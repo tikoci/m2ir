@@ -39,6 +39,51 @@ handler-private:
       - source: code
         ref: "this project's PROTOCOL.md"
 
+# ── documented handler-scoped u8 command spaces ──────────────────────────
+handler-scoped-u8:
+  mproxy-handler-2:
+    canonical-name: mproxy-file-transfer
+    handler-path:
+      process-id:
+        value: 0x02
+        version-range: "6.30.1-6.42.x"
+        notes: |
+          Tenable's public CVE-2018-14847 PoC targets [2,2]. Process ids are
+          version-scoped through system.x3, so this should not be treated as
+          a universal `mproxy` assignment outside the affected v6 range.
+      handler-id: 2
+    confidence: documented
+    evidence:
+      - source: code
+        ref: "tenable/routeros poc/bytheway"
+        url: "https://github.com/tenable/routeros/blob/master/poc/bytheway/src/main.cpp"
+      - source: code
+        ref: "tenable/routeros 8291_honeypot"
+        url: "https://github.com/tenable/routeros/blob/master/8291_honeypot/README.md"
+    notes: |
+      These u8 SYS_CMD values are handler-scoped, not global short forms.
+      The same numeric values can carry different meanings in other
+      handlers.
+    commands:
+      0x07:
+        canonical-name: fileOpen
+        encoding: { tcodes: [0x09] }
+        args:
+          - { key: 0x000001, name: path, tcodes: [0x20, 0x21], role: "absolute file path" }
+        response:
+          - { key: 0x000002, tcodes: [0x08, 0x09], role: "file size in bytes" }
+          - { key: 0xfe0001, name: STD_ID, role: "session context for follow-up reads" }
+        notes: "CVE-2018-14847 open-file request. Honeypot logs show SYS_TO=[2,2], SYS_CMD=7, and a string key 1 path."
+      0x04:
+        canonical-name: fileRead
+        encoding: { tcodes: [0x09] }
+        args:
+          - { key: 0xfe0001, name: STD_ID, role: "session id returned by fileOpen" }
+          - { key: 0x000002, tcodes: [0x08, 0x09], role: "number of bytes to read" }
+        response:
+          - { key: 0x000003, tcodes: [0x30, 0x31], role: "raw file content" }
+        notes: "CVE-2018-14847 follow-up read request after a prior fileOpen."
+
 # ── legacy u8 short-form values ─────────────────────────────────────────
 # Encoded as tcode 0x09 (1-byte SYS_CMD). Pre-handler shortcuts; not
 # STD_CMD_* (those start at 0xFE0000).
@@ -51,7 +96,10 @@ legacy-short-form:
   0x04:
     canonical-name: cmdChallenge
     confidence: guessed
-    notes: "Project uses u8 CMD=4 in the 'request challenge' step of legacy auth. No name in any source."
+    notes: |
+      Project uses u8 CMD=4 in the 'request challenge' step of legacy auth.
+      Not a universal short-form label: Tenable documents the same u8 value
+      as `fileRead` inside the mproxy/handler-2 command space.
 
   0x05:
     canonical-name: cmdOpen
@@ -63,8 +111,10 @@ legacy-short-form:
     confidence: observed-only
     notes: |
       Encoded as u8 (tcode 0x09). Not a STD_CMD_* (those start at
-      0xFE0000). Pre-handler 'shortcut' for the system-info path.
-      Distinct from CMD_GET=0xFE000D.
+      0xFE0000). Pre-handler 'shortcut' for the system-info path in this
+      project's auth flow. Distinct from CMD_GET=0xFE000D, and also
+      distinct from the documented mproxy/handler-2 `fileOpen` command
+      that reuses u8 value 7 in a different handler context.
 
 investigation-trail:
   - date: 2026-05-03
@@ -73,3 +123,9 @@ investigation-trail:
       short-forms are drained from the strawman. The full mepty +
       mproxy + undo command spaces are still pending — see README.md
       §Status step 4.
+  - date: 2026-05-04
+    finding: |
+      Added the public mproxy/handler-2 fileOpen/fileRead surface from
+      Tenable's CVE-2018-14847 material. The remaining gap is the rest of
+      the mproxy, mepty, and undo command catalogs outside the documented
+      public PoCs.

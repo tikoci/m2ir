@@ -34,21 +34,92 @@ source-table:
     full SYS_*/STD_* lookup misses. The `0xPP` byte is the process id
     used in the first element of SYS_TO / SYS_FROM and as the top byte
     of handler-private SYS_CMD values.
+  version-warning: |
+    Process ids are assigned by `/nova/etc/loader/system.x3` and differ
+    across RouterOS versions. Keep the Cisco-Talos table as a documented
+    reference version, but do not treat its numeric process ids as a
+    universal map.
 
 evidence:
   - source: code
     ref: "Cisco-Talos Winbox_Dissector.lua:246-269 (typeIDCode process catch-alls)"
     url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L246-L269"
+  - source: code
+    ref: "tenable/routeros msg_re/parse_x3 (system.x3 examples)"
+    url: "https://github.com/tenable/routeros/blob/master/msg_re/parse_x3/README.md"
+  - source: code
+    ref: "tenable/routeros msg_re/find_handlers (registered handlers)"
+    url: "https://github.com/tenable/routeros/blob/master/msg_re/find_handlers/README.md"
+  - source: doc
+    ref: "MarginResearch — Pulling MikroTik into the Limelight"
+    url: "https://margin.re/2022/06/pulling-mikrotik-into-the-limelight/"
+
+version-observations:
+  - version: "6.43.45"
+    source: "/nova/etc/loader/system.x3 parsed by Tenable parse_x3"
+    mappings:
+      - { binary: /nova/bin/log, process-id: 0x03 }
+      - { binary: /nova/bin/radius, process-id: 0x05 }
+      - { binary: /nova/bin/moduler, process-id: 0x06 }
+      - { binary: /nova/bin/user, process-id: 0x0d }
+    notes: "Concrete example showing that process ids are loader-assigned and version-scoped."
+  - version-range: "6.30.1-6.42.x"
+    source: "Tenable CVE-2018-14847 PoC"
+    mappings:
+      - { binary: /nova/bin/mproxy, process-id: 0x02, handler-id: 2 }
+    notes: "The public PoC sends WinBox file-open and file-read messages to [2,2]."
+
+registered-handler-observations:
+  - binary: /nova/bin/mproxy
+    version: "6.41.4"
+    handler-ids: [2, 1]
+    confidence: documented
+  - binary: /nova/bin/user
+    version: "6.41.4"
+    handler-ids: [3, 2, 1, 4, 5, 6, 7, 8]
+    confidence: documented
+    notes: "MarginResearch's auth trace reaches the user authentication handler at [13,4]."
+  - binary: /nova/bin/www
+    version: "6.41.4"
+    handler-ids: [1, 2]
+    confidence: documented
+    notes: "MarginResearch identifies handler 2 as FoisHandler."
 
 processes:
   0x01: { canonical-name: net,      confidence: documented }
-  0x02: { canonical-name: moduler,  confidence: documented }
+  0x02:
+    canonical-name: moduler
+    confidence: documented
+    notes: |
+      Cisco-Talos labels 0x02 as `moduler` in its reference version. This
+      slot is version-scoped: Tenable's CVE-2018-14847 PoC uses [2,2] as
+      the `mproxy` file-transfer handler for RouterOS 6.30.1-6.42.x, while
+      Tenable's parse_x3 sample for 6.43.45 moves `/nova/bin/moduler` to
+      process id 0x06.
+    version-identities:
+      - version-source: "Cisco-Talos reference version"
+        canonical-name: moduler
+        confidence: documented
+      - version-range: "6.30.1-6.42.x"
+        canonical-name: mproxy
+        confidence: documented
+        evidence:
+          - source: code
+            ref: "tenable/routeros poc/bytheway (set_to(2,2))"
+            url: "https://github.com/tenable/routeros/blob/master/poc/bytheway/src/main.cpp"
   0x03: { canonical-name: sermgr,   confidence: documented }
   0x04: { canonical-name: notify,   confidence: documented }
   0x05: { canonical-name: radv,     confidence: documented }
   0x06: { canonical-name: system,   confidence: documented }
   0x07: { canonical-name: ping,     confidence: documented }
-  0x08: { canonical-name: undo,     confidence: documented }
+  0x08:
+    canonical-name: undo
+    confidence: documented
+    notes: |
+      Cisco-Talos labels 0x08 as `undo` in its reference version. Tenable's
+      6.41.4 handler survey does not show a standalone `/nova/bin/undo`
+      binary, so treat this as a version-specific identity rather than a
+      universal guarantee of a dedicated undo daemon.
   0x09: { canonical-name: log,      confidence: documented }
   0x0a:
     canonical-name: mepty
@@ -60,9 +131,19 @@ processes:
     canonical-name: hotplug
     confidence: documented
     notes: |
-      Per Cisco-Talos `typeIDCode` HOTPLUG = 0x0D0000. The project's
-      observed path [13, 4] is therefore handler 4 under the `hotplug`
-      process, not a separate "user-service" process.
+      Cisco-Talos labels 0x0D0000 as `hotplug` in its reference version.
+      MarginResearch and Tenable's parse_x3 sample for RouterOS 6.43.45
+      both place `/nova/bin/user` at process id 13 (0x0d), and
+      MarginResearch's authentication trace uses [13,4] to reach the user
+      authentication handler. Treat this numeric slot as version-scoped.
+    version-identities:
+      - version-source: "Cisco-Talos reference version"
+        canonical-name: hotplug
+        confidence: documented
+      - version: "6.43.45"
+        canonical-name: user
+        confidence: documented
+        notes: "MarginResearch's auth trace uses [13,4]; Tenable parse_x3 maps `/nova/bin/user` -> 13."
     revision-history:
       - date: 2026-05-03
         belief: "0x0D = user-service-or-similar (project observation [13,4]; loose attribution to MarginResearch)"
@@ -72,13 +153,24 @@ processes:
             ref: "winbox-m2-semantics.yaml processes.0x0d in strawman/"
       - date: 2026-05-03
         belief: "0x0D = hotplug; [13, 4] is hotplug subhandler 4"
-        outcome: current
+        outcome: superseded
         evidence:
           - source: code
             ref: "Cisco-Talos Winbox_Dissector.lua:258 (HOTPLUG = 0X0d0000)"
             url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L258"
+      - date: 2026-05-04
+        belief: "0x0D is version-scoped: hotplug in the Cisco-Talos reference version, user in 6.43.45's system.x3/auth traces"
+        outcome: current
+        evidence:
+          - source: doc
+            ref: "MarginResearch — [13,4] authentication path to user"
+            url: "https://margin.re/2022/06/pulling-mikrotik-into-the-limelight/"
+          - source: code
+            ref: "tenable/routeros msg_re/parse_x3 — /nova/bin/user -> 13"
+            url: "https://github.com/tenable/routeros/blob/master/msg_re/parse_x3/README.md"
     open-questions:
-      - "What does hotplug subhandler 4 specifically cover (sysinfo / capabilities / pre-auth, per project)?"
+      - "Which RouterOS build produced Cisco-Talos's HOTPLUG = 0x0D label?"
+      - "When did `/nova/bin/user` occupy process id 13, and what process id did hotplug move to in those builds?"
   0x0e: { canonical-name: bridge,   confidence: documented }
   0x0f: { canonical-name: diskd,    confidence: documented }
   0x10: { canonical-name: dude,     confidence: documented }

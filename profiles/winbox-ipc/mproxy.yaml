@@ -1,0 +1,92 @@
+# mproxy seed — winbox-ipc
+#
+# /nova/bin/mproxy is the external WinBox front-end on TCP/8291. Public
+# sources document its role in authentication and its handler-2 file-transfer
+# surface; the rest of its command space is still largely unmapped.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: winbox-ipc
+canonical-name: mproxy
+maturity: exploratory
+
+binary: /nova/bin/mproxy
+port: 8291
+role: |
+  External WinBox proxy. Accepts TCP/8291 sessions, participates in the
+  WinBox EC-SRP5-backed authentication flow, and routes authenticated
+  requests into the internal RouterOS nv::message graph.
+
+process-id-observations:
+  - version-range: "6.30.1-6.42.x"
+    process-id: 0x02
+    confidence: documented
+    evidence:
+      - source: code
+        ref: "tenable/routeros poc/bytheway (set_to(2,2))"
+        url: "https://github.com/tenable/routeros/blob/master/poc/bytheway/src/main.cpp"
+  - version: "6.43.45"
+    process-id: unknown
+    confidence: observed-only
+    notes: |
+      Tenable's parse_x3 README only shows sample mappings for log, radius,
+      moduler, and user. It does not publish the `mproxy` row for this
+      version, so do not assume process id 0x02 remained stable.
+
+registered-handlers:
+  version: "6.41.4"
+  source: "tenable/routeros msg_re/find_handlers"
+  handlers:
+    1:
+      canonical-name: mproxy-handler-1
+      confidence: observed-only
+      notes: "Registered in public handler scans, but no command catalog is documented."
+    2:
+      canonical-name: mproxy-file-transfer
+      confidence: documented
+      notes: "Documented by Tenable's CVE-2018-14847 PoC and honeypot traces."
+
+handler-surfaces:
+  2:
+    commands:
+      0x07:
+        canonical-name: fileOpen
+        encoding: { tcodes: [0x09] }
+        args:
+          - { key: 0x000001, tcodes: [0x20, 0x21], role: "absolute file path" }
+        response:
+          - { key: 0x000002, tcodes: [0x08, 0x09], role: "file size in bytes" }
+          - { key: 0xfe0001, name: STD_ID, role: "session context for follow-up reads" }
+      0x04:
+        canonical-name: fileRead
+        encoding: { tcodes: [0x09] }
+        args:
+          - { key: 0xfe0001, name: STD_ID, role: "session id returned by fileOpen" }
+          - { key: 0x000002, tcodes: [0x08, 0x09], role: "number of bytes to read" }
+        response:
+          - { key: 0x000003, tcodes: [0x30, 0x31], role: "raw file content" }
+    known-target:
+      path: /flash/rw/store/user.dat
+      role: "Credential database used by the public CVE-2018-14847 PoC."
+
+evidence:
+  - source: doc
+    ref: "MarginResearch — Pulling MikroTik into the Limelight"
+    url: "https://margin.re/2022/06/pulling-mikrotik-into-the-limelight/"
+  - source: code
+    ref: "tenable/routeros poc/bytheway"
+    url: "https://github.com/tenable/routeros/blob/master/poc/bytheway/src/main.cpp"
+  - source: code
+    ref: "tenable/routeros 8291_honeypot"
+    url: "https://github.com/tenable/routeros/blob/master/8291_honeypot/README.md"
+  - source: code
+    ref: "tenable/routeros msg_re/find_handlers"
+    url: "https://github.com/tenable/routeros/blob/master/msg_re/find_handlers/README.md"
+
+investigation-trail:
+  - date: 2026-05-04
+    finding: |
+      Public sources firmly document the handler-2 file-transfer surface and
+      `mproxy`'s role as the TCP/8291 entry point, but they do not publish a
+      broader command catalog for handler 1 or later RouterOS versions.

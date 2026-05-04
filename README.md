@@ -29,6 +29,7 @@ profile/concept/physical layering.
 | `test/` | Anchor tests for schema slices and tooling |
 | `work/2026-05-m2ir-bootstrap/` | Imported design notes — promote out of `work/` only when stable, and prefer promoting *into the schema's prose attributes* |
 | [`BOOTSTRAP.md`](BOOTSTRAP.md) | Repo plumbing — setup, lint, hooks, `cortex.db`, Kaitai |
+| [`CREDITS.md`](CREDITS.md) | Upstream projects whose data was drained into the schema |
 
 ## Status
 
@@ -57,8 +58,16 @@ next steps, roughly in order:
    [`german77/TheDudeToHuman`](https://github.com/german77/TheDudeToHuman),
    including the overlapping 0x5208/0x5209 note vs.
    service-description surface.
-4. MarginResearch + Tenable architecture facts into `winbox-ipc` and
-   the seeds for `mproxy` and `undo` object classes.
+4. ~~MarginResearch + Tenable architecture facts into `winbox-ipc` and
+   the seeds for `mproxy` and `undo` object classes.~~ Done — see
+   [`profiles/winbox-ipc/profile.yaml`](profiles/winbox-ipc/profile.yaml),
+   [`sys-keys.yaml`](profiles/winbox-ipc/sys-keys.yaml),
+   [`processes.yaml`](profiles/winbox-ipc/processes.yaml),
+   [`commands.yaml`](profiles/winbox-ipc/commands.yaml),
+   [`mproxy.yaml`](profiles/winbox-ipc/mproxy.yaml), and
+   [`undo.yaml`](profiles/winbox-ipc/undo.yaml). Process-id conflicts are
+   recorded as version-scoped observations rather than flattened into one
+   universal numeric map.
 5. Scaffold `concepts/` from the cross-profile values that fall out of
    the first two profiles.
 
