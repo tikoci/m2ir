@@ -29,10 +29,10 @@ they stand, so a reader can see the materials before the redesign.
 
 | File | Purpose | Format |
 |------|---------|--------|
-| `src/protocols/winbox/schema/winbox-chunk.ksy` | Outer chunked transport framing on TCP/8291 | [Kaitai Struct](https://kaitai.io) |
-| `src/protocols/winbox/schema/winbox-m2.ksy` | The M2 / `nv::message` TLV format itself, with type, key, command, and process-id enums | Kaitai Struct |
-| `src/protocols/winbox/schema/winbox-ec-srp5.ksy` | Pre-encryption EC-SRP5 handshake messages (4 shapes) | Kaitai Struct |
-| `src/protocols/winbox/schema/winbox-m2-semantics.yaml` | **Semantic overlay** — names, evidence, confidence, "apparent magics". Not Kaitai. | custom YAML |
+| `profiles/winbox-ipc/strawman/winbox-chunk.ksy` | Outer chunked transport framing on TCP/8291 | [Kaitai Struct](https://kaitai.io) |
+| `profiles/winbox-ipc/strawman/winbox-m2.ksy` | The M2 / `nv::message` TLV format itself, with type, key, command, and process-id enums | Kaitai Struct |
+| `profiles/winbox-ipc/strawman/winbox-ec-srp5.ksy` | Pre-encryption EC-SRP5 handshake messages (4 shapes) | Kaitai Struct |
+| `profiles/winbox-ipc/strawman/winbox-m2-semantics.yaml` | **Semantic overlay** — names, evidence, confidence, "apparent magics". Not Kaitai. | custom YAML |
 
 The three `.ksy` files are valid Kaitai Struct schemas (`ks-version: 0.10`)
 and can be compiled with `kaitai-struct-compiler` to produce parsers in any

@@ -1,60 +1,57 @@
 # m2ir
 
-`m2ir` is a Bun/TypeScript workspace for collecting, testing, and gradually formalizing a reusable intermediate representation for MikroTik binary formats.
+`m2ir` is a unified schema for MikroTik RouterOS binary formats —
+nv::message ("M2"), the WinBox app protocol, the saved-connections CDB
+file, MNDP discovery, the Dude object store, and the JSProxy / RoMON
+adjacencies. Same byte grammar shows up across many surfaces with very
+different *usage*. The job of m2ir is to capture that knowledge once,
+durably, in YAML that both humans and agents can read directly.
 
-The first bootstrap imports the current WinBox/M2 strawman from `~/Lab/winbox-terminal-protocol/schema/`: the parsable schema artifacts live under `src/`, the anchor tests live under `test/`, and the longer design notes stay under `work/` until they harden into stable repo-owned specs.
+The format is the deliverable. Prose lives inside the schema (as
+`notes:`, `evidence:`, `revision-history:`, `aka:`), not in adjacent
+spec docs. See [`DESIGN.md`](DESIGN.md) for the principles, especially
+the YAML-canonical / Kaitai-derived inversion and the
+profile/concept/physical layering.
 
-## Layout
+## Where things live
 
 | Path | Purpose |
-| --- | --- |
-| `src/protocols/winbox/schema/` | Imported WinBox chunk, EC-SRP5, M2, and semantic-overlay schema artifacts |
-| `src/tooling/` | Repo-local Bun tooling for instruction audits and `cortex.db` event logging |
-| `test/protocols/winbox/` | Anchor tests for the current WinBox/M2 schema seed |
-| `test/tooling/` | Tests for the repo-local bootstrap tooling |
-| `work/2026-05-m2ir-bootstrap/` | Imported design notes and exploratory context for the initial repo shape |
-| `cortex.db` | Repo-owned SQLite database for lightweight local event logging |
+|---|---|
+| [`DESIGN.md`](DESIGN.md) | Format principles. The one orientation doc. |
+| [`physical/`](physical/) | Profile-agnostic wire grammars (placeholder) |
+| [`concepts/`](concepts/) | Cross-profile semantic identity (placeholder) |
+| [`profiles/`](profiles/) | One subdir per usage context — winbox-ipc, dude-on-disk, winbox-cdb, mndp |
+| [`profiles/winbox-ipc/strawman/`](profiles/winbox-ipc/strawman/) | Seed material imported from the WinBox terminal-protocol experiment: 3 `.ksy` files + 1 semantic-overlay `.yaml` |
+| [`fixtures/`](fixtures/) | Raw bytes referenced by `evidence:` (placeholder) |
+| `src/tooling/` | Repo-local Bun tooling (instruction audit, `cortex.db` event log) |
+| `test/` | Anchor tests for schema slices and tooling |
+| `work/2026-05-m2ir-bootstrap/` | Imported design notes — promote out of `work/` only when stable, and prefer promoting *into the schema's prose attributes* |
+| [`BOOTSTRAP.md`](BOOTSTRAP.md) | Repo plumbing — setup, lint, hooks, `cortex.db`, Kaitai |
 
-## Setup
+## Status
 
-```bash
-bun install
-bun run hooks:install
-bun run lint
-bun run test
-bun run build
-```
+v0.1 in progress. The seed strawman (one profile — `winbox-ipc`) is
+present; canonical YAML schema is not yet written. Expected next steps,
+roughly in order:
 
-## Helper scripts
+1. Drain the `winbox-ipc/strawman/` content into canonical YAML under
+   `profiles/winbox-ipc/` and `physical/nv-message.yaml`.
+2. Lift the Cisco-Talos `Winbox_Protocol_Dissector` Lua tables into the
+   profile (SYS_*/STD_*/CMD_*/ERROR_* enums + the typeIDCode process-id
+   table) at `confidence: documented`.
+3. Pull the donny `nova.ts` TAG/RANGE catalog into
+   `profiles/dude-on-disk/` — the largest existing knowledge bank.
+   Cross-check against [`german77/TheDudeToHuman`](https://github.com/german77/TheDudeToHuman),
+   the older and more battle-tested decoder donny absorbed from.
+4. MarginResearch + Tenable architecture facts into `winbox-ipc` and
+   the seeds for `mproxy` and `undo` object classes.
+5. Scaffold `concepts/` from the cross-profile values that fall out of
+   the first two profiles.
 
-```bash
-# Show which instruction files apply to a repo path
-bun run audit:applyto -- src/index.ts
+The expected sources to drain (and why each matters) are listed in
+`work/2026-05-m2ir-bootstrap/m2ir-design-review.md` §"What is already
+known and ought to land in m2ir".
 
-# Manually append an event to the repo-owned SQLite log
-bun run hook:log -- --source manual --event note --summary "bootstrap checkpoint"
+## License
 
-# Install the local git hooks for this repository
-bun run hooks:install
-```
-
-Git hooks are wired through package scripts so the same entrypoints stay reproducible from the CLI:
-
-- `.githooks/pre-commit` -> `bun run hook:git:pre-commit`
-- `.githooks/pre-push` -> `bun run hook:git:pre-push`
-
-`cortex.db` now keeps three distinct streams instead of flattening everything into one generic table:
-
-- `repo_events` for manual notes and generic internal events
-- `git_hook_runs` for local git hook executions with command, status, exit code, and duration
-- `copilot_hook_events` for documented Copilot hook payloads (`sessionStart`, `preToolUse`, `postToolUse`, and related events)
-
-`.github/hooks/hooks.json` is wired to a dedicated Copilot hook handler that reads JSON from stdin and writes nothing to stdout, so it stays compatible with the documented hook behavior.
-
-## Optional external tools
-
-Kaitai is not required for normal lint/test/build loops, but it is useful when regenerating or validating the `.ksy` schemas:
-
-```bash
-brew install kaitai-struct-compiler
-```
+CC0-1.0 for the schema content (maximum reuse and re-derivation).

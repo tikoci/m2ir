@@ -1,5 +1,5 @@
 ---
-applyTo: "work/**,src/protocols/**,src/data/**,docs/WORKFLOW.md,docs/specs/S002-protocols-and-access.md,docs/specs/S003-device-discovery-and-cache.md,docs/specs/S006-alpha-first-command.md,test/integration/**,README.md"
+applyTo: "work/**,physical/**,concepts/**,profiles/**,fixtures/**,test/profiles/**,test/integration/**,README.md,DESIGN.md"
 ---
 
 # RouterOS protocol grounding

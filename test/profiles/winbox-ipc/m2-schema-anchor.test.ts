@@ -1,14 +1,14 @@
-// Anchor tests for the WinBox M2 schema strawman.
+// Anchor tests for the WinBox-IPC M2 schema strawman.
 //
-// Strategy: don't depend on the Kaitai compiler in CI. Instead, hand-code
-// a minimal TLV parser that mirrors `src/protocols/winbox/schema/winbox-m2.ksy`
-// and assert it agrees
-// with byte-level fixtures lifted verbatim from PROTOCOL.md examples.
+// Strategy: don't depend on the Kaitai compiler in CI. Hand-code a minimal
+// TLV parser that mirrors `profiles/winbox-ipc/strawman/winbox-m2.ksy` and
+// assert it agrees with byte-level fixtures lifted verbatim from PROTOCOL.md
+// examples.
 //
-// When Kaitai-generated JS is added later (`bunx kaitai-struct-compiler -t
-// javascript src/protocols/winbox/schema/winbox-m2.ksy`), point `parseM2()`
-// at it and these
-// fixtures become regression tests for the generated parser too.
+// The .ksy files in `profiles/winbox-ipc/strawman/` are *examples of the
+// binary-types-in-YAML problem*, not the canonical artifact. The canonical
+// m2ir form is the YAML schema this repo is being built around — see
+// /DESIGN.md for why Kaitai sits downstream rather than upstream.
 //
 // The point of these tests is to *exercise the schema as documentation*:
 // every fixture pulls a real byte sequence out of PROTOCOL.md and asserts

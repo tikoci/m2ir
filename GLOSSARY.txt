@@ -215,6 +215,11 @@ SETOBJ
 setobj
 strz
 sysinfo
+mproxy
+tcodes
+ADR
+adr
+Footgun
 toobig
 toomuch
 UNDOID
