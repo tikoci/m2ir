@@ -1,0 +1,50 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://raw.githubusercontent.com/tikoci/m2ir/main/src/schema/m2ir.schema.json",
+	"title": "m2ir schema file",
+	"description": "Minimal JSON Schema for m2ir protocol schema YAML files. additionalProperties is true everywhere to accommodate the flexible schema structure; only well-known enum fields are constrained.",
+	"type": "object",
+	"additionalProperties": true,
+	"$defs": {
+		"confidence": {
+			"description": "Epistemic confidence level for a field or entry.",
+			"type": "string",
+			"enum": [
+				"documented",
+				"inferred",
+				"observed-only",
+				"guessed",
+				"superseded"
+			]
+		},
+		"maturity": {
+			"description": "Maturity level of a profile or sub-tree.",
+			"type": "string",
+			"enum": ["exploratory", "stable", "speculative"]
+		},
+		"evidenceSource": {
+			"description": "Source kind for an evidence entry.",
+			"type": "string",
+			"enum": ["code", "doc", "sample", "talk"]
+		},
+		"evidenceEntry": {
+			"type": "object",
+			"additionalProperties": true,
+			"properties": {
+				"source": { "$ref": "#/$defs/evidenceSource" },
+				"ref": { "type": "string" }
+			}
+		},
+		"evidenceList": {
+			"type": "array",
+			"items": { "$ref": "#/$defs/evidenceEntry" }
+		}
+	},
+	"properties": {
+		"m2ir-version": { "type": "number" },
+		"schema-version": { "type": "number" },
+		"confidence": { "$ref": "#/$defs/confidence" },
+		"maturity": { "$ref": "#/$defs/maturity" },
+		"evidence": { "$ref": "#/$defs/evidenceList" }
+	}
+}

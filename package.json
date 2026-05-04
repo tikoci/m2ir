@@ -13,7 +13,8 @@
 		"has-flag": "4.0.0",
 		"markdownlint-cli2": "^0.22.1",
 		"secretlint": "^12.3.1",
-		"typedoc": "^0.28.19"
+		"typedoc": "^0.28.19",
+		"yaml": "^2.8.4"
 	},
 	"optionalDependencies": {},
 	"peerDependencies": {
@@ -36,7 +37,8 @@
 		"hook:git:pre-push": "bun run hook:git -- --hook pre-push -- bun run ci",
 		"hook:log": "bun src/tooling/log-repo-event.ts",
 		"hooks:install": "git config --local core.hooksPath .githooks && chmod +x .githooks/pre-commit .githooks/pre-push",
-		"lint": "bun run lint:biome && bun run lint:typecheck",
+		"lint": "bun run lint:biome && bun run lint:typecheck && bun run lint:yaml",
+		"lint:yaml": "bun src/tooling/lint-yaml.ts",
 		"lint:git:commit": "bun run lint",
 		"lint:git:push": "bun run ci",
 		"lint:ci": "bun run lint && bun run lint:markdownlint && bun run lint:cspell && bun run lint:secretlint && bun run lint:agents",
