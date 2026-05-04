@@ -19,6 +19,7 @@ The first bootstrap imports the current WinBox/M2 strawman from `~/Lab/winbox-te
 
 ```bash
 bun install
+bun run hooks:install
 bun run lint
 bun run test
 bun run build
@@ -32,6 +33,9 @@ bun run audit:applyto -- src/index.ts
 
 # Manually append an event to the repo-owned SQLite log
 bun run hook:log -- --source manual --event note --summary "bootstrap checkpoint"
+
+# Install the local git hooks for this repository
+bun run hooks:install
 ```
 
 Git hooks are wired through package scripts so the same entrypoints stay reproducible from the CLI:
@@ -39,7 +43,13 @@ Git hooks are wired through package scripts so the same entrypoints stay reprodu
 - `.githooks/pre-commit` -> `bun run hook:git:pre-commit`
 - `.githooks/pre-push` -> `bun run hook:git:pre-push`
 
-`.github/hooks/hooks.json` is also pre-wired to send Copilot hook events through the same logger, with the caveat that Copilot CLI hook support is still evolving and may depend on the client/runtime honoring repo-local hook configuration.
+`cortex.db` now keeps three distinct streams instead of flattening everything into one generic table:
+
+- `repo_events` for manual notes and generic internal events
+- `git_hook_runs` for local git hook executions with command, status, exit code, and duration
+- `copilot_hook_events` for documented Copilot hook payloads (`sessionStart`, `preToolUse`, `postToolUse`, and related events)
+
+`.github/hooks/hooks.json` is wired to a dedicated Copilot hook handler that reads JSON from stdin and writes nothing to stdout, so it stays compatible with the documented hook behavior.
 
 ## Optional external tools
 

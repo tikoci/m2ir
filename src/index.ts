@@ -1,6 +1,8 @@
 export {
 	ensureCortexSchema,
 	getCortexDbPath,
+	logCopilotHookEvent,
+	logGitHookRun,
 	logRepoEvent,
 	openCortexDb,
 } from "./tooling/cortex-db.ts";

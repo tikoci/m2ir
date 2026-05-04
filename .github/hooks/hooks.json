@@ -4,8 +4,8 @@
 		"sessionStart": [
 			{
 				"type": "command",
-				"bash": "bun run hook:copilot -- --event sessionStart",
-				"powershell": "bun run hook:copilot -- --event sessionStart",
+				"bash": "bun run hook:copilot -- --hook sessionStart",
+				"powershell": "bun run hook:copilot -- --hook sessionStart",
 				"cwd": ".",
 				"timeoutSec": 10
 			}
@@ -13,8 +13,8 @@
 		"sessionEnd": [
 			{
 				"type": "command",
-				"bash": "bun run hook:copilot -- --event sessionEnd",
-				"powershell": "bun run hook:copilot -- --event sessionEnd",
+				"bash": "bun run hook:copilot -- --hook sessionEnd",
+				"powershell": "bun run hook:copilot -- --hook sessionEnd",
 				"cwd": ".",
 				"timeoutSec": 10
 			}
@@ -22,8 +22,8 @@
 		"userPromptSubmitted": [
 			{
 				"type": "command",
-				"bash": "bun run hook:copilot -- --event userPromptSubmitted",
-				"powershell": "bun run hook:copilot -- --event userPromptSubmitted",
+				"bash": "bun run hook:copilot -- --hook userPromptSubmitted",
+				"powershell": "bun run hook:copilot -- --hook userPromptSubmitted",
 				"cwd": ".",
 				"timeoutSec": 10
 			}
@@ -31,8 +31,8 @@
 		"preToolUse": [
 			{
 				"type": "command",
-				"bash": "bun run hook:copilot -- --event preToolUse",
-				"powershell": "bun run hook:copilot -- --event preToolUse",
+				"bash": "bun run hook:copilot -- --hook preToolUse",
+				"powershell": "bun run hook:copilot -- --hook preToolUse",
 				"cwd": ".",
 				"timeoutSec": 10
 			}
@@ -40,8 +40,8 @@
 		"postToolUse": [
 			{
 				"type": "command",
-				"bash": "bun run hook:copilot -- --event postToolUse",
-				"powershell": "bun run hook:copilot -- --event postToolUse",
+				"bash": "bun run hook:copilot -- --hook postToolUse",
+				"powershell": "bun run hook:copilot -- --hook postToolUse",
 				"cwd": ".",
 				"timeoutSec": 10
 			}
@@ -49,8 +49,8 @@
 		"errorOccurred": [
 			{
 				"type": "command",
-				"bash": "bun run hook:copilot -- --event errorOccurred",
-				"powershell": "bun run hook:copilot -- --event errorOccurred",
+				"bash": "bun run hook:copilot -- --hook errorOccurred",
+				"powershell": "bun run hook:copilot -- --hook errorOccurred",
 				"cwd": ".",
 				"timeoutSec": 10
 			}
