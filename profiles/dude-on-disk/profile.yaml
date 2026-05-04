@@ -1,0 +1,94 @@
+# dude-on-disk profile — The Dude `objs.obj` blobs
+#
+# A per-row object blob from `dude.db`. Same physical nv::message TLV grammar
+# as winbox-ipc, but the profile-specific rules differ: byte 2 is a marker,
+# compactness is signaled by that marker instead of the low tcode bit, and the
+# object class is chosen from the range of the leading section-1 tag.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+id: dude-on-disk
+title: The Dude on-disk object blob
+maturity: exploratory
+description: |
+  The Dude stores each object row as a Nova / nv::message blob in `dude.db`
+  table `objs`, column `obj`. Donny's decoder treats the blob as an 8-byte
+  constant preamble, a 4-byte LE declared-field-count, then TLV entries until
+  end-of-buffer. The same physical TLV grammar as winbox-ipc applies, but this
+  profile renames byte 2 to `marker`, uses marker 0x11 for compact-width
+  payloads, and dispatches objects by the leading section-1 tag's numeric range.
+
+physical-ref: ../../physical/nv-message.yaml
+magic: [0x4d, 0x32, 0x01, 0x00, 0xff, 0x88, 0x01, 0x00]
+
+structure:
+  root:
+    seq:
+      - { name: preamble, size: 8, role: "constant Nova prefix; bytes 4-7 also resemble the header of a one-element u32 array" }
+      - { name: declared-field-count, width: u32le, role: "section-1 field count as consumed by donny's decoder" }
+      - { name: fields, kind: tlv-entry, repeat: eos }
+
+byte-2-as: marker
+markers:
+  0x10:
+    name: standard
+    width-rule: from-tcode
+    confidence: documented
+  0x11:
+    name: compact
+    width-rule: always-1-byte
+    confidence: documented
+    notes: "Donny short-circuits marker 0x11 to a one-byte value regardless of tcode."
+  0xfe:
+    name: alternate
+    width-rule: from-tcode
+    confidence: documented
+    notes: |
+      Alternate standard marker. Used for the continuation separator
+      (`SELF_ID`, tag 0x0001) and trailing `NAME` field in donny's writers.
+
+compact-rule: marker-byte
+continuation:
+  separator:
+    tag: 0x0001
+    canonical-name: SELF_ID
+    marker: 0xfe
+    tcode: 0x08
+    role: "section boundary between the main body and the trailing NAME field"
+  trailing-field:
+    tag: 0x0010
+    canonical-name: NAME
+    marker: 0xfe
+    role: "last field emitted by donny's object builders"
+
+classification:
+  kind: by-leading-tag-range
+  skip-leading-tags: [0x0001]
+  refs:
+    object-classes: ./object-classes.yaml
+  notes: |
+    Donny classifies objects by the first section-1 tag, except when that tag is
+    SELF_ID (0x0001). In that case the next tag is the real discriminator.
+    Overlapping ranges exist; prefer the narrower/special-case bands before
+    the wider ranges around them (for example syslog-rule before network-scanner).
+
+refs:
+  object-classes: ./object-classes.yaml
+  fields: ./fields.yaml
+
+evidence:
+  - source: code
+    ref: "tikoci/donny src/lib/nova.ts:1-248"
+    url: "https://github.com/tikoci/donny/blob/main/src/lib/nova.ts#L1-L248"
+  - source: code
+    ref: "german77/TheDudeToHuman src/the_dude_to_human/database/dude_field_parser.cpp:1-438"
+    url: "https://github.com/german77/TheDudeToHuman/blob/master/src/the_dude_to_human/database/dude_field_parser.cpp#L1-L438"
+
+investigation-trail:
+  - date: 2026-05-03
+    finding: |
+      Donny's comments call the first 8 bytes a constant magic, while the local
+      design notes observe that bytes 4-7 also parse as the header of a
+      one-element u32 array. Keep both interpretations visible until fixture
+      work decides whether a more structured prefix model is useful downstream.

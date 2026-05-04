@@ -16,9 +16,9 @@ source-table:
   name: typeIDCode
   language: lua
   file: Winbox_Dissector.lua
-  lines: { from: 198, to: 269 }
+  lines: { from: 198, to: 216 }
   repo: "Cisco-Talos/Winbox_Protocol_Dissector"
-  url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L198-L269"
+  url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L198-L216"
   drained-on: 2026-05-03
   notes: |
     SYS_* portion of `typeIDCode` (the same Lua table also feeds STD_* into

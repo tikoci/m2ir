@@ -17,4 +17,11 @@ Reference implementations:
   understanding, but TheDudeToHuman has more real-world testing miles;
   cross-check against it when donny and the schema disagree.
 
-Placeholder. Populate after `winbox-ipc/` reaches v0.1.
+Initial canonical drain now lives in:
+
+- `profile.yaml` — profile rules, marker semantics, continuation shape,
+  and leading-tag range classification.
+- `object-classes.yaml` — the RANGE catalog from donny, with the
+  overlapping note/service-description band called out explicitly.
+- `fields.yaml` — the TAG catalog keyed by `(object-class, tag)` so
+  overlapping numeric tags stay distinct.

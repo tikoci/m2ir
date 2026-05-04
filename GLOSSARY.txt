@@ -219,9 +219,14 @@ mproxy
 tcodes
 ADR
 adr
+CHARTLINE
 Footgun
+IFTYPE
+LTYPE
+NOTIF
 toobig
 toomuch
+TPLS
 UNDOID
 undoid
 UNKNOWNID

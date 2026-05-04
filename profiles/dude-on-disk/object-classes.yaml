@@ -1,0 +1,176 @@
+# Dude object-class discriminator ranges — dude-on-disk
+#
+# Drained from tikoci/donny src/lib/nova.ts RANGE constants and corroborated
+# against german77/TheDudeToHuman full field IDs.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: dude-on-disk
+
+source-table:
+  name: RANGE
+  language: typescript
+  file: src/lib/nova.ts
+  lines: { from: 180, to: 247 }
+  repo: "tikoci/donny"
+  url: "https://github.com/tikoci/donny/blob/main/src/lib/nova.ts#L180-L247"
+  drained-on: 2026-05-03
+  notes: |
+    Donny classifies Dude objects by the range the leading section-1 tag falls
+    into. This file records that range table as the canonical class dispatcher.
+
+evidence:
+  - source: code
+    ref: "tikoci/donny src/lib/nova.ts:180-247 (RANGE constants)"
+    url: "https://github.com/tikoci/donny/blob/main/src/lib/nova.ts#L180-L247"
+  - source: code
+    ref: "german77/TheDudeToHuman src/the_dude_to_human/database/dude_field_id.h:165-420 (0x10-prefixed full field IDs corroborate the same class bands)"
+    url: "https://github.com/german77/TheDudeToHuman/blob/master/src/the_dude_to_human/database/dude_field_id.h#L165-L420"
+
+object-classes:
+  - canonical-name: device
+    source-symbols: { lo: DEVICE_LO, hi: DEVICE_HI }
+    tag-range: { from: 0x1f40, to: 0x1f5a }
+    confidence: documented
+    notes: "Core monitored objects"
+  - canonical-name: probe-config
+    source-symbols: { lo: PROBE_CONFIG_LO, hi: PROBE_CONFIG_HI }
+    tag-range: { from: 0x2ee0, to: 0x2ef4 }
+    confidence: documented
+    notes: "Core monitored objects"
+  - canonical-name: probe-template
+    source-symbols: { lo: PROBE_TEMPLATE_LO, hi: PROBE_TEMPLATE_HI }
+    tag-range: { from: 0x36b0, to: 0x36d1 }
+    confidence: documented
+    notes: "Core monitored objects"
+  - canonical-name: service
+    source-symbols: { lo: SERVICE_LO, hi: SERVICE_HI }
+    tag-range: { from: 0xbf68, to: 0xbf71 }
+    confidence: documented
+    notes: "Core monitored objects"
+  - canonical-name: node
+    source-symbols: { lo: NODE_LO, hi: NODE_HI }
+    tag-range: { from: 0x5dc0, to: 0x5ddf }
+    confidence: documented
+    notes: "Map / topology"
+  - canonical-name: canvas
+    source-symbols: { lo: CANVAS_LO, hi: CANVAS_HI }
+    tag-range: { from: 0x61a8, to: 0x61fa }
+    confidence: documented
+    notes: "Map / topology"
+  - canonical-name: link
+    source-symbols: { lo: LINK_LO, hi: LINK_HI }
+    tag-range: { from: 0x55f0, to: 0x55f9 }
+    confidence: documented
+    notes: "Map / topology"
+  - canonical-name: group
+    source-symbols: { lo: GROUP_LO, hi: GROUP_HI }
+    tag-range: { from: 0x2328, to: 0x2337 }
+    confidence: documented
+    notes: "Map / topology"
+  - canonical-name: notification
+    source-symbols: { lo: NOTIF_LO, hi: NOTIF_HI }
+    tag-range: { from: 0x3e80, to: 0x3e9b }
+    confidence: documented
+    notes: "Alerting / notifications"
+  - canonical-name: snmp-profile
+    source-symbols: { lo: SNMP_LO, hi: SNMP_HI }
+    tag-range: { from: 0x3c68, to: 0x3c72 }
+    confidence: documented
+    notes: "Configuration profiles"
+  - canonical-name: tool
+    source-symbols: { lo: TOOL_LO, hi: TOOL_HI }
+    tag-range: { from: 0x7530, to: 0x7533 }
+    confidence: documented
+    notes: "Configuration profiles"
+  - canonical-name: device-type
+    source-symbols: { lo: DEV_TYPE_LO, hi: DEV_TYPE_HI }
+    tag-range: { from: 0x2710, to: 0x271f }
+    confidence: documented
+    notes: "Device type templates — 17 built-in types (Bridge, Router, Windows Computer, etc.)"
+  - canonical-name: chart
+    source-symbols: { lo: CHART_LO, hi: CHART_HI }
+    tag-range: { from: 0x07d0, to: 0x07df }
+    confidence: documented
+    notes: "Charts and functions (custom expressions; table name remains data_sources for compatibility)"
+  - canonical-name: data-source
+    source-symbols: { lo: DATA_SOURCE_LO, hi: DATA_SOURCE_HI }
+    tag-range: { from: 0xcb20, to: 0xcb2f }
+    confidence: documented
+    notes: "Charts and functions (custom expressions; table name remains data_sources for compatibility)"
+  - canonical-name: note
+    tag-range: { from: 0x5208, to: 0x5209 }
+    confidence: inferred
+    notes: |
+      TheDudeToHuman exposes `Note_*` full field IDs in this band, but donny's
+      RANGE table does not list a separate note object class and instead uses
+      the wider 0x5208-0x520F band for service-description annotations.
+  - canonical-name: service-description
+    source-symbols: { lo: SVC_DESCR_LO, hi: SVC_DESCR_HI }
+    tag-range: { from: 0x5208, to: 0x520f }
+    confidence: documented
+    notes: "Service description annotations on probe templates"
+  - canonical-name: syslog-rule
+    source-symbols: { lo: SYSLOG_RULE_LO, hi: SYSLOG_RULE_HI }
+    tag-range: { from: 0x1770, to: 0x1779 }
+    confidence: documented
+    notes: |
+      Syslog rules (subset of net-scanner range). Match this narrower band
+      before the wider 0x1770-0x177f network-scanner range.
+  - canonical-name: network-scanner
+    source-symbols: { lo: NET_SCANNER_LO, hi: NET_SCANNER_HI }
+    tag-range: { from: 0x1770, to: 0x177f }
+    confidence: documented
+    notes: |
+      Network scanner / auto-discovery settings (one per db). This is the
+      wider superset around the narrower syslog-rule class above.
+  - canonical-name: server-meta
+    source-symbols: { lo: SERVER_META_LO, hi: SERVER_META_HI }
+    tag-range: { from: 0x1000, to: 0x101f }
+    confidence: documented
+    notes: "Server state metadata (one per db)"
+  - canonical-name: asset
+    source-symbols: { lo: ASSET_LO, hi: ASSET_HI }
+    tag-range: { from: 0x697a, to: 0x697a }
+    confidence: documented
+    notes: "File assets (fonts, icons, certs) — not user objects"
+  - canonical-name: network
+    source-symbols: { lo: NETWORK_LO, hi: NETWORK_HI }
+    tag-range: { from: 0x2af8, to: 0x2afa }
+    confidence: documented
+    notes: "Network/subnet group (0x2AF8–0x2AFA)"
+  - canonical-name: link-type
+    source-symbols: { lo: LINK_TYPE_LO, hi: LINK_TYPE_HI }
+    tag-range: { from: 0x59d8, to: 0x59db }
+    confidence: documented
+    notes: "Link type definitions (0x59D8–0x59DB)"
+  - canonical-name: open-panel
+    source-symbols: { lo: OPEN_PANEL_LO, hi: OPEN_PANEL_HI }
+    tag-range: { from: 0x4a38, to: 0x4a3f }
+    confidence: documented
+    notes: "Open panel / active session (ephemeral state)"
+  - canonical-name: active-session
+    source-symbols: { lo: ACTIVE_SESSION_LO, hi: ACTIVE_SESSION_HI }
+    tag-range: { from: 0x4e20, to: 0x4e23 }
+    confidence: documented
+    notes: "Open panel / active session (ephemeral state)"
+  - canonical-name: chart-line
+    source-symbols: { lo: CHART_LINE_LO, hi: CHART_LINE_HI }
+    tag-range: { from: 0xc350, to: 0xc356 }
+    confidence: documented
+    notes: "Chart line (0xC350–0xC356)"
+  - canonical-name: discover-job
+    source-symbols: { lo: DISCOVER_LO, hi: DISCOVER_HI }
+    tag-range: { from: 0x6590, to: 0x65ad }
+    confidence: documented
+    notes: "Auto-discovery job (0x6590–0x65AD)"
+
+investigation-trail:
+  - date: 2026-05-03
+    finding: |
+      The 0x5208-0x5209 band is overloaded in public sources. Donny treats the
+      wider 0x5208-0x520F range as service-description annotations, while
+      TheDudeToHuman also exposes Note_* full field IDs at 0x5208/0x5209. Keep
+      both surfaces visible until fixture-backed blobs confirm whether this is
+      one polymorphic class or two adjacent classes.

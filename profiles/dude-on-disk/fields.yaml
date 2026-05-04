@@ -1,0 +1,660 @@
+# Dude tag catalog — dude-on-disk
+#
+# Canonicalized from tikoci/donny src/lib/nova.ts TAG constants. Tags repeat
+# across object classes, so entries are keyed by (object-class, tag) rather
+# than by tag alone.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: dude-on-disk
+
+source-table:
+  name: TAG
+  language: typescript
+  file: src/lib/nova.ts
+  lines: { from: 34, to: 178 }
+  repo: "tikoci/donny"
+  url: "https://github.com/tikoci/donny/blob/main/src/lib/nova.ts#L34-L178"
+  drained-on: 2026-05-03
+  notes: |
+    Donny's TAG constants are the current highest-signal public catalog of Dude
+    object fields. This file captures the tag/name inventory first; deeper field
+    typing and per-object prose can split into narrower files later. Some
+    numeric tags intentionally recur under different object classes (notably
+    0x5208/0x5209), so the canonical key here is (object-class, tag).
+
+evidence:
+  - source: code
+    ref: "tikoci/donny src/lib/nova.ts:34-178 (TAG constants)"
+    url: "https://github.com/tikoci/donny/blob/main/src/lib/nova.ts#L34-L178"
+  - source: code
+    ref: "german77/TheDudeToHuman src/the_dude_to_human/database/dude_field_id.h:165-420 (full field IDs for the same objects)"
+    url: "https://github.com/german77/TheDudeToHuman/blob/master/src/the_dude_to_human/database/dude_field_id.h#L165-L420"
+
+fields:
+  - object-class: any
+    tag: 0x0001
+    canonical-name: SELF_ID
+    confidence: documented
+    notes: |
+      Generic object id in section 1. When encoded as marker 0xfe / tcode 0x08
+      in section 2 it also acts as the continuation separator between the main
+      body and the trailing NAME field.
+  - object-class: any
+    tag: 0x0010
+    canonical-name: NAME
+    confidence: documented
+    notes: |
+      Trailing display/name field. Donny's builders place it last in section 2
+      and encode it with marker 0xfe.
+  - object-class: chart
+    tag: 0x07d0
+    canonical-name: CHART_TYPE
+    confidence: documented
+    notes: |
+      Chart / panel element (0x07D0–0x07DF)
+      str "Chart Line" | "Panel Element"
+  - object-class: chart
+    tag: 0x07d1
+    canonical-name: CHART_ENABLED
+    confidence: documented
+    notes: |
+      Chart / panel element (0x07D0–0x07DF)
+      bool
+  - object-class: server-meta
+    tag: 0x0fef
+    canonical-name: SYS_COLORS
+    confidence: documented
+    notes: |
+      Server state metadata (0x1000–0x101F) — one per database
+      u32[] global color palette [red,blue,green,orange]
+  - object-class: server-meta
+    tag: 0x1001
+    canonical-name: SYS_ROOT_IDS
+    confidence: documented
+    notes: |
+      Server state metadata (0x1000–0x101F) — one per database
+      u32[] root object id list
+  - object-class: server-meta
+    tag: 0x1015
+    canonical-name: SYS_LAST_UPDATE
+    confidence: documented
+    notes: |
+      Server state metadata (0x1000–0x101F) — one per database
+      u32[] [timestamp, ...] last-write timestamps
+  - object-class: server-meta
+    tag: 0x1017
+    canonical-name: SYS_LAST_CLIENT_CONNECT
+    confidence: documented
+    notes: |
+      Server state metadata (0x1000–0x101F) — one per database
+      u32 Unix timestamp written when the Dude client connects
+  - object-class: syslog-rule
+    tag: 0x1770
+    canonical-name: SYSLOG_ENABLED
+    confidence: documented
+    notes: "Syslog rule (0x1770–0x1779)"
+  - object-class: syslog-rule
+    tag: 0x1771
+    canonical-name: SYSLOG_IP_FILTER
+    confidence: documented
+    notes: "Syslog rule (0x1770–0x1779)"
+  - object-class: syslog-rule
+    tag: 0x1772
+    canonical-name: SYSLOG_IP_MASK
+    confidence: documented
+    notes: "Syslog rule (0x1770–0x1779)"
+  - object-class: syslog-rule
+    tag: 0x1773
+    canonical-name: SYSLOG_PATTERN
+    confidence: documented
+    notes: "Syslog rule (0x1770–0x1779)"
+  - object-class: syslog-rule
+    tag: 0x1774
+    canonical-name: SYSLOG_INVERT
+    confidence: documented
+    notes: "Syslog rule (0x1770–0x1779)"
+  - object-class: syslog-rule
+    tag: 0x1778
+    canonical-name: SYSLOG_ACTION
+    confidence: documented
+    notes: "Syslog rule (0x1770–0x1779)"
+  - object-class: syslog-rule
+    tag: 0x1779
+    canonical-name: SYSLOG_NOTIFICATION_ID
+    confidence: documented
+    notes: "Syslog rule (0x1770–0x1779)"
+  - object-class: device
+    tag: 0x1f40
+    canonical-name: DEVICE_IP
+    confidence: documented
+    notes: |
+      Device (0x1F40–0x1F5A)
+      u32[] IPv4 list. Donny treats 0xffffffff as "no IPv4 address assigned"
+      and derives the normalized dns-mode view from that sentinel/empty case.
+  - object-class: device
+    tag: 0x1f41
+    canonical-name: DEVICE_DNS_NAMES
+    confidence: documented
+    notes: |
+      Device (0x1F40–0x1F5A)
+      String-array payload carried via TC_COMPOUND in donny's decoder.
+  - object-class: device
+    tag: 0x1f42
+    canonical-name: DEVICE_LOOKUP
+    confidence: documented
+    aliases:
+      - { name: DEVICE_DNS_MODE, status: superseded, note: "@deprecated 0x1F42 is Device_Lookup; normalized dns_mode is derived from an empty IP list." }
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f43
+    canonical-name: DEVICE_POLL_INTERVAL
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f44
+    canonical-name: DEVICE_MAC
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f45
+    canonical-name: DEVICE_MAC_LOOKUP
+    confidence: documented
+    notes: |
+      Device (0x1F40–0x1F5A)
+      binary flag: 0=off 1=on (C++ Device_MacLookup)
+  - object-class: device
+    tag: 0x1f46
+    canonical-name: DEVICE_USERNAME
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f47
+    canonical-name: DEVICE_PASSWORD
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f49
+    canonical-name: DEVICE_ENABLED
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f4a
+    canonical-name: DEVICE_ROUTER_OS
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f4b
+    canonical-name: DEVICE_SNMP_ENABLED
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f4c
+    canonical-name: DEVICE_TYPE_ID
+    confidence: documented
+    notes: |
+      Device (0x1F40–0x1F5A)
+      u32 DeviceType object ID (C++ Device_TypeId); 0xFFFFFFFF = none
+  - object-class: device
+    tag: 0x1f4d
+    canonical-name: DEVICE_AGENT_ID
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f4e
+    canonical-name: DEVICE_SNMP_PROFILE
+    confidence: documented
+    notes: |
+      Device (0x1F40–0x1F5A)
+      u32 SNMP profile object ID (C++ Device_SnmpProfileId); 0xFFFFFFFF = none
+  - object-class: device
+    tag: 0x1f51
+    canonical-name: DEVICE_AUTO_DISCOVER
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f52
+    canonical-name: DEVICE_ORDER
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f53
+    canonical-name: DEVICE_COLOR_OVERRIDE
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f54
+    canonical-name: DEVICE_SIZE
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f55
+    canonical-name: DEVICE_INHERIT_PROBES
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f56
+    canonical-name: DEVICE_SERVICES
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f57
+    canonical-name: DEVICE_EXTRA_SERVICES
+    confidence: documented
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f58
+    canonical-name: DEVICE_CUSTOM_FIELD1
+    confidence: documented
+    aliases:
+      - { name: DEVICE_NOTES, status: superseded, note: "@deprecated Dude UI term is CustomField1." }
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f59
+    canonical-name: DEVICE_CUSTOM_FIELD2
+    confidence: documented
+    aliases:
+      - { name: DEVICE_LABEL, status: superseded, note: "@deprecated Dude UI term is CustomField2." }
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: device
+    tag: 0x1f5a
+    canonical-name: DEVICE_CUSTOM_FIELD3
+    confidence: documented
+    aliases:
+      - { name: DEVICE_CUSTOM_FIELD, status: superseded, note: "@deprecated Dude UI term is CustomField3." }
+    notes: "Device (0x1F40–0x1F5A)"
+  - object-class: group
+    tag: 0x2328
+    canonical-name: GROUP_MEMBERS
+    confidence: documented
+    notes: |
+      Group (0x2328–0x2337)
+      u32[] device/object ids in the group
+  - object-class: device-type
+    tag: 0x2710
+    canonical-name: DEV_TYPE_DEF_PROBES
+    confidence: documented
+    notes: |
+      Device type template (0x2710–0x271F) — 17 built-in types (Bridge, Router, etc.)
+      u32[] default-enabled probe IDs
+  - object-class: device-type
+    tag: 0x2711
+    canonical-name: DEV_TYPE_ALL_PROBES
+    confidence: documented
+    notes: |
+      Device type template (0x2710–0x271F) — 17 built-in types (Bridge, Router, etc.)
+      u32[] all probe template IDs for this type
+  - object-class: device-type
+    tag: 0x2712
+    canonical-name: DEV_TYPE_PROBE_IDS
+    confidence: documented
+    notes: |
+      Device type template (0x2710–0x271F) — 17 built-in types (Bridge, Router, etc.)
+      u32[] active probe template IDs
+  - object-class: device-type
+    tag: 0x2713
+    canonical-name: DEV_TYPE_PARENT
+    confidence: documented
+    notes: |
+      Device type template (0x2710–0x271F) — 17 built-in types (Bridge, Router, etc.)
+      u32 parent type id (0xFFFFFFFF = root)
+  - object-class: device-type
+    tag: 0x2714
+    canonical-name: DEV_TYPE_POLL
+    confidence: documented
+    notes: |
+      Device type template (0x2710–0x271F) — 17 built-in types (Bridge, Router, etc.)
+      u8 poll interval in seconds
+  - object-class: device-type
+    tag: 0x2715
+    canonical-name: DEV_TYPE_URL
+    confidence: documented
+    notes: |
+      Device type template (0x2710–0x271F) — 17 built-in types (Bridge, Router, etc.)
+      str device URL template e.g. "http://[Device.FirstAddress]"
+  - object-class: network
+    tag: 0x2af8
+    canonical-name: NETWORK_SUBNETS
+    confidence: documented
+    notes: "Network/subnet group (0x2AF8–0x2AFA)"
+  - object-class: network
+    tag: 0x2af9
+    canonical-name: NETWORK_MAP_ID
+    confidence: documented
+    notes: "Network/subnet group (0x2AF8–0x2AFA)"
+  - object-class: network
+    tag: 0x2afa
+    canonical-name: NETWORK_NEXT_ID
+    confidence: documented
+    notes: "Network/subnet group (0x2AF8–0x2AFA)"
+  - object-class: probe-config
+    tag: 0x2ee0
+    canonical-name: PROBE_ENABLED
+    confidence: documented
+    notes: "Probe config (0x2EE0–0x2EF4)"
+  - object-class: probe-config
+    tag: 0x2ee1
+    canonical-name: PROBE_DEVICE_ID
+    confidence: documented
+    notes: "Probe config (0x2EE0–0x2EF4)"
+  - object-class: probe-config
+    tag: 0x2ee3
+    canonical-name: PROBE_TYPE_ID
+    confidence: documented
+    notes: "Probe config (0x2EE0–0x2EF4)"
+  - object-class: probe-config
+    tag: 0x2eec
+    canonical-name: PROBE_SERVICE_ID
+    confidence: documented
+    notes: "Probe config (0x2EE0–0x2EF4)"
+  - object-class: probe-config
+    tag: 0x2eef
+    canonical-name: PROBE_CREATED
+    confidence: documented
+    notes: "Probe config (0x2EE0–0x2EF4)"
+  - object-class: probe-template
+    tag: 0x36b0
+    canonical-name: PROBE_KIND
+    confidence: documented
+    notes: "Probe template (0x36B0–0x36D1)"
+  - object-class: probe-template
+    tag: 0x36b1
+    canonical-name: PROBE_PARENT
+    confidence: documented
+    notes: "Probe template (0x36B0–0x36D1)"
+  - object-class: probe-template
+    tag: 0x36b2
+    canonical-name: PROBE_PORT
+    confidence: documented
+    notes: "Probe template (0x36B0–0x36D1)"
+  - object-class: snmp-profile
+    tag: 0x3c68
+    canonical-name: SNMP_VERSION
+    confidence: documented
+    notes: "SNMP profile (0x3C68–0x3C72)"
+  - object-class: snmp-profile
+    tag: 0x3c6a
+    canonical-name: SNMP_PORT
+    confidence: documented
+    notes: "SNMP profile (0x3C68–0x3C72)"
+  - object-class: notification
+    tag: 0x3e80
+    canonical-name: NOTIF_ENABLED
+    confidence: documented
+    notes: "Notification (0x3E80–0x3E9B)"
+  - object-class: notification
+    tag: 0x3e9a
+    canonical-name: NOTIF_MAIL_V6
+    confidence: documented
+    notes: |
+      Notification (0x3E80–0x3E9B)
+      tcode 0x18 — 16-byte IPv6 mail server address (all-zero = not configured)
+  - object-class: notification
+    tag: 0x3e9b
+    canonical-name: NOTIF_MAIL_DNS
+    confidence: documented
+    notes: |
+      Notification (0x3E80–0x3E9B)
+      str mail server DNS name (empty = not configured)
+  - object-class: open-panel
+    tag: 0x4a38
+    canonical-name: PANEL_SESSION_ID
+    confidence: documented
+    notes: "Open panel (0x4A38–0x4A3F)"
+  - object-class: open-panel
+    tag: 0x4a3e
+    canonical-name: PANEL_MAP_ID
+    confidence: documented
+    notes: "Open panel (0x4A38–0x4A3F)"
+  - object-class: active-session
+    tag: 0x4e20
+    canonical-name: SESSION_PANEL_ID
+    confidence: documented
+    notes: "Active session (0x4E20–0x4E23)"
+  - object-class: active-session
+    tag: 0x4e21
+    canonical-name: SESSION_USERNAME
+    confidence: documented
+    notes: "Active session (0x4E20–0x4E23)"
+  - object-class: note
+    tag: 0x5208
+    canonical-name: NOTE_PARENT_ID
+    confidence: documented
+    notes: "Note/annotation (0x5208–0x5209)"
+  - object-class: service-description
+    tag: 0x5208
+    canonical-name: SVC_DESCR_PARENT
+    confidence: documented
+    notes: |
+      Service description — annotations on probe templates (0x5208–0x520F)
+      u32 probe template id this describes
+  - object-class: note
+    tag: 0x5209
+    canonical-name: NOTE_TIMESTAMP
+    confidence: documented
+    notes: "Note/annotation (0x5208–0x5209)"
+  - object-class: service-description
+    tag: 0x5209
+    canonical-name: SVC_DESCR_CREATED
+    confidence: documented
+    notes: |
+      Service description — annotations on probe templates (0x5208–0x520F)
+      u32 creation timestamp (Unix seconds)
+  - object-class: link
+    tag: 0x55f0
+    canonical-name: LINK_MASTERING_TYPE
+    confidence: documented
+    notes: "Link (0x55F0–0x55F9)"
+  - object-class: link
+    tag: 0x55f1
+    canonical-name: LINK_DEVICE_A
+    confidence: documented
+    notes: |
+      Link (0x55F0–0x55F9)
+      C++ Link_MasterDevice
+  - object-class: link
+    tag: 0x55f2
+    canonical-name: LINK_MASTER_INTERFACE
+    confidence: documented
+    notes: "Link (0x55F0–0x55F9)"
+  - object-class: link
+    tag: 0x55f3
+    canonical-name: LINK_SPEED
+    confidence: documented
+    notes: "Link (0x55F0–0x55F9)"
+  - object-class: link
+    tag: 0x55f4
+    canonical-name: LINK_MAP_ID
+    confidence: documented
+    notes: "Link (0x55F0–0x55F9)"
+  - object-class: link
+    tag: 0x55f5
+    canonical-name: LINK_MAP_ELEMENT_ID
+    confidence: documented
+    notes: "Link (0x55F0–0x55F9)"
+  - object-class: link
+    tag: 0x55f6
+    canonical-name: LINK_TYPE_ID
+    confidence: documented
+    notes: "Link (0x55F0–0x55F9)"
+  - object-class: link
+    tag: 0x55f7
+    canonical-name: LINK_HISTORY
+    confidence: documented
+    notes: "Link (0x55F0–0x55F9)"
+  - object-class: link
+    tag: 0x55f8
+    canonical-name: LINK_TX_DATA_SOURCE_ID
+    confidence: documented
+    notes: "Link (0x55F0–0x55F9)"
+  - object-class: link
+    tag: 0x55f9
+    canonical-name: LINK_RX_DATA_SOURCE_ID
+    confidence: documented
+    notes: "Link (0x55F0–0x55F9)"
+  - object-class: link-type
+    tag: 0x59d8
+    canonical-name: LTYPE_CATEGORY
+    confidence: documented
+    notes: "Link type (0x59D8–0x59DB)"
+  - object-class: link-type
+    tag: 0x59d9
+    canonical-name: LTYPE_STYLE
+    confidence: documented
+    notes: "Link type (0x59D8–0x59DB)"
+  - object-class: link-type
+    tag: 0x59da
+    canonical-name: LTYPE_IFTYPE
+    confidence: documented
+    notes: "Link type (0x59D8–0x59DB)"
+  - object-class: link-type
+    tag: 0x59db
+    canonical-name: LTYPE_SPEED
+    confidence: documented
+    notes: "Link type (0x59D8–0x59DB)"
+  - object-class: node
+    tag: 0x5dc0
+    canonical-name: NODE_MAP_ID
+    confidence: documented
+    notes: "Map node placement (0x5DC0–0x5DDF)"
+  - object-class: node
+    tag: 0x5dc4
+    canonical-name: NODE_DEVICE_ID
+    confidence: documented
+    notes: "Map node placement (0x5DC0–0x5DDF)"
+  - object-class: node
+    tag: 0x5dc5
+    canonical-name: NODE_X
+    confidence: documented
+    notes: "Map node placement (0x5DC0–0x5DDF)"
+  - object-class: node
+    tag: 0x5dc6
+    canonical-name: NODE_Y
+    confidence: documented
+    notes: "Map node placement (0x5DC0–0x5DDF)"
+  - object-class: canvas
+    tag: 0x61a8
+    canonical-name: CANVAS_LO_TAG
+    confidence: documented
+    notes: "Map canvas container (0x61A8–0x61FA)"
+  - object-class: discover-job
+    tag: 0x6590
+    canonical-name: DISCOVER_INCLUDE_IDS
+    confidence: documented
+    notes: |
+      Auto-discovery job (0x6590–0x65AD)
+      u32[] — explicit IDs to include
+  - object-class: discover-job
+    tag: 0x6598
+    canonical-name: DISCOVER_CANVAS_ID
+    confidence: documented
+    notes: |
+      Auto-discovery job (0x6590–0x65AD)
+      u32   — destination canvas/map ID
+  - object-class: discover-job
+    tag: 0x659a
+    canonical-name: DISCOVER_NETWORK
+    confidence: documented
+    notes: |
+      Auto-discovery job (0x6590–0x65AD)
+      LE u32 — target network IPv4 address
+  - object-class: discover-job
+    tag: 0x659b
+    canonical-name: DISCOVER_INTERVAL
+    confidence: documented
+    notes: |
+      Auto-discovery job (0x6590–0x65AD)
+      u32   — scan interval in seconds
+  - object-class: discover-job
+    tag: 0x659f
+    canonical-name: DISCOVER_ENABLED
+    confidence: documented
+    notes: |
+      Auto-discovery job (0x6590–0x65AD)
+      bool
+  - object-class: discover-job
+    tag: 0x65a0
+    canonical-name: DISCOVER_PROBE_TPLS
+    confidence: documented
+    notes: |
+      Auto-discovery job (0x6590–0x65AD)
+      u32[] — probe template IDs to apply
+  - object-class: discover-job
+    tag: 0x65a1
+    canonical-name: DISCOVER_EXCLUDE_IDS
+    confidence: documented
+    notes: |
+      Auto-discovery job (0x6590–0x65AD)
+      u32[] — device IDs to exclude
+  - object-class: discover-job
+    tag: 0x65ad
+    canonical-name: DISCOVER_SEED_IP
+    confidence: documented
+    notes: |
+      Auto-discovery job (0x6590–0x65AD)
+      str   — seed/gateway IP (may be empty)
+  - object-class: asset
+    tag: 0x697a
+    canonical-name: ASSET_PARENT_DIR
+    confidence: documented
+    notes: "File asset virtual FS"
+  - object-class: tool
+    tag: 0x7530
+    canonical-name: TOOL_KIND
+    confidence: documented
+    notes: "Tool (0x7530–0x7533)"
+  - object-class: tool
+    tag: 0x7531
+    canonical-name: TOOL_PARENT
+    confidence: documented
+    notes: "Tool (0x7530–0x7533)"
+  - object-class: service
+    tag: 0xbf68
+    canonical-name: SVC_ENABLED
+    confidence: documented
+    notes: "Data source / time-series anchor (0xBF68–0xBF71), exposed as Service in donny."
+  - object-class: service
+    tag: 0xbf69
+    canonical-name: SVC_STATUS
+    confidence: documented
+    notes: "Data source / time-series anchor (0xBF68–0xBF71), exposed as Service in donny."
+  - object-class: service
+    tag: 0xbf6a
+    canonical-name: SVC_UNIT
+    confidence: documented
+    notes: "Data source / time-series anchor (0xBF68–0xBF71), exposed as Service in donny."
+  - object-class: service
+    tag: 0xbf6f
+    canonical-name: SVC_TIMEOUT
+    confidence: documented
+    notes: "Data source / time-series anchor (0xBF68–0xBF71), exposed as Service in donny."
+  - object-class: service
+    tag: 0xbf71
+    canonical-name: SVC_INTERVAL
+    confidence: documented
+    notes: "Data source / time-series anchor (0xBF68–0xBF71), exposed as Service in donny."
+  - object-class: chart-line
+    tag: 0xc350
+    canonical-name: CHARTLINE_CHART_ID
+    confidence: documented
+    notes: "Chart line (0xC350–0xC356)"
+  - object-class: chart-line
+    tag: 0xc351
+    canonical-name: CHARTLINE_SERVICE_ID
+    confidence: documented
+    notes: "Chart line (0xC350–0xC356)"
+  - object-class: data-source
+    tag: 0xcb21
+    canonical-name: DS_EXPRESSION
+    confidence: documented
+    notes: |
+      Function / custom expression (0xCB20–0xCB2F), historically exposed as data_sources in donny.
+      str OID formula e.g. "oid(concatenate(...))"
+  - object-class: data-source
+    tag: 0xcb22
+    canonical-name: DS_DESCRIPTION
+    confidence: documented
+    notes: |
+      Function / custom expression (0xCB20–0xCB2F), historically exposed as data_sources in donny.
+      str human-readable description
