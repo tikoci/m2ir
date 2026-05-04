@@ -1,0 +1,184 @@
+# STD_* keys — winbox-ipc standard namespace (byte_2 = 0xFE)
+#
+# Object/session machinery: object IDs, paging, queries, dynamic flags.
+# Drained from strawman/winbox-m2.ksy `full_key_id` enum (STD_* portion)
+# and supplemented from winbox-m2-semantics.yaml notes.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: winbox-ipc
+namespace: 0xfe
+namespace-name: standard
+
+evidence:
+  - source: code
+    ref: "Cisco-Talos Winbox_Protocol_Dissector"
+
+keys:
+  0xfe0001:
+    canonical-name: STD_ID
+    physical: { tcodes: ["*"] }
+    semantic: object-id
+    role: "object identifier for SETOBJ / REMOVEOBJ / GETOBJ"
+    aliases:
+      - { name: SESSION_ID, status: project-repurpose, source: "this project's mepty handler reuses STD_ID as session id from the auth phase" }
+    confidence: documented
+    notes: "Project's `SESSION_ID = 0xFE0001` is `STD_ID` repurposed by mepty."
+
+  0xfe0002:
+    canonical-name: STD_OBJS
+    physical: { tcodes: [0xa8] }
+    semantic: object-array
+    confidence: documented
+
+  0xfe0003:
+    canonical-name: STD_GETALLID
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xfe0004:
+    canonical-name: STD_GETALLNO
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xfe0005:
+    canonical-name: STD_NEXTID
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xfe0006:
+    canonical-name: STD_UNDOID
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xfe0007:
+    canonical-name: STD_DYNAMIC
+    physical: { tcodes: [0x00, 0x01] }
+    semantic: bool
+    confidence: documented
+
+  0xfe0008:
+    canonical-name: STD_INACTIVE
+    physical: { tcodes: [0x00, 0x01] }
+    semantic: bool
+    confidence: documented
+
+  0xfe0009:
+    canonical-name: STD_DESCR
+    physical: { tcodes: [0x20, 0x21] }
+    semantic: utf8-string
+    confidence: documented
+
+  0xfe000a:
+    canonical-name: STD_DISABLED
+    physical: { tcodes: [0x00, 0x01] }
+    semantic: bool
+    confidence: documented
+
+  0xfe000b:
+    canonical-name: STD_FINISHED
+    physical: { tcodes: [0x00, 0x01] }
+    semantic: bool
+    confidence: documented
+
+  0xfe000c:
+    canonical-name: STD_FILTER
+    physical: { tcodes: [0x28, 0x29] }
+    semantic: nested-message
+    confidence: documented
+    notes: "Project-PROTOCOL.md identifies `FE000C` as STD_FILTER."
+
+  0xfe000d:
+    canonical-name: STD_PRESET
+    physical: { tcodes: ["*"] }
+    semantic: any
+    confidence: documented
+
+  0xfe000e:
+    canonical-name: STD_PAGENO
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xfe000f:
+    canonical-name: STD_PAGE
+    physical: { tcodes: ["*"] }
+    semantic: any
+    confidence: documented
+
+  0xfe0010:
+    canonical-name: STD_NAME
+    physical: { tcodes: [0x20, 0x21] }
+    semantic: utf8-string
+    confidence: documented
+
+  0xfe0011:
+    canonical-name: STD_INTERVAL
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xfe0012:
+    canonical-name: STD_VERSION
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xfe0013:
+    canonical-name: STD_DEAD
+    physical: { tcodes: [0x00, 0x01] }
+    semantic: bool
+    confidence: documented
+
+  0xfe0014:
+    canonical-name: STD_COUNT
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xfe0015:
+    canonical-name: STD_GETALL_COOKIE
+    physical: { tcodes: ["*"] }
+    semantic: any
+    confidence: documented
+
+  0xfe0016:
+    canonical-name: STD_QUERY
+    physical: { tcodes: [0x28, 0x29] }
+    semantic: nested-message
+    confidence: documented
+
+  0xfe0017:
+    canonical-name: STD_QUERY_OP
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xfe0018:
+    canonical-name: STD_MAXOBJS
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xfe0019:
+    canonical-name: STD_OBJ_COUNT
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xfe001a:
+    canonical-name: STD_CLASS
+    physical: { tcodes: ["*"] }
+    semantic: any
+    confidence: documented
+
+  0xfe001b:
+    canonical-name: STD_SNMP_QUERY
+    physical: { tcodes: ["*"] }
+    semantic: any
+    confidence: documented

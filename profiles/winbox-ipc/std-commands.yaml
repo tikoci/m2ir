@@ -1,0 +1,44 @@
+# STD_CMD_* — winbox-ipc standard command codes
+#
+# When SYS_CMD (key 0xFF0007) carries a u32 value in the 0xFE0000 range,
+# the value is one of these universal commands. Drained from
+# strawman/winbox-m2.ksy `std_cmd` enum.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: winbox-ipc
+appears-in: { field: 0xff0007, name: SYS_CMD }
+range: { from: 0xfe0000, to: 0xfe0016 }
+
+evidence:
+  - source: code
+    ref: "Cisco-Talos Winbox_Protocol_Dissector"
+
+commands:
+  0xfe0000: { canonical-name: CMD_NOOP,         confidence: documented }
+  0xfe0001: { canonical-name: CMD_GETPOLICIES,  confidence: documented }
+  0xfe0002: { canonical-name: CMD_GETOBJ,       confidence: documented }
+  0xfe0003: { canonical-name: CMD_SETOBJ,       confidence: documented }
+  0xfe0004: { canonical-name: CMD_GETALL,       confidence: documented }
+  0xfe0005: { canonical-name: CMD_ADDOBJ,       confidence: documented }
+  0xfe0006: { canonical-name: CMD_REMOVEOBJ,    confidence: documented }
+  0xfe0007: { canonical-name: CMD_MOVEOBJ,      confidence: documented }
+  0xfe0008: { canonical-name: CMD_SETFORM,      confidence: documented }
+  0xfe000b: { canonical-name: CMD_NOTIFY,       confidence: documented }
+  0xfe000d:
+    canonical-name: CMD_GET
+    confidence: documented
+    notes: |
+      Project's `cmdGet=7` (a u8 SYS_CMD value, see commands.yaml) is a
+      legacy short form used pre-mepty; it is distinct from
+      CMD_GET=0xFE000D.
+  0xfe000e: { canonical-name: CMD_SET,          confidence: documented }
+  0xfe000f: { canonical-name: CMD_START,        confidence: documented }
+  0xfe0010: { canonical-name: CMD_POLL,         confidence: documented }
+  0xfe0011: { canonical-name: CMD_CANCEL,       confidence: documented }
+  0xfe0012: { canonical-name: CMD_SUBSCRIBE,    confidence: documented }
+  0xfe0013: { canonical-name: CMD_UNSUBSCRIBE,  confidence: documented }
+  0xfe0014: { canonical-name: CMD_DISCONNECTED, confidence: documented }
+  0xfe0015: { canonical-name: CMD_GETCOUNT,     confidence: documented }
+  0xfe0016: { canonical-name: CMD_RESET,        confidence: documented }

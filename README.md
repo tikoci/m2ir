@@ -18,10 +18,11 @@ profile/concept/physical layering.
 | Path | Purpose |
 |---|---|
 | [`DESIGN.md`](DESIGN.md) | Format principles. The one orientation doc. |
-| [`physical/`](physical/) | Profile-agnostic wire grammars (placeholder) |
+| [`physical/`](physical/) | Profile-agnostic wire grammars — `nv-message.yaml` drained; `mndp.yaml` pending |
 | [`concepts/`](concepts/) | Cross-profile semantic identity (placeholder) |
 | [`profiles/`](profiles/) | One subdir per usage context — winbox-ipc, dude-on-disk, winbox-cdb, mndp |
-| [`profiles/winbox-ipc/strawman/`](profiles/winbox-ipc/strawman/) | Seed material imported from the WinBox terminal-protocol experiment: 3 `.ksy` files + 1 semantic-overlay `.yaml` |
+| [`profiles/winbox-ipc/`](profiles/winbox-ipc/) | First profile drained from the strawman: profile, transport, EC-SRP5 handshake, SYS/STD keys, commands, errors, processes |
+| [`profiles/winbox-ipc/strawman/`](profiles/winbox-ipc/strawman/) | Original seed material (3 `.ksy` files + 1 semantic-overlay `.yaml`) preserved as evidence |
 | [`fixtures/`](fixtures/) | Raw bytes referenced by `evidence:` (placeholder) |
 | `src/tooling/` | Repo-local Bun tooling (instruction audit, `cortex.db` event log) |
 | `test/` | Anchor tests for schema slices and tooling |
@@ -30,15 +31,19 @@ profile/concept/physical layering.
 
 ## Status
 
-v0.1 in progress. The seed strawman (one profile — `winbox-ipc`) is
-present; canonical YAML schema is not yet written. Expected next steps,
-roughly in order:
+v0.1 in progress. The seed strawman (one profile — `winbox-ipc`) has
+been drained into canonical YAML; deeper sources still pending. Expected
+next steps, roughly in order:
 
-1. Drain the `winbox-ipc/strawman/` content into canonical YAML under
-   `profiles/winbox-ipc/` and `physical/nv-message.yaml`.
+1. ~~Drain the `winbox-ipc/strawman/` content into canonical YAML under
+   `profiles/winbox-ipc/` and `physical/nv-message.yaml`.~~ Done — see
+   [`physical/nv-message.yaml`](physical/nv-message.yaml) and
+   [`profiles/winbox-ipc/`](profiles/winbox-ipc/).
 2. Lift the Cisco-Talos `Winbox_Protocol_Dissector` Lua tables into the
    profile (SYS_*/STD_*/CMD_*/ERROR_* enums + the typeIDCode process-id
-   table) at `confidence: documented`.
+   table) at `confidence: documented`. Partial — the strawman drain
+   already covers the canonical Cisco-Talos enums; the handler-private
+   command tables (mepty, mproxy, undo) still need coverage.
 3. Pull the donny `nova.ts` TAG/RANGE catalog into
    `profiles/dude-on-disk/` — the largest existing knowledge bank.
    Cross-check against [`german77/TheDudeToHuman`](https://github.com/german77/TheDudeToHuman),

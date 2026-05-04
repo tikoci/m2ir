@@ -1,0 +1,206 @@
+# nv::message TLV grammar — profile-agnostic wire format
+#
+# Drained from profiles/winbox-ipc/strawman/winbox-m2.ksy and the
+# semantic overlay (winbox-m2-semantics.yaml). The Kaitai file is
+# evidence; this YAML is canonical.
+#
+# Profile-naming rule: byte_2 of the 4-byte TLV header is named locally
+# per profile (winbox-ipc -> namespace; dude-on-disk -> marker;
+# winbox-cdb -> tag-1 / record-type discriminator). The physical layer
+# only declares its width and position.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+id: nv-message
+title: nv::message TLV grammar (M2)
+aka:
+  - nova-message
+  - M2
+endian-policy: |
+  Bytes inside the 4-byte header and inside `payload` numeric fields are
+  little-endian (LE). The chunked transport layer that wraps M2 (see
+  profiles/winbox-ipc/transport.yaml) is big-endian (BE) for its own
+  length/tag fields, so an M2 blob lives inside a BE frame but is
+  internally LE. Keep the boundary explicit when consuming bytes.
+
+confidence: documented
+evidence:
+  - source: code
+    ref: "Cisco-Talos Winbox_Protocol_Dissector"
+    url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector"
+  - source: doc
+    ref: "MarginResearch — Pulling MikroTik into the Limelight"
+    url: "https://margin.re/2022/06/pulling-mikrotik-into-the-limelight/"
+
+notes: |
+  An nv::message blob is the literal ASCII bytes "M2" followed by zero or
+  more TLV entries until end-of-stream (or, for nested messages, until
+  the enclosing length boundary). Each entry is a 4-byte header plus a
+  variable payload selected by the `tcode` byte.
+
+  Within RouterOS source the textual form of nv::message also exists but
+  is deprecated and not covered here.
+
+# ── magic ────────────────────────────────────────────────────────────────
+magic-prefix:
+  bytes: [0x4d, 0x32]
+  ascii: "M2"
+  required-on: [root, nested]
+  confidence: documented
+  evidence:
+    - source: doc
+      ref: "MarginResearch — distinguishes nv::message binary form from deprecated pseudo-JSON form"
+
+# ── 4-byte TLV entry header ──────────────────────────────────────────────
+header:
+  size: 4
+  fields:
+    - name: key_low
+      width: u1
+      role: "low byte of the 16-bit key index inside byte_2's role"
+    - name: key_high
+      width: u1
+      role: "high byte of the 16-bit key index"
+    - name: byte_2
+      width: u1
+      role: "profile-defined; namespace in winbox-ipc, marker in dude-on-disk"
+      profile-naming: required
+    - name: tcode
+      width: u1
+      role: "selects payload encoding from `tcodes:` table; bit 0 sometimes used as compact-flag (profile-defined)"
+  derived:
+    full_key:
+      formula: "(byte_2 << 16) | (key_high << 8) | key_low"
+      role: "canonical 24-bit identifier used in cross-tool tables"
+    key_id:
+      formula: "key_low | (key_high << 8)"
+      role: "16-bit key index inside the chosen byte_2 role"
+
+# ── tcode -> payload-rule table ──────────────────────────────────────────
+# Each tcode is its own enumerant; profiles may pair adjacent tcodes
+# (e.g. 0x20/0x21) under a `compact-rule:`. The physical layer stays
+# neutral on that pairing.
+tcodes:
+  0x00:
+    name: bool_false
+    payload: none
+    value: false
+    confidence: documented
+    notes: "Boolean value carried entirely in the tcode byte; no payload bytes consumed."
+  0x01:
+    name: bool_true
+    payload: none
+    value: true
+    confidence: documented
+  0x08:
+    name: u32_wide
+    payload: { fixed: 4, endian: le }
+    confidence: documented
+  0x09:
+    name: u32_compact
+    payload: { fixed: 1 }
+    confidence: documented
+    notes: "1-byte unsigned value; profiles that pair with 0x08 use this as a compact-length variant."
+  0x10:
+    name: u64_wide
+    payload: { fixed: 8, endian: le }
+    confidence: documented
+    notes: "No compact variant defined; 0x11 is unallocated."
+  0x18:
+    name: bytes_16
+    payload: { fixed: 16 }
+    confidence: documented
+    notes: |
+      16 raw bytes. Profiles bind this to ipv6-addr (winbox-ipc SYS_RADDR6,
+      MNDP-equivalent concept). Surprise: NOT a signed integer despite
+      sitting between u32 and u64 in the tcode space.
+    evidence:
+      - source: code
+        ref: "Cisco-Talos Winbox_Protocol_Dissector — ip6_addr handling"
+  0x20:
+    name: string_wide
+    payload: { len-prefix: u16le, body: utf8 }
+    confidence: documented
+  0x21:
+    name: string_compact
+    payload: { len-prefix: u8, body: utf8 }
+    confidence: documented
+  0x28:
+    name: msg_wide
+    payload: { len-prefix: u16le, body: nv-message }
+    confidence: documented
+    recursion: true
+  0x29:
+    name: msg_compact
+    payload: { len-prefix: u8, body: nv-message }
+    confidence: documented
+    recursion: true
+  0x30:
+    name: bytes_wide
+    payload: { len-prefix: u16le, body: opaque }
+    confidence: documented
+  0x31:
+    name: bytes_compact
+    payload: { len-prefix: u8, body: opaque }
+    confidence: documented
+  0x80:
+    name: bool_array
+    status: declared-unwired
+    confidence: inferred
+    notes: |
+      Forward-declared in RouterOS source but never registered in the
+      Cisco-Talos dispatch table. Not observed in any public capture.
+      Encountering one in real traffic should stop the parse and capture
+      the bytes for analysis.
+  0x88:
+    name: u32_array
+    payload: { count: u16le, item: u32_wide }
+    confidence: documented
+  0x90:
+    name: u64_array
+    status: declared-unwired
+    confidence: inferred
+    notes: |
+      Forward-declared in RouterOS source, never wired up in the dispatch
+      table per Cisco-Talos source review. Sample sightings reported in
+      public sources but no parse implementation; treat as unknown.
+  0xa0:
+    name: string_array
+    payload: { count: u16le, item: string_wide }
+    confidence: documented
+  0xa8:
+    name: msg_array
+    payload: { count: u16le, item: msg_wide }
+    confidence: documented
+    recursion: true
+
+# ── recursion ────────────────────────────────────────────────────────────
+recursion:
+  via-tcodes: [0x28, 0x29, 0xa8]
+  rule: |
+    A nested message starts with the same M2 magic and contains TLV
+    entries until its length-prefix boundary. Recursion is unbounded in
+    the format; profiles MAY cap depth at the application layer.
+
+# ── structure ────────────────────────────────────────────────────────────
+structure:
+  root:
+    seq:
+      - { name: magic, kind: magic-prefix }
+      - { name: entries, kind: tlv-entry, repeat: eos }
+  tlv-entry:
+    seq:
+      - { name: header, kind: header }
+      - { name: payload, kind: by-tcode, ref: "tcodes[header.tcode].payload" }
+
+# ── investigation trail ──────────────────────────────────────────────────
+investigation-trail:
+  - date: 2026-05-03
+    finding: |
+      Drained from strawman .ksy + semantic overlay. Naming of byte_2 is
+      deferred to profiles per DESIGN.md §3 ("profile-agnostic physical,
+      profile-specific naming"). The compact-flag interpretation of the
+      low bit of `tcode` is also a profile concern: winbox-ipc treats
+      0x21/0x29/0x31 as the compact pairs of 0x20/0x28/0x30, but
+      dude-on-disk decides compactness from `byte_2` (marker) instead.

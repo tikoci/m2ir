@@ -8,7 +8,7 @@ grammar but conveys the same concepts (see `/concepts/`).
 
 | Profile | Status | Reference impl |
 |---|---|---|
-| `winbox-ipc/` | seed strawman imported | this repo's parent project + Cisco-Talos dissector |
+| `winbox-ipc/` | strawman drained into canonical YAML | this repo's parent project + Cisco-Talos dissector |
 | `dude-on-disk/` | placeholder | [`tikoci/donny`](https://github.com/tikoci/donny) + [`german77/TheDudeToHuman`](https://github.com/german77/TheDudeToHuman) |
 | `winbox-cdb/` | placeholder | `~/Lab/centrs` `src/data/winbox-cdb.ts` |
 | `mndp/` | placeholder | `~/Lab/mcp-monorepo/mcp-mikrotik` `src/mndp.ts` |

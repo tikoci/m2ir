@@ -1,0 +1,75 @@
+# EC-SRP5 handshake — winbox-ipc
+#
+# The four messages that precede AES-128-CBC session traffic on RouterOS
+# >= 6.43. Each handshake message is wrapped in the same chunked frame
+# as the rest of the protocol (see transport.yaml) using tag 0x06; the
+# byte layouts here are the *assembled* (post-dechunking) payloads.
+#
+# Drained from strawman/winbox-ec-srp5.ksy.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: winbox-ipc
+layer: handshake
+endian: be
+
+evidence:
+  - source: code
+    ref: "MarginResearch mikrotik_authentication"
+    url: "https://github.com/MarginResearch/mikrotik_authentication"
+  - source: doc
+    ref: "MarginResearch — Pulling MikroTik into the Limelight"
+    url: "https://margin.re/2022/06/pulling-mikrotik-into-the-limelight/"
+
+notes: |
+  Elliptic-curve points are serialized as the big-endian X coordinate
+  (32 bytes) plus a single byte parity flag (0 = even Y, 1 = odd Y).
+  The salt is opaque 16 bytes. No length headers exist inside these
+  payloads — message identity is positional / size-based; the 0x06
+  prefix byte is conventional and not validated.
+
+# ── messages ────────────────────────────────────────────────────────────
+messages:
+  client_phase1:
+    direction: client-to-server
+    phase: 1
+    role: "public-key offer with username"
+    seq:
+      - { name: tag,      contents: [0x06], notes: "same value as the chunk tag; conventional, not validated" }
+      - { name: username, kind: strz, encoding: utf-8, notes: "NUL-terminated UTF-8 username" }
+      - { name: pubkey,   size: 32, notes: "Curve25519 client public point, big-endian X coordinate" }
+      - { name: parity,   width: u1, notes: "Y-parity bit (0=even, 1=odd)" }
+    confidence: observed-only
+
+  server_phase1:
+    direction: server-to-client
+    phase: 1
+    role: "public-key reply + per-user salt"
+    seq:
+      - { name: tag,    contents: [0x06] }
+      - { name: pubkey, size: 32, notes: "Curve25519 server public point, big-endian X coordinate" }
+      - { name: parity, width: u1 }
+      - { name: salt,   size: 16, notes: "per-user salt; opaque to the client" }
+    confidence: observed-only
+
+  client_phase2:
+    direction: client-to-server
+    phase: 2
+    role: "confirmation value"
+    structurally-identical-to: phase2_confirmation
+    confidence: observed-only
+
+  server_phase2:
+    direction: server-to-client
+    phase: 2
+    role: "confirmation value"
+    structurally-identical-to: phase2_confirmation
+    confidence: observed-only
+
+  phase2_confirmation:
+    role: "shared shape used in both phase-2 messages; only the derivation input differs"
+    seq:
+      - { name: tag,          contents: [0x06] }
+      - { name: confirmation, size: 32, notes: "SHA-256(...) confirmation value" }
+    confidence: observed-only

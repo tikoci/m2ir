@@ -1,0 +1,75 @@
+# Handler-private and legacy commands — winbox-ipc
+#
+# When SYS_CMD (0xFF0007) is NOT in the 0xFE0000-0xFE0016 range, it is
+# either:
+#   * a handler-private u32 with top byte = process_id (see processes.yaml)
+#     and low 16 bits the handler-local opcode, e.g. 0x0A0065 = mepty
+#     login command; or
+#   * a legacy u8-encoded short-form value (cmdGet=7, cmdOpen=5, ...) used
+#     in pre-mepty auth flows.
+#
+# Drained from winbox-m2-semantics.yaml `commands:` section. The full
+# handler-private command catalogs (mepty, mproxy, undo) belong here once
+# this project's PROTOCOL.md and MarginResearch are drained.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: winbox-ipc
+appears-in: { field: 0xff0007, name: SYS_CMD }
+
+# ── handler-private (process_id-prefixed u32 values) ────────────────────
+handler-private:
+  0x0a0065:
+    canonical-name: meptyLogin
+    process-id: 0x0a
+    process-name: mepty
+    confidence: documented
+    evidence:
+      - source: code
+        ref: "this project's PROTOCOL.md and working code"
+    notes: "Project-named; consistent with the process_id=0x0a convention."
+
+  0x0a0067:
+    canonical-name: meptyData
+    process-id: 0x0a
+    process-name: mepty
+    confidence: documented
+    evidence:
+      - source: code
+        ref: "this project's PROTOCOL.md"
+
+# ── legacy u8 short-form values ─────────────────────────────────────────
+# Encoded as tcode 0x09 (1-byte SYS_CMD). Pre-handler shortcuts; not
+# STD_CMD_* (those start at 0xFE0000).
+legacy-short-form:
+  0x01:
+    canonical-name: cmdLogin
+    confidence: guessed
+    notes: "Project uses u8 CMD=1 in legacy login step. No name in any source."
+
+  0x04:
+    canonical-name: cmdChallenge
+    confidence: guessed
+    notes: "Project uses u8 CMD=4 in the 'request challenge' step of legacy auth. No name in any source."
+
+  0x05:
+    canonical-name: cmdOpen
+    confidence: observed-only
+    notes: "u8-encoded. Used in the legacy MD5 auth handshake (cmdOpen / Step 2a)."
+
+  0x07:
+    canonical-name: cmdGet
+    confidence: observed-only
+    notes: |
+      Encoded as u8 (tcode 0x09). Not a STD_CMD_* (those start at
+      0xFE0000). Pre-handler 'shortcut' for the system-info path.
+      Distinct from CMD_GET=0xFE000D.
+
+investigation-trail:
+  - date: 2026-05-03
+    finding: |
+      Only the mepty handler's two commands (login, data) and four legacy
+      short-forms are drained from the strawman. The full mepty +
+      mproxy + undo command spaces are still pending — see README.md
+      §Status step 4.

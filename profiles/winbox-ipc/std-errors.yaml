@@ -1,0 +1,30 @@
+# STD_ERROR_* — winbox-ipc standard error codes
+#
+# When SYS_STATUS = ERROR on a TYPE_REPLY, SYS_ERRNO (0xFF0008) carries
+# one of these values. Drained from strawman/winbox-m2.ksy `std_errno`
+# enum.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: winbox-ipc
+appears-in: { field: 0xff0008, name: SYS_ERRNO }
+
+evidence:
+  - source: code
+    ref: "Cisco-Talos Winbox_Protocol_Dissector"
+
+errors:
+  0xfe0001: { canonical-name: ERROR_UNKNOWN,        confidence: documented }
+  0xfe0002: { canonical-name: ERROR_BRKPATH,        confidence: documented }
+  0xfe0003: { canonical-name: ERROR_NOTIMP,         confidence: documented }
+  0xfe0004: { canonical-name: ERROR_UNKNOWNID,      confidence: documented }
+  0xfe0005: { canonical-name: ERROR_MISSING,        confidence: documented }
+  0xfe0006: { canonical-name: ERROR_FAILED,         confidence: documented }
+  0xfe0007: { canonical-name: ERROR_EXISTS,         confidence: documented }
+  0xfe0009: { canonical-name: ERROR_NOTALLOWED,     confidence: documented }
+  0xfe000a: { canonical-name: ERROR_TOOBIG,         confidence: documented }
+  0xfe000b: { canonical-name: ERROR_UNKNOWNNEXTID,  confidence: documented }
+  0xfe000c: { canonical-name: ERROR_BUSY,           confidence: documented }
+  0xfe000d: { canonical-name: ERROR_TIMEOUT,        confidence: documented }
+  0xfe000e: { canonical-name: ERROR_TOOMUCH,        confidence: documented }

@@ -1,0 +1,108 @@
+# winbox-ipc profile — RouterOS IPC over TCP/8291
+#
+# The WinBox.app's wire conversation with a router. Same nv::message
+# grammar as dude-on-disk and winbox-cdb; this profile names byte_2 as
+# `namespace`, signals compact-length via the low bit of `tcode`, and
+# discriminates message variants by the SYS_CMD field value.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+id: winbox-ipc
+title: WinBox IPC (TCP/8291)
+maturity: exploratory
+description: |
+  RouterOS IPC over TCP/8291 — the WinBox app's wire conversation with a
+  router. Application payloads are nv::message blobs ("M2"), wrapped in
+  the chunked transport defined in transport.yaml, optionally encrypted
+  with AES-128-CBC after an EC-SRP5 handshake (RouterOS >= 6.43; see
+  ec-srp5-handshake.yaml).
+
+physical-ref: ../../physical/nv-message.yaml
+magic: ["M2"]
+
+structure:
+  root: { repeat: tlv-entry, until: eos }
+
+# ── byte_2 -> namespace ──────────────────────────────────────────────────
+byte-2-as: namespace
+namespaces:
+  0x00:
+    name: user
+    abbrev: USER
+    role: "application/per-handler keys (handler-private fields)"
+    confidence: documented
+  0xfe:
+    name: standard
+    abbrev: STD
+    role: "object/session machinery (STD_* keys, STD_CMD_* codes, STD_ERROR_* values)"
+    confidence: documented
+  0xff:
+    name: system
+    abbrev: SYS
+    role: "transport/routing/auth (SYS_* keys)"
+    confidence: documented
+
+# ── compact-length signaling ─────────────────────────────────────────────
+compact-rule: low-bit-of-tcode
+compact-pairs:
+  - { wide: 0x08, compact: 0x09, kind: u32 }
+  - { wide: 0x20, compact: 0x21, kind: string }
+  - { wide: 0x28, compact: 0x29, kind: nested-message }
+  - { wide: 0x30, compact: 0x31, kind: bytes }
+
+# ── key id composition ──────────────────────────────────────────────────
+key-id:
+  formula: "(namespace << 16) | (key_high << 8) | key_low"
+  notes: |
+    The 24-bit "full key" is the canonical identifier in cross-tool tables.
+    Cisco-Talos's dispatch tables, MarginResearch write-ups, and this
+    repo's sys-keys.yaml/std-keys.yaml all key by full_key.
+
+# ── classification ──────────────────────────────────────────────────────
+classification:
+  kind: by-field-value
+  target-field: 0xff0007
+  target-name: SYS_CMD
+  notes: |
+    Within a request/reply, SYS_CMD discriminates message shape.
+    Two ranges:
+      * 0xFE0000-0xFE0016  -> standard commands (see std-commands.yaml)
+      * other              -> handler-private; top byte is the process_id
+                              (see processes.yaml), low 16 bits are the
+                              handler-local opcode (e.g. 0x0A0065 = mepty
+                              login command).
+  open-questions:
+    - "Some legacy short-form commands (cmdGet=7, cmdOpen=5, ...) are u8-encoded SYS_CMD values that don't fit either range; see commands.yaml."
+
+# ── refs ────────────────────────────────────────────────────────────────
+refs:
+  transport: ./transport.yaml
+  handshake-ec-srp5: ./ec-srp5-handshake.yaml
+  sys-keys: ./sys-keys.yaml
+  std-keys: ./std-keys.yaml
+  std-commands: ./std-commands.yaml
+  std-errors: ./std-errors.yaml
+  processes: ./processes.yaml
+  commands: ./commands.yaml
+
+# ── evidence ────────────────────────────────────────────────────────────
+evidence:
+  - source: code
+    ref: "Cisco-Talos Winbox_Protocol_Dissector"
+    url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector"
+  - source: doc
+    ref: "MarginResearch — Pulling MikroTik into the Limelight"
+    url: "https://margin.re/2022/06/pulling-mikrotik-into-the-limelight/"
+  - source: code
+    ref: "MarginResearch mikrotik_authentication"
+    url: "https://github.com/MarginResearch/mikrotik_authentication"
+
+investigation-trail:
+  - date: 2026-05-03
+    finding: |
+      Drained from strawman/winbox-m2.ksy + winbox-m2-semantics.yaml. The
+      handler-private command tables (mepty / mproxy / undo) and the
+      user-namespace key catalogs are NOT yet drained; pulling them in
+      from the Cisco-Talos dissector + this project's PROTOCOL.md is the
+      next step (README.md §Status step 2 + step 4).

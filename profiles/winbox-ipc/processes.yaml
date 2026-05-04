@@ -1,0 +1,86 @@
+# RouterOS process / handler IDs — winbox-ipc
+#
+# The first u32 element of SYS_TO and SYS_FROM (key 0xFF0001/0xFF0002,
+# tcode 0x88) is a process_id; subsequent elements are the handler
+# hierarchy *within* that process. The same byte also forms the top byte
+# of handler-private SYS_CMD values (e.g. 0x0A0065 -> process 0x0A,
+# handler-local opcode 0x0065).
+#
+# Drained from strawman/winbox-m2.ksy `process_id` enum (Cisco-Talos
+# `typeIDCode` table) plus the project-observed entries from
+# winbox-m2-semantics.yaml.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: winbox-ipc
+appears-in:
+  - { field: 0xff0001, name: SYS_TO,   element-index: 0 }
+  - { field: 0xff0002, name: SYS_FROM, element-index: 0 }
+  - { field: 0xff0007, name: SYS_CMD,  byte: top-byte-of-u32 }
+
+evidence:
+  - source: code
+    ref: "Cisco-Talos Winbox_Protocol_Dissector — typeIDCode 'if no SYS/STD match, & 0xFF0000'"
+
+processes:
+  0x01: { canonical-name: net,        confidence: documented }
+  0x02: { canonical-name: moduler,    confidence: documented }
+  0x03: { canonical-name: sermgr,     confidence: documented }
+  0x04: { canonical-name: notify,     confidence: documented }
+  0x05: { canonical-name: radv,       confidence: documented }
+  0x06: { canonical-name: system,     confidence: documented }
+  0x07: { canonical-name: ping,       confidence: documented }
+  0x08: { canonical-name: undo,       confidence: documented }
+  0x09: { canonical-name: log,        confidence: documented }
+  0x0a:
+    canonical-name: mepty
+    confidence: documented
+    notes: "Terminal PTY proxy. Owns commands 0x0A0065 (login) and 0x0A0067 (data) per this project."
+  0x0b: { canonical-name: pppman,     confidence: documented }
+  0x0c: { canonical-name: radius,     confidence: documented }
+  0x0d:
+    canonical-name: user-service
+    confidence: observed-only
+    notes: |
+      Project uses path [13, 4] for sysinfo / capabilities / pre-auth.
+      MarginResearch mentions process 13 = "user service handler 4" but
+      this is not enumerated in the Cisco-Talos process table.
+    evidence:
+      - source: doc
+        ref: "MarginResearch — Pulling MikroTik into the Limelight"
+  0x0e: { canonical-name: bridge,     confidence: documented }
+  0x0f: { canonical-name: diskd,      confidence: documented }
+  0x10: { canonical-name: dude,       confidence: documented }
+  0x11: { canonical-name: console,    confidence: documented }
+  0x12: { canonical-name: cerm,       confidence: documented }
+  0x18:
+    canonical-name: management
+    confidence: observed-only
+    notes: "Project observes paths [24,0], [24,1], [24,2]. Public sources do not enumerate."
+  0x2c: { canonical-name: route,      confidence: documented }
+  0x4c:
+    canonical-name: mepty-handler-0x4c
+    confidence: observed-only
+    notes: |
+      Project uses [76] as the mepty handler path. Inconsistent with
+      process_id=0x0a; likely [76] is a *handler id* under the mepty
+      process rather than a process id itself. Discrepancy unresolved.
+    open-questions:
+      - "Is [76] a handler under process 0x0a (mepty) or its own process?"
+  0x78:
+    canonical-name: login-or-mgmt
+    confidence: observed-only
+    notes: "Project uses [120] as 'session/login handler'. No public reference."
+  0xfd:
+    canonical-name: local
+    confidence: documented
+    notes: "Reserved for local/loopback dispatch."
+  0xfe:
+    canonical-name: standard_ns
+    confidence: documented
+    notes: "Synthetic process id matching the standard namespace byte."
+  0xff:
+    canonical-name: system_ns
+    confidence: documented
+    notes: "Synthetic process id matching the system namespace byte."

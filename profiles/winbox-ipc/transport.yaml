@@ -1,0 +1,105 @@
+# Transport-layer chunked framing — winbox-ipc
+#
+# WinBox carries application-level payloads (an M2 message in plaintext
+# or AES-128-CBC ciphertext containing an M2 message) over TCP/8291 using
+# a simple chunked frame. Drained from strawman/winbox-chunk.ksy and the
+# transport-layer constants in winbox-m2-semantics.yaml.
+#
+# Endianness: this layer is big-endian for its own length/tag bytes.
+# The M2 payload assembled inside is internally little-endian
+# (see physical/nv-message.yaml).
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: winbox-ipc
+layer: transport
+endian: be
+
+evidence:
+  - source: code
+    ref: "Cisco-Talos Winbox_Protocol_Dissector"
+  - source: code
+    ref: "MarginResearch mikrotik_authentication"
+    url: "https://github.com/MarginResearch/mikrotik_authentication"
+
+# ── frame structure ─────────────────────────────────────────────────────
+structure:
+  stream:
+    seq:
+      - { name: chunks, kind: chunk, repeat: until, until: "chunk.is_last" }
+  chunk:
+    seq:
+      - name: len
+        width: u1
+        role: "payload byte count; 0xFF means full chunk and more follow"
+      - name: tag
+        width: u1
+        ref: "chunk-tags[tag]"
+      - name: payload
+        size: "len"
+    derived:
+      is_last: "len < 0xFF"
+
+# ── chunk tags ──────────────────────────────────────────────────────────
+chunk-tags:
+  0x01:
+    name: plaintext_m2
+    role: "first chunk of a plaintext message; payload begins with [body_length:u2be][m2 message]"
+    confidence: observed-only
+    apparent-magic: true
+    notes: "Observed-as-constant in MarginResearch wire dumps and the Cisco-Talos dissector; not formally named in any public source."
+  0x06:
+    name: encrypted_m2
+    role: "first chunk of an EC-SRP5-encrypted message; payload begins with [enc_length:u2be][iv:16][ciphertext]"
+    confidence: observed-only
+    apparent-magic: true
+    notes: |
+      Same value (0x06) appears as the first byte of every EC-SRP5
+      handshake payload (see ec-srp5-handshake.yaml). Coincidence vs
+      reuse is unclear; not formally named anywhere public.
+  0xff:
+    name: continuation
+    role: "carried by every non-first chunk of a multi-chunk message"
+    confidence: observed-only
+    apparent-magic: true
+    notes: "Distinct from 0xFF used as the SYS_* namespace byte inside the M2 payload."
+
+# ── reassembly rules ────────────────────────────────────────────────────
+reassembly:
+  rule: |
+    Concatenate the `payload` of all chunks of a message in order to
+    obtain the assembled application payload. The first chunk's `tag`
+    selects the application mode:
+      * tag=0x01 (plaintext): assembled = [body_length:u2be][m2 message]
+      * tag=0x06 (encrypted): assembled = [enc_length:u2be][iv:16][ciphertext]
+                              decryption (AES-128-CBC) yields an m2 message.
+    Continuation chunks always carry tag=0xFF.
+  notes: |
+    Encryption is enabled after the EC-SRP5 handshake completes; on
+    RouterOS < 6.43 only the legacy MD5 plaintext mode (tag 0x01) is
+    available.
+
+# ── HKDF magic strings ──────────────────────────────────────────────────
+# Constants used in key derivation; not magic numbers but magic
+# (English-sentence) constants and worth recording explicitly.
+hkdf-info:
+  - direction: client-to-server
+    text: "On the client side, this is the send key; on the server side, it is the receive key."
+    confidence: documented
+    evidence:
+      - source: code
+        ref: "MarginResearch mikrotik_authentication — HKDF derivation"
+  - direction: server-to-client
+    text: "On the server side, this is the send key; on the client side, it is the receive key."
+    confidence: documented
+
+# ── apparent-magic catalog ──────────────────────────────────────────────
+apparent-magics:
+  - context: "legacy MD5 login — 0x00 prefix on hashed password"
+    bytes: [0x00]
+    confidence: documented
+    notes: |
+      MD5 input is `0x00 + password + salt`; the result is `0x00 + MD5(...)`
+      — totaling 17 bytes. The leading 0x00 is a marker MikroTik's auth
+      code expects.

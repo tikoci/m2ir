@@ -229,3 +229,5 @@ unknownid
 UNKNOWNNEXTID
 unknownnextid
 UTF
+enumerant
+unwired

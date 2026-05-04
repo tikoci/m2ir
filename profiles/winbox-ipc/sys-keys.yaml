@@ -1,0 +1,165 @@
+# SYS_* keys — winbox-ipc system namespace (byte_2 = 0xFF)
+#
+# Drained from strawman/winbox-m2.ksy `full_key_id` enum and the
+# winbox-m2-semantics.yaml overlay. Names follow the Cisco-Talos
+# dissector. Where this project's own PROTOCOL.md uses a divergent name
+# the older label is preserved in `aka:` so old code keeps grepping.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: winbox-ipc
+namespace: 0xff
+namespace-name: system
+
+evidence:
+  - source: code
+    ref: "Cisco-Talos Winbox_Protocol_Dissector"
+
+keys:
+  0xff0001:
+    canonical-name: SYS_TO
+    physical: { tcodes: [0x88] }
+    semantic: handler-path
+    role: "destination handler path; first element = process_id, rest = handler hierarchy"
+    confidence: documented
+
+  0xff0002:
+    canonical-name: SYS_FROM
+    physical: { tcodes: [0x88] }
+    semantic: handler-path
+    role: "source handler path"
+    confidence: documented
+
+  0xff0003:
+    canonical-name: SYS_TYPE
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: enum-u32
+    role: "message direction discriminant"
+    values:
+      1: TYPE_REQUEST
+      2: TYPE_REPLY
+    confidence: documented
+    notes: |
+      Canonical request/reply discriminant. This project's PROTOCOL.md
+      does not list 0xFF0003 at all and uses the boolean SYS_REPLYEXP
+      (0xFF0005) for the same purpose; the two fields likely coexist
+      with overlapping meaning.
+
+  0xff0004:
+    canonical-name: SYS_STATUS
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: enum-u32
+    role: "set on TYPE_REPLY to indicate command outcome"
+    values:
+      1: OK
+      2: ERROR
+    confidence: documented
+    notes: |
+      Project-PROTOCOL.md mislabels 0xFF0008 as `SYS_STATUS`; per
+      Cisco-Talos that's actually `SYS_ERRNO`, and the real `SYS_STATUS`
+      is at 0xFF0004.
+
+  0xff0005:
+    canonical-name: SYS_REPLYEXP
+    physical: { tcodes: [0x00, 0x01] }
+    semantic: bool
+    role: "true = sender expects a reply"
+    aliases:
+      - { name: SYS_REQUEST, status: superseded, source: "this project's PROTOCOL.md" }
+    confidence: documented
+
+  0xff0006:
+    canonical-name: SYS_REQID
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: request-id
+    confidence: documented
+
+  0xff0007:
+    canonical-name: SYS_CMD
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: command-code
+    confidence: documented
+    notes: |
+      Encodes either a STD_CMD_* (0xFE0000-range; see std-commands.yaml)
+      or a handler-private command (top byte = process_id; see
+      commands.yaml + processes.yaml). Encoded as u8 (tcode 0x09) for
+      legacy short-form values (cmdGet=7, cmdOpen=5) and u32 (tcode 0x08)
+      for the canonical 0xFE0000- and process_id-prefixed forms.
+
+  0xff0008:
+    canonical-name: SYS_ERRNO
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: enum-u32
+    role: "set on TYPE_REPLY when SYS_STATUS == ERROR; values from std-errors.yaml"
+    aliases:
+      - { name: SYS_STATUS, status: superseded, source: "this project's PROTOCOL.md mislabel" }
+    confidence: documented
+
+  0xff0009:
+    canonical-name: SYS_ERRSTR
+    physical: { tcodes: [0x20, 0x21] }
+    semantic: utf8-string
+    confidence: documented
+
+  0xff000a:
+    canonical-name: SYS_USER
+    physical: { tcodes: [0x20, 0x21] }
+    semantic: utf8-string
+    confidence: documented
+
+  0xff000b:
+    canonical-name: SYS_POLICY
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: bitmask-u32
+    confidence: documented
+    notes: |
+      Bitmask. Known values:
+        0x5FFFE    = admin
+        0xFFFFFFFF = super-admin
+    evidence:
+      - source: doc
+        ref: "MarginResearch — policy bitmask values"
+
+  0xff000d:
+    canonical-name: SYS_CTRL
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xff000f:
+    canonical-name: SYS_CTRL_ARG
+    physical: { tcodes: ["*"] }
+    semantic: any
+    confidence: documented
+    notes: "Tcode varies; argument paired with SYS_CTRL."
+
+  0xff0010:
+    canonical-name: SYS_USER_ID
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xff0011:
+    canonical-name: SYS_NOTIFYCMD
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
+
+  0xff0012:
+    canonical-name: SYS_ORIGINATOR
+    physical: { tcodes: [0x88] }
+    semantic: handler-path
+    confidence: documented
+
+  0xff0013:
+    canonical-name: SYS_RADDR6
+    physical: { tcodes: [0x18] }
+    semantic: ipv6-addr
+    confidence: documented
+
+  0xff0016:
+    canonical-name: SYS_DREASON
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    confidence: documented
