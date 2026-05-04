@@ -34,6 +34,8 @@
 		"hook:git": "bun src/tooling/run-git-hook.ts",
 		"hook:git:pre-commit": "bun run hook:git -- --hook pre-commit -- bun run lint",
 		"hook:git:pre-push": "bun run hook:git -- --hook pre-push -- bun run ci",
+		"hook:git:commit": "bun run hook:git -- --hook commit -- bun run lint",
+		"hook:git:push": "bun run hook:git -- --hook push -- bun run ci",
 		"hook:log": "bun src/tooling/log-repo-event.ts",
 		"hooks:install": "git config --local core.hooksPath .githooks && chmod +x .githooks/pre-commit .githooks/pre-push",
 		"lint": "bun run lint:biome && bun run lint:typecheck",
