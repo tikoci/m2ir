@@ -60,10 +60,16 @@ handler-scoped-u8:
       - source: code
         ref: "tenable/routeros 8291_honeypot"
         url: "https://github.com/tenable/routeros/blob/master/8291_honeypot/README.md"
+      - source: doc
+        ref: "n0p — WinBox bug dissection"
+        url: "https://blog.n0p.me/2018/05/2018-05-21-winbox-bug-dissection/"
     notes: |
       These u8 SYS_CMD values are handler-scoped, not global short forms.
       The same numeric values can carry different meanings in other
-      handlers.
+      handlers. The older n0p/BASUCERT write-up independently describes the
+      same two-request file-transfer surface as the pre-auth list / file
+      retrieval path, including a changing session byte echoed from one
+      request/response pair into the next.
     commands:
       0x07:
         canonical-name: fileOpen
@@ -129,3 +135,9 @@ investigation-trail:
       Tenable's CVE-2018-14847 material. The remaining gap is the rest of
       the mproxy, mepty, and undo command catalogs outside the documented
       public PoCs.
+  - date: 2026-05-04
+    finding: |
+      Added n0p/BASUCERT as an independent corroborating source for the
+      handler-2 file-transfer flow: the same open/read surface underlies the
+      unauthenticated list/file retrieval path, and it carries a changing
+      session byte between the paired requests.

@@ -16,7 +16,9 @@ port: 8291
 role: |
   External WinBox proxy. Accepts TCP/8291 sessions, participates in the
   WinBox EC-SRP5-backed authentication flow, and routes authenticated
-  requests into the internal RouterOS nv::message graph.
+  requests into the internal RouterOS nv::message graph. Older reversing
+  write-ups also place the initial list / file-transfer flow behind this
+  same front-end surface.
 
 process-id-observations:
   - version-range: "6.30.1-6.42.x"
@@ -45,7 +47,10 @@ registered-handlers:
     2:
       canonical-name: mproxy-file-transfer
       confidence: documented
-      notes: "Documented by Tenable's CVE-2018-14847 PoC and honeypot traces."
+      notes: |
+        Documented by Tenable's CVE-2018-14847 PoC and honeypot traces.
+        Older n0p/BASUCERT reversing independently describes the same
+        list/file retrieval surface from the `mproxy` binary.
 
 handler-surfaces:
   2:
@@ -70,6 +75,34 @@ handler-surfaces:
       path: /flash/rw/store/user.dat
       role: "Credential database used by the public CVE-2018-14847 PoC."
 
+session-observations:
+  - version-range: "6.29-6.42"
+    confidence: documented
+    notes: |
+      n0p/BASUCERT describe the pre-auth list / file-retrieval flow as a
+      paired request sequence where the follow-up request must copy a
+      changing one-byte session value from the prior response. Replaying the
+      same packets without updating that byte yields a "bad session id"
+      error.
+    evidence:
+      - source: doc
+        ref: "n0p — WinBox bug dissection"
+        url: "https://blog.n0p.me/2018/05/2018-05-21-winbox-bug-dissection/"
+
+auth-observations:
+  - version-range: "<=6.49.8"
+    confidence: documented
+    notes: |
+      VulnCheck reports that WinBox authentication returns a smaller reply
+      when the supplied username does not exist, exposing an account-
+      existence oracle. Treat login-response sizing and brute-force
+      assumptions as version-scoped auth behavior rather than a protocol
+      invariant.
+    evidence:
+      - source: doc
+        ref: "VulnCheck — Foisted revisited"
+        url: "https://www.vulncheck.com/blog/mikrotik-foisted-revisited"
+
 evidence:
   - source: doc
     ref: "MarginResearch — Pulling MikroTik into the Limelight"
@@ -83,6 +116,12 @@ evidence:
   - source: code
     ref: "tenable/routeros msg_re/find_handlers"
     url: "https://github.com/tenable/routeros/blob/master/msg_re/find_handlers/README.md"
+  - source: doc
+    ref: "n0p — WinBox bug dissection"
+    url: "https://blog.n0p.me/2018/05/2018-05-21-winbox-bug-dissection/"
+  - source: doc
+    ref: "VulnCheck — Foisted revisited"
+    url: "https://www.vulncheck.com/blog/mikrotik-foisted-revisited"
 
 investigation-trail:
   - date: 2026-05-04
@@ -90,3 +129,9 @@ investigation-trail:
       Public sources firmly document the handler-2 file-transfer surface and
       `mproxy`'s role as the TCP/8291 entry point, but they do not publish a
       broader command catalog for handler 1 or later RouterOS versions.
+  - date: 2026-05-04
+    finding: |
+      Added two version-scoped public observations around the same front-end
+      surface: n0p/BASUCERT's changing session-byte requirement in the
+      pre-auth list/file flow for 6.29-6.42, and VulnCheck's username-
+      existence oracle in WinBox authentication through 6.49.8.

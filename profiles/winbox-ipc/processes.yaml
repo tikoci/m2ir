@@ -53,6 +53,9 @@ evidence:
   - source: doc
     ref: "MarginResearch — Pulling MikroTik into the Limelight"
     url: "https://margin.re/2022/06/pulling-mikrotik-into-the-limelight/"
+  - source: doc
+    ref: "DEVCORE — Pwn2Own Toronto 2022"
+    url: "https://devco.re/blog/2024/05/24/pwn2own-toronto-2022-a-9-year-old-bug-in-mikrotik-routeros-en/"
 
 version-observations:
   - version: "6.43.45"
@@ -68,6 +71,25 @@ version-observations:
     mappings:
       - { binary: /nova/bin/mproxy, process-id: 0x02, handler-id: 2 }
     notes: "The public PoC sends WinBox file-open and file-read messages to [2,2]."
+  - version-family: "RouterOS v6 (DEVCORE auth trace)"
+    source: "DEVCORE Pwn2Own Toronto 2022"
+    mappings:
+      - { binary: /nova/bin/user, process-id: 0x0d, handler-id: 4, role: "account/password verification handler" }
+    notes: |
+      DEVCORE's auth walkthrough uses `SYS_TO=[13,4]` for the `user`
+      authentication handler. Treat this as another version-scoped
+      corroboration of the `/nova/bin/user` -> 13 mapping, not as a
+      universal claim about all RouterOS releases.
+
+transient-process-observations:
+  - binary: /nova/bin/login
+    id-shape: runtime-serial
+    confidence: documented
+    source: "DEVCORE Pwn2Own Toronto 2022"
+    notes: |
+      DEVCORE uses process id 1039 for `login` in its illustrative auth
+      trace and explicitly notes that this kind of helper process is spawned
+      on demand and absent from the `.x3` files.
 
 registered-handler-observations:
   - binary: /nova/bin/mproxy

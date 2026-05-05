@@ -64,6 +64,10 @@ architecture:
       Process ids are assigned by loader configuration and differ across
       RouterOS versions. Cisco-Talos, MarginResearch, and Tenable agree on
       the routing model but not on one universal numeric process-id map.
+      Package-scoped binaries can be assigned in
+      `/ram/pckg/<package>/nova/etc/loader/<package>.x3` instead of the base
+      `system.x3`, and some runtime-spawned processes (for example `login`)
+      do not live in any x3 file at all.
 
 structure:
   root: { repeat: tlv-entry, until: eos }
@@ -149,6 +153,9 @@ evidence:
   - source: code
     ref: "tenable/routeros msg_re/find_handlers"
     url: "https://github.com/tenable/routeros/blob/master/msg_re/find_handlers/README.md"
+  - source: doc
+    ref: "DEVCORE — Pwn2Own Toronto 2022"
+    url: "https://devco.re/blog/2024/05/24/pwn2own-toronto-2022-a-9-year-old-bug-in-mikrotik-routeros-en/"
 
 investigation-trail:
   - date: 2026-05-03
@@ -164,3 +171,10 @@ investigation-trail:
       Handler routing model, multicast/broadcast forms, and the explicit
       warning that process ids are version-scoped through system.x3 rather
       than fixed across all RouterOS releases.
+  - date: 2026-05-04
+    finding: |
+      DEVCORE independently corroborates the loader/Looper/Handler routing
+      model, shows the concrete auth path `SYS_TO=[13,4]` into the `user`
+      process, and notes two process-id nuances now recorded here: package
+      binaries can be assigned in per-package `.x3` files, while runtime
+      helpers such as `login` may use ephemeral ids that never appear in x3.
