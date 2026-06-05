@@ -3,6 +3,8 @@ coverage
 dist
 node_modules
 
+# repo-local agent/event log — runtime state, kept local, never published
+cortex.db
+
 scratch/*
 !scratch/AGENTS.md
-!scratch/initialize-as-template-repo.md

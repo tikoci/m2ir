@@ -33,9 +33,10 @@ profile/concept/physical layering.
 
 ## Status
 
-v0.1 in progress. The seed strawman (one profile — `winbox-ipc`) has
-been drained into canonical YAML; deeper sources still pending. Expected
-next steps, roughly in order:
+v0.1, initial public release. m2ir is a **reference knowledge base** — the
+schema content (CC0 YAML) is the deliverable, not a runnable tool. The seed
+strawman (one profile — `winbox-ipc`) has been drained into canonical YAML;
+deeper sources still pending. Expected next steps, roughly in order:
 
 1. ~~Drain the `winbox-ipc/strawman/` content into canonical YAML under
    `profiles/winbox-ipc/` and `physical/nv-message.yaml`.~~ Done — see

@@ -10,8 +10,8 @@ grammar but conveys the same concepts (see `/concepts/`).
 |---|---|---|
 | `winbox-ipc/` | strawman drained into canonical YAML | this repo's parent project + Cisco-Talos dissector |
 | `dude-on-disk/` | initial TAG/RANGE catalog drained into canonical YAML | [`tikoci/donny`](https://github.com/tikoci/donny) + [`german77/TheDudeToHuman`](https://github.com/german77/TheDudeToHuman) |
-| `winbox-cdb/` | placeholder | `~/Lab/centrs` `src/data/winbox-cdb.ts` |
-| `mndp/` | placeholder | `~/Lab/mcp-monorepo/mcp-mikrotik` `src/mndp.ts` |
+| `winbox-cdb/` | placeholder | `tikoci/centrs` `src/data/winbox-cdb.ts` |
+| `mndp/` | placeholder | `mcp-mikrotik` `src/mndp.ts` |
 
 A profile is one directory of YAML; prose lives inside the schema (in
 `notes:`, `evidence:`, `revision-history:`, …), not in adjacent `.md`

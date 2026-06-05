@@ -1,6 +1,6 @@
 # m2ir — strawman intermediate representation
 
-_Imported from `~/Lab/winbox-terminal-protocol/schema/README.md` and lightly adapted for this repository's initial bootstrap._
+_Imported from `subixonfire/winbox-terminal-protocol/schema/README.md` and lightly adapted for this repository's initial bootstrap._
 
 This directory is an experiment in **format design**: how much of the
 MikroTik `nv::message` ("M2") protocol family can be captured in a

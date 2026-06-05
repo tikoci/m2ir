@@ -1,6 +1,6 @@
 # m2ir — design notes
 
-_Imported from `~/Lab/winbox-terminal-protocol/schema/DESIGN.md` and lightly adapted for this repository's initial bootstrap._
+_Imported from `subixonfire/winbox-terminal-protocol/schema/DESIGN.md` and lightly adapted for this repository's initial bootstrap._
 
 `m2ir` is the working name for an intermediate representation of MikroTik's
 binary protocol family. The wire format ("nv::message", informally "M2"
@@ -11,7 +11,7 @@ after its `4D 32` magic) is shared across many RouterOS surfaces:
   [`~/GitHub/donny`](https://github.com/tikoci/donny))
 - WinBox client's saved-connections file (CDB) — same wire format,
   different field semantics, optional RC4-encrypted variant. Reference
-  impl: [`~/Lab/centrs`](../../) `src/data/winbox-cdb.ts`. RoMON targets
+  impl: [`tikoci/centrs`](../../) `src/data/winbox-cdb.ts`. RoMON targets
   show up here as `recordType=7/8` with a `romonAgent` field — i.e. the
   CDB profile is one of the few places RoMON has a public, parseable
   shape today.
@@ -19,7 +19,7 @@ after its `4D 32` magic) is shared across many RouterOS surfaces:
   marker/tcode byte) but conveys *the same semantic values* (router
   identity, version, board model, MAC, IPv4/v6, uptime) that turn up
   again in the nv::message profiles. Reference impl:
-  [`~/Lab/mcp-monorepo/mcp-mikrotik`](../../) `src/mndp.ts`. This is
+  [`mcp-mikrotik`](../../) `src/mndp.ts`. This is
   what makes a profile-independent **concept catalog** unavoidable.
 - RouterOS-internal IPC (`/nova/bin/*` processes — partly known via Cisco-Talos / MarginResearch)
 - mproxy file transfer, the undo handler, dude-server-to-router probes,

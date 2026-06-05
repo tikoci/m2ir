@@ -1,6 +1,6 @@
 # context-rules — discrimination in m2ir
 
-_Imported from `~/Lab/winbox-terminal-protocol/schema/context-rules.md` and lightly adapted for this repository's initial bootstrap._
+_Imported from `subixonfire/winbox-terminal-protocol/schema/context-rules.md` and lightly adapted for this repository's initial bootstrap._
 
 The crux of the IR problem. A field's *encoding* is described by tcode +
 marker. A field's *meaning* depends on context: which command is in
@@ -19,8 +19,8 @@ profiles, and proposes a single mechanism that covers all four.
 |---|---|---|---|
 | `winbox-ipc` | the `SYS_CMD` field's value | exact-match | this project + Cisco-Talos |
 | `dude-on-disk` | the leading section-1 tag's *numeric range* | range-match | `~/GitHub/donny` |
-| `winbox-cdb` | the `recordType` field's value (tag 1) | exact-match | `~/Lab/centrs` `src/data/winbox-cdb.ts` |
-| `mndp` | the per-TLV type code | exact-match, but it's the field's own tag | `~/Lab/mcp-monorepo/mcp-mikrotik` |
+| `winbox-cdb` | the `recordType` field's value (tag 1) | exact-match | `tikoci/centrs` `src/data/winbox-cdb.ts` |
+| `mndp` | the per-TLV type code | exact-match, but it's the field's own tag | `mcp-mikrotik` |
 
 A fifth, hypothetical pattern — predicate-match (e.g. "if any flag bit is
 set in field X, this variant applies") — is not yet observed but should
@@ -332,10 +332,10 @@ Just not use it as the source of truth.
   closest existing standard to the proposed `source + variants` block.
 - [Kaitai Struct switch-on/cases](https://doc.kaitai.io/user_guide.html#switching) —
   the pattern lives there too, but tied to a specific compiler.
-- `~/Lab/centrs/src/data/winbox-cdb.ts` — concrete reference impl of a
+- `tikoci/centrs/src/data/winbox-cdb.ts` — concrete reference impl of a
   `field-by-tag` discriminator (record types).
 - `~/GitHub/donny/src/lib/nova.ts` `RANGE` constants — concrete reference
   impl of a `leading-tag` + `range` discriminator.
-- `~/Lab/mcp-monorepo/mcp-mikrotik/src/mndp.ts` — concrete reference
+- `mcp-mikrotik/src/mndp.ts` — concrete reference
   impl of a `leading-tag` + trivial-exact discriminator, plus the
   unknown-collection default-variant pattern.

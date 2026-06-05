@@ -11,6 +11,6 @@ Discriminator is `recordType` on tag 1; record types include MAC target,
 IP admin, IP user, and RoMON neighbor / target. The CDB profile is one
 of the few places RoMON has a public, parseable shape.
 
-Reference implementation: `~/Lab/centrs` `src/data/winbox-cdb.ts`.
+Reference implementation: `tikoci/centrs` `src/data/winbox-cdb.ts`.
 
 Placeholder.

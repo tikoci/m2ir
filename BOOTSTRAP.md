@@ -50,8 +50,9 @@ generic table:
 - `copilot_hook_events` — documented Copilot hook payloads
   (`sessionStart`, `preToolUse`, `postToolUse`, …)
 
-Treat it as repo-local working data: never log secrets, credentials, or
-copied prompt text.
+It is **git-ignored** — kept local, never committed or published. Treat
+it as repo-local working data: never log secrets, credentials, or copied
+prompt text.
 
 ## Optional external tools
 
