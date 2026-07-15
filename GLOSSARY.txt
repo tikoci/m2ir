@@ -195,8 +195,10 @@ mepty
 mgmt
 moduler
 moveobj
+mtu
 NEXTID
 nextid
+nlevel
 NOTIFYCMD
 NUL
 notallowed
@@ -206,17 +208,23 @@ PAGENO
 pckg
 poc # proof-of-concept, often appears lowercase in upstream paths
 fileread
+popcount
 pppman
+preimage
+PRK
+pvid
 Radv
 radv
 RADDR
 raddr
+~redp # REDP-1, random-embedding-into-the-curve point-derivation technique
 REMOVEOBJ
 removeobj
 REQID
 reqid
 REPLYEXP
 replyexp
+routerboard
 sermgr
 setform
 SETOBJ

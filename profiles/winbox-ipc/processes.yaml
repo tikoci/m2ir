@@ -56,6 +56,8 @@ evidence:
   - source: doc
     ref: "DEVCORE — Pwn2Own Toronto 2022"
     url: "https://devco.re/blog/2024/05/24/pwn2own-toronto-2022-a-9-year-old-bug-in-mikrotik-routeros-en/"
+  - source: code
+    ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available) — see ./gui-handlers.yaml for the full handler catalog this sources"
 
 version-observations:
   - version: "6.43.45"
@@ -193,15 +195,71 @@ processes:
     open-questions:
       - "Which RouterOS build produced Cisco-Talos's HOTPLUG = 0x0D label?"
       - "When did `/nova/bin/user` occupy process id 13, and what process id did hotplug move to in those builds?"
+      - |
+        A private third-party WinBox client implementation also sends a
+        GET (cmdGet=7) to [13,4] once per connection, immediately after
+        auth completes, purely to read back a server-assigned source id
+        from the reply's SYS_FROM — see ./gui-handlers.yaml
+        source-id-adoption. Is this the same `user` handler MarginResearch
+        traces for authentication doing double duty as a capability
+        exchange, or a distinct handler that happens to share the path?
   0x0e: { canonical-name: bridge,   confidence: documented }
   0x0f: { canonical-name: diskd,    confidence: documented }
-  0x10: { canonical-name: dude,     confidence: documented }
+  0x10:
+    canonical-name: dude
+    confidence: documented
+    notes: |
+      CONFLICT: a private third-party WinBox client implementation queries
+      [16,2] and [16,13] for /interface bridge port and /interface bridge
+      vlan respectively (see ./gui-handlers.yaml bridge-port / bridge-vlan).
+      Either process 0x10 is version-scoped like 0x02 (moduler/mproxy) and
+      0x0d (hotplug/user) above — dude in the Cisco-Talos reference
+      version, a bridge-management handler in whatever version that
+      implementation targets — or [16,2]/[16,13] are wrongly attributed in
+      that source. Not resolved; do not assume either identity is
+      universal.
+    evidence:
+      - source: code
+        ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+    open-questions:
+      - "Does RouterOS reassign 0x10 from dude to a bridge-management role in some version range, matching the 0x02 and 0x0d precedents?"
+      - "Or does the third-party implementation's [16,2]/[16,13] path route through dude's own handler surface (dude managing bridge state) rather than a distinct bridge process?"
   0x11: { canonical-name: console,  confidence: documented }
   0x12: { canonical-name: cerm,     confidence: documented }
+  0x14:
+    canonical-name: interface
+    confidence: observed-only
+    notes: |
+      Not in Cisco-Talos typeIDCode. A private third-party WinBox client
+      implementation queries [20,0] (/interface), [20,1] (/ip address),
+      and [20,37] (/ipv6 address) — see ./gui-handlers.yaml. Named
+      `interface` here descriptively; no independent source confirms this
+      label.
+    evidence:
+      - source: code
+        ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
   0x18:
     canonical-name: management
     confidence: observed-only
-    notes: "Project observes paths [24,0], [24,1], [24,2]. Not in Cisco-Talos typeIDCode."
+    notes: |
+      Project observes paths [24,0], [24,1], [24,2]. Not in Cisco-Talos
+      typeIDCode. Corroborated and extended by a private third-party
+      implementation, which also uses [24,1] (/system identity), [24,2]
+      (/system resource), and [24,17] (/system routerboard) — see
+      ./gui-handlers.yaml.
+    evidence:
+      - source: code
+        ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+  0x41:
+    canonical-name: license
+    confidence: observed-only
+    notes: |
+      Not in Cisco-Talos typeIDCode. A private third-party WinBox client
+      implementation addresses it as a bare single-element SYS_TO=[65]
+      (like mepty's [76]), for /system license — see ./gui-handlers.yaml.
+    evidence:
+      - source: code
+        ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
   0x2c: { canonical-name: route,    confidence: documented }
   0x4c:
     canonical-name: mepty-handler-0x4c
@@ -210,9 +268,19 @@ processes:
       Project uses [76] as the mepty handler path. Inconsistent with
       process_id=0x0a; likely [76] is a *handler id* under the mepty
       process rather than a process id itself. Not in Cisco-Talos
-      typeIDCode.
+      typeIDCode. A private third-party implementation corroborates the
+      bare single-element SYS_TO=[76] path for mepty login/data messages,
+      while its SYS_CMD values for those same messages are 0x0A0065 /
+      0x0A0067 (top byte 0x0a) — see ./commands.yaml handler-private. The
+      path (0x4c) and the command top-byte (0x0a) disagree on which
+      number is "the" mepty process id; this project has not resolved
+      which one (if either) loader/system.x3 actually assigns to mepty.
+    evidence:
+      - source: code
+        ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
     open-questions:
       - "Is [76] a handler under process 0x0a (mepty) or its own process?"
+      - "Why does the command-code top byte (0x0a) not match the SYS_TO path (0x4c/76) for the same mepty login/data messages?"
   0x78:
     canonical-name: login-or-mgmt
     confidence: observed-only
@@ -229,3 +297,14 @@ processes:
     canonical-name: system_ns
     confidence: documented
     notes: "Synthetic process id matching the system namespace byte."
+
+investigation-trail:
+  - date: 2026-07-14
+    finding: |
+      Added two new process ids (0x14 interface-family, 0x41 license) and
+      one direct conflict (0x10: documented as `dude` by Cisco-Talos, but
+      a private third-party implementation uses [16,2]/[16,13] for bridge
+      port/vlan) from a private third-party WinBox client implementation.
+      Also added a source-id-adoption note to 0x0d/[13,4] and a path-vs-
+      command-code-top-byte discrepancy note to 0x4c/mepty. See
+      ./gui-handlers.yaml for the full handler catalog this drains from.

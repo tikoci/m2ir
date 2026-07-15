@@ -135,6 +135,8 @@ refs:
   commands: ./commands.yaml
   mproxy: ./mproxy.yaml
   undo: ./undo.yaml
+  session-crypto: ./session-crypto.yaml
+  gui-handlers: ./gui-handlers.yaml
 
 # ── evidence ────────────────────────────────────────────────────────────
 evidence:
@@ -156,6 +158,8 @@ evidence:
   - source: doc
     ref: "DEVCORE — Pwn2Own Toronto 2022"
     url: "https://devco.re/blog/2024/05/24/pwn2own-toronto-2022-a-9-year-old-bug-in-mikrotik-routeros-en/"
+  - source: code
+    ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
 
 investigation-trail:
   - date: 2026-05-03
@@ -178,3 +182,22 @@ investigation-trail:
       process, and notes two process-id nuances now recorded here: package
       binaries can be assigned in per-package `.x3` files, while runtime
       helpers such as `login` may use ephemeral ids that never appear in x3.
+  - date: 2026-07-14
+    finding: |
+      Drained a private third-party WinBox client implementation (a
+      server-side RouterOS monitoring product; source not publicly
+      available). Added two new files: session-crypto.yaml (post-EC-SRP5
+      key derivation and the AES-128-CBC message MAC/pad/encrypt
+      construction — previously undocumented here) and gui-handlers.yaml
+      (the GET_ONE/GET_ALL management-handler catalog used by the WinBox
+      GUI's fast binary path, plus a source-id-adoption step at [13,4]
+      distinct from MarginResearch's auth-only reading of that path).
+      Extended ec-srp5-handshake.yaml with the actual derivation algorithm
+      (previously wire-shapes only) and corroborated client_phase1's byte
+      layout independently. Surfaced two new process ids (0x14, 0x41) and
+      one direct conflict with the documented 0x10=dude assignment in
+      processes.yaml, plus upgraded the four legacy-short-form commands in
+      commands.yaml from guessed/observed-only to observed-only with a
+      second independent corroborating implementation. All additions are
+      algorithm/fact descriptions written from scratch — no source from
+      that implementation was reproduced.

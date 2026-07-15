@@ -21,6 +21,8 @@ evidence:
   - source: doc
     ref: "MarginResearch — Pulling MikroTik into the Limelight"
     url: "https://margin.re/2022/06/pulling-mikrotik-into-the-limelight/"
+  - source: code
+    ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available) — independently corroborates the message shapes below and supplies the derivation algorithm section"
 
 notes: |
   Elliptic-curve points are serialized as the big-endian X coordinate
@@ -41,6 +43,7 @@ messages:
       - { name: pubkey,   size: 32, notes: "Curve25519 client public point, big-endian X coordinate" }
       - { name: parity,   width: u1, notes: "Y-parity bit (0=even, 1=odd)" }
     confidence: observed-only
+    corroboration: "byte-for-byte match in the private third-party implementation: username || 0x00 || 32-byte pubkey-x || parity-byte"
 
   server_phase1:
     direction: server-to-client
@@ -73,3 +76,54 @@ messages:
       - { name: tag,          contents: [0x06] }
       - { name: confirmation, size: 32, notes: "SHA-256(...) confirmation value" }
     confidence: observed-only
+
+# ── derivation algorithm ──────────────────────────────────────────────────
+# The messages above are the wire shapes; this section is *how the values
+# in them get computed*, which no source in this file's `evidence:` block
+# previously spelled out end-to-end. Curve is Curve25519 in Weierstrass
+# form (matches the field prime / order used elsewhere for Curve25519);
+# points are converted Montgomery-x <-> Weierstrass-x for wire transfer
+# (see physical/nv-message.yaml-adjacent curve notes if added) and lifted
+# back with the standard Curve25519 curve equation.
+derivation:
+  evidence:
+    - source: code
+      ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+  confidence: observed-only
+  notes: |
+    This is a description of the algorithm as implemented, not a copy of
+    its source. It has not been independently verified by this project
+    against a live RouterOS device; treat as a strong lead for
+    implementation, not a certified spec.
+  client-phase1:
+    - "generate a random 32-byte client private scalar sA"
+    - "client public point xWA = Weierstrass-to-Montgomery-x(scalar-multiply(sA, G)), plus its Y-parity byte"
+    - "send username || 0x00 || xWA || parity (client_phase1 above)"
+  server-phase1-received: "client receives (xWB, xWB-parity, salt) — see server_phase1 above"
+  shared-secret-computation:
+    - step: "password validator private scalar: i = SHA-256(salt || SHA-256(username || ':' || password))"
+      notes: "the ':' separator and this exact nesting (hash-of-hash) is implementation detail, not confirmed against a RouterOS-side spec"
+    - step: "xGamma = x-coordinate of scalar-multiply(i, G) (the password-validator's own public point)"
+    - step: "v = REDP-1(xGamma, parity=1) — deterministic random-point-from-string embedding: repeatedly SHA-256 a running preimage until the result lifts to a valid curve point of the requested parity"
+    - step: "wB = pointAdd(liftX(xWB, xWB-parity), v) — recover the server's Weierstrass point and offset it by the password-validator embedding"
+    - step: "j = SHA-256(xWA || xWB) — a value binding both parties' public points, independent of role order"
+    - step: "combine scalar: u = (i * j + sA) mod curve-order"
+    - step: "shared point Z = scalar-multiply(u, wB); fail if Z is the identity point"
+    - step: "z = Montgomery-x(Z) — the raw shared value"
+    - step: "secret = SHA-256(z) — this is the value handed to session-crypto.yaml's key-derivation"
+    - step: "clientConfirm = SHA-256(j || z)"
+    - step: "serverConfirm = SHA-256(j || clientConfirm || z)"
+  confirmation-check:
+    client-sends: clientConfirm
+    client-verifies: "server's phase2 reply must equal serverConfirm, else treat as wrong username/password"
+    notes: "asymmetric confirmation — serverConfirm folds in clientConfirm, so the server's confirmation message implicitly proves it saw the client's"
+
+investigation-trail:
+  - date: 2026-07-14
+    finding: |
+      Added the derivation algorithm (previously this file only had wire
+      shapes) and a byte-for-byte corroboration of client_phase1's layout,
+      from a private third-party WinBox client implementation. Curve
+      constants used by that implementation match Curve25519's field
+      prime and order, consistent with this file's existing "Curve25519"
+      labels sourced from MarginResearch.

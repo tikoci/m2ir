@@ -96,31 +96,65 @@ handler-scoped-u8:
 legacy-short-form:
   0x01:
     canonical-name: cmdLogin
-    confidence: guessed
-    notes: "Project uses u8 CMD=1 in legacy login step. No name in any source."
+    confidence: observed-only
+    notes: |
+      Project uses u8 CMD=1 in legacy login step. No name in any source.
+      Corroborated by a private third-party WinBox client implementation's
+      pre-6.43 MD5 fallback flow: final step sends SYS_TO=[13,4], CMD=1,
+      with session id + username (field 1) + salt (field 9, raw, echoed
+      from the challenge step) + hashed password (field 10, raw:
+      0x00 || MD5(0x00 || password || salt)).
+    evidence:
+      - source: code
+        ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
 
   0x04:
     canonical-name: cmdChallenge
-    confidence: guessed
+    confidence: observed-only
     notes: |
       Project uses u8 CMD=4 in the 'request challenge' step of legacy auth.
       Not a universal short-form label: Tenable documents the same u8 value
-      as `fileRead` inside the mproxy/handler-2 command space.
+      as `fileRead` inside the mproxy/handler-2 command space. Corroborated
+      by a private third-party implementation's flow: sent to SYS_TO=[13,4]
+      with the session id from the prior list step; the reply's field 9
+      (raw, namespace USER) is the salt used in the cmdLogin MD5 hash.
+    evidence:
+      - source: code
+        ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
 
   0x05:
     canonical-name: cmdOpen
     confidence: observed-only
-    notes: "u8-encoded. Used in the legacy MD5 auth handshake (cmdOpen / Step 2a)."
+    notes: |
+      u8-encoded. Used in the legacy MD5 auth handshake (cmdOpen / Step
+      2a). Corroborated by a private third-party implementation: sent to
+      SYS_TO=[2,2] with the session id obtained from the cmdGet/list step;
+      reply not otherwise consumed before proceeding to cmdChallenge.
+    evidence:
+      - source: code
+        ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
 
   0x07:
     canonical-name: cmdGet
     confidence: observed-only
     notes: |
-      Encoded as u8 (tcode 0x09). Not a STD_CMD_* (those start at
-      0xFE0000). Pre-handler 'shortcut' for the system-info path in this
-      project's auth flow. Distinct from CMD_GET=0xFE000D, and also
-      distinct from the documented mproxy/handler-2 `fileOpen` command
-      that reuses u8 value 7 in a different handler context.
+      Encoded as u8 (tcode 0x09) in this project; a private third-party
+      implementation instead encodes the same CMD=7 value as u32 (tcode
+      0x08) — consistent with profile.yaml's documented 0x08/0x09
+      compact-pair (both are valid `u32 kind` tcodes; 0x09 is just the
+      1-byte form for small values), not a conflict. Not a STD_CMD_*
+      (those start at 0xFE0000). Pre-handler 'shortcut' for the
+      system-info path in this project's auth flow. Distinct from
+      CMD_GET=0xFE000D, and also distinct from the documented
+      mproxy/handler-2 `fileOpen` command that reuses u8 value 7 in a
+      different handler context. The third-party implementation's legacy
+      flow sends this CMD=7 to SYS_TO=[2,2] with string field 1 = "list"
+      (not a path) to bootstrap a session id before cmdOpen/cmdChallenge/
+      cmdLogin — see ./gui-handlers.yaml for its distinct post-auth
+      reuse of CMD=7 (as cmdGet, u8, to [13,4]) for source-id adoption.
+    evidence:
+      - source: code
+        ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
 
 investigation-trail:
   - date: 2026-05-03

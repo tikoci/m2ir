@@ -1,0 +1,284 @@
+# GUI management handlers — winbox-ipc
+#
+# The WinBox GUI's fast path for menus like /interface, /ip address,
+# /system resource: a one-shot binary GET_ONE/GET_ALL request to a
+# (process_id, handler_id) pair, replying with one nv::message (single
+# record) or a STD_OBJS-style MSG_ARRAY of per-row records. This is
+# distinct from the mepty terminal path (see processes.yaml 0x0a/[76])
+# and from the mproxy pre-auth file-transfer surface (see mproxy.yaml).
+#
+# Drained from a private third-party WinBox client implementation
+# (a server-side RouterOS monitoring product; source not publicly
+# available, so entries here are confidence: observed-only unless a
+# public source is also cited). Where a (process,handler) pair already
+# had an open question in processes.yaml, this file corroborates or
+# narrows it rather than overwriting the existing attribution.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: winbox-ipc
+canonical-name: gui-handlers
+maturity: exploratory
+
+evidence:
+  - source: code
+    ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+
+# ── source-id adoption ───────────────────────────────────────────────────
+# Every request's SYS_FROM is [0, source_id] — a per-connection id the
+# GUI client picks for itself (this implementation starts at 8) and then
+# lets the server correct. Observed once per connection, before the
+# first handler query.
+source-id-adoption:
+  role: |
+    After EC-SRP5 (or legacy MD5) auth completes, the client sends one
+    GET request to [13,4] (see processes.yaml 0x0d) with SYS_FROM=[0,
+    client_guess] and reads back the server's reply SYS_TO array; its
+    second element becomes the source id used in SYS_FROM for every
+    later request on the connection.
+  request:
+    sys-to: [13, 4]
+    sys-cmd: { value: 7, name: cmdGet, ref: "./commands.yaml legacy-short-form.0x07" }
+    sys-from: [0, "<client-chosen source id, e.g. 8>"]
+    sys-reqid: 0
+  response:
+    sys-to: "[0, <server-assigned source id>] — element 1 becomes the client's source id for the rest of the session"
+  confidence: observed-only
+  notes: |
+    This reuses process 0x0d / handler 4 — the same path MarginResearch's
+    auth trace uses for the `user` authentication handler (see
+    processes.yaml 0x0d version-identities). Whether this is the *same*
+    handler serving a dual role (auth AND capability/source-id exchange)
+    or a coincidental reuse of the path is an open question.
+
+# ── GET_ONE / GET_ALL request shape ──────────────────────────────────────
+request-shape:
+  common-fields:
+    - { field: 0xff0001, name: SYS_TO,   value: "[process_id, handler_id]" }
+    - { field: 0xff0002, name: SYS_FROM, value: "[0, source_id]" }
+    - { field: 0xff0005, name: SYS_REPLYEXP, value: true }
+    - { field: 0xff0006, name: SYS_REQID, value: "client-chosen, echoed in the reply" }
+    - { field: 0xff0007, name: SYS_CMD,  value: "CMD_GET (0xfe000d) for single-record, CMD_GETALL (0xfe0004) for list" }
+  get-all-optional-flags:
+    role: |
+      Some RouterOS builds reject a bare CMD_GETALL and require two extra
+      session-namespace fields; others reject the request *with* them.
+      This implementation probes per-host: try bare first, and only on
+      failure reconnect and retry with the flags, then remembers which
+      mode worked for that host.
+    fields:
+      - { field: 12, namespace: session, tcode: u32, value: "0x20000000 (536870912)", role: "unconfirmed — reproduces a working request, semantics not decoded" }
+      - { field: 4,  namespace: session, tcode: u8,  value: 0, role: "unconfirmed" }
+    confidence: observed-only
+    notes: |
+      Field ids 12/4 have not been cross-checked against std-keys.yaml's
+      SESSION namespace catalog (namespace 0x00, session-scoped) — this
+      project's own std-keys.yaml is SYS/STD (0xff/0xfe) only and does not
+      yet enumerate the 0x00-namespace session fields used inside GET_ALL
+      framing. Treat as a fixture to reproduce, not a decoded field.
+  response-shape:
+    single-record: "reply is one flat nv::message; fields keyed in a handler-specific namespace (this project observed both namespace 0x00/USER and a numeric namespace matching the handler's own id in different handlers — see per-handler notes below)"
+    list: "reply carries rows in { field: 2, namespace: session }, tcode 0xa8 (msg_array); each element parses as its own nv::message record"
+    row-id: "each row's `namespace:session field:1` (STD_ID-equivalent, u8/u32) is the row's `.id`-style identifier, rendered as `*<hex>` to match RouterOS CLI convention"
+
+# ── handler catalog ──────────────────────────────────────────────────────
+handlers:
+  system-resource:
+    sys-to: [24, 2]
+    process-id: 0x18
+    process-ref: "./processes.yaml 0x18 (management)"
+    cmd: GET_ONE
+    role: "/system resource — cpu, memory, hdd, version, board, uptime"
+    confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        1: { name: uptime, unit: seconds, tcode: u32 }
+        4: { name: cpu, tcode: string }
+        5: { name: cpu-frequency, tcode: u32 }
+        6: { name: cpu-load, tcode: u32 }
+        19: { name: write-sect-total, tcode: u64 }
+        20: { name: write-sect-since-reboot, tcode: u64 }
+        22: { name: version, tcode: string }
+        23: { name: bad-blocks, tcode: u32 }
+        24: { name: cpu-count, tcode: u32 }
+        25: { name: model, tcode: string }
+        26: { name: architecture-name, tcode: string }
+        27: { name: platform, tcode: string }
+        39: { name: build-time, tcode: string }
+        40: { name: total-memory, tcode: u64 }
+        41: { name: free-memory, tcode: u64 }
+        42: { name: total-hdd-space, tcode: u64 }
+        43: { name: free-hdd-space, tcode: u64 }
+        44: { name: board-name, tcode: string }
+        45: { name: factory-software, tcode: string }
+    notes: "Field-id -> name map is this implementation's own; not cross-checked against a public source."
+
+  system-identity:
+    sys-to: [24, 1]
+    process-id: 0x18
+    process-ref: "./processes.yaml 0x18 (management)"
+    cmd: GET_ONE
+    role: "/system identity — device name"
+    confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        12: { name: name, tcode: string }
+
+  routerboard:
+    sys-to: [24, 17]
+    process-id: 0x18
+    process-ref: "./processes.yaml 0x18 (management)"
+    cmd: GET_ONE
+    role: "/system routerboard — model, serial, firmware"
+    confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        1: { name: software-id, tcode: string }
+        4: { name: nlevel, tcode: u32, role: "license level (also reachable via the license handler below)" }
+        7: { name: current-firmware, tcode: string }
+        9: { name: factory-firmware, tcode: string }
+        10: { name: model, tcode: string }
+        13: { name: serial-number, tcode: string }
+        15: { name: upgrade-firmware, tcode: string }
+        16: { name: routerboard, tcode: bool }
+        24: { name: firmware-type, tcode: string }
+        32: { name: board-name, tcode: string }
+    notes: |
+      Field 1 (software-id) and 4 (nlevel) are also read from the
+      dedicated license handler below; this implementation queries only
+      the license handler for those two and the routerboard handler for
+      the rest, but both appear to expose overlapping fields.
+
+  license:
+    sys-to: [65]
+    process-id: 0x41
+    process-ref: "./processes.yaml 0x41 (new — not in Cisco-Talos typeIDCode)"
+    cmd: GET_ONE
+    role: "/system license"
+    confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        1: { name: software-id, tcode: string }
+        4: { name: nlevel, tcode: u32 }
+    notes: "Single-element SYS_TO, like mepty's [76] — no handler-id suffix. New process id, not previously recorded in processes.yaml."
+
+  interface:
+    sys-to: [20, 0]
+    process-id: 0x14
+    process-ref: "./processes.yaml 0x14 (new — not in Cisco-Talos typeIDCode)"
+    cmd: GET_ALL
+    role: "/interface — one row per interface"
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-1:
+        5: { name: default-name, tcode: string }
+        6: { name: name, tcode: string }
+        14: { name: running, tcode: bool }
+        30: { name: type, tcode: string }
+        101: { name: l2mtu, tcode: u32 }
+        105: { name: actual-mtu, tcode: u32 }
+      namespace-user:
+        1001: { name: mac-address, tcode: bytes, size: 6 }
+      namespace-session:
+        9: { name: comment, tcode: string }
+        10: { name: disabled, tcode: bool }
+    notes: |
+      Fields observed split across three byte_2 values in the same row:
+      a small-integer namespace (called `namespace-1` here — not yet
+      identified against sys-keys.yaml/std-keys.yaml's 0xff/0xfe scheme,
+      may be a per-handler private namespace), USER (0x00) for
+      mac-address, and SESSION for comment/disabled. This 3-namespace
+      split repeats across ip-address, bridge-port, and bridge-vlan below,
+      suggesting `namespace-1` is a stable convention for this handler
+      family rather than a one-off.
+
+  ip-address:
+    sys-to: [20, 1]
+    process-id: 0x14
+    process-ref: "./processes.yaml 0x14 (new)"
+    cmd: GET_ALL
+    role: "/ip address — one row per address"
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-user:
+        1: { name: address, tcode: u32, role: "IPv4 address, host byte order little-endian on the wire" }
+        3: { name: netmask, tcode: u32, role: "expressed on the wire as a bitmask; CLI shows /popcount" }
+        5: { name: interface, tcode: u32, role: "references interface row id from the interface handler" }
+      namespace-session:
+        9: { name: comment, tcode: string }
+        10: { name: disabled, tcode: bool }
+
+  ipv6-address:
+    sys-to: [20, 37]
+    process-id: 0x14
+    process-ref: "./processes.yaml 0x14 (new)"
+    cmd: GET_ALL
+    role: "/ipv6 address"
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-user:
+        1: { name: address, tcode: bytes_16, role: "128-bit IPv6 address, ref: physical/nv-message.yaml tcode 0x18" }
+        2: { name: prefix-length, tcode: u32 }
+        3: { name: interface, tcode: u32 }
+      namespace-session:
+        9: { name: comment, tcode: string }
+        10: { name: disabled, tcode: bool }
+
+  bridge-port:
+    sys-to: [16, 2]
+    process-id: 0x10
+    process-ref: "./processes.yaml 0x10 — CONFLICT: Cisco-Talos documents 0x10 as `dude`"
+    cmd: GET_ALL
+    role: "/interface bridge port"
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-user:
+        3: { name: interface, tcode: u32 }
+        4: { name: bridge, tcode: u32 }
+        19: { name: pvid, tcode: u32 }
+      namespace-session:
+        9: { name: comment, tcode: string }
+        10: { name: disabled, tcode: bool }
+    notes: |
+      See processes.yaml 0x10 for the version-scoping conflict this
+      introduces against the documented `dude` assignment.
+
+  bridge-vlan:
+    sys-to: [16, 13]
+    process-id: 0x10
+    process-ref: "./processes.yaml 0x10 — same conflict as bridge-port above"
+    cmd: GET_ALL
+    role: "/interface bridge vlan"
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-user:
+        1: { name: vlan-ids, tcode: u32_array, role: "pairs of (start,end); a singleton pair start==end is one vlan id" }
+        2: { name: bridge, tcode: u32 }
+        3: { name: tagged, tcode: u32_array, role: "interface row ids" }
+        5: { name: untagged, tcode: u32_array, role: "interface row ids" }
+      namespace-session:
+        7: { name: dynamic, tcode: bool }
+        9: { name: comment, tcode: string }
+        10: { name: disabled, tcode: bool }
+
+investigation-trail:
+  - date: 2026-07-14
+    finding: |
+      Drained the GUI GET_ONE/GET_ALL management-handler surface from a
+      private third-party WinBox client implementation. Confirms this
+      project's existing legacy-short-form cmdGet=7 and the 0x0d/[13,4]
+      path (now understood to double as a post-auth source-id exchange,
+      not only the auth handler MarginResearch documented). Surfaces two
+      new process ids (0x14, 0x41) and one direct conflict with the
+      Cisco-Talos 0x10=dude assignment — recorded in processes.yaml rather
+      than resolved here.

@@ -1,0 +1,95 @@
+# Post-handshake session crypto — winbox-ipc
+#
+# ec-srp5-handshake.yaml documents the four handshake messages and stops
+# at "the shared secret"; transport.yaml's chunk-tag 0x06 stops at
+# "[enc_length:u2be][iv:16][ciphertext], decryption yields an m2 message".
+# This file fills the gap between those two: how the shared secret
+# becomes four session keys, and the exact plaintext framing that gets
+# AES-encrypted.
+#
+# Drained from a private third-party WinBox client implementation
+# (a server-side RouterOS monitoring product; source not publicly
+# available). Algorithm-level description only — no source reproduced.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+profile: winbox-ipc
+layer: session-crypto
+canonical-name: session-crypto
+
+evidence:
+  - source: code
+    ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+
+# ── key derivation ────────────────────────────────────────────────────────
+key-derivation:
+  input: "the EC-SRP5 shared secret z = SHA-256(shared curve point x-coordinate) — see ec-srp5-handshake.yaml derivation section"
+  role: "derives 4 independent keys (client-send AES, client-receive AES, client-send HMAC, client-receive HMAC) from one shared secret"
+  algorithm:
+    - step: 1
+      op: "tx_pre  = SHA-1(secret || zeros(40) || SEND_MAGIC  || fill(40, 0xF2))"
+      notes: "client uses SEND_MAGIC for its own tx key, server uses it for its rx key (roles swap by a `server` flag, not by a different magic string)"
+    - step: 2
+      op: "rx_pre  = SHA-1(secret || zeros(40) || RECEIVE_MAGIC || fill(40, 0xF2))"
+    - step: 3
+      op: "each of tx_pre/rx_pre is truncated to its first 16 bytes, then expanded via an HMAC-SHA1-based construction to 36 bytes: T1 = HMAC-SHA1(PRK, 0x01), T2 = HMAC-SHA1(PRK, T1 || 0x02), output = (T1 || T2)[0:36], where PRK = HMAC-SHA1(key=zeros(64), message=<the 16-byte truncated hash>)"
+      notes: "structurally an RFC 5869 HKDF-Expand step keyed by a zero-salt HKDF-Extract; not confirmed to be literally HKDF, but matches its shape exactly"
+    - step: 4
+      op: "split each 36-byte expansion into aes_key = bytes[0:16], hmac_key = bytes[16:36] (20 bytes)"
+  magic-strings:
+    send: "On the client side, this is the send key; on the server side, it is the receive key."
+    receive: "On the client side, this is the receive key; on the server side, it is the send key."
+    notes: "ASCII, used as literal hash input material — not a label/context string in the HKDF-info sense, concatenated directly into the SHA-1 preimage."
+  output-keys:
+    - { name: sendAes, size: 16, use: "AES-128-CBC key for messages this side sends" }
+    - { name: receiveAes, size: 16, use: "AES-128-CBC key for messages this side receives" }
+    - { name: sendHmac, size: 20, use: "HMAC-SHA1 key authenticating messages this side sends" }
+    - { name: receiveHmac, size: 20, use: "HMAC-SHA1 key authenticating messages this side receives" }
+  confidence: observed-only
+
+# ── message encryption (chunk-tag 0x06 payload) ───────────────────────────
+# Fills in transport.yaml's `encrypted_m2` chunk-tag payload: this is what
+# produces the [enc_length:u2be][iv:16][ciphertext] bytes and what
+# decryption must reverse.
+message-encryption:
+  plaintext-framing:
+    role: "the actual bytes AES-encrypted are NOT the bare m2 message — a MAC and padding are appended first"
+    layout:
+      - { field: message, role: "the m2 message bytes (plaintext application payload)" }
+      - { field: mac, size: 20, role: "HMAC-SHA1(sendHmac, message) — computed over message alone, before padding" }
+      - { field: padding, size: "variable, 1-16 bytes", role: "PKCS7-like: pad byte value == pad length - 1, repeated; sized so (message+mac+padding) is a multiple of 16" }
+    padding-formula: "padLen = 15 - ((len(message) + 20) mod 16); write (padLen + 1) bytes, each holding value padLen"
+    confidence: observed-only
+  encryption:
+    cipher: aes-128-cbc
+    key: sendAes
+    iv: "random 16 bytes, freshly generated per message"
+    auto-padding: "disabled at the cipher level — the scheme's own padding above is what's encrypted, not PKCS7 added by the cipher"
+    wire-layout:
+      - { field: ciphertext-length, width: u2, endian: be }
+      - { field: iv, size: 16 }
+      - { field: ciphertext, size: ciphertext-length }
+    notes: "matches transport.yaml's `encrypted_m2` chunk-tag payload exactly: [enc_length:u2be][iv:16][ciphertext]"
+  decryption:
+    steps:
+      - "AES-128-CBC decrypt ciphertext with receiveAes and the frame's iv, auto-padding disabled"
+      - "read the last plaintext byte as padLen; discard the trailing (padLen + 1) bytes"
+      - "the remaining trailing 20 bytes are the HMAC-SHA1 MAC; verify against HMAC-SHA1(receiveHmac, remaining-message-bytes) before trusting the message"
+      - "remaining bytes after removing the MAC are the m2 message"
+    confidence: observed-only
+    notes: |
+      This implementation reads and strips the MAC but does not appear to
+      reject a message on MAC mismatch (constant-time compare not
+      observed) — worth independently verifying before relying on this
+      MAC as a security boundary rather than a corruption check.
+
+investigation-trail:
+  - date: 2026-07-14
+    finding: |
+      Filled the gap between ec-srp5-handshake.yaml (stops at shared
+      secret) and transport.yaml (documents chunk-tag 0x06's byte layout
+      but not how it's produced). Algorithm matches a standard
+      HKDF-Extract/Expand shape over SHA-1 with two fixed magic-string
+      inputs distinguishing tx/rx roles, and a MAC-then-pad-then-encrypt
+      construction (not encrypt-then-MAC).
