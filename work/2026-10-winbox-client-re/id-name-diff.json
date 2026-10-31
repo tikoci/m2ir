@@ -1,0 +1,583 @@
+{
+	"summary": {
+		"CONFIRMED": 64,
+		"NAME-ONLY": 17,
+		"ABSENT": 1
+	},
+	"verdicts": [
+		{
+			"file": "sys-keys",
+			"id": "0xff0001",
+			"name": "SYS_TO",
+			"verdict": "CONFIRMED",
+			"ev": "u32@27c55 + str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0002",
+			"name": "SYS_FROM",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0003",
+			"name": "SYS_TYPE",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-outer + u32@279ac,f1b33 + str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0004",
+			"name": "SYS_STATUS",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-outer + u32@279b4 + str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0005",
+			"name": "SYS_REPLYEXP",
+			"verdict": "CONFIRMED",
+			"ev": "u32@b3d,b95,e8d + str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0006",
+			"name": "SYS_REQID",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0007",
+			"name": "SYS_CMD",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-outer + u32@279a2 + str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0008",
+			"name": "SYS_ERRNO",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-outer + u32@279c1 + str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0009",
+			"name": "SYS_ERRSTR",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff000a",
+			"name": "SYS_USER",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff000b",
+			"name": "SYS_POLICY",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff000d",
+			"name": "SYS_CTRL",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff000f",
+			"name": "SYS_CTRL_ARG",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0010",
+			"name": "SYS_USER_ID",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0011",
+			"name": "SYS_NOTIFYCMD",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0012",
+			"name": "SYS_ORIGINATOR",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0013",
+			"name": "SYS_RADDR6",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "sys-keys",
+			"id": "0xff0016",
+			"name": "SYS_DREASON",
+			"verdict": "ABSENT",
+			"ev": ""
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0001",
+			"name": "STD_ID",
+			"verdict": "CONFIRMED",
+			"ev": "u32@164fc,bdf9,d0a6 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0002",
+			"name": "STD_OBJS",
+			"verdict": "CONFIRMED",
+			"ev": "u32@1360c4,13113,b38a5 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0003",
+			"name": "STD_GETALLID",
+			"verdict": "CONFIRMED",
+			"ev": "u32@13128,1360b8,ac7ce + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0004",
+			"name": "STD_GETALLNO",
+			"verdict": "CONFIRMED",
+			"ev": "u32@1360b0,1155b,11883 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0005",
+			"name": "STD_NEXTID",
+			"verdict": "CONFIRMED",
+			"ev": "u32@1360b4,1313d,e7ab2 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0006",
+			"name": "STD_UNDOID",
+			"verdict": "CONFIRMED",
+			"ev": "u32@1360bc,13149,84429 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0007",
+			"name": "STD_DYNAMIC",
+			"verdict": "CONFIRMED",
+			"ev": "u32@c304,133d4,1360c0 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0008",
+			"name": "STD_INACTIVE",
+			"verdict": "CONFIRMED",
+			"ev": "u32@9e29c,c2f7,fcf9 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0009",
+			"name": "STD_DESCR",
+			"verdict": "CONFIRMED",
+			"ev": "u32@98cc7,f4d4a,f7f3b + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe000a",
+			"name": "STD_DISABLED",
+			"verdict": "CONFIRMED",
+			"ev": "u32@8b9e4,c311,8ba97 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe000b",
+			"name": "STD_FINISHED",
+			"verdict": "CONFIRMED",
+			"ev": "u32@acb4,10504,1021 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe000c",
+			"name": "STD_FILTER",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe000d",
+			"name": "STD_PRESET",
+			"verdict": "CONFIRMED",
+			"ev": "u32@11c7,12b61,9e45a + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe000e",
+			"name": "STD_PAGENO",
+			"verdict": "CONFIRMED",
+			"ev": "u32@1216f,12b52,1bd4b + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe000f",
+			"name": "STD_PAGE",
+			"verdict": "CONFIRMED",
+			"ev": "u32@8109c,815d4,f821c + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0010",
+			"name": "STD_NAME",
+			"verdict": "CONFIRMED",
+			"ev": "u32@95158,b8d28,e982 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0011",
+			"name": "STD_INTERVAL",
+			"verdict": "CONFIRMED",
+			"ev": "u32@81598,e98d,810ad + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0012",
+			"name": "STD_VERSION",
+			"verdict": "CONFIRMED",
+			"ev": "u32@14bd,b5d32 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0013",
+			"name": "STD_DEAD",
+			"verdict": "CONFIRMED",
+			"ev": "u32@14f4 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0014",
+			"name": "STD_COUNT",
+			"verdict": "CONFIRMED",
+			"ev": "u32@1b36 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0015",
+			"name": "STD_GETALL_COOKIE",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0016",
+			"name": "STD_QUERY",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0017",
+			"name": "STD_QUERY_OP",
+			"verdict": "CONFIRMED",
+			"ev": "u32@128af,13155 + str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0018",
+			"name": "STD_MAXOBJS",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe0019",
+			"name": "STD_OBJ_COUNT",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe001a",
+			"name": "STD_CLASS",
+			"verdict": "NAME-ONLY",
+			"ev": "str:exact"
+		},
+		{
+			"file": "std-keys",
+			"id": "0xfe001b",
+			"name": "STD_SNMP_QUERY",
+			"verdict": "CONFIRMED",
+			"ev": "u32@27c1b + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0000",
+			"name": "CMD_NOOP",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@29700,4ebd,27c22 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0001",
+			"name": "CMD_GETPOLICIES",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@164fc,bdf9,d0a6 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0002",
+			"name": "CMD_GETOBJ",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@1360c4,13113,b38a5 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0003",
+			"name": "CMD_SETOBJ",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@13128,1360b8,ac7ce + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0004",
+			"name": "CMD_GETALL",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@1360b0,1155b,11883 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0005",
+			"name": "CMD_ADDOBJ",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@1360b4,1313d,e7ab2 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0006",
+			"name": "CMD_REMOVEOBJ",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@1360bc,13149,84429 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0007",
+			"name": "CMD_MOVEOBJ",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@c304,133d4,1360c0 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0008",
+			"name": "CMD_SETFORM",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@9e29c,c2f7,fcf9 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe000b",
+			"name": "CMD_NOTIFY",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@acb4,10504,1021 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe000d",
+			"name": "CMD_GET",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@11c7,12b61,9e45a + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe000e",
+			"name": "CMD_SET",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@1216f,12b52,1bd4b + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe000f",
+			"name": "CMD_START",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@8109c,815d4,f821c + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0010",
+			"name": "CMD_POLL",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@95158,b8d28,e982 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0011",
+			"name": "CMD_CANCEL",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@81598,e98d,810ad + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0012",
+			"name": "CMD_SUBSCRIBE",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@14bd,b5d32 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0013",
+			"name": "CMD_UNSUBSCRIBE",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@14f4 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0014",
+			"name": "CMD_DISCONNECTED",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + u32@1b36 + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0015",
+			"name": "CMD_GETCOUNT",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + str:exact"
+		},
+		{
+			"file": "std-commands",
+			"id": "0xfe0016",
+			"name": "CMD_RESET",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-CMD + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe0001",
+			"name": "ERROR_UNKNOWN",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + u32@164fc,bdf9,d0a6 + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe0002",
+			"name": "ERROR_BRKPATH",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + u32@1360c4,13113,b38a5 + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe0003",
+			"name": "ERROR_NOTIMP",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + u32@13128,1360b8,ac7ce + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe0004",
+			"name": "ERROR_UNKNOWNID",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + u32@1360b0,1155b,11883 + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe0005",
+			"name": "ERROR_MISSING",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + u32@1360b4,1313d,e7ab2 + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe0006",
+			"name": "ERROR_FAILED",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + u32@1360bc,13149,84429 + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe0007",
+			"name": "ERROR_EXISTS",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + u32@c304,133d4,1360c0 + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe0009",
+			"name": "ERROR_NOTALLOWED",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + u32@98cc7,f4d4a,f7f3b + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe000a",
+			"name": "ERROR_TOOBIG",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + u32@8b9e4,c311,8ba97 + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe000b",
+			"name": "ERROR_UNKNOWNNEXTID",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + u32@acb4,10504,1021 + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe000c",
+			"name": "ERROR_BUSY",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe000d",
+			"name": "ERROR_TIMEOUT",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + u32@11c7,12b61,9e45a + str:exact"
+		},
+		{
+			"file": "std-errors",
+			"id": "0xfe000e",
+			"name": "ERROR_TOOMUCH",
+			"verdict": "CONFIRMED",
+			"ev": "oracle-ERR + u32@1216f,12b52,1bd4b + str:exact"
+		},
+		{
+			"file": "sys-keys:values",
+			"id": "0x1",
+			"name": "TYPE_REQUEST",
+			"verdict": "CONFIRMED",
+			"ev": "u32@42c,808,8a0 + str:exact"
+		},
+		{
+			"file": "sys-keys:values",
+			"id": "0x2",
+			"name": "TYPE_REPLY",
+			"verdict": "CONFIRMED",
+			"ev": "u32@dc,644,11b4 + str:exact"
+		},
+		{
+			"file": "sys-keys:values",
+			"id": "0x1",
+			"name": "OK",
+			"verdict": "CONFIRMED",
+			"ev": "u32@42c,808,8a0 + str:substr"
+		},
+		{
+			"file": "sys-keys:values",
+			"id": "0x2",
+			"name": "ERROR",
+			"verdict": "CONFIRMED",
+			"ev": "u32@dc,644,11b4 + str:substr"
+		}
+	]
+}

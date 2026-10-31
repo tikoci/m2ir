@@ -1,0 +1,2 @@
+[216] FAIL(DIVERGE) iters=4/4 zLen=32 server confirmation mismatch (bad user/pass/math?)
+redp1sweep n=400 ok=399 agreeOk=399 divergeOk=0 agreeFail=0 divergeFail=1 mschap=0 unknown=0 distinctSalts=1

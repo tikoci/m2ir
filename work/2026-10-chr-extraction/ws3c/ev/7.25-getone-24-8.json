@@ -1,0 +1,57 @@
+[
+	{
+		"key": "0xff0001",
+		"tcode": "0x88",
+		"value": [0, 11]
+	},
+	{
+		"key": "0xff0002",
+		"tcode": "0x88",
+		"value": [24, 8]
+	},
+	{
+		"key": "0xff001c",
+		"tcode": "0xa0",
+		"value": ["msg-proxy-7.25"]
+	},
+	{
+		"key": "0x000001",
+		"tcode": "0x0",
+		"value": false
+	},
+	{
+		"key": "0xff0003",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0xff0006",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0x000002",
+		"tcode": "0x21",
+		"value": "Router has some automatic configuration.\r\n"
+	},
+	{
+		"key": "0x000003",
+		"tcode": "0x20",
+		"value": "#| IP address 192.168.88.1/24 is on ether1\n#| ether1 is enabled\n\n:global action\n\n# these commands are executed after installation or configuration reset\n:if ($action = \"apply\") do={\n    :delay 5s\n    /ip address add address=192.168.88.1/24 interface=ether1 comment=\"default configuration\"\n}\n\n# these commands are executed if user requests to remove default configuration\n:if ($action = \"revert\") do={\n    /ip address {\n        :local o [find address=\"192.168.88.1/24\" interface=\"ether1\" comment=\"default configuration\"]\n\t:if ([:len $o] != 0) do={ remove $o }\n    }\n}\n"
+	},
+	{
+		"key": "0x000004",
+		"tcode": "0x20",
+		"value": "#| CAP configuration\n#|\n#|   * Wireless interfaces are set to be managed by CAPsMAN.\n#|   * All ethernet interfaces and CAPsMAN managed interfaces are bridged.\n#|   * DHCP client is set on bridge interface.\n#|   * If printed on the sticker, \"admin\" user is protected by password.\n\n:global action;\n:local brName  \"bridgeLocal\";\n:local logPref \"defconf:\";\n:local wirelessMenu \"wireless\"\n:local usingWifiPack false;\n:local needAdminPass 1;\n\n:if ([:len [/system package find name~\"wifi\" !disabled]] != 0) do={\n  :set usingWifiPack true;\n  :set wirelessMenu \"wifi\";\n}\n\n:if ($action = \"apply\") do={\n\n  # wait for ethernet interfaces\n  :local count 0;\n  :while ([/interface ethernet find] = \"\") do={\n    :if ($count = 30) do={\n      :log warning \"DefConf: Unable to find ethernet interfaces\";\n      /quit;\n    }\n    :delay 1s; :set count ($count + 1);\n  }\n\n  :local macSet 0;\n  :local tmpMac \"\";\n\n  :foreach k in=[/interface ethernet find] do={\n    # first ethernet is found; add bridge and set mac address of the ethernet port\n    :if ($macSet = 0) do={\n      :set tmpMac [/interface ethernet get $k mac-address];\n      /interface bridge add name=$brName auto-mac=no admin-mac=$tmpMac comment=\"defconf\";\n      :set macSet 1;\n    }\n    # add bridge ports\n    /interface bridge port add bridge=$brName interface=$k comment=\"defconf\"\n  }\n\n  # try to add dhcp client on bridge interface (may fail if already exist)\n  :do {\n    /ip dhcp-client add interface=$brName disabled=no comment=\"defconf\"\n  } on-error={ :log warning \"$logPref unable to add dhcp client\";}\n\n  # try to configure caps (may fail if for example specified interfaces are missing)\n  :local findWireless [:parse \":local count 0;\n  :while ([/interface $wirelessMenu find] = \\\"\\\") do={\n      :if (\\$count = 30) do={\n        :log warning \\\"DefConf: Unable to find wireless interfaces\\\"; /quit\n      };\n      :delay 1s;\n      :set count (\\$count + 1)\n    }\"]\n  [$findWireless]\n\n  :if ($usingWifiPack) do={\n    :local addDatapath [:parse \"/interface $wirelessMenu datapath\n    add comment=\\\"defconf\\\" name=capdp disabled=no bridge=$brName\"]\n    [$addDatapath]\n  }\n\n  # delay just to make sure that all wireless interfaces are loaded\n  :delay 5s;\n\n  :do {\n    :local setCap \"\"\n    if ($usingWifiPack) do={\n      :set setCap [:parse \":foreach i in=[/interface $wirelessMenu find] do={\n        /interface $wirelessMenu set \\$i configuration.manager=capsman datapath=capdp\n      }\n      /interface $wirelessMenu cap\n      set enabled=yes discovery-interfaces=$brName slaves-datapath=capdp\"]\n    } else={\n\n      :set setCap [:parse \"\n      :local interfacesList \\\"\\\";\n      :local bFirst 1;\n      :foreach i in=[/interface $wirelessMenu find] do={\n        if (\\$bFirst = 1) do={\n          :set interfacesList [/interface $wirelessMenu get \\$i name];\n          :set bFirst 0;\n        } else={\n          :set interfacesList \\\"\\$interfacesList,\\$[/interface wireless get \\$i name]\\\";\n        }\n      }\n      /interface $wirelessMenu cap set enabled=yes interfaces=\\$interfacesList \\\\\n        discovery-interfaces=$brName bridge=$brName\"]\n    }\n    [$setCap]\n  } on-error={ :log warning \"$logPref unable to configure caps\";}\n\n  # do not set admin pass for RBD25 boards that do not have it printed\n  :if ([:pick [/system routerboard get model] 0 5] = \"RBD25\") do={\n    if ((($defconfPassword = \"\" || $defconfPassword = nil) && \\\n        !($defconfWpsPassword = \"\" || $defconfWpsPassword = nil)) || \\\n        (!($defconfPassword = \"\" || $defconfPassword = nil) && \\\n        ($defconfWpsPassword = \"\" || $defconfWpsPassword = nil))) do={\n      :set needAdminPass 0;\n    }\n  }\n\n  # set admin password\n  :if ($needAdminPass = 1) do={\n    :if (!($keepUsers = \"yes\")) do={\n      :if (!($defconfPassword = \"\" || $defconfPassword = nil)) do={\n        /user set admin password=$defconfPassword\n        :delay 0.5\n        /user expire-password admin\n      }\n    }\n  }\n}\n\n:if ($action = \"revert\") do={\n\n  :if (!($keepUsers = \"yes\")) do={\n        /user set admin password=\"\"\n        :delay 0.5\n        /user expire-password admin\n  }\n\n  :do {\n    :local removeCap \"\"\n    if ($usingWifiPack) do={\n      :set removeCap [:parse \":foreach i in=[/interface $wirelessMenu find] do={\n        /interface $wirelessMenu set \\$i !configuration.manager !datapath }\n      /interface $wirelessMenu cap\n      set enabled=no !slaves-datapath !discovery-interfaces\"]\n    } else={\n      :set removeCap [:parse \"/interface $wirelessMenu cap\n      set enabled=no interfaces=\\\"\\\" discovery-interfaces=\\\"\\\" bridge=none\"]\n    }\n    [$removeCap]\n  } on-error={ :log warning \"$logPref unable to unset caps\";}\n\n  :if ($usingWifiPack) do={\n    :local removeDatapath [:parse \"/interface $wirelessMenu datapath remove [find comment=\\\"defconf\\\"]\"]\n    [$removeDatapath]\n  }\n\n  :local o [/ip dhcp-client find comment=\"defconf\"]\n  :if ([:len $o] != 0) do={ /ip dhcp-client remove $o }\n\n  /interface bridge port remove [find comment=\"defconf\"]\n  /interface bridge remove [find comment=\"defconf\"]\n\n}\n"
+	},
+	{
+		"key": "0x000005",
+		"tcode": "0x21",
+		"value": " \n"
+	},
+	{
+		"key": "0x000006",
+		"tcode": "0x20",
+		"value": "#| WPS-Sync Configuration\n#|\n#|    * Wireless and Ethernet interfaces are bridged.\n#|    * wlan1 and wlan2 are Access Points.\n#|    * wlan3 is WPS-Sync repeater.\n#|\n#| Wireless: CAP enabled on wlan1, wlan2;\n#| WPS Sync:\n#|     mode:          repeater;\n#| LAN Configuration:\n#|     DHCP client:   enabled;\n\n:global action;\n\n# bridge port name\n:global brName  \"bridgeLocal\";\n:global logPref \"defconf:\";\n:local usingWifiPack [:len [/system package find name~\"wifi\" !disabled]];\n\n:if ($usingWifiPack) do={\n    :log warning \"$logPref WPS-Sync is not supported with Wifi package\";\n    /ip address add address=192.168.88.1/24 interface=ether1 comment=\"defconf\";\n    /quit\n}\n\n:if ($action = \"apply\") do={\n\n  # wait for ethernet interfaces\n  :local count 0;\n  :while ([/interface ethernet find] = \"\") do={\n    :if ($count = 30) do={\n      :log warning \"$logPref Unable to find ethernet interfaces\";\n      /quit;\n    }\n    :delay 1s; :set count ($count + 1);\n  }\n\n  :local macSet 0;\n  :local tmpMac \"\";\n\n  :foreach k in=[/interface ethernet find] do={\n    # first ethernet is found; add bridge and set mac address of the ethernet port\n    :if ($macSet = 0) do={\n      :set tmpMac [/interface ethernet get $k mac-address];\n      /interface bridge add name=$brName auto-mac=no admin-mac=$tmpMac comment=\"defconf\";\n      :set macSet 1;\n    }\n    # add ethernet bridge ports\n    /interface bridge port add bridge=$brName interface=$k comment=\"defconf\"\n  }\n\n  # add dhcp client on bridge interface (may fail if already exist)\n  :do {\n    /ip dhcp-client add interface=$brName disabled=no comment=\"defconf\"\n  } on-error={ :log warning \"$logPref Unable to add dhcp client\";}\n\n  # configure WPS-Sync (may fail if specified interfaces are missing)\n  :local findWireless [:parse \":local count 0;\n  :while ([/interface wireless print count-only] < 3) do={\n    :set count ($count +1);\n    :if ($count = 40) do={\n      :log warning \\\"$logPref Unable to find wireless interfaces\\\";\n      /ip address add address=192.168.88.1/24 interface=ether1 comment=\\\"defconf\\\";\n      /quit\n    }\n      :delay 1s;\n      :set count (\\$count + 1)\n  }\"]\n  [$findWireless]\n\n  :do {\n    :local setWPSsync \"\"\n    :set setWPSsync [:parse \":foreach k in=[/interface wireless find] do={\n    # add wireless bridge ports\n    /interface bridge port add bridge=\\$brName interface=\\$k comment=\\\"defconf\\\"\n    }\n\n    :local hwInfo [/interface wireless info hw-info [.. find where default-name=\\\"wlan3\\\"] as-value];\n    # :if ((\\$hwInfo->\\\"locked-countries\\\")~\\\"russia\\\") do={\n      /interface wireless set [find where default-name=\\\"wlan3\\\"] channel-width=20/40mhz-XX band=5ghz-a/n/ac\n    # } else={\n    #  /interface wireless set [find where default-name=\\\"wlan3\\\"] channel-width=20/40/80mhz-XXXX band=5ghz-a/n/ac\n    # }\n\n    /interface wireless cap\n      set discovery-interfaces=bridgeLocal enabled=yes interfaces=wlan1,wlan2\n    /interface wireless\n      setup-repeater wlan3 duration=1m55s\"]\n  [$setWPSsync]\n  } on-error={ :log warning \"$logPref Unable to configure WPS-Sync\";}\n}\n\n:if ($action = \"revert\") do={\n  :local o [/ip dhcp-client find comment=\"defconf\"]\n  :if ([:len $o] != 0) do={ /ip dhcp-client remove $o }\n\n  /interface bridge port remove [find comment=\"defconf\"]\n  /interface bridge remove [find comment=\"defconf\"]\n\n  :do {\n    :local removeWPSsync \"\"\n    :set removeWPSsync [:parse \"/interface wireless cap set enabled=no interfaces=\\\"\\\" discovery-interfaces=\\\"\\\"\n\t  /interface wireless reset-configuration wlan1\n\t  /interface wireless reset-configuration wlan2\n\t  /interface wireless reset-configuration wlan3\"]\n    [$removeWPSsync]\n  } on-error={ :log warning \"$logPref Unable to unset WPS-Sync\";}\n}\n\n:set brName;\n:set logPref;\n\n"
+	}
+]

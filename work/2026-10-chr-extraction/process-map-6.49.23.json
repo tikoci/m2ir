@@ -1,0 +1,960 @@
+[
+	{
+		"id": 2,
+		"path": "/nova/bin/mproxy",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			},
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 3,
+		"path": "/nova/bin/log",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			},
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 4,
+		"path": "/nova/bin/mtget",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 5,
+		"path": "/nova/bin/radius",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 6,
+		"path": "/nova/bin/moduler",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			},
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 7,
+		"path": "/nova/bin/sigwatch",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/bndl/advanced-tools/nova/etc/loader/adv-tools.x3"
+	},
+	{
+		"id": 8,
+		"path": "/nova/bin/sshd",
+		"on_disk": false,
+		"flags": {
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/bndl/security/nova/etc/loader/security.x3"
+	},
+	{
+		"id": 10,
+		"path": "/nova/bin/discover",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 12,
+		"path": "/nova/bin/ssld",
+		"on_disk": true,
+		"flags": {
+			"279": {
+				"vals": [1],
+				"text": "true"
+			},
+			"280": {
+				"vals": [400],
+				"text": "400%"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 13,
+		"path": "/nova/bin/user",
+		"on_disk": true,
+		"flags": {
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 14,
+		"path": "/nova/bin/resolver",
+		"on_disk": true,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 15,
+		"path": "/nova/bin/mactel",
+		"on_disk": true,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 16,
+		"path": "/nova/bin/bridge2",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 17,
+		"path": "/nova/bin/undo",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 18,
+		"path": "/nova/bin/macping",
+		"on_disk": true,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 19,
+		"path": "/nova/bin/cerm",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 20,
+		"path": "/nova/bin/net",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			},
+			"293": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 21,
+		"path": null,
+		"on_disk": false,
+		"flags": {
+			"56": {
+				"vals": [24, 23],
+				"text": "24,23"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 22,
+		"path": "/nova/bin/ping",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 23,
+		"path": "/nova/bin/dhcp",
+		"on_disk": false,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			},
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/bndl/dhcp/nova/etc/loader/dhcp.x3"
+	},
+	{
+		"id": 24,
+		"path": "/nova/bin/sys2",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			},
+			"173": {
+				"vals": [1],
+				"text": "true"
+			},
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 25,
+		"path": "/nova/bin/graphing",
+		"on_disk": true,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			},
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 26,
+		"path": "/nova/bin/traceroute",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 27,
+		"path": "/nova/bin/ppp",
+		"on_disk": false,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			},
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/bndl/ppp/nova/etc/loader/ppp.x3"
+	},
+	{
+		"id": 28,
+		"path": "/nova/bin/upnp",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 29,
+		"path": "/nova/bin/btest",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 30,
+		"path": "/nova/bin/ippool6",
+		"on_disk": false,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/bndl/ipv6/nova/etc/loader/ipv6.x3"
+	},
+	{
+		"id": 31,
+		"path": "/nova/bin/radvd",
+		"on_disk": false,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/bndl/ipv6/nova/etc/loader/ipv6.x3"
+	},
+	{
+		"id": 34,
+		"path": "/nova/bin/snmp",
+		"on_disk": true,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 38,
+		"path": "/nova/bin/fping",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/bndl/advanced-tools/nova/etc/loader/adv-tools.x3"
+	},
+	{
+		"id": 40,
+		"path": "/nova/bin/email",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 41,
+		"path": "/nova/bin/mobit",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/bndl/advanced-tools/nova/etc/loader/adv-tools.x3"
+	},
+	{
+		"id": 42,
+		"path": "/nova/bin/socks",
+		"on_disk": true,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 43,
+		"path": "/nova/bin/dhcpclient",
+		"on_disk": false,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/bndl/dhcp/nova/etc/loader/dhcp.x3"
+	},
+	{
+		"id": 44,
+		"path": "/nova/bin/route",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			},
+			"173": {
+				"vals": [1],
+				"text": "true"
+			},
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 45,
+		"path": "/nova/bin/sniffer",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 46,
+		"path": "/nova/bin/traflog",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 48,
+		"path": "/nova/bin/console",
+		"on_disk": true,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			},
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 49,
+		"path": "/nova/bin/profiler",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 50,
+		"path": "/nova/bin/traf_con",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 51,
+		"path": "/nova/bin/netwatch",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/bndl/advanced-tools/nova/etc/loader/adv-tools.x3"
+	},
+	{
+		"id": 52,
+		"path": "/nova/bin/portman",
+		"on_disk": true,
+		"flags": {
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 54,
+		"path": "/nova/bin/ups",
+		"on_disk": false,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/bndl/ups/nova/etc/loader/ups.x3"
+	},
+	{
+		"id": 55,
+		"path": "/nova/bin/licupgr",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 57,
+		"path": "/nova/bin/macscan",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/bndl/advanced-tools/nova/etc/loader/adv-tools.x3"
+	},
+	{
+		"id": 61,
+		"path": "/nova/bin/rbbios",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 63,
+		"path": "/nova/bin/hotspot",
+		"on_disk": false,
+		"flags": {
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/bndl/hotspot/nova/etc/loader/hotspot.x3"
+	},
+	{
+		"id": 64,
+		"path": "/nova/bin/tftpd",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 65,
+		"path": "/nova/bin/keyman",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 67,
+		"path": "/nova/bin/backup",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 68,
+		"path": "/nova/bin/sermgr",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			},
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 70,
+		"path": "/nova/bin/www",
+		"on_disk": true,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 71,
+		"path": null,
+		"on_disk": false,
+		"flags": {
+			"56": {
+				"vals": [20, 50],
+				"text": "20,50"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 72,
+		"path": "/nova/bin/fileman",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 75,
+		"path": "/nova/bin/cerm-worker",
+		"on_disk": true,
+		"flags": {
+			"72": 12,
+			"279": {
+				"vals": [1],
+				"text": "true"
+			},
+			"280": {
+				"vals": [50],
+				"text": "50%"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 76,
+		"path": "/nova/bin/mepty",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 77,
+		"path": "/nova/bin/pspeed",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/bndl/advanced-tools/nova/etc/loader/adv-tools.x3"
+	},
+	{
+		"id": 78,
+		"path": "/nova/bin/ddns",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/bndl/advanced-tools/nova/etc/loader/adv-tools.x3"
+	},
+	{
+		"id": 79,
+		"path": "/nova/bin/diskd",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			},
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 82,
+		"path": "/nova/bin/wakeonlan",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/bndl/advanced-tools/nova/etc/loader/adv-tools.x3"
+	},
+	{
+		"id": 83,
+		"path": "/nova/bin/sertcp",
+		"on_disk": true,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 84,
+		"path": "/nova/bin/ippool",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 85,
+		"path": "/nova/bin/ipsec",
+		"on_disk": false,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			},
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/bndl/security/nova/etc/loader/security.x3"
+	},
+	{
+		"id": 86,
+		"path": "/nova/bin/arpd",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 88,
+		"path": "/nova/bin/wireless",
+		"on_disk": false,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			},
+			"173": {
+				"vals": [1],
+				"text": "true"
+			},
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/bndl/wireless/nova/etc/loader/wireless.x3"
+	},
+	{
+		"id": 89,
+		"path": "/nova/bin/ppp-worker",
+		"on_disk": false,
+		"flags": {
+			"72": 30,
+			"279": {
+				"vals": [1],
+				"text": "true"
+			},
+			"280": {
+				"vals": [80],
+				"text": "80%"
+			}
+		},
+		"src": "extractions/root-6.49.23/bndl/ppp/nova/etc/loader/ppp.x3"
+	},
+	{
+		"id": 92,
+		"path": "/nova/bin/partd",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 93,
+		"path": "/nova/bin/vrrp",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 94,
+		"path": "/nova/bin/msgfw",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 95,
+		"path": "/nova/bin/memtest",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/bndl/advanced-tools/nova/etc/loader/adv-tools.x3"
+	},
+	{
+		"id": 96,
+		"path": "/nova/bin/wproxy",
+		"on_disk": true,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 97,
+		"path": "/nova/bin/trafflow",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 101,
+		"path": "/nova/bin/scanner",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/bndl/advanced-tools/nova/etc/loader/adv-tools.x3"
+	},
+	{
+		"id": 103,
+		"path": "/nova/bin/dudes",
+		"on_disk": false,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			},
+			"173": {
+				"vals": [1],
+				"text": "true"
+			},
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/dude-6.49.23/nova/etc/loader/dude.x3"
+	},
+	{
+		"id": 104,
+		"path": "/nova/bin/agent",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 109,
+		"path": "/nova/bin/vm",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 115,
+		"path": "/nova/bin/bfd",
+		"on_disk": false,
+		"flags": {},
+		"src": "extractions/root-6.49.23/bndl/routing/nova/etc/loader/routing.x3"
+	},
+	{
+		"id": 118,
+		"path": "/nova/bin/led",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 119,
+		"path": "/nova/bin/trafficgen",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 120,
+		"path": "/nova/bin/quickset",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 122,
+		"path": "/nova/bin/smb",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 123,
+		"path": "/nova/bin/cloud",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 124,
+		"path": "/nova/bin/lcdstat",
+		"on_disk": true,
+		"flags": {
+			"173": {
+				"vals": [1],
+				"text": "true"
+			},
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 127,
+		"path": "/nova/bin/romon",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 128,
+		"path": "/nova/bin/modprobed",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 129,
+		"path": "/nova/bin/watchdog",
+		"on_disk": true,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			},
+			"173": {
+				"vals": [1],
+				"text": "true"
+			},
+			"204": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 130,
+		"path": "/nova/bin/dot1x",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 132,
+		"path": "/nova/bin/detnet",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 133,
+		"path": "/nova/bin/cloudpingd",
+		"on_disk": false,
+		"flags": {
+			"153": {
+				"vals": [1],
+				"text": "true"
+			},
+			"173": {
+				"vals": [1],
+				"text": "true"
+			}
+		},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 134,
+		"path": "/nova/bin/kidcontrol",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	},
+	{
+		"id": 137,
+		"path": "/nova/bin/ptp",
+		"on_disk": true,
+		"flags": {},
+		"src": "extractions/root-6.49.23/nova/etc/loader/system.x3"
+	}
+]

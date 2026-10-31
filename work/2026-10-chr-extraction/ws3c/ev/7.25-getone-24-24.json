@@ -1,0 +1,77 @@
+[
+	{
+		"key": "0xff0001",
+		"tcode": "0x88",
+		"value": [0, 11]
+	},
+	{
+		"key": "0xff0002",
+		"tcode": "0x88",
+		"value": [24, 24]
+	},
+	{
+		"key": "0xff001c",
+		"tcode": "0xa0",
+		"value": ["msg-proxy-7.25"]
+	},
+	{
+		"key": "0xfe000b",
+		"tcode": "0x1",
+		"value": true
+	},
+	{
+		"key": "0x000005",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0x00000a",
+		"tcode": "0x9",
+		"value": 1
+	},
+	{
+		"key": "0x00000c",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0x00000d",
+		"tcode": "0x9",
+		"value": 1
+	},
+	{
+		"key": "0x00000e",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0xff0003",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0xff0006",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0x000004",
+		"tcode": "0x21",
+		"value": ""
+	},
+	{
+		"key": "0x000006",
+		"tcode": "0x21",
+		"value": "NEWESTa7.stable"
+	},
+	{
+		"key": "0x000003",
+		"tcode": "0x21",
+		"value": ""
+	},
+	{
+		"key": "0x000001",
+		"tcode": "0x21",
+		"value": "7.25"
+	}
+]

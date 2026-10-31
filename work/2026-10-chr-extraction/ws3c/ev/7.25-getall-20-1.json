@@ -1,0 +1,108 @@
+{
+	"mode": "bare",
+	"reply": [
+		{
+			"key": "0xff0001",
+			"tcode": "0x88",
+			"value": [0, 11]
+		},
+		{
+			"key": "0xff0002",
+			"tcode": "0x88",
+			"value": [20, 1]
+		},
+		{
+			"key": "0xff001c",
+			"tcode": "0xa0",
+			"value": ["msg-proxy-7.25"]
+		},
+		{
+			"key": "0xfe0002",
+			"tcode": "0xa8",
+			"value": [
+				[
+					{
+						"key": "0x00000b",
+						"tcode": "0x0",
+						"value": false
+					},
+					{
+						"key": "0xfe0007",
+						"tcode": "0x1",
+						"value": true
+					},
+					{
+						"key": "0xfe0008",
+						"tcode": "0x0",
+						"value": false
+					},
+					{
+						"key": "0xfe000a",
+						"tcode": "0x0",
+						"value": false
+					},
+					{
+						"key": "0x000004",
+						"tcode": "0x8",
+						"value": 4278321162
+					},
+					{
+						"key": "0x000005",
+						"tcode": "0x9",
+						"value": 2
+					},
+					{
+						"key": "0x000006",
+						"tcode": "0x9",
+						"value": 0
+					},
+					{
+						"key": "0x00000a",
+						"tcode": "0x9",
+						"value": 2
+					},
+					{
+						"key": "0xfe0001",
+						"tcode": "0x9",
+						"value": 1
+					},
+					{
+						"key": "0x000001",
+						"tcode": "0x8",
+						"value": 251789322
+					},
+					{
+						"key": "0x000002",
+						"tcode": "0x8",
+						"value": 131082
+					},
+					{
+						"key": "0x000003",
+						"tcode": "0x8",
+						"value": 16777215
+					},
+					{
+						"key": "0xfe0009",
+						"tcode": "0x21",
+						"value": ""
+					}
+				]
+			]
+		},
+		{
+			"key": "0xff0003",
+			"tcode": "0x9",
+			"value": 2
+		},
+		{
+			"key": "0xfe0019",
+			"tcode": "0x9",
+			"value": 1
+		},
+		{
+			"key": "0xff0006",
+			"tcode": "0x9",
+			"value": 2
+		}
+	]
+}

@@ -1,0 +1,909 @@
+ 806a522:	push   %ebp
+ 806a523:	mov    %esp,%ebp
+ 806a525:	push   %edi
+ 806a526:	push   %esi
+ 806a527:	push   %ebx
+ 806a528:	sub    $0x288,%esp
+ 806a52e:	mov    0x8(%ebp),%edi
+ 806a531:	push   %edi
+ 806a532:	call   80527f0 <_ZN2nv7messageC1Ev@plt>
+ 806a537:	call   8058470 <_start@@Base+0x2d94>
+ 806a53c:	add    $0xc,%esp
+ 806a53f:	push   %eax
+ 806a540:	push   $0xc
+ 806a542:	push   %edi
+ 806a543:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a548:	add    $0xc,%esp
+ 806a54b:	mov    0xc(%ebp),%eax
+ 806a54e:	add    $0x64,%eax
+ 806a551:	push   %eax
+ 806a552:	push   $0x19
+ 806a554:	push   %edi
+ 806a555:	call   8050af0 <_ZN2nv7message6insertINS_9string_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a55a:	add    $0xc,%esp
+ 806a55d:	mov    0xc(%ebp),%eax
+ 806a560:	add    $0x68,%eax
+ 806a563:	push   %eax
+ 806a564:	push   $0x2c
+ 806a566:	push   %edi
+ 806a567:	call   8050af0 <_ZN2nv7message6insertINS_9string_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a56c:	add    $0xc,%esp
+ 806a56f:	mov    0xc(%ebp),%eax
+ 806a572:	add    $0x6c,%eax
+ 806a575:	push   %eax
+ 806a576:	push   $0x1a
+ 806a578:	push   %edi
+ 806a579:	call   8050af0 <_ZN2nv7message6insertINS_9string_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a57e:	add    $0xc,%esp
+ 806a581:	mov    0xc(%ebp),%eax
+ 806a584:	add    $0x70,%eax
+ 806a587:	push   %eax
+ 806a588:	push   $0x1b
+ 806a58a:	push   %edi
+ 806a58b:	call   8050af0 <_ZN2nv7message6insertINS_9string_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a590:	mov    0xc(%ebp),%eax
+ 806a593:	mov    0x74(%eax),%eax
+ 806a596:	add    $0x10,%esp
+ 806a599:	cmpl   $0x0,(%eax)
+ 806a59c:	je     806a5b1 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x4e19>
+ 806a59e:	push   %ebx
+ 806a59f:	mov    0xc(%ebp),%eax
+ 806a5a2:	add    $0x74,%eax
+ 806a5a5:	push   %eax
+ 806a5a6:	push   $0x2d
+ 806a5a8:	push   %edi
+ 806a5a9:	call   8050af0 <_ZN2nv7message6insertINS_9string_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a5ae:	add    $0x10,%esp
+ 806a5b1:	mov    0xc(%ebp),%eax
+ 806a5b4:	mov    0x84(%eax),%eax
+ 806a5ba:	cmp    $0x3,%eax
+ 806a5bd:	je     806a8c1 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5129>
+ 806a5c3:	cmp    $0x2,%eax
+ 806a5c6:	jne    806a78e <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x4ff6>
+ 806a5cc:	push   %ecx
+ 806a5cd:	push   %ecx
+ 806a5ce:	push   $0x8092fc5
+ 806a5d3:	push   $0x8093866
+ 806a5d8:	call   8051ca0 <fopen@plt>
+ 806a5dd:	mov    %eax,-0x248(%ebp)
+ 806a5e3:	add    $0x10,%esp
+ 806a5e6:	test   %eax,%eax
+ 806a5e8:	je     806a87f <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x50e7>
+ 806a5ee:	mov    0xc(%ebp),%eax
+ 806a5f1:	movl   $0x0,0x90(%eax)
+ 806a5fb:	movl   $0x0,0x94(%eax)
+ 806a605:	movl   $0x0,0x98(%eax)
+ 806a60f:	movl   $0x0,-0x250(%ebp)
+ 806a619:	movl   $0x0,-0x24c(%ebp)
+ 806a623:	movl   $0x0,-0x240(%ebp)
+ 806a62d:	movl   $0x0,-0x23c(%ebp)
+ 806a637:	lea    -0x118(%ebp),%ebx
+ 806a63d:	lea    -0x218(%ebp),%esi
+ 806a643:	sub    $0xc,%esp
+ 806a646:	push   -0x248(%ebp)
+ 806a64c:	call   8050c10 <feof@plt>
+ 806a651:	add    $0x10,%esp
+ 806a654:	test   %eax,%eax
+ 806a656:	jne    806a734 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x4f9c>
+ 806a65c:	push   %edx
+ 806a65d:	push   -0x248(%ebp)
+ 806a663:	push   $0xff
+ 806a668:	push   %ebx
+ 806a669:	call   8050bc0 <fgets@plt>
+ 806a66e:	add    $0xc,%esp
+ 806a671:	push   %esi
+ 806a672:	push   $0x8093872
+ 806a677:	push   %ebx
+ 806a678:	call   80524c0 <sscanf@plt>
+ 806a67d:	add    $0x10,%esp
+ 806a680:	dec    %eax
+ 806a681:	jne    806a6a0 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x4f08>
+ 806a683:	mov    -0x218(%ebp),%eax
+ 806a689:	mov    -0x214(%ebp),%edx
+ 806a68f:	mov    0xc(%ebp),%ecx
+ 806a692:	add    %eax,0x90(%ecx)
+ 806a698:	adc    %edx,0x94(%ecx)
+ 806a69e:	jmp    806a643 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x4eab>
+ 806a6a0:	push   %eax
+ 806a6a1:	push   %esi
+ 806a6a2:	push   $0x809388d
+ 806a6a7:	push   %ebx
+ 806a6a8:	call   80524c0 <sscanf@plt>
+ 806a6ad:	add    $0x10,%esp
+ 806a6b0:	dec    %eax
+ 806a6b1:	jne    806a6d0 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x4f38>
+ 806a6b3:	mov    -0x218(%ebp),%eax
+ 806a6b9:	mov    -0x214(%ebp),%edx
+ 806a6bf:	add    %eax,-0x250(%ebp)
+ 806a6c5:	adc    %edx,-0x24c(%ebp)
+ 806a6cb:	jmp    806a643 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x4eab>
+ 806a6d0:	push   %eax
+ 806a6d1:	push   %esi
+ 806a6d2:	push   $0x80938a8
+ 806a6d7:	push   %ebx
+ 806a6d8:	call   80524c0 <sscanf@plt>
+ 806a6dd:	add    $0x10,%esp
+ 806a6e0:	dec    %eax
+ 806a6e1:	jne    806a700 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x4f68>
+ 806a6e3:	mov    -0x218(%ebp),%eax
+ 806a6e9:	mov    -0x214(%ebp),%edx
+ 806a6ef:	sub    %eax,-0x240(%ebp)
+ 806a6f5:	sbb    %edx,-0x23c(%ebp)
+ 806a6fb:	jmp    806a643 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x4eab>
+ 806a700:	push   %eax
+ 806a701:	push   %esi
+ 806a702:	push   $0x80938c3
+ 806a707:	push   %ebx
+ 806a708:	call   80524c0 <sscanf@plt>
+ 806a70d:	add    $0x10,%esp
+ 806a710:	dec    %eax
+ 806a711:	jne    806a643 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x4eab>
+ 806a717:	mov    -0x218(%ebp),%eax
+ 806a71d:	mov    -0x214(%ebp),%edx
+ 806a723:	add    %eax,-0x240(%ebp)
+ 806a729:	adc    %edx,-0x23c(%ebp)
+ 806a72f:	jmp    806a643 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x4eab>
+ 806a734:	mov    -0x240(%ebp),%eax
+ 806a73a:	mov    -0x23c(%ebp),%edx
+ 806a740:	mov    %edx,%ecx
+ 806a742:	or     %eax,%ecx
+ 806a744:	je     806a780 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x4fe8>
+ 806a746:	mov    -0x250(%ebp),%ebx
+ 806a74c:	mov    -0x24c(%ebp),%esi
+ 806a752:	imul   $0x3e8,%esi,%ecx
+ 806a758:	mov    $0x3e8,%eax
+ 806a75d:	mul    %ebx
+ 806a75f:	add    %ecx,%edx
+ 806a761:	push   -0x23c(%ebp)
+ 806a767:	push   -0x240(%ebp)
+ 806a76d:	push   %edx
+ 806a76e:	push   %eax
+ 806a76f:	call   808e138 <_ZN6vectorI10unique_ptrI15X509CertificateEED1Ev@@Base+0xacd4>
+ 806a774:	add    $0x10,%esp
+ 806a777:	mov    0xc(%ebp),%ecx
+ 806a77a:	mov    %eax,0x98(%ecx)
+ 806a780:	sub    $0xc,%esp
+ 806a783:	push   -0x248(%ebp)
+ 806a789:	jmp    806a877 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x50df>
+ 806a78e:	dec    %eax
+ 806a78f:	jne    806a87f <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x50e7>
+ 806a795:	call   8058181 <_start@@Base+0x2aa5>
+ 806a79a:	mov    %eax,%ebx
+ 806a79c:	test   %eax,%eax
+ 806a79e:	je     806a87f <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x50e7>
+ 806a7a4:	push   %eax
+ 806a7a5:	push   $0x5
+ 806a7a7:	push   $0x8093846
+ 806a7ac:	push   %ebx
+ 806a7ad:	call   8050ce0 <strncmp@plt>
+ 806a7b2:	add    $0x10,%esp
+ 806a7b5:	test   %eax,%eax
+ 806a7b7:	jne    806a7bc <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5024>
+ 806a7b9:	add    $0x5,%ebx
+ 806a7bc:	push   %eax
+ 806a7bd:	push   %eax
+ 806a7be:	push   $0x8092fc5
+ 806a7c3:	push   $0x808e5e9
+ 806a7c8:	call   8051ca0 <fopen@plt>
+ 806a7cd:	mov    %eax,%esi
+ 806a7cf:	add    $0x10,%esp
+ 806a7d2:	test   %eax,%eax
+ 806a7d4:	je     806a87f <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x50e7>
+ 806a7da:	sub    $0xc,%esp
+ 806a7dd:	push   %esi
+ 806a7de:	call   8050c10 <feof@plt>
+ 806a7e3:	add    $0x10,%esp
+ 806a7e6:	test   %eax,%eax
+ 806a7e8:	jne    806a873 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x50db>
+ 806a7ee:	push   %eax
+ 806a7ef:	push   %esi
+ 806a7f0:	push   $0x100
+ 806a7f5:	lea    -0x118(%ebp),%eax
+ 806a7fb:	push   %eax
+ 806a7fc:	call   8050bc0 <fgets@plt>
+ 806a801:	movl   $0x0,-0x220(%ebp)
+ 806a80b:	movl   $0x0,-0x21c(%ebp)
+ 806a815:	lea    -0x220(%ebp),%eax
+ 806a81b:	push   %eax
+ 806a81c:	lea    -0x218(%ebp),%edx
+ 806a822:	push   %edx
+ 806a823:	mov    %edx,-0x240(%ebp)
+ 806a829:	push   $0x80938de
+ 806a82e:	lea    -0x118(%ebp),%eax
+ 806a834:	push   %eax
+ 806a835:	call   80524c0 <sscanf@plt>
+ 806a83a:	add    $0x20,%esp
+ 806a83d:	cmp    $0x2,%eax
+ 806a840:	mov    -0x240(%ebp),%edx
+ 806a846:	jne    806a7da <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5042>
+ 806a848:	push   %ecx
+ 806a849:	push   %ecx
+ 806a84a:	push   %ebx
+ 806a84b:	push   %edx
+ 806a84c:	call   80527c0 <strcmp@plt>
+ 806a851:	add    $0x10,%esp
+ 806a854:	test   %eax,%eax
+ 806a856:	jne    806a7da <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5042>
+ 806a858:	mov    -0x220(%ebp),%eax
+ 806a85e:	mov    -0x21c(%ebp),%edx
+ 806a864:	mov    0xc(%ebp),%ecx
+ 806a867:	mov    %eax,0x90(%ecx)
+ 806a86d:	mov    %edx,0x94(%ecx)
+ 806a873:	sub    $0xc,%esp
+ 806a876:	push   %esi
+ 806a877:	call   8052100 <fclose@plt>
+ 806a87c:	add    $0x10,%esp
+ 806a87f:	mov    0xc(%ebp),%eax
+ 806a882:	push   0x94(%eax)
+ 806a888:	push   0x90(%eax)
+ 806a88e:	push   $0x14
+ 806a890:	push   %edi
+ 806a891:	call   8052360 <_ZN2nv7message6insertINS_6u64_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a896:	mov    0xc(%ebp),%eax
+ 806a899:	mov    0x94(%eax),%edx
+ 806a89f:	mov    0x90(%eax),%eax
+ 806a8a5:	mov    0xc(%ebp),%ecx
+ 806a8a8:	add    0x88(%ecx),%eax
+ 806a8ae:	adc    0x8c(%ecx),%edx
+ 806a8b4:	push   %edx
+ 806a8b5:	push   %eax
+ 806a8b6:	push   $0x13
+ 806a8b8:	push   %edi
+ 806a8b9:	call   8052360 <_ZN2nv7message6insertINS_6u64_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a8be:	add    $0x20,%esp
+ 806a8c1:	mov    0xc(%ebp),%eax
+ 806a8c4:	cmpl   $0x2,0x84(%eax)
+ 806a8cb:	jne    806a8df <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5147>
+ 806a8cd:	push   %edx
+ 806a8ce:	push   0x98(%eax)
+ 806a8d4:	push   $0x17
+ 806a8d6:	push   %edi
+ 806a8d7:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a8dc:	add    $0x10,%esp
+ 806a8df:	sub    $0xc,%esp
+ 806a8e2:	lea    -0x22c(%ebp),%eax
+ 806a8e8:	push   %eax
+ 806a8e9:	call   8051550 <_ZN6stringC1Ev@plt>
+ 806a8ee:	lea    -0x228(%ebp),%esi
+ 806a8f4:	mov    %esi,(%esp)
+ 806a8f7:	call   8051550 <_ZN6stringC1Ev@plt>
+ 806a8fc:	lea    -0x224(%ebp),%ebx
+ 806a902:	add    $0xc,%esp
+ 806a905:	lea    -0x22c(%ebp),%eax
+ 806a90b:	push   %eax
+ 806a90c:	push   %esi
+ 806a90d:	push   %ebx
+ 806a90e:	call   8051100 <_Z12getOSVersionP6stringS0_@plt>
+ 806a913:	add    $0xc,%esp
+ 806a916:	mov    -0x22c(%ebp),%eax
+ 806a91c:	cmpl   $0x0,(%eax)
+ 806a91f:	je     806a94d <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x51b5>
+ 806a921:	push   %ecx
+ 806a922:	push   %ecx
+ 806a923:	push   $0x80cfba8
+ 806a928:	push   %ebx
+ 806a929:	call   80513d0 <_ZN6string6appendEPKc@plt>
+ 806a92e:	pop    %eax
+ 806a92f:	pop    %edx
+ 806a930:	lea    -0x22c(%ebp),%eax
+ 806a936:	push   %eax
+ 806a937:	push   %ebx
+ 806a938:	call   8051660 <_ZN6string6appendERKS_@plt>
+ 806a93d:	pop    %ecx
+ 806a93e:	pop    %eax
+ 806a93f:	push   $0x80969c2
+ 806a944:	push   %ebx
+ 806a945:	call   80513d0 <_ZN6string6appendEPKc@plt>
+ 806a94a:	add    $0x10,%esp
+ 806a94d:	call   80518e0 <_ZN2nv9getUptimeEv@plt>
+ 806a952:	push   %edx
+ 806a953:	push   %eax
+ 806a954:	push   $0x1
+ 806a956:	push   %edi
+ 806a957:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a95c:	call   80522a0 <_ZN2nv10getJiffiesEv@plt>
+ 806a961:	add    $0xc,%esp
+ 806a964:	push   %eax
+ 806a965:	push   $0x2e
+ 806a967:	push   %edi
+ 806a968:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a96d:	add    $0xc,%esp
+ 806a970:	push   %ebx
+ 806a971:	push   $0x16
+ 806a973:	push   %edi
+ 806a974:	call   8050af0 <_ZN2nv7message6insertINS_9string_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a979:	add    $0xc,%esp
+ 806a97c:	push   %esi
+ 806a97d:	push   $0x27
+ 806a97f:	push   %edi
+ 806a980:	call   8050af0 <_ZN2nv7message6insertINS_9string_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806a985:	movl   $0x0,-0x234(%ebp)
+ 806a98f:	lea    -0x234(%ebp),%eax
+ 806a995:	mov    %eax,(%esp)
+ 806a998:	call   8051bb0 <_ZN2nv13getFreeMemoryEPj@plt>
+ 806a99d:	mov    %eax,-0x240(%ebp)
+ 806a9a3:	mov    -0x234(%ebp),%ebx
+ 806a9a9:	add    $0x10,%esp
+ 806a9ac:	cmp    $0x7fff,%ebx
+ 806a9b2:	ja     806a9c2 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x522a>
+ 806a9b4:	add    $0x3fff,%ebx
+ 806a9ba:	and    $0xffffc000,%ebx
+ 806a9c0:	jmp    806a9ce <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5236>
+ 806a9c2:	add    $0x7fff,%ebx
+ 806a9c8:	and    $0xffff8000,%ebx
+ 806a9ce:	push   %eax
+ 806a9cf:	push   %eax
+ 806a9d0:	push   $0x8092fc5
+ 806a9d5:	push   $0x809390a
+ 806a9da:	call   8051ca0 <fopen@plt>
+ 806a9df:	mov    %eax,%esi
+ 806a9e1:	add    $0x10,%esp
+ 806a9e4:	test   %eax,%eax
+ 806a9e6:	je     806aa50 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x52b8>
+ 806a9e8:	push   %eax
+ 806a9e9:	push   %esi
+ 806a9ea:	push   $0xff
+ 806a9ef:	lea    -0x118(%ebp),%edx
+ 806a9f5:	push   %edx
+ 806a9f6:	mov    %edx,-0x248(%ebp)
+ 806a9fc:	call   8050bc0 <fgets@plt>
+ 806aa01:	add    $0x10,%esp
+ 806aa04:	test   %eax,%eax
+ 806aa06:	je     806aa44 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x52ac>
+ 806aa08:	push   %ecx
+ 806aa09:	push   %ecx
+ 806aa0a:	push   $0x8093918
+ 806aa0f:	mov    -0x248(%ebp),%edx
+ 806aa15:	push   %edx
+ 806aa16:	call   8050a70 <strstr@plt>
+ 806aa1b:	add    $0x10,%esp
+ 806aa1e:	test   %eax,%eax
+ 806aa20:	je     806aa44 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x52ac>
+ 806aa22:	push   %edx
+ 806aa23:	lea    -0x218(%ebp),%edx
+ 806aa29:	push   %edx
+ 806aa2a:	push   $0x809391d
+ 806aa2f:	push   %eax
+ 806aa30:	call   80524c0 <sscanf@plt>
+ 806aa35:	add    $0x10,%esp
+ 806aa38:	dec    %eax
+ 806aa39:	jne    806aa44 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x52ac>
+ 806aa3b:	mov    -0x218(%ebp),%ebx
+ 806aa41:	shl    $0xa,%ebx
+ 806aa44:	sub    $0xc,%esp
+ 806aa47:	push   %esi
+ 806aa48:	call   8052100 <fclose@plt>
+ 806aa4d:	add    $0x10,%esp
+ 806aa50:	mov    %ebx,-0x234(%ebp)
+ 806aa56:	mov    -0x240(%ebp),%esi
+ 806aa5c:	cmp    $0xffffffff,%esi
+ 806aa5f:	je     806aada <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5342>
+ 806aa61:	mov    %ebx,%eax
+ 806aa63:	xor    %edx,%edx
+ 806aa65:	shld   $0xa,%eax,%edx
+ 806aa69:	shl    $0xa,%eax
+ 806aa6c:	push   %edx
+ 806aa6d:	push   %eax
+ 806aa6e:	push   $0x28
+ 806aa70:	push   %edi
+ 806aa71:	call   8052360 <_ZN2nv7message6insertINS_6u64_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806aa76:	add    $0xc,%esp
+ 806aa79:	push   -0x234(%ebp)
+ 806aa7f:	push   $0x2
+ 806aa81:	push   %edi
+ 806aa82:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806aa87:	add    $0xc,%esp
+ 806aa8a:	mov    -0x234(%ebp),%eax
+ 806aa90:	shr    $0xa,%eax
+ 806aa93:	push   %eax
+ 806aa94:	push   $0x23
+ 806aa96:	push   %edi
+ 806aa97:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806aa9c:	mov    %esi,%eax
+ 806aa9e:	xor    %edx,%edx
+ 806aaa0:	shld   $0xa,%eax,%edx
+ 806aaa4:	shl    $0xa,%eax
+ 806aaa7:	push   %edx
+ 806aaa8:	push   %eax
+ 806aaa9:	push   $0x29
+ 806aaab:	push   %edi
+ 806aaac:	call   8052360 <_ZN2nv7message6insertINS_6u64_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806aab1:	add    $0x1c,%esp
+ 806aab4:	push   %esi
+ 806aab5:	push   $0x3
+ 806aab7:	push   %edi
+ 806aab8:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806aabd:	add    $0xc,%esp
+ 806aac0:	mov    $0xa,%eax
+ 806aac5:	mul    %esi
+ 806aac7:	shrd   $0xa,%edx,%eax
+ 806aacb:	sar    $0xa,%edx
+ 806aace:	push   %eax
+ 806aacf:	push   $0x24
+ 806aad1:	push   %edi
+ 806aad2:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806aad7:	add    $0x10,%esp
+ 806aada:	push   %eax
+ 806aadb:	push   %eax
+ 806aadc:	push   $0x8092fc5
+ 806aae1:	push   $0x8093925
+ 806aae6:	call   8051ca0 <fopen@plt>
+ 806aaeb:	mov    %eax,-0x240(%ebp)
+ 806aaf1:	add    $0x10,%esp
+ 806aaf4:	lea    -0x218(%ebp),%esi
+ 806aafa:	test   %eax,%eax
+ 806aafc:	je     806ab17 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x537f>
+ 806aafe:	sub    $0xc,%esp
+ 806ab01:	push   -0x240(%ebp)
+ 806ab07:	call   8050c10 <feof@plt>
+ 806ab0c:	add    $0x10,%esp
+ 806ab0f:	test   %eax,%eax
+ 806ab11:	je     806afc0 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5828>
+ 806ab17:	sub    $0xc,%esp
+ 806ab1a:	push   -0x240(%ebp)
+ 806ab20:	call   8052100 <fclose@plt>
+ 806ab25:	pop    %esi
+ 806ab26:	pop    %eax
+ 806ab27:	lea    -0x118(%ebp),%eax
+ 806ab2d:	push   %eax
+ 806ab2e:	push   $0x809373f
+ 806ab33:	call   8051120 <statfs@plt>
+ 806ab38:	mov    -0x114(%ebp),%esi
+ 806ab3e:	mov    %esi,%ebx
+ 806ab40:	sar    $0x1f,%ebx
+ 806ab43:	mov    -0x110(%ebp),%eax
+ 806ab49:	mov    %eax,-0x240(%ebp)
+ 806ab4f:	mov    -0x240(%ebp),%edx
+ 806ab55:	imul   %ebx,%edx
+ 806ab58:	mov    %edx,-0x250(%ebp)
+ 806ab5e:	mov    -0x240(%ebp),%eax
+ 806ab64:	mul    %esi
+ 806ab66:	mov    %eax,-0x248(%ebp)
+ 806ab6c:	mov    %edx,-0x244(%ebp)
+ 806ab72:	mov    -0x250(%ebp),%eax
+ 806ab78:	add    %eax,-0x244(%ebp)
+ 806ab7e:	mov    -0x10c(%ebp),%eax
+ 806ab84:	mov    %eax,-0x240(%ebp)
+ 806ab8a:	mov    -0x240(%ebp),%edx
+ 806ab90:	imul   %ebx,%edx
+ 806ab93:	mov    %edx,%ecx
+ 806ab95:	mov    -0x240(%ebp),%eax
+ 806ab9b:	mul    %esi
+ 806ab9d:	mov    %eax,-0x240(%ebp)
+ 806aba3:	mov    %edx,-0x23c(%ebp)
+ 806aba9:	add    %ecx,-0x23c(%ebp)
+ 806abaf:	mov    -0x248(%ebp),%ebx
+ 806abb5:	mov    -0x244(%ebp),%esi
+ 806abbb:	push   %esi
+ 806abbc:	push   %ebx
+ 806abbd:	push   $0x2a
+ 806abbf:	push   %edi
+ 806abc0:	call   8052360 <_ZN2nv7message6insertINS_6u64_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806abc5:	add    $0x1c,%esp
+ 806abc8:	mov    %ebx,%eax
+ 806abca:	mov    %esi,%edx
+ 806abcc:	shrd   $0xa,%edx,%eax
+ 806abd0:	shr    $0xa,%edx
+ 806abd3:	push   %eax
+ 806abd4:	push   $0xa
+ 806abd6:	push   %edi
+ 806abd7:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806abdc:	add    $0xc,%esp
+ 806abdf:	mov    %ebx,-0x248(%ebp)
+ 806abe5:	mov    %esi,-0x244(%ebp)
+ 806abeb:	mov    %ebx,%eax
+ 806abed:	mov    %esi,%edx
+ 806abef:	shrd   $0x14,%edx,%eax
+ 806abf3:	shr    $0x14,%edx
+ 806abf6:	push   %eax
+ 806abf7:	push   $0x25
+ 806abf9:	push   %edi
+ 806abfa:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806abff:	mov    -0x240(%ebp),%ebx
+ 806ac05:	mov    -0x23c(%ebp),%esi
+ 806ac0b:	push   %esi
+ 806ac0c:	push   %ebx
+ 806ac0d:	push   $0x2b
+ 806ac0f:	push   %edi
+ 806ac10:	call   8052360 <_ZN2nv7message6insertINS_6u64_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806ac15:	add    $0x1c,%esp
+ 806ac18:	mov    %ebx,-0x240(%ebp)
+ 806ac1e:	mov    %esi,-0x23c(%ebp)
+ 806ac24:	mov    %ebx,%ecx
+ 806ac26:	mov    %esi,%ebx
+ 806ac28:	shrd   $0xa,%ebx,%ecx
+ 806ac2c:	shr    $0xa,%ebx
+ 806ac2f:	push   %ecx
+ 806ac30:	push   $0xb
+ 806ac32:	push   %edi
+ 806ac33:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806ac38:	add    $0xc,%esp
+ 806ac3b:	mov    -0x23c(%ebp),%esi
+ 806ac41:	imul   $0xa,%esi,%ecx
+ 806ac44:	mov    $0xa,%eax
+ 806ac49:	mull   -0x240(%ebp)
+ 806ac4f:	add    %ecx,%edx
+ 806ac51:	mov    %edx,%esi
+ 806ac53:	sar    $0x1f,%esi
+ 806ac56:	and    $0xfffff,%esi
+ 806ac5c:	xor    %ebx,%ebx
+ 806ac5e:	add    %esi,%eax
+ 806ac60:	adc    %ebx,%edx
+ 806ac62:	shrd   $0x14,%edx,%eax
+ 806ac66:	sar    $0x14,%edx
+ 806ac69:	push   %eax
+ 806ac6a:	push   $0x26
+ 806ac6c:	push   %edi
+ 806ac6d:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806ac72:	add    $0xc,%esp
+ 806ac75:	mov    -0x248(%ebp),%ebx
+ 806ac7b:	mov    -0x244(%ebp),%esi
+ 806ac81:	mov    %ebx,%eax
+ 806ac83:	mov    %esi,%edx
+ 806ac85:	sub    -0x240(%ebp),%eax
+ 806ac8b:	sbb    -0x23c(%ebp),%edx
+ 806ac91:	shrd   $0xa,%edx,%eax
+ 806ac95:	shr    $0xa,%edx
+ 806ac98:	push   %eax
+ 806ac99:	push   $0x1c
+ 806ac9b:	push   %edi
+ 806ac9c:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806aca1:	add    $0x10,%esp
+ 806aca4:	mov    %esi,%ecx
+ 806aca6:	or     %ebx,%ecx
+ 806aca8:	je     806afb9 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5821>
+ 806acae:	mov    -0x240(%ebp),%ebx
+ 806acb4:	mov    -0x23c(%ebp),%esi
+ 806acba:	imul   $0x64,%esi,%ecx
+ 806acbd:	mov    $0x64,%eax
+ 806acc2:	mul    %ebx
+ 806acc4:	add    %ecx,%edx
+ 806acc6:	push   -0x244(%ebp)
+ 806accc:	push   -0x248(%ebp)
+ 806acd2:	push   %edx
+ 806acd3:	push   %eax
+ 806acd4:	call   808e138 <_ZN6vectorI10unique_ptrI15X509CertificateEED1Ev@@Base+0xacd4>
+ 806acd9:	add    $0x10,%esp
+ 806acdc:	push   %edx
+ 806acdd:	push   %eax
+ 806acde:	push   $0x1d
+ 806ace0:	push   %edi
+ 806ace1:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806ace6:	mov    0xc(%ebp),%eax
+ 806ace9:	call   8061e32 <_start@@Base+0xc756>
+ 806acee:	mov    0xc(%ebp),%eax
+ 806acf1:	mov    0x78(%eax),%esi
+ 806acf4:	lea    0x3c(%esi),%eax
+ 806acf7:	mov    $0x3d,%ecx
+ 806acfc:	xor    %edx,%edx
+ 806acfe:	div    %ecx
+ 806ad00:	mov    %edx,-0x240(%ebp)
+ 806ad06:	lea    0x1(%esi),%eax
+ 806ad09:	xor    %edx,%edx
+ 806ad0b:	div    %ecx
+ 806ad0d:	mov    %edx,-0x258(%ebp)
+ 806ad13:	mov    0xc(%ebp),%eax
+ 806ad16:	mov    0x80(%eax),%eax
+ 806ad1c:	mov    0xc(%ebp),%ecx
+ 806ad1f:	sub    0x7c(%ecx),%eax
+ 806ad22:	sar    $0x3,%eax
+ 806ad25:	imul   $0xc035b7d1,%eax,%eax
+ 806ad2b:	mov    %eax,%esi
+ 806ad2d:	mov    %eax,-0x25c(%ebp)
+ 806ad33:	lea    -0x218(%ebp),%ebx
+ 806ad39:	mov    %ebx,(%esp)
+ 806ad3c:	call   8051830 <_ZN11vector_baseC2Ev@plt>
+ 806ad41:	add    $0xc,%esp
+ 806ad44:	push   $0x4
+ 806ad46:	mov    %esi,%eax
+ 806ad48:	shl    $0x2,%eax
+ 806ad4b:	push   %eax
+ 806ad4c:	push   %ebx
+ 806ad4d:	call   8050980 <_ZN11vector_base11reserve_rawEjj@plt>
+ 806ad52:	add    $0x10,%esp
+ 806ad55:	movl   $0x0,-0x250(%ebp)
+ 806ad5f:	movl   $0x0,-0x260(%ebp)
+ 806ad69:	movl   $0x0,-0x248(%ebp)
+ 806ad73:	mov    -0x240(%ebp),%eax
+ 806ad79:	shl    $0x3,%eax
+ 806ad7c:	mov    %eax,-0x27c(%ebp)
+ 806ad82:	mov    -0x258(%ebp),%edx
+ 806ad88:	lea    0x0(,%edx,8),%eax
+ 806ad8f:	mov    %eax,-0x280(%ebp)
+ 806ad95:	mov    -0x25c(%ebp),%eax
+ 806ad9b:	cmp    %eax,-0x250(%ebp)
+ 806ada1:	je     806af8c <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x57f4>
+ 806ada7:	imul   $0x988,-0x250(%ebp),%eax
+ 806adb1:	mov    0xc(%ebp),%ecx
+ 806adb4:	add    0x7c(%ecx),%eax
+ 806adb7:	mov    0x78(%ecx),%edx
+ 806adba:	lea    (%eax,%edx,8),%ecx
+ 806adbd:	mov    (%ecx),%ebx
+ 806adbf:	mov    0x4(%ecx),%esi
+ 806adc2:	mov    %ebx,-0x268(%ebp)
+ 806adc8:	mov    %esi,-0x264(%ebp)
+ 806adce:	mov    -0x27c(%ebp),%edx
+ 806add4:	add    %eax,%edx
+ 806add6:	mov    (%edx),%ebx
+ 806add8:	mov    0x4(%edx),%esi
+ 806addb:	mov    %ebx,-0x270(%ebp)
+ 806ade1:	mov    %esi,-0x26c(%ebp)
+ 806ade7:	add    -0x280(%ebp),%eax
+ 806aded:	mov    (%eax),%ebx
+ 806adef:	mov    0x4(%eax),%esi
+ 806adf2:	mov    %ebx,-0x278(%ebp)
+ 806adf8:	mov    %esi,-0x274(%ebp)
+ 806adfe:	mov    0x7a4(%ecx),%ebx
+ 806ae04:	mov    0x7a0(%ecx),%ecx
+ 806ae0a:	mov    %ecx,-0x240(%ebp)
+ 806ae10:	mov    %ebx,-0x23c(%ebp)
+ 806ae16:	mov    0x7a0(%edx),%ecx
+ 806ae1c:	mov    0x7a4(%edx),%ebx
+ 806ae22:	mov    0x7a4(%eax),%edx
+ 806ae28:	mov    0x7a0(%eax),%eax
+ 806ae2e:	mov    %eax,-0x258(%ebp)
+ 806ae34:	mov    %edx,-0x254(%ebp)
+ 806ae3a:	cmp    %ebx,-0x23c(%ebp)
+ 806ae40:	jne    806ae59 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x56c1>
+ 806ae42:	cmp    %ecx,-0x240(%ebp)
+ 806ae48:	jne    806ae59 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x56c1>
+ 806ae4a:	movl   $0x0,-0x220(%ebp)
+ 806ae54:	jmp    806aedb <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5743>
+ 806ae59:	mov    -0x268(%ebp),%eax
+ 806ae5f:	mov    -0x264(%ebp),%edx
+ 806ae65:	sub    -0x270(%ebp),%eax
+ 806ae6b:	sbb    -0x26c(%ebp),%edx
+ 806ae71:	mov    %eax,-0x270(%ebp)
+ 806ae77:	mov    %edx,-0x26c(%ebp)
+ 806ae7d:	imul   $0x64,-0x26c(%ebp),%eax
+ 806ae84:	mov    %eax,-0x284(%ebp)
+ 806ae8a:	mov    $0x64,%esi
+ 806ae8f:	mov    %esi,%eax
+ 806ae91:	mull   -0x270(%ebp)
+ 806ae97:	mov    %eax,-0x270(%ebp)
+ 806ae9d:	mov    %edx,-0x26c(%ebp)
+ 806aea3:	mov    -0x284(%ebp),%eax
+ 806aea9:	add    %eax,-0x26c(%ebp)
+ 806aeaf:	mov    -0x240(%ebp),%eax
+ 806aeb5:	mov    -0x23c(%ebp),%edx
+ 806aebb:	sub    %ecx,%eax
+ 806aebd:	sbb    %ebx,%edx
+ 806aebf:	push   %edx
+ 806aec0:	push   %eax
+ 806aec1:	push   -0x26c(%ebp)
+ 806aec7:	push   -0x270(%ebp)
+ 806aecd:	call   808e138 <_ZN6vectorI10unique_ptrI15X509CertificateEED1Ev@@Base+0xacd4>
+ 806aed2:	add    $0x10,%esp
+ 806aed5:	mov    %eax,-0x220(%ebp)
+ 806aedb:	push   %eax
+ 806aedc:	push   %eax
+ 806aedd:	lea    -0x220(%ebp),%eax
+ 806aee3:	push   %eax
+ 806aee4:	lea    -0x218(%ebp),%eax
+ 806aeea:	push   %eax
+ 806aeeb:	call   806bb72 <_ZN6vectorIjE9push_backERKj@@Base>
+ 806aef0:	mov    -0x220(%ebp),%eax
+ 806aef6:	add    %eax,-0x260(%ebp)
+ 806aefc:	add    $0x10,%esp
+ 806aeff:	mov    -0x254(%ebp),%eax
+ 806af05:	cmp    %eax,-0x23c(%ebp)
+ 806af0b:	jne    806af27 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x578f>
+ 806af0d:	mov    -0x258(%ebp),%eax
+ 806af13:	cmp    %eax,-0x240(%ebp)
+ 806af19:	jne    806af27 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x578f>
+ 806af1b:	movl   $0x0,-0x220(%ebp)
+ 806af25:	jmp    806af75 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x57dd>
+ 806af27:	mov    -0x268(%ebp),%eax
+ 806af2d:	mov    -0x264(%ebp),%edx
+ 806af33:	sub    -0x278(%ebp),%eax
+ 806af39:	sbb    -0x274(%ebp),%edx
+ 806af3f:	imul   $0x64,%edx,%ecx
+ 806af42:	mov    $0x64,%esi
+ 806af47:	mul    %esi
+ 806af49:	add    %ecx,%edx
+ 806af4b:	mov    -0x240(%ebp),%ecx
+ 806af51:	mov    -0x23c(%ebp),%ebx
+ 806af57:	sub    -0x258(%ebp),%ecx
+ 806af5d:	sbb    -0x254(%ebp),%ebx
+ 806af63:	push   %ebx
+ 806af64:	push   %ecx
+ 806af65:	push   %edx
+ 806af66:	push   %eax
+ 806af67:	call   808e138 <_ZN6vectorI10unique_ptrI15X509CertificateEED1Ev@@Base+0xacd4>
+ 806af6c:	add    $0x10,%esp
+ 806af6f:	mov    %eax,-0x220(%ebp)
+ 806af75:	mov    -0x220(%ebp),%eax
+ 806af7b:	add    %eax,-0x248(%ebp)
+ 806af81:	incl   -0x250(%ebp)
+ 806af87:	jmp    806ad95 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x55fd>
+ 806af8c:	cmpl   $0x0,-0x248(%ebp)
+ 806af93:	je     806b154 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x59bc>
+ 806af99:	push   %eax
+ 806af9a:	mov    -0x248(%ebp),%eax
+ 806afa0:	xor    %edx,%edx
+ 806afa2:	divl   -0x25c(%ebp)
+ 806afa8:	push   %eax
+ 806afa9:	push   $0x6
+ 806afab:	push   %edi
+ 806afac:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806afb1:	add    $0x10,%esp
+ 806afb4:	jmp    806b154 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x59bc>
+ 806afb9:	xor    %eax,%eax
+ 806afbb:	jmp    806acdc <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5544>
+ 806afc0:	push   %ebx
+ 806afc1:	push   -0x240(%ebp)
+ 806afc7:	push   $0xff
+ 806afcc:	push   %esi
+ 806afcd:	call   8050bc0 <fgets@plt>
+ 806afd2:	add    $0xc,%esp
+ 806afd5:	lea    -0x220(%ebp),%eax
+ 806afdb:	push   %eax
+ 806afdc:	push   $0x80939c5
+ 806afe1:	push   %esi
+ 806afe2:	call   80524c0 <sscanf@plt>
+ 806afe7:	add    $0x10,%esp
+ 806afea:	test   %eax,%eax
+ 806afec:	jne    806aafe <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5366>
+ 806aff2:	push   %eax
+ 806aff3:	lea    -0x118(%ebp),%ebx
+ 806aff9:	push   %ebx
+ 806affa:	push   $0x8093933
+ 806afff:	push   %esi
+ 806b000:	call   80524c0 <sscanf@plt>
+ 806b005:	add    $0x10,%esp
+ 806b008:	test   %eax,%eax
+ 806b00a:	jne    806b0c6 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x592e>
+ 806b010:	push   %eax
+ 806b011:	push   %ebx
+ 806b012:	push   $0x8093942
+ 806b017:	push   %esi
+ 806b018:	call   80524c0 <sscanf@plt>
+ 806b01d:	add    $0x10,%esp
+ 806b020:	test   %eax,%eax
+ 806b022:	je     806b041 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x58a9>
+ 806b024:	push   %eax
+ 806b025:	push   %eax
+ 806b026:	push   $0x8093952
+ 806b02b:	push   %ebx
+ 806b02c:	call   8051f50 <strcasecmp@plt>
+ 806b031:	add    $0x10,%esp
+ 806b034:	test   %eax,%eax
+ 806b036:	je     806aafe <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5366>
+ 806b03c:	jmp    806b0c6 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x592e>
+ 806b041:	push   %eax
+ 806b042:	push   %ebx
+ 806b043:	push   $0x809395a
+ 806b048:	push   %esi
+ 806b049:	call   80524c0 <sscanf@plt>
+ 806b04e:	add    $0x10,%esp
+ 806b051:	test   %eax,%eax
+ 806b053:	jne    806b0c6 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x592e>
+ 806b055:	push   %ecx
+ 806b056:	push   %ebx
+ 806b057:	push   $0x8093975
+ 806b05c:	push   %esi
+ 806b05d:	call   80524c0 <sscanf@plt>
+ 806b062:	add    $0x10,%esp
+ 806b065:	test   %eax,%eax
+ 806b067:	je     806b0b2 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x591a>
+ 806b069:	push   %edx
+ 806b06a:	push   %edx
+ 806b06b:	push   $0x8093988
+ 806b070:	push   %ebx
+ 806b071:	call   80527c0 <strcmp@plt>
+ 806b076:	add    $0x10,%esp
+ 806b079:	test   %eax,%eax
+ 806b07b:	jne    806b086 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x58ee>
+ 806b07d:	push   %eax
+ 806b07e:	push   %eax
+ 806b07f:	push   $0x809397e
+ 806b084:	jmp    806b089 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x58f1>
+ 806b086:	push   %eax
+ 806b087:	push   %eax
+ 806b088:	push   %ebx
+ 806b089:	lea    -0x230(%ebp),%eax
+ 806b08f:	push   %eax
+ 806b090:	call   8052490 <_ZN6stringC1EPKc@plt>
+ 806b095:	add    $0xc,%esp
+ 806b098:	lea    -0x230(%ebp),%eax
+ 806b09e:	push   %eax
+ 806b09f:	push   $0x4
+ 806b0a1:	push   %edi
+ 806b0a2:	call   8050af0 <_ZN2nv7message6insertINS_9string_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806b0a7:	lea    -0x230(%ebp),%eax
+ 806b0ad:	mov    %eax,(%esp)
+ 806b0b0:	jmp    806b0e4 <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x594c>
+ 806b0b2:	push   %eax
+ 806b0b3:	push   %ebx
+ 806b0b4:	push   $0x809398d
+ 806b0b9:	push   %esi
+ 806b0ba:	call   80524c0 <sscanf@plt>
+ 806b0bf:	add    $0x10,%esp
+ 806b0c2:	test   %eax,%eax
+ 806b0c4:	je     806b0eb <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5953>
+ 806b0c6:	push   %eax
+ 806b0c7:	push   %eax
+ 806b0c8:	push   %ebx
+ 806b0c9:	lea    -0x230(%ebp),%ebx
+ 806b0cf:	push   %ebx
+ 806b0d0:	call   8052490 <_ZN6stringC1EPKc@plt>
+ 806b0d5:	add    $0xc,%esp
+ 806b0d8:	push   %ebx
+ 806b0d9:	push   $0x4
+ 806b0db:	push   %edi
+ 806b0dc:	call   8050af0 <_ZN2nv7message6insertINS_9string_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806b0e1:	mov    %ebx,(%esp)
+ 806b0e4:	call   8051220 <_ZN6string7freeptrEv@plt>
+ 806b0e9:	jmp    806b14c <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x59b4>
+ 806b0eb:	push   %eax
+ 806b0ec:	lea    -0x220(%ebp),%eax
+ 806b0f2:	push   %eax
+ 806b0f3:	push   $0x809399c
+ 806b0f8:	push   %esi
+ 806b0f9:	call   80524c0 <sscanf@plt>
+ 806b0fe:	add    $0x10,%esp
+ 806b101:	test   %eax,%eax
+ 806b103:	jne    806b13d <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x59a5>
+ 806b105:	push   %eax
+ 806b106:	lea    -0x220(%ebp),%eax
+ 806b10c:	push   %eax
+ 806b10d:	push   $0x80939a9
+ 806b112:	push   %esi
+ 806b113:	call   80524c0 <sscanf@plt>
+ 806b118:	add    $0x10,%esp
+ 806b11b:	test   %eax,%eax
+ 806b11d:	jne    806b13d <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x59a5>
+ 806b11f:	push   %ebx
+ 806b120:	lea    -0x220(%ebp),%eax
+ 806b126:	push   %eax
+ 806b127:	push   $0x80939b9
+ 806b12c:	push   %esi
+ 806b12d:	call   80524c0 <sscanf@plt>
+ 806b132:	add    $0x10,%esp
+ 806b135:	test   %eax,%eax
+ 806b137:	je     806aafe <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5366>
+ 806b13d:	push   %ecx
+ 806b13e:	push   -0x220(%ebp)
+ 806b144:	push   $0x5
+ 806b146:	push   %edi
+ 806b147:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806b14c:	add    $0x10,%esp
+ 806b14f:	jmp    806aafe <_Z14map_node_destrI6stringS0_EvP14tree_node_base@@Base+0x5366>
+ 806b154:	push   %ecx
+ 806b155:	mov    -0x260(%ebp),%eax
+ 806b15b:	mov    -0x25c(%ebp),%esi
+ 806b161:	xor    %edx,%edx
+ 806b163:	div    %esi
+ 806b165:	push   %eax
+ 806b166:	push   $0x9
+ 806b168:	push   %edi
+ 806b169:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806b16e:	add    $0xc,%esp
+ 806b171:	lea    -0x218(%ebp),%ebx
+ 806b177:	push   %ebx
+ 806b178:	push   $0x22
+ 806b17a:	push   %edi
+ 806b17b:	call   8051b60 <_ZN2nv7message6insertINS_12u32_array_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806b180:	add    $0xc,%esp
+ 806b183:	push   %esi
+ 806b184:	push   $0x18
+ 806b186:	push   %edi
+ 806b187:	call   8052520 <_ZN2nv7message6insertINS_6u32_idEEEvT_NS_8IdTraitsIS3_E8set_typeE@plt>
+ 806b18c:	mov    %ebx,(%esp)
+ 806b18f:	call   806ba7a <_ZN6vectorIjED1Ev@@Base>
+ 806b194:	lea    -0x224(%ebp),%eax
+ 806b19a:	mov    %eax,(%esp)
+ 806b19d:	call   8051220 <_ZN6string7freeptrEv@plt>
+ 806b1a2:	lea    -0x228(%ebp),%eax
+ 806b1a8:	mov    %eax,(%esp)
+ 806b1ab:	call   8051220 <_ZN6string7freeptrEv@plt>
+ 806b1b0:	lea    -0x22c(%ebp),%eax
+ 806b1b6:	mov    %eax,(%esp)
+ 806b1b9:	call   8051220 <_ZN6string7freeptrEv@plt>
+ 806b1be:	mov    %edi,%eax
+ 806b1c0:	lea    -0xc(%ebp),%esp
+ 806b1c3:	pop    %ebx
+ 806b1c4:	pop    %esi
+ 806b1c5:	pop    %edi
+ 806b1c6:	pop    %ebp
+ 806b1c7:	ret    $0x4

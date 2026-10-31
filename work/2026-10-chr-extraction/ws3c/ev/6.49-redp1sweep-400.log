@@ -1,0 +1,3 @@
+[140] DIVERGE ok iters=4/4 zLen=31 salt=158694a0bcd1601a87e941c9cf6cfb9b
+[286] DIVERGE ok iters=4/4 zLen=31 salt=158694a0bcd1601a87e941c9cf6cfb9b
+redp1sweep n=400 ok=400 agreeOk=398 divergeOk=2 agreeFail=0 divergeFail=0 mschap=0 unknown=0 distinctSalts=1

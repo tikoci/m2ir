@@ -1,0 +1,172 @@
+[
+	{
+		"key": "0xff0001",
+		"tcode": "0x88",
+		"value": [0, 11]
+	},
+	{
+		"key": "0xff0002",
+		"tcode": "0x88",
+		"value": [24, 2]
+	},
+	{
+		"key": "0x000022",
+		"tcode": "0x88",
+		"value": [0]
+	},
+	{
+		"key": "0x000002",
+		"tcode": "0x8",
+		"value": 491520
+	},
+	{
+		"key": "0x000005",
+		"tcode": "0x8",
+		"value": 2400
+	},
+	{
+		"key": "0x000003",
+		"tcode": "0x8",
+		"value": 465356
+	},
+	{
+		"key": "0x000009",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0x00000a",
+		"tcode": "0x8",
+		"value": 65028
+	},
+	{
+		"key": "0x00000b",
+		"tcode": "0x8",
+		"value": 32800
+	},
+	{
+		"key": "0x00000c",
+		"tcode": "0x8",
+		"value": 1793418638
+	},
+	{
+		"key": "0x000018",
+		"tcode": "0x9",
+		"value": 1
+	},
+	{
+		"key": "0x00001c",
+		"tcode": "0x8",
+		"value": 32228
+	},
+	{
+		"key": "0x00001d",
+		"tcode": "0x9",
+		"value": 50
+	},
+	{
+		"key": "0x000023",
+		"tcode": "0x8",
+		"value": 480
+	},
+	{
+		"key": "0x000024",
+		"tcode": "0x8",
+		"value": 4544
+	},
+	{
+		"key": "0x000025",
+		"tcode": "0x9",
+		"value": 63
+	},
+	{
+		"key": "0x000026",
+		"tcode": "0x8",
+		"value": 320
+	},
+	{
+		"key": "0xff0003",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0x000001",
+		"tcode": "0x9",
+		"value": 157
+	},
+	{
+		"key": "0x00002e",
+		"tcode": "0x8",
+		"value": 15789
+	},
+	{
+		"key": "0xff0006",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0x00002b",
+		"tcode": "0x10",
+		"value": "u64:33587200"
+	},
+	{
+		"key": "0x00002a",
+		"tcode": "0x10",
+		"value": "u64:66588672"
+	},
+	{
+		"key": "0x000004",
+		"tcode": "0x21",
+		"value": "Intel(R)"
+	},
+	{
+		"key": "0x000029",
+		"tcode": "0x10",
+		"value": "u64:476524544"
+	},
+	{
+		"key": "0x000028",
+		"tcode": "0x10",
+		"value": "u64:503316480"
+	},
+	{
+		"key": "0x000027",
+		"tcode": "0x21",
+		"value": "Oct/07/2026 16:05:16"
+	},
+	{
+		"key": "0x000016",
+		"tcode": "0x21",
+		"value": "6.49.23 (stable)"
+	},
+	{
+		"key": "0x000013",
+		"tcode": "0x10",
+		"value": "u64:449"
+	},
+	{
+		"key": "0x000014",
+		"tcode": "0x10",
+		"value": "u64:448"
+	},
+	{
+		"key": "0x00001b",
+		"tcode": "0x21",
+		"value": "MikroTik"
+	},
+	{
+		"key": "0x00001a",
+		"tcode": "0x21",
+		"value": "x86_64"
+	},
+	{
+		"key": "0x00002c",
+		"tcode": "0x21",
+		"value": "CHR"
+	},
+	{
+		"key": "0x000019",
+		"tcode": "0x21",
+		"value": "CHR"
+	}
+]

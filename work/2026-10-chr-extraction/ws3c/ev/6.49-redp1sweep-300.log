@@ -1,0 +1,4 @@
+[0] DIVERGE ok iters=1/1 zLen=31 salt=e87aec79f28724caab60153c65ac69b3
+[66] DIVERGE ok iters=1/1 zLen=31 salt=e87aec79f28724caab60153c65ac69b3
+[118] DIVERGE ok iters=1/1 zLen=31 salt=e87aec79f28724caab60153c65ac69b3
+redp1sweep n=300 ok=300 agreeOk=297 divergeOk=3 agreeFail=0 divergeFail=0 mschap=0 unknown=0 distinctSalts=1

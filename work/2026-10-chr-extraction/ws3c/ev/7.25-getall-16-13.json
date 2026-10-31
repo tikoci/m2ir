@@ -1,0 +1,40 @@
+{
+	"mode": "bare",
+	"reply": [
+		{
+			"key": "0xff0001",
+			"tcode": "0x88",
+			"value": [0, 11]
+		},
+		{
+			"key": "0xff0002",
+			"tcode": "0x88",
+			"value": [16, 13]
+		},
+		{
+			"key": "0xff001c",
+			"tcode": "0xa0",
+			"value": ["msg-proxy-7.25"]
+		},
+		{
+			"key": "0xfe0002",
+			"tcode": "0xa8",
+			"value": []
+		},
+		{
+			"key": "0xff0003",
+			"tcode": "0x9",
+			"value": 2
+		},
+		{
+			"key": "0xfe0019",
+			"tcode": "0x9",
+			"value": 0
+		},
+		{
+			"key": "0xff0006",
+			"tcode": "0x9",
+			"value": 2
+		}
+	]
+}
