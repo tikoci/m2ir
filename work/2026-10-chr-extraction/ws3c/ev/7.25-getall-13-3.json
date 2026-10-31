@@ -1,0 +1,159 @@
+{
+	"mode": "bare",
+	"reply": [
+		{ "key": "0xff0001", "tcode": "0x88", "value": [0, 11] },
+		{ "key": "0xff0002", "tcode": "0x88", "value": [13, 3] },
+		{ "key": "0xff001c", "tcode": "0xa0", "value": ["msg-proxy-7.25"] },
+		{
+			"key": "0xfe0002",
+			"tcode": "0xa8",
+			"value": [
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 1 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 1 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "local" },
+					{
+						"key": "0x000001",
+						"tcode": "0x21",
+						"value": "login to the console from gui and serial"
+					}
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 2 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 1 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "telnet" },
+					{
+						"key": "0x000001",
+						"tcode": "0x21",
+						"value": "telnet to the router"
+					}
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 3 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 1 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "ssh" },
+					{ "key": "0x000001", "tcode": "0x21", "value": "ssh to the router" }
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 4 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 0 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "ftp" },
+					{ "key": "0x000001", "tcode": "0x21", "value": "ftp to the router" }
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 5 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 0 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "reboot" },
+					{ "key": "0x000001", "tcode": "0x21", "value": "reboot the router" }
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 6 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 0 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "read" },
+					{
+						"key": "0x000001",
+						"tcode": "0x21",
+						"value": "read router configuration"
+					}
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 7 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 0 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "write" },
+					{
+						"key": "0x000001",
+						"tcode": "0x21",
+						"value": "write router configuration"
+					}
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 8 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 0 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "policy" },
+					{
+						"key": "0x000001",
+						"tcode": "0x21",
+						"value": "manage user policies"
+					}
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 9 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 0 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "test" },
+					{ "key": "0x000001", "tcode": "0x21", "value": "test network" }
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 10 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 1 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "winbox" },
+					{
+						"key": "0x000001",
+						"tcode": "0x21",
+						"value": "connect to the router via WinBox"
+					}
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 11 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 0 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "password" },
+					{ "key": "0x000001", "tcode": "0x21", "value": "change password" }
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 12 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 1 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "web" },
+					{
+						"key": "0x000001",
+						"tcode": "0x21",
+						"value": "connect to the router via Web"
+					}
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 13 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 0 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "sniff" },
+					{ "key": "0x000001", "tcode": "0x21", "value": "sniff traffic" }
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 14 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 0 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "sensitive" },
+					{
+						"key": "0x000001",
+						"tcode": "0x21",
+						"value": "see sensitive information"
+					}
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 15 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 1 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "api" },
+					{
+						"key": "0x000001",
+						"tcode": "0x21",
+						"value": "connect to the router via API"
+					}
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 16 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 0 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "romon" },
+					{ "key": "0x000001", "tcode": "0x21", "value": "connect to RoMON" }
+				],
+				[
+					{ "key": "0xfe0001", "tcode": "0x9", "value": 19 },
+					{ "key": "0x000003", "tcode": "0x9", "value": 1 },
+					{ "key": "0x000002", "tcode": "0x21", "value": "rest-api" },
+					{
+						"key": "0x000001",
+						"tcode": "0x21",
+						"value": "connect to the router via REST API"
+					}
+				]
+			]
+		},
+		{ "key": "0xff0003", "tcode": "0x9", "value": 2 },
+		{ "key": "0xfe0019", "tcode": "0x9", "value": 17 },
+		{ "key": "0xff0006", "tcode": "0x9", "value": 2 }
+	]
+}

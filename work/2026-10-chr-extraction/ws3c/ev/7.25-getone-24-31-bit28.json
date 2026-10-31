@@ -1,0 +1,86 @@
+[
+	{ "key": "0xff0001", "tcode": "0x88", "value": [0, 11] },
+	{ "key": "0xff0002", "tcode": "0x88", "value": [24, 31] },
+	{ "key": "0xff001c", "tcode": "0xa0", "value": ["msg-proxy-7.25"] },
+	{
+		"key": "0x000005",
+		"tcode": "0xa8",
+		"value": [
+			[
+				{ "key": "0x000007", "tcode": "0x1", "value": true },
+				{ "key": "0x000001", "tcode": "0x8", "value": 134217728 },
+				{ "key": "0x000002", "tcode": "0x8", "value": 4294967295 }
+			],
+			[
+				{ "key": "0x000001", "tcode": "0x8", "value": 118292480 },
+				{ "key": "0x000002", "tcode": "0x8", "value": 134217727 }
+			],
+			[
+				{ "key": "0x000007", "tcode": "0x1", "value": true },
+				{ "key": "0x000001", "tcode": "0x8", "value": 103940096 },
+				{ "key": "0x000002", "tcode": "0x8", "value": 117440511 }
+			],
+			[
+				{ "key": "0x000001", "tcode": "0x8", "value": 103900680 },
+				{ "key": "0x000002", "tcode": "0x8", "value": 103900927 }
+			],
+			[
+				{ "key": "0x000007", "tcode": "0x1", "value": true },
+				{ "key": "0x000004", "tcode": "0x8", "value": 4294967295 },
+				{ "key": "0x000003", "tcode": "0x8", "value": 1681455313 }
+			]
+		]
+	},
+	{ "key": "0x000006", "tcode": "0x9", "value": 5 },
+	{ "key": "0x00000a", "tcode": "0x9", "value": 0 },
+	{ "key": "0xff0003", "tcode": "0x9", "value": 2 },
+	{ "key": "0xff0006", "tcode": "0x9", "value": 2 },
+	{
+		"key": "0x000020",
+		"tcode": "0x31",
+		"value": "bytes:abf7673e8047c33ab56a745cec254f46"
+	},
+	{
+		"key": "0xfe0024",
+		"tcode": "0x29",
+		"value": [
+			{
+				"key": "0x00006d",
+				"tcode": "0x88",
+				"value": [742921347, 537927680, 2143259648, 65536]
+			},
+			{ "key": "0x00000b", "tcode": "0x0", "value": false },
+			{ "key": "0x00000c", "tcode": "0x1", "value": true },
+			{ "key": "0x00000d", "tcode": "0x1", "value": true },
+			{ "key": "0x00000e", "tcode": "0x1", "value": true },
+			{ "key": "0x00000f", "tcode": "0x1", "value": true },
+			{ "key": "0x000010", "tcode": "0x1", "value": true },
+			{ "key": "0x000011", "tcode": "0x1", "value": true },
+			{ "key": "0x000012", "tcode": "0x1", "value": true },
+			{ "key": "0x000013", "tcode": "0x0", "value": false },
+			{ "key": "0x000014", "tcode": "0x1", "value": true },
+			{ "key": "0x000015", "tcode": "0x1", "value": true },
+			{ "key": "0x000016", "tcode": "0x1", "value": true },
+			{ "key": "0x000017", "tcode": "0x1", "value": true },
+			{ "key": "0x000018", "tcode": "0x1", "value": true },
+			{ "key": "0x000019", "tcode": "0x1", "value": true },
+			{ "key": "0x00001a", "tcode": "0x1", "value": true },
+			{ "key": "0x00001b", "tcode": "0x1", "value": true },
+			{ "key": "0x00001c", "tcode": "0x0", "value": false },
+			{ "key": "0x00001d", "tcode": "0x0", "value": false },
+			{ "key": "0x00001e", "tcode": "0x0", "value": false },
+			{ "key": "0x00001f", "tcode": "0x0", "value": false },
+			{ "key": "0x000065", "tcode": "0x0", "value": false },
+			{ "key": "0x000066", "tcode": "0x0", "value": false },
+			{ "key": "0x000064", "tcode": "0x9", "value": 255 },
+			{ "key": "0x000069", "tcode": "0x9", "value": 32 },
+			{ "key": "0x00006a", "tcode": "0x9", "value": 6 },
+			{ "key": "0x00006b", "tcode": "0x9", "value": 0 },
+			{ "key": "0x00006c", "tcode": "0x9", "value": 0 },
+			{ "key": "0x00006e", "tcode": "0x9", "value": 0 },
+			{ "key": "0x000068", "tcode": "0x10", "value": "u64:0" },
+			{ "key": "0x000066", "tcode": "0x10", "value": "u64:9" }
+		]
+	},
+	{ "key": "0x000007", "tcode": "0x21", "value": "7.13+,6.49.8+" }
+]

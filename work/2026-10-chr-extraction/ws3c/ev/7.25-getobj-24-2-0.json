@@ -1,0 +1,15 @@
+[
+	{ "key": "0xff0001", "tcode": "0x88", "value": [0, 11] },
+	{ "key": "0xff0002", "tcode": "0x88", "value": [24, 2] },
+	{ "key": "0xff001c", "tcode": "0xa0", "value": ["msg-proxy-7.25"] },
+	{ "key": "0x000006", "tcode": "0x9", "value": 1 },
+	{ "key": "0x00001e", "tcode": "0x9", "value": 0 },
+	{ "key": "0x000009", "tcode": "0x9", "value": 0 },
+	{ "key": "0x00001f", "tcode": "0x9", "value": 0 },
+	{ "key": "0x000021", "tcode": "0x9", "value": 0 },
+	{ "key": "0x000020", "tcode": "0x9", "value": 0 },
+	{ "key": "0xfe0001", "tcode": "0x9", "value": 0 },
+	{ "key": "0xff0003", "tcode": "0x9", "value": 2 },
+	{ "key": "0xff0006", "tcode": "0x9", "value": 2 },
+	{ "key": "0xfe0010", "tcode": "0x21", "value": "cpu0" }
+]

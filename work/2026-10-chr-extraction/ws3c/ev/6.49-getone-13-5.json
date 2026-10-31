@@ -1,0 +1,47 @@
+[
+	{
+		"key": "0xff0001",
+		"tcode": "0x88",
+		"value": [0, 11]
+	},
+	{
+		"key": "0xff0002",
+		"tcode": "0x88",
+		"value": [13, 5]
+	},
+	{
+		"key": "0x000005",
+		"tcode": "0x88",
+		"value": []
+	},
+	{
+		"key": "0x000001",
+		"tcode": "0x0",
+		"value": false
+	},
+	{
+		"key": "0x000002",
+		"tcode": "0x1",
+		"value": true
+	},
+	{
+		"key": "0x000004",
+		"tcode": "0x9",
+		"value": 1
+	},
+	{
+		"key": "0xff0003",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0xff0006",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0x000003",
+		"tcode": "0x9",
+		"value": 0
+	}
+]

@@ -121,6 +121,17 @@ transient-process-observations:
       DEVCORE uses process id 1039 for `login` in its illustrative auth
       trace and explicitly notes that this kind of helper process is spawned
       on demand and absent from the `.x3` files.
+  - binary: unknown
+    id-shape: runtime-serial
+    confidence: observed-only
+    source: "live CHR interrogation (census batch, 7.25)"
+    notes: |
+      Process id 1025 (0x401) answers live on 7.25: real looper,
+      single handler 3 (NOTIMP both verbs), per-boot stable
+      (identical across 3+ logins). Every v7 [61,H] request is
+      answered from=[1025,H] with 0xff000b=-1. Transient-shaped
+      (high id, absent from any static map); identity open
+      (compat shim? session helper? renamed board process?).
 
 registered-handler-observations:
   - binary: /nova/bin/mproxy
@@ -142,7 +153,7 @@ registered-handler-observations:
     handler-ids: [0, 1, 2, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 23, 24, 25, 31]
     confidence: observed-only
     source-detail: "static addHandler census (17 sites) + live hscan 17/17 match"
-    notes: "NOT registered: 17. v7 live delta: drops {5,6,9} (14 handlers); data-vs-NOTIMP split v7: data {0,1,2,8,10,14,16,24,31}, NOTIMP {7,12,15,23,25}."
+    notes: "NOT registered: 17. v7: 19 handlers — drops {5,6,9}, gains {33,34,35,36,38} (33 data {501,502,503}, 34 UNKNOWNID selector-gated, 35 empty-data, 36 NOTIMP, 38 FCC text); v6 hscan 32-40 all BRKPATH."
     evidence:
       - source: code
         ref: "RouterOS sys2 addHandler sites (6.49.23); see work/2026-10-chr-extraction/sys2-handler-tables.md"
@@ -152,7 +163,7 @@ registered-handler-observations:
     version: "6.49.23"
     handler-ids: "79 static (75 live in 0-95 + 103/NOTIMP + 3 registered-but-BRKPATH {37,38,60})"
     confidence: observed-only
-    notes: "The 3 BRKPATH are package/version-gated, not reachable on this CHR. v7 live: 84 in 0-95 + 26 in 96-130 (net +~50% handlers, mostly NOTIMP stubs + 6 thin data singletons); v7 HAS 37/38/60 live. Both: [20,62]->[10,1] cross-process proxy."
+    notes: "The 3 BRKPATH are package/version-gated, not reachable on this CHR. v7 live: 84 in 0-95 + 26 in 96-130 + 134 (mark-registry-shaped, 4 mark-kind negatives); v7 HAS 37/38/60 live. Both: [20,62]->[10,1] cross-process proxy."
     evidence:
       - source: code
         ref: "RouterOS net addHandler census (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §3"
@@ -220,10 +231,12 @@ registered-handler-observations:
     version: "6.49.23"
     handler-ids: [1, 2, 3]
     confidence: observed-only
-    notes: "1+2 = AHolder('')-derived data-driven; 3 = custom (insmod csel0.ko + open /dev/csel0 in ctor; slot 10 setter touching u32:1 + bool:3-8). Server-dead on CHR: nobody addresses [61,x], board values never enter an M2 row."
+    notes: "1+2 = AHolder('')-derived data-driven; 3 = custom (insmod csel0.ko + open /dev/csel0 in ctor; slot 10 setter touching u32:1 + bool:3-8). CORRECTION: not server-dead — direct queries answer live ([61,1]={1:F}, [61,2]={}, [61,3] NOTIMP; GET-only). Only the sys2 relay is absent. v7: no rbbios binary; pid-61 routes to pid-1025 (quirk)."
     evidence:
       - source: code
         ref: "RouterOS rbbios handler analysis (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §5"
+      - source: sample
+        ref: "live CHR interrogation (census batch, 6.49.23 + 7.25): ev/{6.49,7.25}-hscan-61.txt + ev/6.49-getone-61-{1,2}.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17 + routerboard-hunt.md §8"
 
 cross-process-proxies:
   - from: [20, 62]
@@ -233,9 +246,31 @@ cross-process-proxies:
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+  - from: [61, "<any>"]
+    to: [1025, "<same>"]
+    role: "v7-only: every [61,H] answered from=[1025,H] with 0xff000b=-1 (alias or shared looper; 1025 = real looper, single NOTIMP handler 3, UNIQUE to 1025 — [24,3] gives BRKPATH). 1025 is static/shared, not per-session (concurrent held session still gets 1025; present on factory-reset box + across reboots). Only pid 61 routes there — v6-only pids 46/50/55/122 time out, 48 answers natively. Truly-unknown v7 pids (60,62,999 + 46/50/55/122) time out with NO reply instead; bare [1] ANSWERS (empty success, policy -1) while [1,H] times out."
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (census batch, 7.25): ev/7.25-hscan-61.txt + ev/7.25-hscan-1025.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): concurrency + reset + reboot stability, absent-pid classification, ev/7.25-getone-1.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+  - from: [48, 5]
+    to: [24, 33]
+    role: "v7-only: [48,5] answered from=[48,5,24,33] with [24,33]'s {501,502,503} shape — a cross-process proxy. v6 serves {501:'',502:T} NATIVELY on [48,5] (no 503): v6->v7 handler migration with proxy-compat."
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (identity batch, both versions): ev/7.25-getone-48-5.json vs ev/6.49-getone-48-5.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
 processes:
-  0x01: { canonical-name: net,      confidence: documented }
+  0x01:
+    canonical-name: net
+    confidence: documented
+    notes: "Live v7 refinement: bare [1] ANSWERS (from=[1], 0xff000b=-1, empty success, no errno) but EVERY [1,H] (hscan 0-5) times out with no reply — a known pid with no handlers (absent from the v6 loader map). Refines 'unknown pids time out' (true for 60/62/999/46/50/55/122, not for bare-1)."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): ev/7.25-getone-1.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
   0x02:
     canonical-name: moduler
     confidence: documented
@@ -366,7 +401,7 @@ processes:
         evidence:
           - source: code
             ref: "RouterOS 6.49.23 .x3 process map; see work/2026-10-chr-extraction/README.md"
-        notes: "user = 13 stable since 6.43.45. Live: [13,1-8] map identical on 6.49.23 and 7.25 (4=auth legacy-CMD-only, 5=data, 6/7=FAILED)."
+        notes: "user = 13 stable since 6.43.45. Live: [13,1-8] map identical on 6.49.23 and 7.25 (4=auth legacy-CMD-only, 5=data, 6/7=FAILED). Batch §19: 6/7 = UserPrefs (username-selected; bare-GET FAILED is missing-selector, not dead); [13,1/2/3/4,8] = users/groups/policies/sessions/default; [13,4] dual-role (GET adopts source-id + GETALL lists sessions)."
     revision-history:
       - date: 2026-05-03
         belief: "0x0D = user-service-or-similar (project observation [13,4]; loose attribution to MarginResearch)"
@@ -493,18 +528,47 @@ processes:
     evidence:
       - source: code
         ref: "RouterOS 6.49.23 .x3 process map + route addHandler census; see work/2026-10-chr-extraction/README.md + net-bridge2-handler-tables.md §3"
+  0x30:
+    canonical-name: console
+    confidence: observed-only
+    notes: |
+      The 6.49.23 loader map assigns 0x30 to /nova/bin/console
+      (conflicts with the Cisco-Talos 0x11=console label — version
+      scoping open). Live v7 looper: handlers answer NOTIMP with a
+      flickering from-length ([48] for H in {0,1,7,11,12}, [48,H]
+      otherwise — tentative: unregistered vs
+      registered-unimplemented). [48,5] proxies to [24,33] on v7
+      (from=[48,5,24,33]); v6 serves {501,502} natively (see
+      cross-process-proxies).
+    evidence:
+      - source: code
+        ref: "RouterOS 6.49.23 .x3 process map; see work/2026-10-chr-extraction/README.md"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, both versions): ev/7.25-getone-48-5.json vs ev/6.49-getone-48-5.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
   0x3d:
     canonical-name: rbbios
     confidence: observed-only
     notes: |
       Not in Cisco-Talos typeIDCode. The 6.49.23 loader map assigns 0x3d
       to /nova/bin/rbbios (BIOS device proxy, 3 handlers — NOT
-      routerboard-info; see registered-handler-observations). Server-dead
-      on CHR: sends one SYS_CMD=5 notify to sys2; handlers never
-      addressed. v7 has NO rbbios binary (board strings moved to `mode`).
+      routerboard-info; see registered-handler-observations). Handlers
+      answer direct queries live ([61,1]={1:F}, [61,2]={}); only the
+      sys2 relay is absent (corrected from "server-dead"). v7 has NO
+      rbbios binary (board strings moved to `mode`, which has no M2
+      handlers) and routes pid-61 to pid-1025 (see
+      cross-process-proxies).
     evidence:
       - source: code
         ref: "RouterOS 6.49.23 .x3 process map + rbbios analysis; see work/2026-10-chr-extraction/README.md + net-bridge2-handler-tables.md §5 + routerboard-hunt.md §7"
+      - source: sample
+        ref: "live CHR interrogation (census batch, both versions); see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
+    revision-history:
+      - date: 2026-10-31
+        belief: "rbbios handlers are server-dead on CHR (never addressed)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (census batch, 6.49.23): [61,1]/[61,2] answer direct queries; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
   0x41:
     canonical-name: keyman
     confidence: observed-only
@@ -597,6 +661,22 @@ processes:
     canonical-name: system_ns
     confidence: documented
     notes: "Synthetic process id matching the system namespace byte."
+  0x401:
+    canonical-name: unknown-transient-1025
+    confidence: observed-only
+    notes: |
+      v7-only, transient-shaped (see transient-process-observations):
+      real looper, single handler 3 (NOTIMP both verbs — UNIQUE to
+      1025, [24,3] gives BRKPATH), per-boot stable. Static/shared:
+      per-session REFUTED (concurrent held session still gets
+      1025), present on factory-reset box + across reboots. Answers
+      all v7 pid-61 requests, and ONLY pid 61 (see
+      cross-process-proxies). Identity open.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (census batch, 7.25): ev/7.25-hscan-1025.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): concurrency/reset/reboot stability + handler-3 uniqueness; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
 investigation-trail:
   - date: 2026-07-14
@@ -618,3 +698,18 @@ investigation-trail:
       0x67 (dude) / 0x1f (radv), scoped 0x0a (mepty vs discover),
       recorded the v7 static-map deferral, the full handler census,
       and the [20,62]->[10,1] cross-process proxy.
+  - date: 2026-10-31
+    finding: |
+      Census batch (findings §17): v7 sys2 = 19 handlers
+      (+33/34/35/36/38), v7 net +134, v6 rbbios answers live
+      ([61,1]={F}, [61,2]={} — "server-dead" superseded),
+      v7-only [61,H]->[1025,H] proxy + new transient process
+      0x401 (identity open), unknown-v7-pid timeout behavior.
+  - date: 2026-10-31
+    finding: |
+      Identity batch (findings §18): 0x401 static/shared
+      (per-session refuted; factory+reboot stable; 61-only;
+      handler-3 unique), bare-[1] answers while [1,H] times
+      out (handler-less), new 0x30 console entry
+      (loader map; conflicts with documented 0x11=console),
+      [48,5]->[24,33] proxy + v6-native/v7-proxy migration.

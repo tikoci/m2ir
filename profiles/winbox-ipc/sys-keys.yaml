@@ -144,10 +144,13 @@ keys:
       documents 0x5FFFE as a standard admin mask, 0x7FFFE as the maximum
       mask settable via the WinBox GUI, and bit 0x80000000 as the
       super-admin gate checked by `www` handler 2 ("FoisHandler"). Internal
-      RouterOS messages may carry 0xFFFFFFFF.
+      RouterOS messages may carry 0xFFFFFFFF — seen live on every v7
+      pid-1025-routed error reply (consistent with internal origin).
     evidence:
       - source: doc
         ref: "MarginResearch — policy bitmask values"
+      - source: sample
+        ref: "live CHR interrogation (census batch, 7.25): 0xff000b=-1 on all [61,H]->[1025,H] errors; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
         url: "https://margin.re/2022/06/pulling-mikrotik-into-the-limelight/"
 
   0xff000d:
@@ -204,6 +207,17 @@ keys:
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §3"
+
+  0xff001e:
+    canonical-name: SYS_OBSERVED_1E
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    role: "unknown u32 in interface rows (project-named; no documented label)"
+    confidence: observed-only
+    notes: "STATIC-ONLY, no live sighting: the v7 [20,0] row-core (0x806515c) inserts entry+0x40 here when != 0xffffffff. Absent from every captured row (ether/lo/vlan/bridge/tunnel both versions), so the field's live value and role are open."
+    evidence:
+      - source: code
+        ref: "RouterOS v7 net row-core 0x8064f1a; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
 
 investigation-trail:
   - date: 2026-10-31

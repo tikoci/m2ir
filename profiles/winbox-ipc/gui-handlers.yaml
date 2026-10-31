@@ -59,6 +59,10 @@ source-id-adoption:
     processes.yaml 0x0d version-identities). Whether this is the *same*
     handler serving a dual role (auth AND capability/source-id exchange)
     or a coincidental reuse of the path is an open question.
+    DUAL-ROLE CLOSED (batch §19): the same [13,4] also serves
+    GETALL = active-sessions list (3 admin rows: f1/f3 u32
+    stamps, f4 transport 13/9/1, f6=2/f8=3 const;
+    ev/7.25-getall-13-4.json) — GET adopts, GETALL lists.
   evidence:
     - source: sample
       ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): echo verified across guesses + overlapping session; see work/2026-10-chr-extraction/ws3c-prober-findings.md §3"
@@ -88,7 +92,7 @@ request-shape:
       loop: bare (or count) -> follow 0xfe0003 tokens.
     fields:
       - { field: 0xfe0004, name: STD_GETALLNO, tcode: u32, role: "count = head-limit; reply carries 0xfe0003 next-token when truncated (+ 0xfe0004 emitted-count echo on v6 [20,0])" }
-      - { field: 0xfe0003, name: STD_GETALLID, tcode: u32, role: "start cursor — PER-HANDLER; only server-issued tokens are meaningful ([20,1] validates an inclusive row-id cursor, [20,0] takes lower_bound(row-id) with no validation, iterating in creation order)" }
+      - { field: 0xfe0003, name: STD_GETALLID, tcode: u32, role: "start cursor — PER-HANDLER; only server-issued tokens are meaningful ([20,1] validates an inclusive row-id cursor, [20,0] takes lower_bound(row-id) with no validation, iterating in stored rename-fixup order)" }
       - { field: 0xfe000c, name: STD_FILTER, tcode: u32, role: "flags word (default 5); values 0/5/0x20000000 return byte-identical replies — ignored for content here" }
     ignored: "USER-namespace (0x00) versions of count/flags are ignored entirely; rows arrive identically with or without them."
     confidence: observed-only
@@ -100,13 +104,30 @@ request-shape:
       "some builds require flags" probe is unnecessary on 6.49.23/7.25
       but retained as a version-scoped possibility for other builds.
       See std-keys.yaml 0xfe0003/0xfe0004/0xfe000c/0xfe0019 for the key
-      semantics. [20,0]-only row filters: 0x10001 exact-match is
-      live on BOTH versions (ether type 1, loopback type 76;
-      =999 matches nothing either version); 0x10002/mask-0x10011
-      and 0x10003/mask-0x10012 bitmask pairs stay v6-static-only
-      (untested). Bit-2 entries are always skipped. See
+      semantics. [20,0]-only row filters, ALL legs live on BOTH
+      versions: 0x10001 exact-match (ether type 1, loopback type
+      76; =999 matches nothing either version); 0x10002/mask-
+      0x10011 and 0x10003/mask-0x10012 bitmask pairs (exact
+      conjunction with the 0x10001 leg; mask-0x10011 defaults to
+      the value, mask-0x10012 defaults to value|2 — both rules
+      proven live, incl. the hidden-row select =2/mask-2). The
+      bare default skips bit-2 entries (hidden/deleted, NOT
+      0xfe000a disabled); explicit masks override it. Filter
+      values ARE row-field values (entry+0x14 → 0x10002,
+      +0x1c → 0x10003, +0x60 → 0x10001), so every leg is
+      designable from bare rows. Byte-cap truncation proven
+      live on a 306-row table (194 + token 203 → 112, sound,
+      306/306, no 0xfe0004/0xfe0019). The [20,0] iteration
+      ORDER is behavior-SOLVED: stored order maintained by a
+      dual-mode crossing-gated rename fixup (R1 universal
+      crossing-gate; R2 1NIC-mode with frozen pos0;
+      R3 2NIC+-mode single-swap-exactly-when-run-1; R4 mode ⟺
+      day-0 NIC count) — ~43 rename transitions, all fit.
+      Creation inserts sorted (incl. pos0); reboot persists
+      order and mode. Static mechanism (fixup branch) +
+      v6 iteration stay open. See
       net-bridge2-handler-tables.md §8 and
-      ws3c-prober-findings.md §15.
+      ws3c-prober-findings.md §19 (§18 head+tree DEAD).
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): bare GETALL + count/next-token chaining + flags sweep; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
@@ -254,22 +275,28 @@ handlers:
       the rest, but both appear to expose overlapping fields.
       LIVE+STATIC WALL: [24,17] answers BRKPATH (from=[24] looper
       default) on BOTH 6.49.23 and 7.25; sys2 registers no handler 17
-      (17-handler census certain, both the addHandler sites and the live
-      hscan); no function in 149 ELFs across both versions builds the
-      RB row-shape (bool:16 anchor + signature strings); sys2 handler
-      16 is /nova/store/chfont (console font), not an off-by-one RB.
-      Board code IS present in the images (v6 rbbios readers, v7 mode
-      strings; virtualization gating is runtime, CHR==X86 bits) but no reachable
-      M2 path serves these field ids. The sys-to is version-drifted or
-      wrong — kept as a suspect-shape record, NOT a working path.
+      (17-handler v6 census certain, both the addHandler sites and the
+      live hscan; v7 census 19 sites, still no 17); no function in
+      149 ELFs across both versions builds the RB row-shape (bool:16
+      anchor + signature strings); sys2 handler 16 is
+      /nova/store/chfont (console font), not an off-by-one RB.
+      NARROWED: v6 rbbios ANSWERS direct queries ([61,1]={1:F},
+      [61,2]={} — the handlers are live, only the sys2 relay is
+      absent); v7 routes pid-61 to pid-1025 (quirk, open). But no
+      reachable M2 path serves the full RB field ids (model/serial/
+      firmware). The sys-to is version-drifted or wrong — kept as
+      a suspect-shape record, NOT a working path.
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): BRKPATH both; full sys2 hscans clean; see work/2026-10-chr-extraction/ws3c-prober-findings.md §5"
       - source: code
         ref: "RouterOS 149-ELF row-shape sweep + rbbios last-mile analysis (both versions); see work/2026-10-chr-extraction/routerboard-hunt.md"
+      - source: sample
+        ref: "live CHR interrogation (census batch, both versions): v6 [61,1]/[61,2] answer, v7 61→1025 alias; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17 + routerboard-hunt.md §8"
     open-questions:
-      - "Where does /system/routerboard live over M2 on 6.49.23/7.25 — text-only via terminal, or a non-sys2 process not yet hunted?"
+      - "Where does the FULL /system/routerboard shape (model/serial/firmware) live over M2 on 6.49.23/7.25 — text-only via terminal, or a process not yet hunted?"
       - "Which version (if any) served the RB shape at [24,17]?"
+      - "What is v7 pid 1025 (answers pid-61 requests; single NOTIMP handler 3)?"
 
   license:
     sys-to: [65]
@@ -313,45 +340,69 @@ handlers:
     fields:
       row-id: { namespace: session, field: 1 }
       namespace-1:
+        1: { name: type-code, tcode: u32, role: "interface type code (ether 1, loopback 76); doubles as the 0x10001 exact-match GETALL filter leg (entry+0x60)" }
+        2: { name: flags-a, tcode: u32, role: "entry+0x14 word (ether1 270947, lo 0 — stable across boots); doubles as the 0x10002/mask-0x10011 GETALL filter leg; bit 0x80 gates 0xfe0007 dynamic" }
+        3: { name: flags-b, tcode: u32, role: "entry+0x1c word (ether1 542529, lo 525633 — stable across boots); doubles as the 0x10003/mask-0x10012 GETALL filter leg; bit 2 set = hidden/deleted (skipped by the bare default); bits 0x500 both set = running" }
+        4: { name: kernel-ifindex, tcode: u32, role: "kernel interface index (entry+0x18 -> +0x28): lo=1, sequential per creation batch, gap at deleted interfaces, ABSENT on VRRP (no kernel device)" }
         5: { name: default-name, tcode: string }
-        6: { name: name, tcode: string }
-        14: { name: running, tcode: bool }
+        6: { name: name, tcode: string, role: "display name; ALSO the rename-fixup comparator input (crossing-gate R1 vs neighbors; creation sorted-insert key) — NOT a tree re-sort key (no re-sort on rename; §18 head+tree DEAD)" }
+        14: { name: running, tcode: bool, role: "first-party: (entry+0x1c & 0x500) == 0x500" }
         30: { name: type, tcode: string }
         100: { name: mtu-config, tcode: u32, role: "configured MTU (0 = auto, arrives as u8; else u32)" }
         101: { name: l2mtu, tcode: u32, role: "KEEP-WITH-CAVEAT: seen ONLY as 65535 on an enabled v7 bridge; absent on ether/lo/vlan both versions; CHR virtio has no l2mtu in REST. Likely correct for hardware ether, unproven." }
+        102: { name: unknown-102, tcode: u32, role: "v7: u32 written by type builders (0 on ether/vlan/bridge); v6: base row-core writes it as an EMPTY STRING. Producer moved base->type, type string->u32 across versions." }
         105: { name: actual-mtu, tcode: u32 }
       namespace-user:
         1001: { name: mac-address, tcode: bytes, size: 6 }
       namespace-session:
-        7: { name: dynamic, tcode: bool, role: "present only on some types (bridge yes, ether/lo no)" }
+        7: { name: dynamic, tcode: bool, role: "base row-core: present-True if entry+0x14 bit 0x80 is set, else ABSENT (both versions). v7 bridge-type builder additionally writes explicit False (v6 bridge omits) — version drift in the TYPE builder, not the core." }
         9: { name: comment, tcode: string }
         10: { name: disabled, tcode: bool }
     evidence:
       - source: code
-        ref: "RouterOS net interface row-core 0x80f6738 (810 instructions, 75 ops, 6.49.23): all seven mapped fields converge here; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
+        ref: "RouterOS net interface row-core 0x80f6738 (810 instructions, 75 ops, 6.49.23): all seven mapped fields converge here; entry+0x14/0x1c/0x60 feed row 0x10002/0x10003/0x10001, running = (w & 0x500) == 0x500, dynamic gated on entry+0x14 bit 0x80; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4/§8"
+      - source: code
+        ref: "RouterOS net v7 row-core 0x8064f1a: same ix<> sequence (running/dynamic identical); 0x10066-string gone from base (type builders write u32), NEW 0xff001e (entry+0x40, unseen live — 6-exotic-row hunt negative, batch §19, ev/7.25-getall-20-0-ffhunt.json), shifted +0x180/+0x1c8/+0x1a8; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
       - source: code
         ref: "RouterOS net [20,0] slot-7 handleCmd dispatch 0x80d1af8 + GETALL worker/iterator (6.49.23), v7 same shape; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): MTU triple + session-bool behavior; see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
       - source: sample
         ref: "live CHR interrogation (post-WS-4 batch): lower_bound start + count/filter legs both versions; see work/2026-10-chr-extraction/ws3c-prober-findings.md §15"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, 16 transcripts): 0x10002/0x10003 bitmask legs + both default-mask rules live both versions; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25 + 6.49.23): iteration key SOLVED (slot-0 first-created + rest name-ascending; 4 renames + del/add + reboot; ev/7.25-getall-20-0-iter{1..6}.json + ev/6.49-getall-20-0-v6br.json); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18 — MODEL SUPERSEDED BY §19 (transcripts re-interpreted as T1–T9)"
+      - source: sample
+        ref: "live CHR interrogation (dual-mode batch, 7.25 + 7.26b3 1NIC: R1–R4 crossing-gated rename fixup over ~43 transitions (deep{0..24}, 2nic{5..19}, ws20/ws21/twin4 series); day-0-NIC-gated modes; see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
     notes: |
       Fields split across three byte_2 values: 0x01 (NS-1: interface
       fields + private control plane — the old `namespace-1` label is now
       identified), USER (0x00) for mac-address, SESSION (0xfe) for
       comment/disabled/dynamic. This 3-way split repeats across
       ip-address, bridge-port, and bridge-vlan, confirming NS-1 as a
-      stable convention for this handler family.
+      stable convention for this handler family. Row fields 0x10001/2/3
+      double as the GETALL filter legs (see get-all-paging above) —
+      the request keys and the row keys are the same numbers.
+      Iteration ORDER is behavior-SOLVED (dual-mode
+      crossing-gated rename fixup R1–R4, day-0-NIC-gated):
+      renames swap past strictly-between neighbors only
+      (R1); day-0-1NIC boxes freeze pos0 and bubble
+      one-short (R2); day-0-2NIC+ boxes single-swap
+      exactly when crossed-run == 1 (R3); creation inserts
+      sorted (incl. pos0); reboot persists order and
+      mode. Only server-issued tokens chain soundly,
+      which they do (306-row proof).
       Row shape is STATE-DEPENDENT: disabled rows are SLIM (computed
       fields 101/105/default-name/counters drop until re-enabled). MAC
       appears twice per row (0x3e9 always + a type-specific second field:
       0x404 on ether, 0x82 on bridge; equal values here). GETALL start
       on this handler is lower_bound(row-id), inclusive, with NO
-      validation — nonexistent ids continue from the next-higher id —
-      and rows iterate in creation order, not id order (see
-      get-all-paging above). This handler overrides handleCmd at slot 7
-      and serves GETALL from a custom async worker; its slots 9–17 are
-      the NOTIMP base and are never reached for GETALL.
+      validation — nonexistent ids continue from the next-higher id
+      (see get-all-paging above). This handler
+      overrides handleCmd at slot 7 and serves GETALL from a custom
+      async worker; its slots 9–17 are the NOTIMP base and are never
+      reached for GETALL.
     revision-history:
       - date: 2026-10-31
         belief: "GETALL start cursor on [20,0] is opaque (no closed form)"
@@ -359,6 +410,18 @@ handlers:
         evidence:
           - source: code
             ref: "RouterOS net [20,0] iterator lower_bound decode fits the s-matrix given bridge id 5; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+      - date: 2026-10-31
+        belief: "GETALL iteration order on [20,0] is creation order (then: unknown key)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (identity batch): slot-0 first-created + rest name-ascending fits all tables (2/3/8/102/106/306 rows); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - date: 2026-10-31
+        belief: "GETALL iteration order on [20,0] is slot-0 first-created head + name-ascending tree (renames re-sort)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (dual-mode batch): no re-sort on rename — dual-mode crossing-gated fixup R1–R4 over ~43 transitions (ws19 pos1-entries + pos0-exits disprove pinning); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
 
   ip-address:
     sys-to: [20, 1]
@@ -374,8 +437,8 @@ handlers:
         2: { name: network, tcode: be32, role: "network address, big-endian" }
         3: { name: netmask, tcode: be32, role: "expressed on the wire as a bitmask (/24 -> 0x00FFFFFF); CLI shows /popcount" }
         4: { name: broadcast, tcode: be32, role: "broadcast address, big-endian" }
-        5: { name: interface, tcode: u32, role: "references interface row id from the interface handler (verified)" }
-        10: { name: interface-or-actual, tcode: u32, role: "always equals field 5 here — duplicate or actual-interface, never discriminated (needs an interface!=actual row)" }
+        5: { name: actual-interface, tcode: u32, role: "references the ACTUAL interface row id (discriminated: bridge-port enslavement splits it from field 10)" }
+        10: { name: interface, tcode: u32, role: "references the CONFIGURED interface row id; equals field 5 whenever interface==actual (disabled/VRRP do NOT split them)" }
       namespace-session:
         7: { name: dynamic, tcode: bool, role: "true on the DHCP-created row" }
         8: { name: invalid, tcode: bool, role: "true when the address's bridge is disabled" }
@@ -386,6 +449,8 @@ handlers:
         ref: "RouterOS net candidate 0x80ae18e {be32:1..4, u32:5, u32:10} (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): be32 proven on 10.0.2.15/24 + 192.0.2.1/10.0.2.0/10.0.2.255 rows; see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
+      - source: sample
+        ref: "live CHR interrogation (census batch, 7.25): f5/f10 discriminated via bridge-port enslavement (ev/7.25-getall-20-1-f10.json); see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
     notes: "GETALL start on this handler is a VALIDATED row-id cursor (inclusive): s=0 or nonexistent -> UNKNOWNID error + total count; s=1 -> the id-1 row."
     revision-history:
       - date: 2026-10-31
@@ -394,6 +459,12 @@ handlers:
         evidence:
           - source: sample
             ref: "live CHR interrogation (WS-3C prober): bytes are big-endian; fields {2,4,10} present; see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
+      - date: 2026-10-31
+        belief: "field 5 is the configured interface and field 10 is its duplicate-or-actual"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (census batch, 7.25): enslaved row reads f5=actual-id + f10=configured-id; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
 
   ipv6-address:
     sys-to: [20, 37]
@@ -490,7 +561,7 @@ handlers:
     process-id: 0x18
     process-ref: "./processes.yaml 0x18 (management)"
     cmd: GET_ONE
-    role: "/system clock"
+    role: "/system clock (v7 shape = 18 fields incl. 22/17/25/27/28/7/30/31/29/18/23/24/26; v6 shape drifted: 22/17/7/18/23/24/25/27/28 + trailing zeros)"
     confidence: observed-only
     fields:
       namespace: user
@@ -502,6 +573,8 @@ handlers:
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25), REST cross-checked; see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, both versions): full dumps ev/{6.49,7.25}-getone-24-0.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
   default-config:
     sys-to: [24, 8]
@@ -551,15 +624,17 @@ handlers:
     process-id: 0x14
     process-ref: "./processes.yaml 0x14 (new)"
     cmd: GET_ALL
-    role: "packet-mark registry (one row per mangle packet-mark)"
+    role: "packet-mark registry (one row per mangle packet-mark; IPv4 + IPv6 share this namespace)"
     confidence: observed-only
     fields:
       row-id: { namespace: session, field: 1 }
       namespace-session:
-        16: { name: mark-name, tcode: string, role: "0xfe0010: 'no-mark' default + one row per mangle rule, proven by adding a rule" }
+        16: { name: mark-name, tcode: string, role: "0xfe0010: 'no-mark' default + one row per mangle rule, proven by adding rules (incl. an IPv6 mangle mark, which lands here too)" }
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): rows {id, 0xfe0010}; see work/2026-10-chr-extraction/ws3c-prober-findings.md §7/§10"
+      - source: sample
+        ref: "live CHR interrogation (census batch, 7.25): IPv6 packet-mark shares [20,13]; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
 
   connection-mark-registry:
     sys-to: [20, 14]
@@ -581,121 +656,175 @@ handlers:
     status: role-open
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only thin data singleton (role open; field 5 = 'firmware'!)"
+    role: "v7-only thin data singleton (role open; field 5 = 'firmware'!, 15 = 120, 20 = 5, 11 = 3, 8 = 0xFFFFFFFF)"
     confidence: observed-only
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25): shape in ev/7.25-hscan-20-hi.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-107.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
   v7-net-singleton-114:
     sys-to: [20, 114]
     status: role-open
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only thin data singleton (role open)"
+    role: "v7-only singleton, 0xfe-family with 115/126 (0xfe0007/08=T, 0xfe000a=F, 0xfe000d=T, 0xfe0029=F); 0xfe0010 = 'default'; USER fields {0x23:T, 3:0, 7:1, 8:0, 1:0, 2:0}"
     confidence: observed-only
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-114.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
   v7-net-singleton-115:
     sys-to: [20, 115]
     status: role-open
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only empty-data GET (role open)"
+    role: "v7-only 0xfe-only message, family with 114/126 (0xfe0007/08=T, 0xfe000a=F, 0xfe000d=T, 0xfe0029=F); 0xfe0010 = 'default'; NO user fields at all"
     confidence: observed-only
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-115.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
   v7-net-singleton-122:
     sys-to: [20, 122]
     status: role-open
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only thin data singleton (role open)"
+    role: "v7-only thin data singleton (role open; 255-heavy: 0x121/0x122/0x12f/0x131 = 255, 0x132 = [255], 0x11 = 2, 0x12c = 2)"
     confidence: observed-only
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-122.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
   v7-net-singleton-125:
     sys-to: [20, 125]
     status: role-open
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only thin data singleton (role open)"
+    role: "v7-only thin data singleton (role open; 0x11 = [], 0x15 = 1, 0x0e = 0xFFFFFFFF, 0x10 = T)"
     confidence: observed-only
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-125.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
   v7-net-singleton-126:
     sys-to: [20, 126]
     status: role-open
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only thin data singleton (role open)"
+    role: "v7-only singleton, 0xfe-family with 114/115 (0xfe0007/08=T, 0xfe000a=F, 0xfe000d=T, 0xfe0029=F); 0xfe0010 = 'disabled'; USER fields {0x14/0x15/0x16: 255}"
     confidence: observed-only
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-126.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
   unknown-24-10:
     sys-to: [24, 10]
     status: role-open
     process-id: 0x18
     cmd: GET_ONE
-    role: "unknown singleton, raw shape {1:F, 2:F}"
+    role: "unknown singleton, STABLE version drift: v7 {1:F, 2:F}, v6 {1:F, 2:T} (re-queried, both stable)"
     confidence: observed-only
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-24-10.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical, exemplar ev/7.25-pert-24-10-{pre,post}.json); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
   unknown-24-14:
     sys-to: [24, 14]
     status: role-open
     process-id: 0x18
     cmd: GET_ONE
-    role: "unknown singleton, raw shape {8:F, 9:T, 15:0}"
+    role: "unknown singleton, raw shape {8:F, 9:T, 15:0} — byte-identical both versions"
     confidence: observed-only
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-24-14.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
 
   unknown-24-16:
     sys-to: [24, 16]
     status: role-open
     process-id: 0x18
     cmd: GET_ONE
-    role: "unknown singleton, raw shape {1:2, 2:10} (v6 says /nova/store/chfont — console font, unconvinced as the M2 role)"
+    role: "unknown singleton, raw shape {1:2, 2:10} — byte-identical both versions (v6 says /nova/store/chfont — console font, unconvinced as the M2 role)"
     confidence: observed-only
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-24-16.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
 
-  unknown-24-31:
+  ros-mode-safepkgs-gate:
     sys-to: [24, 31]
-    status: role-open
     process-id: 0x18
+    process-ref: "./processes.yaml 0x18 (management)"
     cmd: GET_ONE
-    role: "unknown singleton: 5 range-rows + '7.13+,6.49.8+' + 16-byte blob"
+    role: "ROS software-mode / safe-packages gate (read-only): field 7 = SafePkgs version-floor list ('7.13+,6.49.8+'), fields 5/6 = ROSMode package rows/count. Request 0xfe000c bit 28 unfolds nested 0xfe0024 mode message; 0x78/0x79 + u64 0x66 need rosMode feature 0x12 (false on CHR). v6 answers {10:0} only."
     confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        5: { name: package-rows, tcode: message_array, role: "5 rows: {7:T,1:u32,2:u32} version ranges + {3:timestamp,4:0xFFFFFFFF} pair" }
+        6: { name: package-count, tcode: u8, role: "5" }
+        7: { name: safepkgs-floors, tcode: string, role: "nv::SafePkgs::tostr() — minimum safe versions per branch" }
+        32: { name: mode-blob, tcode: bytes, size: 16 }
     evidence:
+      - source: code
+        ref: "RouterOS v7 sys2 getter 0x805aaec (slot 9): SafePkgs::tostr -> field 7, ROSMode fields 5/6, 0xfe000c-bit-28 -> 0xfe0024, hasFeature(0x12) gate; slot 10 = base cmdSet (read-only); see work/2026-10-chr-extraction/sys2-handler-tables.md"
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-24-31.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): hidden leg ev/7.25-getone-24-31-bit28.json (0xfe0024 unfolds, 0x78/0x79/0x66 absent — feature-gated); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+    revision-history:
+      - date: 2026-10-31
+        belief: "unknown singleton with dramatic v6/v7 drift (version-scoped role change or empty v6 source)"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 sys2 getter decode + live hidden-leg proof; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
   unknown-13-5:
     sys-to: [13, 5]
     status: role-open
     process-id: 0x0d
     cmd: GET_ONE
-    role: "unknown singleton, raw shape {5:[], 1:F, 2:T, 4:1, 3:0}"
+    role: "unknown singleton, raw shape {5:[], 1:F, 2:T, 4:1, 3:0} — byte-identical both versions"
     confidence: observed-only
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9/§10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-13-5.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
 
   unknown-2-1:
     sys-to: [2, 1]
@@ -707,6 +836,207 @@ handlers:
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9/§10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-2-1.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
+
+  unknown-24-33:
+    sys-to: [24, 33]
+    status: role-open
+    process-id: 0x18
+    cmd: GET_ONE
+    role: "v7-only unknown singleton, raw shape {501:'', 502:T, 503:F}; also served via console proxy [48,5] (from=[48,5,24,33]). v6 serves {501:'',502:T} NATIVELY on [48,5] (no 503) — a v6->v7 handler migration with proxy-compat. Unmoved by identity/timezone/filter/user perturbation."
+    confidence: observed-only
+    evidence:
+      - source: code
+        ref: "RouterOS v7 sys2 addHandler census (18 sites incl. 33); see work/2026-10-chr-extraction/sys2-handler-tables.md (v7 census)"
+      - source: sample
+        ref: "live CHR interrogation (census batch, 7.25): full dump ev/7.25-getone-24-33.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, both versions): [48,5] proxy ev/7.25-getone-48-5.json vs v6-native ev/6.49-getone-48-5.json; perturbation-negative; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+
+  unknown-24-35:
+    sys-to: [24, 35]
+    status: role-open
+    process-id: 0x18
+    cmd: GET_ONE
+    role: "v7-only unknown singleton, EMPTY data (bare-SYS-only success, zero payload fields); unmoved by identity/timezone/filter/user perturbation"
+    confidence: observed-only
+    evidence:
+      - source: code
+        ref: "RouterOS v7 sys2 addHandler census (18 sites incl. 35); see work/2026-10-chr-extraction/sys2-handler-tables.md (v7 census)"
+      - source: sample
+        ref: "live CHR interrogation (census batch, 7.25): full dump ev/7.25-getone-24-35.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+
+  fcc-regulatory:
+    sys-to: [24, 38]
+    process-id: 0x18
+    process-ref: "./processes.yaml 0x18 (management)"
+    cmd: GET_ONE
+    role: "regulatory / FCC compliance text (full Part 15 statement)"
+    confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        1: { name: fcc-statement, tcode: string, role: "'This device complies with part 15 of the FCC Rules...' (5 lines, verbatim)" }
+    evidence:
+      - source: code
+        ref: "RouterOS v7 sys2 addHandler census (18 sites incl. 38); see work/2026-10-chr-extraction/sys2-handler-tables.md (v7 census)"
+      - source: sample
+        ref: "live CHR interrogation (census batch, 7.25): full dump ev/7.25-getone-24-38.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
+
+  unknown-20-134:
+    sys-to: [20, 134]
+    status: role-open
+    process-id: 0x14
+    cmd: GET_ALL
+    role: "v7-only THIRD mark-registry instance — same factory class as [20,13]/[20,14] (max 0xfff/0xffff/0x7ffe, name 'no-mark', adjacent registration; v6 has 13/14 only) — that NEVER populates: 11 negatives (mangle routing/packet/connection, IPv6 packet+connection, bridge-filter, routing-table, route, routing-rule, VRF member, queue-referenced marks)"
+    confidence: observed-only
+    evidence:
+      - source: code
+        ref: "RouterOS v7 net one-factory build 0x8056724 for 13/14/134 (0x805c69e/0x805c6af/0x805c6c3); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+      - source: sample
+        ref: "live CHR interrogation (census batch, 7.25): ev/7.25-getone-20-134.json + ev/7.25-getall-20-134{-rt,}.json (4 mark-kind negatives); see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): 7 more negatives (IPv6 conn-mark shares 14, bridge mark shares 13, table/route/rule/VRF/queue silent); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+
+  security-advisory-24-34:
+    sys-to: [24, 34]
+    process-id: 0x18
+    process-ref: "./processes.yaml 0x18 (management)"
+    cmd: GET_OBJ
+    role: "v7-only security-advisory registry (GETOBJ-only; bare GET -> UNKNOWNID): obj=1 returns one advisory (0xfe0008=T, 0xfe0009=description, 0xfe0010='Permissive ipv6 firewall traceroute rule'); obj 0,2-8 -> UNKNOWNID. v6: BRKPATH."
+    confidence: observed-only
+    fields:
+      namespace-session:
+        8: { name: advisory-active, tcode: bool }
+        9: { name: advisory-description, tcode: string }
+        16: { name: advisory-title, tcode: string, role: "0xfe0010" }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): ev/7.25-getobj-24-34-1.json (obj 0,2-8 UNKNOWNID); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+
+  unknown-13-9:
+    sys-to: [13, 9]
+    status: role-open
+    process-id: 0x0d
+    cmd: GET_ONE
+    role: "v7-only unknown singleton {1:u8 0, 2:u8 0} (GET-only; GETALL -> NOTIMP); v6 BRKPATH. NOT user/session count (stays zero with an extra user + active session)."
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (identity batch, both versions): ev/7.25-getone-13-9.json + v6/v7 user-census hscans; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+
+  user-list-13-1:
+    sys-to: [13, 1]
+    process-id: 0x0d
+    process-ref: "./processes.yaml 0x0d (user)"
+    cmd: GET_ALL
+    role: "/user list — one row per user (admin: id 1, group 3, comment 'system default user')"
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-user:
+        1: { name: username, tcode: string }
+        2: { name: group-id, tcode: u32 }
+        5: { name: unknown-5, tcode: u32, role: "0 on admin" }
+        6: { name: unknown-6, tcode: u32, role: "0 on admin" }
+      namespace-session:
+        9: { name: comment, tcode: string }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getall-13-1.json (1 row); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+
+  user-group-13-2:
+    sys-to: [13, 2]
+    process-id: 0x0d
+    process-ref: "./processes.yaml 0x0d (user)"
+    cmd: GET_ALL
+    role: "/user/group list — read/write/full rows with policy masks (f2) + f3 + f4/0xfe000d True flags"
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-user:
+        1: { name: group-name, tcode: string }
+        2: { name: policy-mask-a, tcode: u32 }
+        3: { name: policy-mask-b, tcode: u32 }
+        4: { name: unknown-4, tcode: bool, role: "True on all 3 groups" }
+        5: { name: unknown-5, tcode: u32, role: "0 on all 3 groups" }
+      namespace-session:
+        9: { name: comment, tcode: string }
+        13: { name: unknown-13, tcode: bool, role: "0xfe000d True on all 3 groups" }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getall-13-2.json (3 rows); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+
+  policy-catalog-13-3:
+    sys-to: [13, 3]
+    process-id: 0x0d
+    process-ref: "./processes.yaml 0x0d (user)"
+    cmd: GET_ALL
+    role: "policy catalog — 17 rows (local/telnet/ssh/ftp/reboot/read/write/policy/test/winbox/password/web/sniff/sensitive/api/romon/rest-api; ids 1–16+19, gap at 17–18); f3 = access-class (1 for the 7 access policies)"
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-user:
+        1: { name: description, tcode: string }
+        2: { name: policy-name, tcode: string }
+        3: { name: access-class, tcode: u32, role: "1 = access policy (local/telnet/ssh/winbox/web/api/rest-api), 0 = permission policy" }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getall-13-3.json (17 rows); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+
+  user-prefs-13-6:
+    sys-to: [13, 6]
+    process-id: 0x0d
+    process-ref: "./processes.yaml 0x0d (user)"
+    cmd: GET_ONE
+    role: "UserPrefs record (username-selected AAAA-map lookup; miss = EMPTY success, not unknown-id). admin has NO record here. WinBox-vs-WebFig split vs [13,7] open."
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getone-13-6-admin.json (empty); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+
+  user-prefs-13-7:
+    sys-to: [13, 7]
+    process-id: 0x0d
+    process-ref: "./processes.yaml 0x0d (user)"
+    cmd: GET_ONE
+    role: "UserPrefs record (username-selected AAAA-map lookup; SET-overwrites-whole-record; GET-after-SET round-trips). Record SURVIVES user-delete + reboot (orphan-by-design). WinBox-vs-WebFig split vs [13,6] open."
+    confidence: observed-only
+    fields:
+      namespace-user:
+        1: { name: username, tcode: string, role: "map key (stale after user delete)" }
+        2: { name: prefs-blob, tcode: string }
+        3: { name: unknown-3, tcode: u32, role: "u8 42 on the observed record" }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getone-13-7-u.json + ev/7.25-setone-13-7-u.json (round-trip + orphan post-state); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+
+  unknown-13-8:
+    sys-to: [13, 8]
+    status: role-open
+    process-id: 0x0d
+    cmd: GET_ALL
+    role: "unknown singleton-list — one row ({id 0, 0xfe0010 'default'})"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getall-13-8.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+
+  unknown-20-61:
+    sys-to: [20, 61]
+    status: role-open
+    process-id: 0x14
+    cmd: GET_ONE
+    role: "v7 net handler in the net/modem_aux store area (near net/apn + /nova/store/sms-config) — modem-aux/APN-adjacent, CHR-absent. Bare GET -> UNKNOWNID; GET with 0xfe0001 field -> UNKNOWNID; GETOBJ/GETALL -> NOTIMP. Selector unknown."
+    confidence: observed-only
+    evidence:
+      - source: code
+        ref: "RouterOS v7 net handler-61 construction (store 'net/modem_aux' at 0x805dc54, addHandler 0x3d at 0x805dc8e); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): GET/GETOBJ/GETALL gating matrix; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
 investigation-trail:
   - date: 2026-07-14
@@ -748,3 +1078,41 @@ investigation-trail:
       count=0 token quirk (points at second entry), 0x10001
       exact-match filter live both versions (ether 1, loopback 76).
       Mask-filter legs stay static-only.
+  - date: 2026-10-31
+    finding: |
+      Mask-leg + singleton batch (findings §16, 31 new ev
+      transcripts): 0x10002/0x10003 bitmask legs + both
+      default-mask rules live both versions (interface gains row
+      fields 1/2/3 + running/dynamic derivations); v7 finish
+      path decoded (token-only, the single v6/v7 worker delta);
+      [24,10] stable drift / [24,31] dramatic drift recorded;
+      114/115/126 identified as one 0xfe-family; full dumps for
+      all v7 high-net singletons + v6 [13,5]/[2,1].
+  - date: 2026-10-31
+    finding: |
+      Census + truncation + discrimination batch (findings §17,
+      18 new ev transcripts): f5/f10 SWAPPED (f5=actual,
+      f10=configured — revision history); [24,38] FCC text
+      identified + new entries 24-33/24-35/20-134 (4 mark-kind
+      negatives); IPv6 marks share [20,13]; v6 rbbios answers
+      ([61,1]={F}, [61,2]={}) + v7 61→1025 quirk; 306-row
+      truncation sound; iteration creation-order REFUTED (open).
+  - date: 2026-10-31
+    finding: |
+      Identity batch (findings §18): [24,34] security-advisory
+      registry identified (GETOBJ-only); [24,31] ROSMode/SafePkgs
+      role + hidden 0xfe000c-bit-28 leg; v7 row-core deltas +
+      dynamic-gate drift resolved; prober gained GETOBJ/SETONE;
+      [48,5]→[24,33] proxy; pid-1025 narrowed; iteration key
+      then-SOLVED as head+tree (SUPERSEDED by §19).
+  - date: 2026-10-31
+    finding: |
+      Dual-mode batch (findings §19, ~60 new ev transcripts):
+      iteration BEHAVIOR dual-mode R1–R4 (~43 transitions;
+      §18 head+tree DEAD); [13,6/7] = UserPrefs
+      (username-selected, whole-record SET, orphan survives);
+      [13,1/2/3/4,8] = users/groups/policies/sessions/
+      default; [13,4] dual-role (GET adopts + GETALL lists);
+      routerboard REST menu absent both versions
+      (build-gated); 0xff001e 6-row hunt negative; 0x98
+      tcode (bytes16_array) for PPPoE rows.

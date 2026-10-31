@@ -163,6 +163,19 @@ tcodes:
     name: u32_array
     payload: { count: u16le, item: u32_wide }
     confidence: documented
+  0x98:
+    name: bytes16_array
+    payload: { count: u16le, item: bytes16 }
+    confidence: observed-only
+    notes: |
+      First sighting: USER field 201 (0xc9) on a v7 PPPoE-client
+      interface row, one all-zeros 16-byte element (unset IPv6
+      address shape — role open). Decoded by alignment (u16 count
+      + 16B items yields clean entry boundaries into a following
+      0x88 field). Project-named; no documented label.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (fields batch, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
   0x90:
     name: u64_array
     status: declared-unwired

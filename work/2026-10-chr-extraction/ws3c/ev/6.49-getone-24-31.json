@@ -1,0 +1,27 @@
+[
+	{
+		"key": "0xff0001",
+		"tcode": "0x88",
+		"value": [0, 11]
+	},
+	{
+		"key": "0xff0002",
+		"tcode": "0x88",
+		"value": [24, 31]
+	},
+	{
+		"key": "0x00000a",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0xff0003",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0xff0006",
+		"tcode": "0x9",
+		"value": 2
+	}
+]

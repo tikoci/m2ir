@@ -1,0 +1,8 @@
+[
+	{ "key": "0xff0001", "tcode": "0x88", "value": [0, 11] },
+	{ "key": "0xff0002", "tcode": "0x88", "value": [48, 5] },
+	{ "key": "0x0001f6", "tcode": "0x1", "value": true },
+	{ "key": "0xff0003", "tcode": "0x9", "value": 2 },
+	{ "key": "0xff0006", "tcode": "0x9", "value": 2 },
+	{ "key": "0x0001f5", "tcode": "0x21", "value": "" }
+]

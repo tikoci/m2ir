@@ -1,0 +1,10 @@
+[
+	{ "key": "0xff0001", "tcode": "0x88", "value": [0, 11] },
+	{ "key": "0xff0002", "tcode": "0x88", "value": [13, 7] },
+	{ "key": "0xff001c", "tcode": "0xa0", "value": ["msg-proxy-7.25"] },
+	{ "key": "0xff0003", "tcode": "0x9", "value": 2 },
+	{ "key": "0xff0006", "tcode": "0x9", "value": 2 },
+	{ "key": "0x000003", "tcode": "0x9", "value": 42 },
+	{ "key": "0x000001", "tcode": "0x21", "value": "ws19-u" },
+	{ "key": "0x000002", "tcode": "0x21", "value": "hello-prefs" }
+]

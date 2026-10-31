@@ -1,0 +1,37 @@
+[
+	{
+		"key": "0xff0001",
+		"tcode": "0x88",
+		"value": [0, 11]
+	},
+	{
+		"key": "0xff0002",
+		"tcode": "0x88",
+		"value": [24, 14]
+	},
+	{
+		"key": "0x000008",
+		"tcode": "0x0",
+		"value": false
+	},
+	{
+		"key": "0x000009",
+		"tcode": "0x1",
+		"value": true
+	},
+	{
+		"key": "0x00000f",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0xff0003",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0xff0006",
+		"tcode": "0x9",
+		"value": 2
+	}
+]

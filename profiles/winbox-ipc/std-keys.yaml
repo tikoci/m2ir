@@ -59,11 +59,12 @@ keys:
       start as an inclusive row-id cursor (0 or nonexistent -> UNKNOWNID
       error); [20,0] does NOT validate — start is lower_bound(row-id)
       in the by-id index, inclusive (nonexistent ids continue from the
-      next-higher id, beyond-max returns empty), and iteration follows
-      creation order rather than id order — which is why bare v7 order
-      is ether1 (id 2) before lo (id 1) and the s=0..8 matrix fits no
-      function of (id,s) alone. Next-token = row-id of the next
-      un-emitted entry, so pagination stays sound. There is NO slot-14
+      next-higher id, beyond-max returns empty); the iteration ORDER
+      model itself is OPEN ("creation order" fit 2–3 rows but is
+      refuted at 102 — lo iterates last; no tested key fits).
+      Next-token = row-id of the next
+      un-emitted entry, so pagination stays sound (306-row live
+      proof: 194 + token → 112, no gaps/dups). There is NO slot-14
       override on net-0: GETALL is routed by a slot-7 handleCmd
       dispatch override to a custom async worker.
     evidence:
@@ -100,8 +101,12 @@ keys:
       yields 0 rows PLUS a 0xfe0003 token pointing at the SECOND entry
       (ev/7.25-getall-20-0-count0.json) — following it skips the first
       row. The v6 [20,0] reply echoes 0xfe0004 = emitted-row count
-      (live: 1 row -> 0xfe0004=1); v7 [20,0] drops that echo (neither
-      0xfe0004 nor 0xfe0019 on the bare reply).
+      (live: 1 row -> 0xfe0004=1, incl. on filtered GETALLs — 0-row
+      results echo 0xfe0004=0); v7 [20,0] drops that echo (neither
+      0xfe0004 nor 0xfe0019 on the bare reply) because the v7
+      finalize block (0x8068071-97) lacks the count insert the v6
+      block (0x80d1f86-9c) always emits — the single v6/v7 worker
+      delta, statically proven.
     evidence:
       - source: code
         ref: "RouterOS libumsg.so ConfigHandler::cmdGetAll count clamp (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
@@ -111,6 +116,10 @@ keys:
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): chaining + v6 reply echo 0xfe0004=1 (ev/6.49-getall-20-0.json); see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
       - source: sample
         ref: "live CHR interrogation (post-WS-4 batch): v6 count=0->all + v7 count=0 token quirk; see work/2026-10-chr-extraction/ws3c-prober-findings.md §15"
+      - source: code
+        ref: "RouterOS net [20,0] finalize delta: v6 0x80d1f86-9c always inserts emitted count, v7 0x8068071-97 omits it; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch): v6 echo holds on filtered GETALLs incl. 0-row (0xfe0004=0); see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
     revision-history:
       - date: 2026-10-31
         belief: "count=0 empties the GETALL reply, unversioned"
@@ -137,7 +146,7 @@ keys:
     semantic: bool
     role: "row is dynamically created (not static config)"
     confidence: documented
-    notes: "Proven live: true on the DHCP-created address row. First-party: co-occurs with 0xfe000a/0xfe0009 in row builders across net+bridge2 (33-40 sites each). Present only on some row types (bridge yes, ether/lo no)."
+    notes: "Proven live: true on the DHCP-created address row. First-party: co-occurs with 0xfe000a/0xfe0009 in row builders across net+bridge2 (33-40 sites each); on [20,0] presence is gated on entry+0x14 bit 0x80 (row-core 0x80f68fd). Present only on some row types (bridge yes, ether/lo no)."
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25), REST cross-checked; see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
@@ -199,17 +208,26 @@ keys:
       and the observed u32-flags shape are both recorded; which contexts
       use which is unresolved. As a SYS_CMD value 0xfe000c is CMD_SHUTDOWN
       (see std-commands.yaml) — namespaces overlap numerically.
+      Per-handler SELECTOR use proven: [24,31] tests bit 28 (0x10000000)
+      of a request 0xfe000c word to unfold the nested 0xfe0024 mode
+      message (static getter + live proof).
     evidence:
       - source: code
         ref: "RouterOS libumsg.so ConfigHandler::cmdGetAll flags read (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): flags values ignored for content; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): [24,31] bit-28 leg ev/7.25-getone-24-31-bit28.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
 
   0xfe000d:
     canonical-name: STD_PRESET
     physical: { tcodes: ["*"] }
     semantic: any
     confidence: documented
+    notes: "Sightings: bool T on the v7 [20,114]/[20,115]/[20,126] 0xfe-family singletons (alongside 0xfe0007/08=T, 0xfe000a=F, 0xfe0029=F). Role beyond the documented label not yet decoded."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, 7.25): ev/7.25-getone-20-{114,115,126}.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
 
   0xfe000e:
     canonical-name: STD_PAGENO
@@ -229,10 +247,12 @@ keys:
     semantic: utf8-string
     role: "name string; on [20,13]/[20,14] mark-registry rows this is the mark name"
     confidence: documented
-    notes: "Live: [20,13]/[20,14] rows are {0xfe0001 row-id, 0xfe0010 mark-name} ('no-mark' default + one row per mangle mark rule, proven by adding rules). Also seen: STRING 0x10 on the discover be32/addr6 neighbor row."
+    notes: "Live: [20,13]/[20,14] rows are {0xfe0001 row-id, 0xfe0010 mark-name} ('no-mark' default + one row per mangle mark rule, proven by adding rules). Also seen: STRING 0x10 on the discover be32/addr6 neighbor row; 'default' on v7 [20,114]/[20,115], 'disabled' on v7 [20,126] (one 0xfe-family)."
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §7/§10"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, 7.25): ev/7.25-getone-20-{114,115,126}.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
 
   0xfe0011:
     canonical-name: STD_INTERVAL
@@ -290,10 +310,12 @@ keys:
     semantic: u32
     role: "TOTAL row count carried on replies (present even on error replies)"
     confidence: documented
-    notes: "Live: present even on UNKNOWNID error replies; ABSENT on [20,0] — handler-specific, not universal. Distinct from 0xfe0014 (GETCOUNT answer)."
+    notes: "Live: present even on UNKNOWNID error replies; ABSENT on [20,0] (incl. the 306-row truncated replies) but present (=1) on [20,134] — handler-specific, not universal. Distinct from 0xfe0014 (GETCOUNT answer)."
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §7/§8"
+      - source: sample
+        ref: "live CHR interrogation (census batch, 7.25): =1 on [20,134], absent on truncated [20,0]; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
 
   0xfe001a:
     canonical-name: STD_CLASS
@@ -337,6 +359,30 @@ keys:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25) — negative result; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
 
+  0xfe0029:
+    canonical-name: STD_OBSERVED_29
+    physical: { tcodes: [0x00, 0x01] }
+    semantic: bool
+    role: "unknown bool (project-named; no documented label)"
+    confidence: observed-only
+    notes: "Sighting: bool F on the v7 [20,114]/[20,115]/[20,126] 0xfe-family singletons (alongside 0xfe0007/08=T, 0xfe000a=F, 0xfe000d=T). First occurrence of this key anywhere in the corpus."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, 7.25): ev/7.25-getone-20-{114,115,126}.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
+
+  0xfe0024:
+    canonical-name: STD_OBSERVED_24
+    physical: { tcodes: [0x28, 0x29] }
+    semantic: nested-message
+    role: "flattened ROSMode runtime message (project-named; no documented label)"
+    confidence: observed-only
+    notes: "[24,31] inserts its flattened runtimeMsg here when the request carries 0xfe000c bit 28 (static getter + live proof: 32 nested fields — 0x6d u32_array + 0x0b-0x1f bools + 0x64/0x65/0x66/0x68-0x6e). First occurrence of this key anywhere in the corpus."
+    evidence:
+      - source: code
+        ref: "RouterOS v7 sys2 getter 0x805aaec (flatten + insert 0xfe0024); see work/2026-10-chr-extraction/sys2-handler-tables.md"
+      - source: sample
+        ref: "live CHR interrogation (identity batch, 7.25): ev/7.25-getone-24-31-bit28.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+
 # ── session naming ────────────────────────────────────────────────────────
 session-naming:
   role: |
@@ -376,3 +422,18 @@ investigation-trail:
       proven (0xfe0004 notes), v7 count=0 token quirk recorded
       (0 rows + second-entry token), lower_bound start + 0x10001
       filter confirmed both versions.
+  - date: 2026-10-31
+    finding: |
+      Mask-leg + singleton batch (findings §16, net-bridge2 §8
+      "v7 finish path" + "Filter legs"): v7 finalize omits the
+      0xfe0004 echo statically (the single v6/v7 worker delta;
+      v6 echo holds on filtered GETALLs incl. 0-row);
+      0xfe0007 presence gated on entry+0x14 bit 0x80; new entry
+      0xfe0029 (bool F on the 114/115/126 family) + 0xfe000d
+      sighting; 0xfe0010 gains 'default'/'disabled' values.
+  - date: 2026-10-31
+    finding: |
+      Census + truncation batch (findings §17): 306-row
+      pagination sound (0xfe0003 notes); [20,0] iteration
+      creation-order REFUTED (open model); 0xfe0019 =1 on
+      [20,134], absent on truncated [20,0].

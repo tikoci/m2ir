@@ -5,6 +5,9 @@
 //   bun work/2026-10-chr-extraction/ws3c/probe.ts --quickchr twin3 adopt
 //   bun work/2026-10-chr-extraction/ws3c/probe.ts --quickchr twin3 getone 24 2
 //   bun work/2026-10-chr-extraction/ws3c/probe.ts --quickchr twin3 getall 20 0
+//   bun work/2026-10-chr-extraction/ws3c/probe.ts --quickchr twin3 getobj 24 34 0
+//   bun work/2026-10-chr-extraction/ws3c/probe.ts --quickchr twin3 getone 24 31 --xfield 16646156=268435456
+//   bun work/2026-10-chr-extraction/ws3c/probe.ts --quickchr twin3 getone 13 6 --xstr 1=admin
 //   bun work/2026-10-chr-extraction/ws3c/probe.ts --quickchr twin3 sweep
 //   bun work/2026-10-chr-extraction/ws3c/probe.ts --quickchr twin3 redp1sweep 300
 //
@@ -24,6 +27,7 @@ import {
 	type EncEntry,
 	encBool,
 	encodeM2,
+	encStr,
 	encU32,
 	encU32Array,
 	findEntry,
@@ -55,6 +59,7 @@ interface Args {
 	fromGuess: number;
 	getallMode: string;
 	xfields: Array<{ key: number; val: number }>;
+	xstrs: Array<{ key: number; val: string }>;
 	reqId: number;
 	holdMs: number;
 	cmd: string;
@@ -75,6 +80,7 @@ function parseArgs(argv: string[]): Args {
 		fromGuess: 11,
 		getallMode: "auto",
 		xfields: [],
+		xstrs: [],
 		reqId: 2,
 		holdMs: 0,
 		cmd: "auth",
@@ -105,6 +111,15 @@ function parseArgs(argv: string[]): Args {
 				throw new Error("--xfield <fullkey>=<value>");
 			}
 			a.xfields.push({ key, val });
+		} else if (t === "--xstr") {
+			const spec = argv[++i] ?? "";
+			const eq = spec.indexOf("=");
+			const key = Number(spec.slice(0, eq));
+			const val = spec.slice(eq + 1);
+			if (!Number.isInteger(key) || eq < 0) {
+				throw new Error("--xstr <fullkey>=<string>");
+			}
+			a.xstrs.push({ key, val });
 		} else if (t.startsWith("--")) throw new Error(`unknown flag ${t}`);
 		else pos.push(t);
 	}
@@ -134,17 +149,25 @@ function resolveQuickchr(name: string): {
 } {
 	const list = quickchrJson(["list", "--json"]);
 	if (!Array.isArray(list)) throw new Error("quickchr list: want array");
+	// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
 	const m = list.map(asRecord).find((x) => x["name"] === name);
 	if (!m) throw new Error(`quickchr: no machine ${name}`);
+	// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
 	const ports = asRecord(m["ports"]);
+	// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
 	const wb = asRecord(ports["winbox"] ?? {});
+	// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
 	const port = wb["host"];
 	if (typeof port !== "number") throw new Error("quickchr: no winbox port");
 	const insp = asRecord(quickchrJson(["inspect", name, "--json"]));
+	// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
 	const services = asRecord(insp["services"] ?? {});
 	const rest = asRecord(services["rest-api"] ?? {});
+	// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
 	const auth = asRecord(rest["auth"] ?? {});
+	// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
 	const user = auth["username"];
+	// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
 	const pass = auth["password"];
 	if (typeof user !== "string" || typeof pass !== "string") {
 		throw new Error("quickchr: no rest-api auth");
@@ -261,6 +284,21 @@ export async function login(
 // ── requests ────────────────────────────────────────────────────────────
 
 /** Build a request in real-client field order: REPLYEXP, REQID, CMD, TO, FROM. */
+function encodeExtras(a: Args): EncEntry[] {
+	return [
+		...a.xfields.map((f) => encU32(f.key, f.val)),
+		...a.xstrs.map((f) => encStr(f.key, f.val)),
+	];
+}
+
+function customSpec(a: Args): string {
+	const parts = [
+		...a.xfields.map((f) => `0x${f.key.toString(16)}=${f.val}`),
+		...a.xstrs.map((f) => `0x${f.key.toString(16)}=${JSON.stringify(f.val)}`),
+	];
+	return parts.length > 0 ? ` custom ${parts.join(" ")}` : "";
+}
+
 function buildRequest(
 	to: number[],
 	cmd: number,
@@ -294,6 +332,8 @@ async function roundTrip(
 
 const CMD_GET = 0xfe000d;
 const CMD_GETALL = 0xfe0004;
+const CMD_GETOBJ = 0xfe0002;
+const CMD_SET = 0xfe000e;
 
 function toJSON(m: M2Message): unknown {
 	return m.entries.map((e) => ({
@@ -314,7 +354,9 @@ function jsonValue(v: M2Value): unknown {
 		) {
 			return (v as M2Message[]).map(toJSON);
 		}
-		return v;
+		return (v as unknown[]).map((x) =>
+			x instanceof Uint8Array ? `bytes:${fmtHex(x, 256)}` : x,
+		);
 	}
 	if (typeof v === "object") return toJSON(v as M2Message);
 	return v;
@@ -351,14 +393,15 @@ async function cmdGetOne(
 		return;
 	}
 	const to = hid === undefined ? [pid] : [pid, hid];
+	const extra = encodeExtras(a);
 	const reply = await roundTrip(
 		s.conn,
 		s.keys,
-		buildRequest(to, CMD_GET, s.sourceId, 2, []),
+		buildRequest(to, CMD_GET, s.sourceId, 2, extra),
 	);
 	if (a.json) console.log(JSON.stringify(toJSON(reply)));
 	else {
-		console.log(`GET_ONE [${to}] (sourceId=${s.sourceId}):`);
+		console.log(`GET_ONE [${to}] (sourceId=${s.sourceId})${customSpec(a)}:`);
 		console.log(fmtMessage(reply));
 	}
 	s.conn.close();
@@ -399,8 +442,8 @@ async function cmdGetAll(
 		return;
 	}
 	const to = hid === undefined ? [pid] : [pid, hid];
-	if (a.xfields.length > 0) {
-		const extra = a.xfields.map((f) => encU32(f.key, f.val));
+	if (a.xfields.length > 0 || a.xstrs.length > 0) {
+		const extra = encodeExtras(a);
 		const rq = a.reqId;
 		const reply = await roundTrip(
 			s.conn,
@@ -408,9 +451,7 @@ async function cmdGetAll(
 			buildRequest(to, CMD_GETALL, s.sourceId, rq, extra),
 		);
 		const rows = findEntry(reply, 0xfe0002);
-		const spec = a.xfields
-			.map((f) => `0x${f.key.toString(16)}=${f.val}`)
-			.join(" ");
+		const spec = customSpec(a).replace(/^ custom /, "");
 		console.log(
 			`--- GET_ALL [${to}] custom ${spec} rows=${rows && Array.isArray(rows.value) ? (rows.value as M2Message[]).length : "none"} ---`,
 		);
@@ -444,6 +485,59 @@ async function cmdGetAll(
 				`--- GET_ALL [${to}] mode=${mode} ERROR: ${(e as Error).message} ---`,
 			);
 		}
+	}
+	s.conn.close();
+}
+
+async function cmdGetObj(
+	a: Args,
+	t: { host: string; port: number; user: string; pass: string },
+	pid: number,
+	hid: number,
+	objId: number,
+): Promise<void> {
+	const s = await login(t.host, t.port, t.user, t.pass, a);
+	if ("mschap" in s) {
+		console.log("MSCHAP-33 branch");
+		return;
+	}
+	const to = [pid, hid];
+	const extra = [encU32(0xfe0001, objId), ...encodeExtras(a)];
+	const reply = await roundTrip(
+		s.conn,
+		s.keys,
+		buildRequest(to, CMD_GETOBJ, s.sourceId, 2, extra),
+	);
+	if (a.json) console.log(JSON.stringify(toJSON(reply)));
+	else {
+		console.log(`GET_OBJ [${to}] obj=${objId} (sourceId=${s.sourceId}):`);
+		console.log(fmtMessage(reply));
+	}
+	s.conn.close();
+}
+
+async function cmdSetOne(
+	a: Args,
+	t: { host: string; port: number; user: string; pass: string },
+	pid: number,
+	hid?: number,
+): Promise<void> {
+	const s = await login(t.host, t.port, t.user, t.pass, a);
+	if ("mschap" in s) {
+		console.log("MSCHAP-33 branch");
+		return;
+	}
+	const to = hid === undefined ? [pid] : [pid, hid];
+	const extra = encodeExtras(a);
+	const reply = await roundTrip(
+		s.conn,
+		s.keys,
+		buildRequest(to, CMD_SET, s.sourceId, 2, extra),
+	);
+	if (a.json) console.log(JSON.stringify(toJSON(reply)));
+	else {
+		console.log(`SET_ONE [${to}] (sourceId=${s.sourceId})${customSpec(a)}:`);
+		console.log(fmtMessage(reply));
 	}
 	s.conn.close();
 }
@@ -616,6 +710,28 @@ async function main(): Promise<void> {
 		const hid = a.rest[1] === undefined ? undefined : Number(a.rest[1]);
 		if (!Number.isInteger(pid)) throw new Error("getall <pid> [hid]");
 		await cmdGetAll(a, t, pid, hid);
+	} else if (a.cmd === "getobj") {
+		const pid = Number(a.rest[0]);
+		const hid = Number(a.rest[1]);
+		const objId = Number(a.rest[2] ?? "0");
+		if (
+			!Number.isInteger(pid) ||
+			!Number.isInteger(hid) ||
+			!Number.isInteger(objId)
+		) {
+			throw new Error("getobj <pid> <hid> [obj-id]");
+		}
+		await cmdGetObj(a, t, pid, hid, objId);
+	} else if (a.cmd === "setone") {
+		const pid = Number(a.rest[0]);
+		const hid = a.rest[1] === undefined ? undefined : Number(a.rest[1]);
+		if (
+			!Number.isInteger(pid) ||
+			(hid !== undefined && !Number.isInteger(hid))
+		) {
+			throw new Error("setone <pid> [hid] (--xfield/--xstr payload)");
+		}
+		await cmdSetOne(a, t, pid, hid);
 	} else if (a.cmd === "sweep") await cmdSweep(a, t);
 	else if (a.cmd === "hscan") {
 		const pid = Number(a.rest[0]);
@@ -635,7 +751,7 @@ async function main(): Promise<void> {
 		await cmdRedp1Sweep(a, t, n);
 	} else
 		throw new Error(
-			`unknown command ${a.cmd} (auth|getone|getall|sweep|hscan|redp1sweep)`,
+			`unknown command ${a.cmd} (auth|getone|getall|getobj|setone|sweep|hscan|redp1sweep)`,
 		);
 	process.exit(0);
 }

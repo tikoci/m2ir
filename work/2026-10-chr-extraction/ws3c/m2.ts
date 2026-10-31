@@ -11,6 +11,7 @@ export type M2Value =
 	| M2Message
 	| number[]
 	| string[]
+	| Uint8Array[]
 	| M2Message[];
 
 export interface M2Entry {
@@ -65,6 +66,7 @@ const TCODE_NAMES: Record<number, string> = {
 	48: "bytes",
 	49: "bytes_c",
 	136: "u32_array",
+	152: "bytes16_array",
 	160: "string_array",
 	168: "msg_array",
 };
@@ -173,6 +175,12 @@ function decodeValue(c: Cursor, tcode: number): M2Value {
 			for (let i = 0; i < count; i++) out.push(c.u32le());
 			return out;
 		}
+		case 0x98: {
+			const count = c.u16le();
+			const out: Uint8Array[] = [];
+			for (let i = 0; i < count; i++) out.push(c.bytes(16));
+			return out;
+		}
 		case 0xa0: {
 			const count = c.u16le();
 			const out: string[] = [];
@@ -187,10 +195,13 @@ function decodeValue(c: Cursor, tcode: number): M2Value {
 				out.push(decodeNested(c.bytes(c.u16le())));
 			return out;
 		}
-		default:
+		default: {
+			const lo = Math.max(0, c.off - 20);
+			const hi = Math.min(c.buf.length, c.off + 48);
 			throw new Error(
-				`m2: unknown tcode 0x${tcode.toString(16)} at off ${c.off} — capture bytes`,
+				`m2: unknown tcode 0x${tcode.toString(16)} at off ${c.off} ctx[${lo}..${hi}]=${fmtHex(c.buf.subarray(lo, hi))}`,
 			);
+		}
 	}
 }
 
@@ -340,7 +351,7 @@ export function fmtValue(v: M2Value, indent = ""): string {
 				.join("\n");
 			return `${rows.length} rows\n${body}`;
 		}
-		return `[${(v as (number | string)[]).map((x) => (typeof x === "number" ? x : JSON.stringify(x))).join(", ")}]`;
+		return `[${(v as (number | string | Uint8Array)[]).map((x) => (typeof x === "number" ? x : x instanceof Uint8Array ? `bytes[${x.length}] ${fmtHex(x)}` : JSON.stringify(x))).join(", ")}]`;
 	}
 	const m = v as M2Message;
 	return `${m.entries.length} fields\n${fmtMessage(m, `${indent}  `)}`;

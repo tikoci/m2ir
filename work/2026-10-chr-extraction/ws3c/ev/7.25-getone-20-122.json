@@ -1,0 +1,82 @@
+[
+	{
+		"key": "0xff0001",
+		"tcode": "0x88",
+		"value": [0, 11]
+	},
+	{
+		"key": "0xff0002",
+		"tcode": "0x88",
+		"value": [20, 122]
+	},
+	{
+		"key": "0xff001c",
+		"tcode": "0xa0",
+		"value": ["msg-proxy-7.25"]
+	},
+	{
+		"key": "0x000132",
+		"tcode": "0x88",
+		"value": [255]
+	},
+	{
+		"key": "0x000120",
+		"tcode": "0x0",
+		"value": false
+	},
+	{
+		"key": "0x000122",
+		"tcode": "0x9",
+		"value": 255
+	},
+	{
+		"key": "0x00012c",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0x00012d",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0x00012e",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0x00012f",
+		"tcode": "0x9",
+		"value": 255
+	},
+	{
+		"key": "0x000130",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0x000131",
+		"tcode": "0x9",
+		"value": 255
+	},
+	{
+		"key": "0x000011",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0xff0003",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0xff0006",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0x000121",
+		"tcode": "0x9",
+		"value": 255
+	}
+]

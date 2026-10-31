@@ -129,3 +129,37 @@ period, or live WS-3C data.
   across `nova/bin/*`).
 - WS-4 drain: 14 new resource fields, `ERROR_OK`=0 add,
   `STATUS_OK` rename, `SYS_DREASON` scoping.
+
+## v7 census (static + live, 2026-10-31)
+
+v7 sys2 `addHandler` sites (objdump grep): 18 IDs
+{0,1,2,7,8,10,12,14,15,16,23,24,25,31,33,35,36,38} — the v6
+set minus {5,6,9} plus FOUR high handlers {33,35,36,38}, NO 17.
+Live hscan 32–40 adds a 19th: [24,34] answers UNKNOWNID from
+[24,34] (selector-gated; static grep missed 0x22 — grep
+undercounts, live wins). Live shapes: 33 {501:"",502:T,503:F},
+35 empty-data (SYS-only success), 36 NOTIMP, 38 = FCC Part 15
+text (identified). Handler-31 pairing: vtable `0x808c98c`,
+slot 9 = `0x805aaec` (uses `nv::SafePkgs` + `ROSMode::saveMsg`
+— role narrowed to a SafePkgs-adjacent package/mode gate, not
+proven). Full detail: `ws3c-prober-findings.md` §17 +
+`ev/7.25-hscan-24-hi.txt` + `ev/7.25-getone-24-{33,35,38}.json`.
+
+## [24,31] role proof + [24,34] identity (2026-10-31)
+
+Getter `0x805aaec` fully decoded: field 7 =
+`nv::SafePkgs(msg).tostr()` (the "7.13+,6.49.8+" floor
+list); fields 5/6 copied from `ROSMode::loadMsg` field 1;
+read-only (slot 10 = base `cmdSet` PLT). Request
+`0xfe000c` bit 28 unfolds nested `0xfe0024` (flattened
+runtime msg) — confirmed live (`ev/7.25-getone-24-31-
+bit28.json`); sibling `0x78/0x79` string arrays
+(`feature_info`/`running_info` enumeration) + u64 `0x66`
+need `rosMode()->hasFeature(0x12)` (`0x8054ebb`), false
+on CHR. Role: ROS software-mode / safe-packages gate
+singleton (findings §18). [24,34] = security-advisory
+registry (GETOBJ-only; 1 advisory on 7.25; v6 BRKPATH).
+Adjacent function `0x805ad16` (attempt-limited mode-SET,
+`incrAttemptCount` + `cleanSys/cleanStd`) belongs to a
+NEIGHBOR handler, not 31 — owner TBD (do not touch live;
+M2 SETs on mode handlers are unsafe).

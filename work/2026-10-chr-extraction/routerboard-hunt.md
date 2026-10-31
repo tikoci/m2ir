@@ -178,7 +178,33 @@ attr 4=ID (process-map record shape), root 33=LOADER,
 match by position — needs verification before use in
 `x3parse.ts`).
 
-## 8. Tool notes
+## 8. Live follow-up: rbbios answers, v7 aliases to 1025 (2026-10-31)
+
+Probed both CHRs directly (`ws3c-prober-findings.md` §17,
+`ev/{6.49,7.25}-hscan-61.txt`,
+`ev/6.49-getone-61-{1,2}.json`):
+
+- v6 `[61,1]` = `{1:bool FALSE}`, `[61,2]` = empty success,
+  `[61,3]` NOTIMP (GET); GET_ALL → NOTIMP on 1+2 (GET-only).
+  CORRECTION to §7 "server-dead": rbbios handlers were never
+  CALLED by sys2, but they ANSWER direct M2 queries — the
+  sys2→rbbios relay is absent, not the handlers. `[61,1]=F`
+  fits "RouterBOARD not detected on CHR" (unconfirmed — needs
+  real hardware to compare; the `[61,3]` csel0 setter was NOT
+  touched).
+- v7: every `[61,H]` answers from=**[1025…]** (NOTIMP/BRKPATH,
+  always carrying the `0xff000b`=-1 internal marker); every
+  `[61,H]` behaves exactly as `[1025,H]` (alias or shared
+  looper). 1025 =
+  real looper, single handler 3 (NOTIMP both verbs). Truly
+  unknown v7 pids (1,60,62,999) time out with no reply.
+  Identity of 1025 open (compat shim? session pseudo-process?
+  renamed board process?).
+- Verdict stands NARROWED: direct rbbios queries work on v6,
+  but the FULL RB row-shape (model/serial/firmware strings +
+  u32:4 + bool:16) is STILL homeless on both versions.
+
+## 9. Tool notes
 
 - `rbscan.ts` argv: `[root] [bins…]`; v6 root is default. Output
   sections per binary: `RB?` (signature conjunction), `anchor`
@@ -191,3 +217,21 @@ match by position — needs verification before use in
 - `?` ids = register-passed (loop-driven) or miscaptured
   pointer immediates (v7 `parser` raw flood) — treat as "id
   unknown", not field-id 0.
+
+## 10. REST gate witnessed (2026-10-31, findings §19)
+
+- `/system/routerboard` is ABSENT on CHR/x86 BOTH
+  versions (CLI-gate, no transcript): v7 =
+  `validation/menu-unavailable` (build-gated !i386 —
+  the gate mechanism); v6 = `:parse`-reject (no such
+  path at all; also note 6.49.23 has NO REST API —
+  use `--via native-api`). Both native-api retrieves
+  fail identically (`validation/unknown-path`).
+- v7 `/system/resource` carries NO routerboard field
+  (board-name is the QEMU string). The prior "v6
+  returns routerboard:false" note was not reproduced
+  and is dropped.
+- Verdict stands NARROWED (again): no CLI/REST path
+  to RB identity on CHR; [24,17] (§5) + v6 rbbios
+  [61,1/2] (§17) remain the only live RB-adjacent
+  surfaces. FULL RB row-shape STILL homeless.

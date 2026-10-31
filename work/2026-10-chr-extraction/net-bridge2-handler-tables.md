@@ -264,9 +264,13 @@ v7 dispatch adds a cmd-`0xe` fast path (MAC-presence check via
 ### Worker + iterator (v6 `0x80d1040` / `0x807763a`; v7 `0x8066774` / `0x8060306`, same shape, shifted offsets)
 
 - Entries are dual-indexed: a **by-id tree** (obj+0x9c, key = entry+0
-  = row-id) and an **iteration tree** (obj+0xac, creation order —
-  NOT id order). Bare GETALL walks the iteration tree from begin
-  (hence v7 bare order ether1(id 2) before lo(id 1)).
+  = row-id) and an **iteration tree** (obj+0xac, begin obj+0xb0;
+  nodes embed at entry+0x24). Bare GETALL walks the iteration tree
+  from begin. The iteration ORDER is behavior-SOLVED (findings
+  §19): stored order maintained by a dual-mode crossing-gated
+  rename fixup (R1–R4, day-0-NIC-gated) — see "Iteration key:
+  SUPERSEDED — dual-mode crossing-gated rename fixup". The §18
+  head+tree model and the §17 creation-order label are both dead.
 - **start = lower_bound(row-id)** in the by-id tree, INCLUSIVE, with
   NO validation: nonexistent ids continue from the next-higher id,
   beyond-max returns empty, absent (−1) starts at begin. Modeled,
@@ -280,20 +284,25 @@ v7 dispatch adds a cmd-`0xe` fast path (MAC-presence check via
   (1000); v7 `count = get(0xfe0004, −1); if (count > 1000)
   count = 1000` → count=0 means ZERO rows (matches the live 7.25
   fixture reading). Defaults agree (1000); [1,1000] agree.
-- **byte caps** (v6): soft 49999 (>49999 with rows left → token +
-  stop); hard 60000 (log `"getall resp too big, stopping at device
-  ..."`, drop the row, stop). v7 caps not decoded.
-- **GETALL filters** (`0x10001` leg live BOTH versions, findings
-  §15; `0x10002`/3+mask legs v6-static-only, untested): criteria
-  built by `0x805bc5c` from `0x10001` (exact entry+0x60, default −1
-  = all), `0x10002`/mask-`0x10011` on entry+0x14,
-  `0x10003`/mask-`0x10012` on entry+0x1c (default mask = val|2);
-  matched per entry by `0x805bc24`. Bit 2 of entry+0x1c is ALWAYS
-  skipped in both iteration modes (hidden/deleted rows — NOT
-  `0xfe000a` disabled, which stays visible). Slot-18 getcount honors
-  the same filters. A request carrying nested `0xfe001b` reads start
-  from the NESTED msg and iterates in ID order instead of creation
-  order (same filter).
+- **byte caps** (IDENTICAL both versions): soft 49999 (>49999
+  with rows left → token + stop); hard 60000 (log `"getall resp
+  too big, stopping at device ..."`, drop the row, stop); loop
+  pre-checks 55000 + `(60000−bytes)/1000` emitted heuristic. v7
+  proven at `0x806805a`/`0x8067f59`/`0x8068122` — see "v7 finish
+  path decoded" below.
+- **GETALL filters** (ALL legs live BOTH versions, findings
+  §15–§16): criteria built by `0x805bc5c` (v7 `0x806316a`,
+  identical) from `0x10001` (exact entry+0x60, default −1 = all),
+  `0x10002`/mask-`0x10011` on entry+0x14 (mask defaults to val02),
+  `0x10003`/mask-`0x10012` on entry+0x1c (mask defaults to
+  val03|2); matched per entry by `0x805bc24` as an exact
+  conjunction — see "Filter legs are row-field filters" below for
+  the full decode. Bit 2 of entry+0x1c is skipped by the BARE
+  default (`(w & 2) == 0` — hidden/deleted rows, NOT `0xfe000a`
+  disabled, which stays visible); explicit masks override it.
+  Slot-18 getcount honors the same filters. A request carrying
+  nested `0xfe001b` reads start from the NESTED msg and iterates in
+  ID order instead of stored order (same filter).
 - Reply shape: `0xfe0002` row array + `0xfe0003` next-token (when
   truncated) + `0xfe0004` emitted count. No `0xfe001d`, no
   `0xfe0019` (both handler-specific absences, live-confirmed).
@@ -311,6 +320,10 @@ V7-only-consistent: v6 ether1 has id 1, which would make s=0,1
 include ether1 (observed: excluded). The count=1→next=1→start=1
 pagination proof is likewise [20,0]-shaped (2 rows ether1+lo:
 head-1 = [ether1], token = lo's id 1, start=1 → [lo]).
+CAVEAT (2026-10-31): the "creation order" label on the iteration
+walk fit 2–3 rows but is REFUTED at 102 rows (findings §17) —
+the 3-row fit constrains only the RELATIVE order
+[ether1 < lo < bridge], which any surviving key model must keep.
 
 Falsifiable predictions — ALL CONFIRMED live 2026-10-31 (see
 findings §15): (1) v6 `[20,0]` count=0 returns ALL rows
@@ -322,6 +335,170 @@ quirk: v7 count=0 yields 0 rows + token = SECOND entry's id
 (off-by-one follow skips the first row — consistent with the
 v6 finish path advancing past the initial entry before the
 count-exhausted check).
+
+Truncation predictions — ALL CONFIRMED live 2026-10-31 on a
+306-row table (findings §17, `ev/7.25-getall-20-0-bulk{2,3}.json`):
+bare → 194 rows + token 203; start=203 → 112 rows ending at the
+final row, no token; 306/306 unique, no gaps/dups,
+order-continuous; no `0xfe0004`/`0xfe0019` either page (v7
+token-only). ~260B/row ⇒ 102 rows fit, 306 don't.
+
+### v7 finish path decoded (2026-10-31; closes the §8 open thread)
+
+The v7 worker is a +0x48-shifted clone of v6 with ONE functional
+delta. Reply builder `0x8067e3a` (v6 `0x80d1d36`), emit loop
+`0x80680d0` (v6 `0x80d1fe0`), iterator `0x8060306` (v6 `0x807763a`):
+
+| role | v6 field | v7 field |
+|---|---|---|
+| count remaining | obj+0x1b0 | obj+0x1f8 |
+| in-flight counter | obj+0x1b4 | obj+0x1fc |
+| iterator (current entry) | obj+0x1bc | obj+0x204 |
+| byte counter | obj+0x1b8 | obj+0x200 |
+| GETALL flags (0xfe000c) | obj+0x1d8 | obj+0x220 |
+| filter criteria (5 words) | obj+0x1c0 | obj+0x208 |
+
+Byte caps are IDENTICAL: soft 49999 (`0x806805a`, v6 `0x80d1f5a`),
+hard 60000 with the same `"getall resp too big, stopping at "` log
+(`0x8067f59`, v6 `0x80d1e50`), loop pre-checks 55000 +
+`(60000−bytes)/1000` heuristic (`0x8068122/2a`, v6 `0x80d205a/62`).
+The "v7 caps not decoded" caveat is retired — constants proven on
+both versions; only live >50KB truncation behavior stays unobserved.
+
+The single delta is the finalize block: v6 (`0x80d1f86–9c`) ALWAYS
+inserts `0xfe0004` = emitted-row count (array bytes >> 3) before
+`replyMessage`; v7 (`0x8068071–97`) inserts the `0xfe0003` next-token
+when rows remain and goes STRAIGHT to `replyMessage` — no
+`0xfe0004` echo exists on v7 [20,0]. This statically explains the
+live token-only truncation (findings §15).
+
+Count=0 quirk mechanics confirmed in BOTH: the emit loop exits
+immediately (count already 0) into the reply builder with an empty
+message, which takes the message-equal path, `decl`s the in-flight
+counter to 0, ADVANCES the initial iterator past the first entry,
+then hits the count-exhausted check with rows left → token = SECOND
+entry's id, 0 rows emitted. Following the token skips row one.
+
+### Filter legs are row-field filters (2026-10-31; closes static-only)
+
+Matcher `0x805bc24` (v6; v7 same shape), args ecx=criteria,
+edx=entry — exact conjunction:
+
+```text
+(entry+0x1c & mask12) == val03   AND
+(entry+0x14 & mask11) == val02   AND
+(val01 == -1 OR entry+0x60 == val01)
+```
+
+Builder `0x805bc5c` (v6; v7 `0x806316a` identical incl. defaults):
+
+| criterion | request key | mask key | default mask |
+|---|---|---|---|
+| val03 / mask12 | `0x10003` (req, 0 when absent) | `0x10012` | **val03 \| 2** |
+| val02 / mask11 | `0x10002` (req, 0 when absent) | `0x10011` | **val02** |
+| val01 | `0x10001` | — (exact) | **−1 = all** |
+
+CORRECTION to the §8 note above ("default mask = val|2"): the
+`|2` applies ONLY to the 0x10012 mask. Bare GETALL therefore =
+`(entry+0x1c & 2) == 0` (bit-2-hidden skip) + two match-alls.
+
+The row-core (`0x80f6738`) maps entry offsets DIRECTLY to row
+fields, so every filter leg is designable from observed rows:
+
+| entry offset | row field | notes |
+|---|---|---|
+| +0x14 | `0x10002`/u32 | direct copy (`0x80f6891`) |
+| +0x1c | `0x10003`/u32 | direct copy (`0x80f67f7`) |
+| +0x60 | `0x10001`/u32 | type code (`0x80f6828`) |
+| +0x1c bits | `0x1000e`/bool running | `(w & 0x500) == 0x500` (`0x80f6809`) |
+| +0x14 bit 0x80 | `0xfe0007`/bool dynamic | presence-gated (`0x80f68fd`) |
+
+Live values (both versions, stable across boots): ether1
+`0x10002=270947 0x10003=542529`, v7 lo `0x10002=0
+0x10003=525633` — all with bit 2 clear (visible) and
+`(0x10003 & 0x500)==0x500` (running). The mask legs went live on
+both versions in findings §16 (16 transcripts, all predictions
+confirmed incl. both default-mask rules and the hidden-row select).
+
+### Iteration key: SUPERSEDED — dual-mode crossing-gated rename fixup (2026-10-31)
+
+The §18 "head + name-tree" model recorded here is DEAD
+(findings §19 retraction; compacted "#1–#8/A/B/C"
+details were unsaved confabulation — ground truth is
+T1–T9 from iter1–6/2nic1–4). Behavior (~43 rename
+transitions, all fit): R1 universal crossing-gate (swap
+past adjacent N ⟺ N strictly between old and new, both
+directions); R2 1NIC-mode (day-0 1-NIC: crossed-bubble
+with a FROZEN pos0 slot — occupant immobile +
+unenterable; leftward one-short, rightward full-run);
+R3 2NIC+-mode (day-0 2/3-NIC: MOVE ⟺ crossed-run == 1,
+single adjacent swap, no pos0-specialness); R4 mode ⟺
+day-0 NIC count (fresh-box 4-way: twin4-F + ws19-day0-M
+plus ws20-M + ws21-M). Creation = sorted-insert (incl.
+pos0); reboot persists order and mode. 1NIC invariant:
+sorted-except-possibly-(0,1). The §8 3-row order
+[ether1, lo, bridge] still constrains relative order
+under creation-insert. v6 iteration not yet probed (no
+[20,0]-rename series on ws3c6); ws19 run≥3 untested.
+
+The static +0x20-u32-key lead stays RETRACTED for this
+tree (see below). NEW static entry point: the RENAME
+fixup path in net (not the iterator) — it branches on
+day-0-NIC-persistent state (tree birth-shape? lo depth?
+phys-count field?) into a pos0-guarded bubble (1NIC)
+vs a run-1-only single swap (2NIC+). Needs Ghidra/REA,
+not objdump; v6 iterator `0x807763a` (+0x9c lower_bound
+by id, `lea 0x24(%ecx)`, walk +0xac/begin +0xb0) is now
+secondary to the rename path.
+
+Prior retraction kept: the `lower_bound`-shaped helpers
+at v6 `0x807edc4/0x807ee08/0x807ee4c` (comparing node−4
+as u32) serve other +0xac trees in other objects
+(generic template coincidence — dozens of callers
+across 0x80a–0x810); the iteration comparator is
+name-string. Live-proof beats the objdump reading.
+
+Related anomaly RESOLVED (findings §18): the v7
+0xfe0007=False bridge row is version drift in the
+bridge-TYPE builder, not the row-core — a v6 bridge row
+with the same f2=0x18223 omits 0xfe0007 (base rule holds
+both versions; v7's bridge builder writes explicit False).
+
+### v7 row-core decoded (2026-10-31)
+
+v7 `[20,0]` row-core @`0x8064f1a` (8 callers incl. worker
+`0x8067f0e`/`0x806823d`), same `ix<>` sequence as v6
+`0x80f6738` with four deltas: (1) v6's 0x10066-STRING is
+gone from base — v7 type builders write 0x10066 as U32
+(`0x80659ae`, value from a walked sub-object; producer
+moved base→type, type string→u32); (2) NEW 0xff001e
+insert from entry+0x40 when ≠ 0xffffffff (`0x806515c`;
+unseen live — absent from all captured rows); (3) shifted
+offsets: 0x1000c/0x1003a from +0x180 (v6 +0x168),
+0x1003c array from +0x1c8/+0x1a8 (v6 +0x1a4/+0x184);
+(4) MAC tail differs (0x3e9 handling + type switch on
++0x60). IDENTICAL: 0x10002/0x10003/0x10001 direct copies
+(+0x14/+0x1c/+0x60), running `(w&0x500)==0x500` (v7 uses
+a NOT+TEST idiom, `0x8064fc4`), dynamic gate (`testb
+$0x80,0x14(%ebx)` → present-True else absent,
+`0x80650e6`). 0x10004 = entry+0x18→+0x28 (kernel ifindex,
+proven live: lo=1, sequential, gap at a deleted interface,
+absent on VRRP).
+
+### Handler 134: third mark-registry instance (2026-10-31)
+
+v7 net builds 13/14/134 from ONE factory (`0x8056724`,
+malloc 0xec) with (max, name) = (0xfff/0xffff/0x7ffe,
+"no-mark"), registered adjacently (`0x805c69e/0x805c6af/
+0x805c6c3`; v7-only — v6 net has 13/14, no 134). Same
+attach step for all three (string `0x8195337` =
+"no-mark"). 11 live negatives (findings §17/§18):
+mangle routing/packet/connection marks, IPv6 packet AND
+connection marks (both share 13/14 — the prime 134
+suspect refuted), bridge-filter marks (→13),
+routing-table, route-in-table, routing-rule, VRF member,
+queue-referenced marks. Same class, never populates —
+driver unknown (MPLS/CAPsMAN/LTE out of CHR-lab scope).
 
 ### v7 Handler vtable shift (framework drift)
 
