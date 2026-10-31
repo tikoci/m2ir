@@ -1852,3 +1852,54 @@ batch: 0x10002 low-byte flags (6/8:
 macvlan/ARP/enslavable proven,
 reserved×3, dynamic prior; bit 0
 probable).
+
+## 29. [13,6/7] split — 6=WinBox, 7=WebFig, static-only (2026-10-31)
+
+No live session (objdump on v7 `user`
+binary only; no transcripts). The
+WebFig-automation plan was mooted:
+the split is fully determined
+statically.
+
+- **Two classes, two stores.** `user`
+  carries `UserPrefs::cmdGet` +
+  `WebUserPrefs::cmdSet` with stores
+  `/nova/store/user/prefs/` vs
+  `/nova/store/user/webprefs/`
+  (0x8059000/0x8059018).
+- **hid6 = UserPrefs (WinBox).**
+  Registered with vtable 0x8059eb8
+  (`0x805814b`); its SET slot
+  (0x805372c) logs
+  "UserPrefs::cmdSet".
+- **hid7 = WebUserPrefs (WebFig).**
+  Vtable 0x8059e08 (`0x80581c0`;
+  same shape, slots 0/1/9/10
+  differ); its SET slot (0x80537c0)
+  logs "WebUserPrefs::cmdSet".
+- **The "Web" prefix is 3 bytes:**
+  0x8059342 = "WebUserPrefs::cmdSet",
+  0x8059345 = "UserPrefs::cmdSet" —
+  one string, two entry points.
+- No live confirmation attempted:
+  no known frontend action writes
+  prefs (prober M2 logins never
+  populated [13,6]+admin), so no
+  discriminating live test exists
+  to run.
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (one write site), 125 role,
+terminal surface (lower priority),
+nlevel proof (TRACTABLE via quickchr
+trial license — blocked on user
+credentials), 1028/1029/1030 roles,
+rewrite-table location
+(runtime/kernel?), M2-ADD persistence
+recipe (micro-thread), bit-0 proof
+(micro-thread), M2 row-SET addressing
+(micro-thread), 0x10003 bit roles
+(micro-thread). CLOSED this batch:
+[13,6/7] split (6=WinBox/7=WebFig,
+static).
