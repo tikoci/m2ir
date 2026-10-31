@@ -60,6 +60,7 @@ interface Args {
 	getallMode: string;
 	xfields: Array<{ key: number; val: number }>;
 	xstrs: Array<{ key: number; val: string }>;
+	xbools: Array<{ key: number; val: boolean }>;
 	reqId: number;
 	holdMs: number;
 	cmd: string;
@@ -81,6 +82,7 @@ function parseArgs(argv: string[]): Args {
 		getallMode: "auto",
 		xfields: [],
 		xstrs: [],
+		xbools: [],
 		reqId: 2,
 		holdMs: 0,
 		cmd: "auth",
@@ -120,6 +122,14 @@ function parseArgs(argv: string[]): Args {
 				throw new Error("--xstr <fullkey>=<string>");
 			}
 			a.xstrs.push({ key, val });
+		} else if (t === "--xbool") {
+			const spec = argv[++i] ?? "";
+			const [ks, vs] = spec.split("=");
+			const key = Number(ks);
+			if (!Number.isInteger(key) || (vs !== "0" && vs !== "1")) {
+				throw new Error("--xbool <fullkey>=<0|1>");
+			}
+			a.xbools.push({ key, val: vs === "1" });
 		} else if (t.startsWith("--")) throw new Error(`unknown flag ${t}`);
 		else pos.push(t);
 	}
@@ -288,6 +298,7 @@ function encodeExtras(a: Args): EncEntry[] {
 	return [
 		...a.xfields.map((f) => encU32(f.key, f.val)),
 		...a.xstrs.map((f) => encStr(f.key, f.val)),
+		...a.xbools.map((f) => encBool(f.key, f.val)),
 	];
 }
 
@@ -295,6 +306,7 @@ function customSpec(a: Args): string {
 	const parts = [
 		...a.xfields.map((f) => `0x${f.key.toString(16)}=${f.val}`),
 		...a.xstrs.map((f) => `0x${f.key.toString(16)}=${JSON.stringify(f.val)}`),
+		...a.xbools.map((f) => `0x${f.key.toString(16)}=${f.val ? "T" : "F"}`),
 	];
 	return parts.length > 0 ? ` custom ${parts.join(" ")}` : "";
 }

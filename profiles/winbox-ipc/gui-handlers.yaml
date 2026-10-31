@@ -674,12 +674,12 @@ handlers:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §7/§10"
 
-  v7-net-singleton-107:
+  sim-settings-20-107:
     sys-to: [20, 107]
-    status: role-open
+    status: identified-chr-absent
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only thin data singleton (role open; field 5 = 'firmware'!, 15 = 120, 20 = 5, 11 = 3, 8 = 0xFFFFFFFF)"
+    role: "v7-only modem SIM-settings holder: AHolder('sim_settings') + defconf 'ModemSIMSlots'. Live thin defaults (field 5 = 'firmware', 15 = 120, 20 = 5, 11 = 3, 8 = 0xFFFFFFFF) are SIM-slot defaults on a modem-less CHR."
     confidence: observed-only
     evidence:
       - source: sample
@@ -688,13 +688,22 @@ handlers:
         ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-107.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: code
+        ref: "RouterOS v7 net handler-107 ctor 0x805a09a (AHolder 'sim_settings', getDefconfParam 'ModemSIMSlots'); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+    revision-history:
+      - date: 2026-10-31
+        belief: "v7-net-singleton-107: thin data singleton, role open"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 net AHolder decode: sim_settings; see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
 
-  v7-net-singleton-114:
+  qos-profile-20-114:
     sys-to: [20, 114]
-    status: role-open
+    status: identified-chr-absent
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only singleton, 0xfe-family with 115/126 (0xfe0007/08=T, 0xfe000a=F, 0xfe000d=T, 0xfe0029=F); 0xfe0010 = 'default'; USER fields {0x23:T, 3:0, 7:1, 8:0, 1:0, 2:0}"
+    role: "v7-only QoS profile holder: AHolder('/nova/store/net/qos/profile'), member of the 8-handler QoS composite (ctor 0x8190e3e; siblings 115/116/117/120/121/122/126). Live 0xfe-defaults (0xfe0010 = 'default') are CHR-absent QoS defaults."
     confidence: observed-only
     evidence:
       - source: sample
@@ -703,13 +712,22 @@ handlers:
         ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-114.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: code
+        ref: "RouterOS v7 net QoS composite ctor 0x8190e3e (AHolder '/nova/store/net/qos/profile' at +0x90); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+    revision-history:
+      - date: 2026-10-31
+        belief: "v7-net-singleton-114: 0xfe-family singleton, role open"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 net QoS composite decode; see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
 
-  v7-net-singleton-115:
+  qos-map-20-115:
     sys-to: [20, 115]
-    status: role-open
+    status: identified-chr-absent
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only 0xfe-only message, family with 114/126 (0xfe0007/08=T, 0xfe000a=F, 0xfe000d=T, 0xfe0029=F); 0xfe0010 = 'default'; NO user fields at all"
+    role: "v7-only QoS map holder: AHolder('/nova/store/net/qos/map'), member of the 8-handler QoS composite (ctor 0x8190e3e; siblings 114/116/117/120/121/122/126). Live 0xfe-only defaults (0xfe0010 = 'default', no USER fields) are CHR-absent QoS defaults."
     confidence: observed-only
     evidence:
       - source: sample
@@ -718,13 +736,22 @@ handlers:
         ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-115.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: code
+        ref: "RouterOS v7 net QoS composite ctor 0x8190e3e (AHolder '/nova/store/net/qos/map' at +0x1a0); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+    revision-history:
+      - date: 2026-10-31
+        belief: "v7-net-singleton-115: 0xfe-only singleton, role open"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 net QoS composite decode; see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
 
-  v7-net-singleton-122:
+  qos-config-20-122:
     sys-to: [20, 122]
-    status: role-open
+    status: identified-chr-absent
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only thin data singleton (role open; 255-heavy: 0x121/0x122/0x12f/0x131 = 255, 0x132 = [255], 0x11 = 2, 0x12c = 2)"
+    role: "v7-only QoS config holder: AHolder('/nova/store/net/qos/config'), head (+0x0) of the 8-handler QoS composite (ctor 0x8190e3e; siblings 114/115/116/117/120/121/126). Live 255-heavy defaults are CHR-absent QoS config."
     confidence: observed-only
     evidence:
       - source: sample
@@ -733,13 +760,22 @@ handlers:
         ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-122.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: code
+        ref: "RouterOS v7 net QoS composite ctor 0x8190e3e (AHolder '/nova/store/net/qos/config' at +0x0); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+    revision-history:
+      - date: 2026-10-31
+        belief: "v7-net-singleton-122: 255-heavy singleton, role open"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 net QoS composite decode; see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
 
   v7-net-singleton-125:
     sys-to: [20, 125]
     status: role-open
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only thin data singleton (role open; 0x11 = [], 0x15 = 1, 0x0e = 0xFFFFFFFF, 0x10 = T)"
+    role: "v7-only thin data singleton (role open; 0x11 = [], 0x15 = 1, 0x0e = 0xFFFFFFFF, 0x10 = T). NARROWED (§25): custom object (not AHolder), embedded defaults {9:'',13:'',0x11:[],0x15:1,0x17:F,0x18:F}, slot-9 0x8166d84 with bit-29 -> 0xfe001d leg (static only), many readers (looper+0x71c); identity unknown."
     confidence: observed-only
     evidence:
       - source: sample
@@ -748,13 +784,15 @@ handlers:
         ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-125.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: code
+        ref: "RouterOS v7 net handler-125 construction (vtable 0x81af600, slot-9 0x8166d84, row builder 0x8166bcc, embedded defaults); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
 
-  v7-net-singleton-126:
+  qos-pfc-20-126:
     sys-to: [20, 126]
-    status: role-open
+    status: identified-chr-absent
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only singleton, 0xfe-family with 114/115 (0xfe0007/08=T, 0xfe000a=F, 0xfe000d=T, 0xfe0029=F); 0xfe0010 = 'disabled'; USER fields {0x14/0x15/0x16: 255}"
+    role: "v7-only QoS PFC (Priority Flow Control) holder: AHolder('/nova/store/net/qos/pfc'), member of the 8-handler QoS composite (ctor 0x8190e3e; siblings 114/115/116/117/120/121/122). Live 0xfe-defaults (0xfe0010 = 'disabled') are CHR-absent QoS defaults."
     confidence: observed-only
     evidence:
       - source: sample
@@ -763,13 +801,22 @@ handlers:
         ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-126.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: code
+        ref: "RouterOS v7 net QoS composite ctor 0x8190e3e (AHolder '/nova/store/net/qos/pfc' at +0x738); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+    revision-history:
+      - date: 2026-10-31
+        belief: "v7-net-singleton-126: 0xfe-family singleton, role open"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 net QoS composite decode; see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
 
-  unknown-24-10:
+  boot-flags-24-10:
     sys-to: [24, 10]
-    status: role-open
+    status: identified
     process-id: 0x18
     cmd: GET_ONE
-    role: "unknown singleton, STABLE version drift: v7 {1:F, 2:F}, v6 {1:F, 2:T} (re-queried, both stable)"
+    role: "boot-flag probe pair: field 1 = exists('/rw/DISABLE_SMP'), field 2 = exists('/rw/ENABLE_X86_64') (literal open() paths in slot-9 0x805719e). v7 {F,F} = both absent; v6 {F,T} = x86_64-flag era drift. Bit-29 request leg unfolds nested 0xfe001d defaults {1:F,2:F} (proven live)."
     confidence: observed-only
     evidence:
       - source: sample
@@ -778,6 +825,17 @@ handlers:
         ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-24-10.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical, exemplar ev/7.25-pert-24-10-{pre,post}.json); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: code
+        ref: "RouterOS v7 sys2 slot-9 0x805719e (open-path probes + bit-29 leg); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+      - source: sample
+        ref: "live CHR interrogation (singleton batch, 7.25): ev/7.25-getone-24-10-bit29.json (nested 0xfe001d {1:F,2:F}); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+    revision-history:
+      - date: 2026-10-31
+        belief: "unknown-24-10: unknown singleton, stable version drift"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 sys2 getter decode: /rw flag probes; see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
 
   unknown-24-14:
     sys-to: [24, 14]
@@ -862,13 +920,19 @@ handlers:
       - source: sample
         ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-2-1.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
 
-  unknown-24-33:
+  sysnote-24-33:
     sys-to: [24, 33]
-    status: role-open
+    status: identified
     process-id: 0x18
     cmd: GET_ONE
-    role: "v7-only unknown singleton, raw shape {501:'', 502:T, 503:F}; also served via console proxy [48,5] (from=[48,5,24,33]). v6 serves {501:'',502:T} NATIVELY on [48,5] (no 503) — a v6->v7 handler migration with proxy-compat. Unmoved by identity/timezone/filter/user perturbation."
+    role: "v7-only /system/note singleton (store '/nova/store/command/sysnote'; read-write): 501 = note text (string), 502 = show-at-login (bool), 503 = show-at-cli-login (bool) — proven 3/3 live BOTH directions (REST perturbation -> M2 tracks; M2 SET -> REST tracks). Bit-29 request leg unfolds nested 0xfe001d DEFAULTS {501:'',502:T,503:F}. U32-typed 502/503 in SET are ignored (strict bool typing). Served via console proxy [48,5] (console shows the note at login); v6 serves {501,502} natively on [48,5] (pre-503 note) — the migration with proxy-compat."
     confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        501: { name: note-text, tcode: string }
+        502: { name: show-at-login, tcode: bool }
+        503: { name: show-at-cli-login, tcode: bool }
     evidence:
       - source: code
         ref: "RouterOS v7 sys2 addHandler census (18 sites incl. 33); see work/2026-10-chr-extraction/sys2-handler-tables.md (v7 census)"
@@ -876,13 +940,24 @@ handlers:
         ref: "live CHR interrogation (census batch, 7.25): full dump ev/7.25-getone-24-33.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
       - source: sample
         ref: "live CHR interrogation (identity batch, both versions): [48,5] proxy ev/7.25-getone-48-5.json vs v6-native ev/6.49-getone-48-5.json; perturbation-negative; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: code
+        ref: "RouterOS v7 sys2 sysnote singleton 0x8092b40 (store path + defaults), row builder 0x807c396 (bit-29 leg), setter 0x807c4a4; see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+      - source: sample
+        ref: "live CHR interrogation (singleton batch, 7.25): ev/7.25-getone-24-33-{sysnote-pre,sysnote-post,bit29}.json (3/3 bidirectional proof + nested defaults); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+    revision-history:
+      - date: 2026-10-31
+        belief: "unknown-24-33: unknown singleton, raw shape {501,502,503}"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 sys2 store decode + live bidirectional proof; see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
 
-  unknown-24-35:
+  dbrd-holder-24-35:
     sys-to: [24, 35]
-    status: role-open
+    status: identified-chr-empty
     process-id: 0x18
     cmd: GET_ONE
-    role: "v7-only unknown singleton, EMPTY data (bare-SYS-only success, zero payload fields); unmoved by identity/timezone/filter/user perturbation"
+    role: "v7-only sys2 daughterboard holder: AHolder('/nova/store/sys2-dbrd'); empty on CHR (no daughterboard) -> the live empty-data (bare-SYS-only success). GETALL -> NOTIMP live (GET-only, rbbios-1/2 class). LEAD: [24,35] on hardware may serve board info (routerboard thread)."
     confidence: observed-only
     evidence:
       - source: code
@@ -891,6 +966,17 @@ handlers:
         ref: "live CHR interrogation (census batch, 7.25): full dump ev/7.25-getone-24-35.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: code
+        ref: "RouterOS v7 sys2 handler-35 registration (AHolder '/nova/store/sys2-dbrd', vtable 0x808d534); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+      - source: sample
+        ref: "live CHR interrogation (singleton batch, 7.25): GETALL -> NOTIMP (no transcript; single-session observation)"
+    revision-history:
+      - date: 2026-10-31
+        belief: "unknown-24-35: unknown singleton, empty data"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 sys2 AHolder decode: sys2-dbrd; see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
 
   fcc-regulatory:
     sys-to: [24, 38]
@@ -914,7 +1000,7 @@ handlers:
     status: role-open
     process-id: 0x14
     cmd: GET_ALL
-    role: "v7-only THIRD mark-registry instance — same factory class as [20,13]/[20,14] (max 0xfff/0xffff/0x7ffe, name 'no-mark', adjacent registration; v6 has 13/14 only) — that NEVER populates: 11 negatives (mangle routing/packet/connection, IPv6 packet+connection, bridge-filter, routing-table, route, routing-rule, VRF member, queue-referenced marks)"
+    role: "v7-only THIRD mark-registry instance — same factory class as [20,13]/[20,14] (max 0xfff/0xffff/0x7ffe, name 'no-mark', adjacent registration; v6 has 13/14 only) — that NEVER populates: 11 negatives (mangle routing/packet/connection, IPv6 packet+connection, bridge-filter, routing-table, route, routing-rule, VRF member, queue-referenced marks). NARROWED (§25): the three registries differ ONLY by max; the SOLE 134 write site is net 0x80df846 (insert request-string-field-137, gated on non-empty entry 0x1a4-string, inside firewall-row-shaped apply 0x80de19a); driver still unknown."
     confidence: observed-only
     evidence:
       - source: code
@@ -923,6 +1009,8 @@ handlers:
         ref: "live CHR interrogation (census batch, 7.25): ev/7.25-getone-20-134.json + ev/7.25-getall-20-134{-rt,}.json (4 mark-kind negatives); see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): 7 more negatives (IPv6 conn-mark shares 14, bridge mark shares 13, table/route/rule/VRF/queue silent); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: code
+        ref: "RouterOS v7 net 134 write-site hunt (sole site 0x80df846, readers 0x81903dd/0x819076f/0x81912fe); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
 
   security-advisory-24-34:
     sys-to: [24, 34]
@@ -1048,18 +1136,29 @@ handlers:
       - source: sample
         ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getall-13-8.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
 
-  unknown-20-61:
+  modem-aux-20-61:
     sys-to: [20, 61]
-    status: role-open
+    status: identified-chr-absent
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7 net handler in the net/modem_aux store area (near net/apn + /nova/store/sms-config) — modem-aux/APN-adjacent, CHR-absent. Bare GET -> UNKNOWNID; GET with 0xfe0001 field -> UNKNOWNID; GETOBJ/GETALL -> NOTIMP. Selector unknown."
+    role: "v7 net/modem_aux store handler (LTE-modem aux area; lte/wwan type 58 adjacent; near net/apn + /nova/store/sms-config). GET selector = request field 7 (string modem key): miss -> UNKNOWNID; hit -> nested message 0x411 as reply, else raw_array 0x3fa single-field, else UNKNOWNID. SET/GETOBJ/GETALL = base = NOTIMP (GET-only). Slot-7 pre-filter claims 0xfe000f/0xfe0011 + private 5/6/7 + 0x3e8-0x404 field-id commands (29->12 targets, undecoded); GET never pre-claimed. Policy vocabulary: 29 field ids in 4 mask classes (0x200/0x240/0x280/0x80000000-gated 0x3e8,0x3ee,0x400). CHR-absent (no modem hardware): live legs are negative-only (f7=lte1/foo -> UNKNOWNID from=[20,61]; SET -> NOTIMP); positive leg needs LTE hardware. v6 net registers 0x3d too but has zero modem_aux strings — v6-61 is NOT modem_aux (role open)."
     confidence: observed-only
     evidence:
       - source: code
         ref: "RouterOS v7 net handler-61 construction (store 'net/modem_aux' at 0x805dc54, addHandler 0x3d at 0x805dc8e); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): GET/GETOBJ/GETALL gating matrix; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: code
+        ref: "RouterOS v7 net handler-61 slot-9 cmdGet 0x8127366 (field-7 selector + 0x411/0x3fa reply shape), slot-7 pre-filter 0x812e00c, ctor policy vocabulary, vtable 0x81c5740; see work/2026-10-chr-extraction/ws3c-prober-findings.md §24"
+      - source: sample
+        ref: "live CHR interrogation (selector batch, 7.25): ev/7.25-getone-20-61-f7.json (f7=lte1/foo UNKNOWNID, SET NOTIMP); see work/2026-10-chr-extraction/ws3c-prober-findings.md §24"
+    revision-history:
+      - date: 2026-10-31
+        belief: "unknown-20-61: modem-adjacent handler, selector unknown"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 net slot-9 decode: selector = field 7 string; see work/2026-10-chr-extraction/ws3c-prober-findings.md §24"
 
 investigation-trail:
   - date: 2026-07-14
@@ -1168,3 +1267,25 @@ investigation-trail:
       ether alias 63; v7 key-init 0x8062d26
       (identical); strncmp tie-break both.
       §21 FULLY CLOSED.
+  - date: 2026-10-31
+    finding: |
+      Selector batch (findings §24, 3 probes
+      + static): [20,61] = modem_aux,
+      GET selector field 7 string, 0x411/
+      0x3fa reply shape, verb matrix,
+      pre-filter map, policy vocabulary;
+      v6-61 is NOT modem_aux (open).
+  - date: 2026-10-31
+    finding: |
+      Singleton batch (findings §25, 3
+      sessions + static): [24,33] =
+      /system/note (3/3 bidirectional +
+      bit-29 defaults); [24,10] = /rw
+      boot-flag probes (bit-29 live);
+      [24,35] = sys2-dbrd holder
+      (hardware-board lead); 107 =
+      sim_settings; 122/114/115/126
+      (+116/117/120/121) = QoS octet;
+      134 narrowed to one write site;
+      125 narrowed; first 0xfe001d
+      sightings; prober --xbool.

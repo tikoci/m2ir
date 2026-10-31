@@ -1353,19 +1353,213 @@ pid-0-130,pid-131-180,during-ssh}.txt`,
   [27,21]/[27,31] + [19,13] data shapes
   sighted (ev hscans).
 
-Still open (updated): routerboard full
-shape, [24,10/33/35] + 107/122/125 +
-114/115/126-family + 134 roles, [20,61]
-selector, [13,6/7] WinBox/WebFig split,
+Still open (updated — see §24):
+routerboard full shape, [24,10/33/35] +
+107/122/125 + 114/115/126-family + 134
+roles, [20,61] selector, [13,6/7]
+WinBox/WebFig split, terminal surface
+(lower priority), nlevel proof (TRACTABLE
+via quickchr trial license — blocked on
+user credentials), 0xff001e sighting,
+0x10002 low-byte flag meanings,
+v6-lo/v7-ether runtime typeobj names
+(docs-level micro-thread), 1028/1029/1030
+roles, rewrite-table location
+(runtime/kernel?). CLOSED this batch:
+pid-1025 identity (= pid-61 rbbios compat
+shim in the 1024–1030 block) + full alias
+census + pathless records 21/71.
+
+## 24. [20,61] selector solved — modem_aux GET key is field 7 (2026-10-31)
+
+Short twin3 session (7.25; booted, 3
+probes, stopped; no config changes) plus
+static decode (v7 net slot-9 0x8127366,
+slot-7 0x812e00c, ctor 0x8127126, vtable
+0x81c5740). CLOSES the [20,61] selector
+thread (CHR-positive leg untestable — no
+modem hardware — but the mechanism is
+fully decoded). New transcript:
+`ev/7.25-getone-20-61-f7.json`.
+
+- **Store CONFIRMED adjacent**:
+  `net/modem_aux` Store constructed at
+  0x805dc54 immediately before
+  addHandler(0x3d) at 0x805dc8e (the §18
+  "sibling" lead is now direct);
+  lte/wwan type 58 registered just above.
+  Vtable 0x81c5740 locals: slots 0/1
+  dtor, 7 pre-filter 0x812e00c, 9 cmdGet
+  0x8127366, 24 0x812c760; every other
+  verb = base.
+- **GET selector = request field 7
+  (string):** cmdGet does
+  `store->lookup(get<string>(7))`; miss →
+  UNKNOWNID; hit → nested message 0x411
+  AS the reply, else raw_array 0x3fa as
+  single-field reply, else UNKNOWNID.
+  Explains §18 exactly (bare +
+  0xfe0001-fielded GETs miss: no
+  field 7 — nobody tried field 7).
+- **Verbs:** SET/GETOBJ/GETALL = base =
+  NOTIMP (slots 10/12/14 not overridden).
+  SET→NOTIMP proven live (new leg).
+- **Pre-filter (slot 7)** claims
+  0xfe000f/0xfe0011, private cmds 5/6/7,
+  and the 0x3e8–0x404 field-id-as-command
+  range (29 cmds → 12 jump targets:
+  modem control plane, undecoded); GET
+  never claimed (0xfe000d falls to the
+  default return-0).
+- **Policy vocabulary** (ctor
+  set_policy): 29 field ids in 4 mask
+  classes — 0x200 {5,6,7,0x3ec}, 0x240
+  {0x3f6,0x3f9,0x3fe}, 0x280 (20 ids
+  0x3e9–0x405), 0x80000000
+  {0x3e8,0x3ee,0x400}; no-policy gaps
+  {0x3ed,0x3ef,0x3f3,0x402} +
+  reply-only 0x411. The modem_aux row
+  field space.
+- **Live** (all three predicted): GET
+  f7=lte1 → UNKNOWNID from=[20,61] (ev
+  JSON); f7=foo → UNKNOWNID; SET f7=lte1
+  → NOTIMP. Handler-found full-path FROM
+  proves the local-9 miss path runs
+  (base GET would be NOTIMP). Positive
+  leg needs LTE hardware (CHR-absent).
+- **Version scope:** v6 net registers
+  0x3d too (@8054bca) but v6 net has
+  ZERO modem_aux/sms strings — v6-61 is
+  NOT modem_aux (role open,
+  micro-thread).
+
+Still open (updated — see §25):
+routerboard full shape, [24,10/33/35] +
+107/122/125 + 114/115/126-family + 134
+roles, [13,6/7] WinBox/WebFig split,
 terminal surface (lower priority), nlevel
 proof (TRACTABLE via quickchr trial
 license — blocked on user credentials),
 0xff001e sighting, 0x10002 low-byte flag
 meanings, v6-lo/v7-ether runtime typeobj
-names (docs-level micro-thread), NEW:
+names (docs-level micro-thread),
 1028/1029/1030 roles, rewrite-table
-location (runtime/kernel?). CLOSED this
-batch: pid-1025 identity (= pid-61
-rbbios compat shim in the 1024–1030
-block) + full alias census + pathless
-records 21/71.
+location (runtime/kernel?), v6-61 role
+(micro-thread). CLOSED this batch:
+[20,61] selector (= field 7 string) +
+verb matrix + pre-filter map + policy
+vocabulary.
+
+## 25. Singleton-role hunt — 11 of 13 identified (2026-10-31)
+
+Three twin3 sessions (7.25; booted,
+probed, stopped; config touched and
+FULLY reverted — /system/note 3/3
+round-trip; left STOPPED) plus static
+decodes (v7 sys2/net disassembly).
+Prober gained `--xbool` (bool custom
+fields; `encBool` already existed).
+New transcripts: `ev/7.25-getone-24-33-
+{sysnote-pre,sysnote-post,bit29}.json`,
+`ev/7.25-getone-24-10-bit29.json`.
+
+- **[24,33] = /system/note — FULLY
+  CLOSED.** Store `/nova/store/command/
+  sysnote` (sys2 singleton 0x8092b40;
+  defaults 502=T/503=F in the ctor).
+  Field map PROVEN 3/3 live both
+  directions: 501=note (string),
+  502=show-at-login, 503=
+  show-at-cli-login (REST perturbation
+  → M2 tracks; M2 SET → REST tracks,
+  incl. bool SET via new `--xbool`).
+  Explains v6 ([48,5] native {501,502}
+  = pre-503 note) + the [48,5]→[24,33]
+  proxy (console shows the note at
+  login). Bonus: u32-typed 502/503 in
+  SET are IGNORED (strict bool typing).
+- **[24,10] = boot-flag probe pair —
+  CLOSED.** Getter (slot 9 0x805719e)
+  inserts exists(`/rw/DISABLE_SMP`)
+  as 1, exists(`/rw/ENABLE_X86_64`)
+  as 2 (literal `open()` paths).
+  Live {F,F} = both absent; v6
+  {F,T} = x86_64-flag era drift.
+  (No flip test: not creatable via any
+  interface + boot-risky; static is
+  airtight.)
+- **[24,35] = sys2 daughterboard
+  holder — CLOSED.** AHolder(
+  `/nova/store/sys2-dbrd`); empty on
+  CHR (no daughterboard) → the live
+  empty-data. GETALL → NOTIMP live
+  (GET-only, rbbios-1/2 class).
+  LEAD for routerboard: [24,35] on
+  HARDWARE may serve board info.
+- **[20,107] = modem SIM settings —
+  CLOSED.** AHolder(`sim_settings`)
+  and defconf `ModemSIMSlots`; live
+  field 5 = "firmware" is a SIM-slot
+  default. CHR-absent (no modem).
+- **122/114/115/126 +116/117/120/
+  121 = QoS octet — ALL CLOSED.**
+  One 0x870 composite (ctor 8190e3e)
+  with 8 AHolder members: 122=qos/
+  config, 114=qos/profile, 115=qos/
+  map, 116=qos/map-vlan, 117=qos/
+  map-ip, 121=qos/txq, 120=qos/
+  txman, 126=qos/pfc. The §16
+  "0xfe-family" = QoS profile/map
+  defaults ("default"/"disabled").
+  CHR-absent (no QoS menu/hardware).
+- **Bit-29 idiom now 4/4:** [24,33]
+  (nested = DEFAULTS {501:"",502:T,
+  503:F} beside live perturbed values
+  — double confirmation),
+  [24,10] (nested {1:F,2:F}), both
+  proven live; [20,125] same shape
+  statically. First-ever 0xfe001d
+  sightings (§8 "never observed"
+  retired — it is the defaults
+  template, not a truncation marker).
+- **134 writer hunt (OPEN, narrowed
+  to one site):** all three mark
+  registries differ ONLY by max
+  (13→0xfff, 14→0xffff, 134→
+  0x7ffe); the SOLE 134 write site
+  is net 80df846: `insert134(
+  request-string-f137)` gated on a
+  non-empty entry 0x1a4-string,
+  inside firewall-row-shaped apply
+  80de19a (be32 + ~60 fields).
+  Driver still unknown (f137's REST
+  counterpart + gate semantics need
+  Ghidra or a rule-shape probe
+  matrix). Iteration sites (81903dd
+  etc.) are readers, not drivers.
+- **125 OPEN (narrowed):** custom
+  object (not AHolder), embedded
+  defaults {9:"",13:"",0x11:[],
+  0x15:1,0x17:F,0x18:F}, bit-29 leg
+  statically, many readers
+  (looper+0x71c) — identity still
+  unknown.
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (one write site), 125 role,
+[13,6/7] WinBox/WebFig split, terminal
+surface (lower priority), nlevel proof
+(TRACTABLE via quickchr trial license
+— blocked on user credentials),
+0xff001e sighting, 0x10002 low-byte
+flag meanings, v6-lo/v7-ether runtime
+typeobj names (docs-level micro-thread),
+1028/1029/1030 roles, rewrite-table
+location (runtime/kernel?), v6-61 role
+(micro-thread). CLOSED this batch:
+[24,33] (full bidirectional), [24,10],
+[24,35], 107, 122/114/115/126-family
+(+116/117/120/121 QoS octet), bit-29
+idiom 4/4 + first 0xfe001d sightings,
+prober `--xbool`.
