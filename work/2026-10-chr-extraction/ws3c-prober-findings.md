@@ -2156,3 +2156,117 @@ vs boot-reap), ADD-unhide
 (micro-thread). CLOSED this batch:
 f3 residuals (narrowed: +0x1c8 model,
 20/22 located; unhide still open).
+
+## 34. Token-gate CLOSED — boot-skip, store forensics (2026-10-31)
+
+Three twin3 cycles (7.25; tokened
+ADD×3 + tokened SET + rowid-reuse +
+bit1/bit7 SETs; all test rows
+removed — M2-remove tokened,
+CLI-remove untokened; 2-row
+baseline verified; left STOPPED)
+plus static (loader/recompute/
+destructor) plus disk forensics
+(qemu-img convert + dd + debugfs —
+rootless; store carved with
+prober m2.ts). 4 transcripts:
+`ev/7.25-raw-20-0-tokgate-add.json`
++ `ev/7.25-getall-20-0-tokgate-
+{live,post,clean}.json`.
+
+- **Write-skip DEAD (§26
+  corrected):** tokened rows ARE
+  in `/rw/store/cfg.000a` — full
+  M2 records WITH `0xff001e =
+  12345`. Record shape `30 04
+  <rowid> <len> M2<len>`
+  (decoded via m2.ts). ADD = 2
+  identical records; SET = +1
+  (append-only, no compaction —
+  dupes + stale f3vrrp linger).
+- **Boot-skip CONFIRMED:**
+  tokened records never
+  instantiate. Post-reboot:
+  GETALL-clean, REMOVE/SET on
+  old rowids → 0xfe0004 (gone
+  from +0xe8 tree, not hidden).
+  Tokened+SET (tokset7+comment)
+  also gone — SET can't rescue.
+- **No boot purge:** tokened
+  records stay in the file
+  across boots; the skip is
+  memory-only.
+- **Tombstones:** len-0 `30 04`
+  record = deletion marker (row
+  4 after CLI REMOVE). Rule:
+  latest-decisive per rowid —
+  tombstone/tokened → absent.
+  Explains stale f3vrrp (row 5,
+  superseded by tokened
+  tokset7) staying dead.
+- **Rowid reuse:** post-boot
+  ADDs took rowids 3,4 (freed
+  tokened/removed ids) → boot
+  frees tokened rowids WITHOUT
+  tombstones. Loader 0x806db12
+  has NO token branch (re-read
+  in full) → the reaper is
+  post-restore: per-type
+  bring-up (+0x10) or session
+  GC, unlink + alloc-free with
+  no Store::remove. Probable:
+  dead-owner-session reap.
+- **Destructor mapped
+  (0x806349e):** Store::remove
+  (tombstone) + Allocator::free
+  (rowid ≤ 0xefffff) + tree
+  unlinks (+0x4/+0x28/+0x1d4/
+  +0xb0) + slave detach
+  (+0x188 clear) + member
+  frees. Apply-set tail
+  DESTROYS rows with +0x1c
+  bit7 (0x8066580).
+- **ADD-unhide narrowed:**
+  recompute head re-read —
+  hidden branch tests OLD
+  +0x1c (keeps {1,7}) → NOT the
+  clearer (§33 rejection
+  holds). Msg bit1/bit7 SETs
+  refused live (bare success,
+  f3 unchanged) → hidden bits
+  are server-owned, merge
+  masks them. With the
+  destroy-tail, the clearer
+  must run between ctor
+  (0x82) and the first
+  apply-tail: ADD-unhide ∈
+  vlan +0x14, boot-unhide ∈
+  vlan +0xc/+0x10 — the SAME
+  per-type hiding place as
+  the token reaper. One
+  static target left.
+- **Bonus:** +0x18 bit1 =
+  in-tree tombstone flag.
+  SETOBJ proceeds iff clear;
+  ADD with an existing rowid
+  reuses iff set, else
+  duplicate-error.
+- **Bonus:** boot restore of
+  0xff001e (0x806ddf5) is
+  REACHABLE (§26 said not) —
+  the store carries tokens.
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (one write site), terminal
+surface (lower priority), nlevel proof
+(TRACTABLE via quickchr trial license
+— blocked on user credentials),
+1028/1029/1030 roles, rewrite-table
+location (runtime/kernel?), bit-0
+proof (micro-thread), ADD-unhide +
+token-reaper pinpoint (micro-thread:
+ONE static target — vlan vtable
++0xc/+0x10/+0x14 handlers). CLOSED
+this batch: token-gate mechanism
+(boot-skip; write-skip dead).
