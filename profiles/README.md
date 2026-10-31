@@ -8,7 +8,7 @@ grammar but conveys the same concepts (see `/concepts/`).
 
 | Profile | Status | Reference impl |
 |---|---|---|
-| `winbox-ipc/` | strawman drained into canonical YAML | this repo's parent project + Cisco-Talos dissector |
+| [`winbox-ipc/`](winbox-ipc/) | transport, authentication, session crypto, and selected management handlers; ongoing research | public sources + client/server analysis + live CHR probes |
 | `dude-on-disk/` | initial TAG/RANGE catalog drained into canonical YAML | [`tikoci/donny`](https://github.com/tikoci/donny) + [`german77/TheDudeToHuman`](https://github.com/german77/TheDudeToHuman) |
 | `winbox-cdb/` | placeholder | `tikoci/centrs` `src/data/winbox-cdb.ts` |
 | `mndp/` | placeholder | `mcp-mikrotik` `src/mndp.ts` |

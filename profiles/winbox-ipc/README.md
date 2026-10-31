@@ -13,6 +13,10 @@ this profile names byte 2 as `namespace` (0xFF=system, 0xFE=session,
   (tags 0x01/0x06/0xFF) and the HKDF magic strings.
 - [`ec-srp5-handshake.yaml`](ec-srp5-handshake.yaml) — four pre-encryption
   handshake messages.
+- [`session-crypto.yaml`](session-crypto.yaml) — session key derivation,
+  encrypted envelopes, message authentication, and padding.
+- [`gui-handlers.yaml`](gui-handlers.yaml) — selected GUI management
+  handlers, native retrieval request/reply shapes, and attribute mappings.
 - [`sys-keys.yaml`](sys-keys.yaml) — SYS_* keys (namespace 0xFF).
 - [`std-keys.yaml`](std-keys.yaml) — STD_* keys (namespace 0xFE).
 - [`std-commands.yaml`](std-commands.yaml) — STD_CMD_* values for SYS_CMD.
@@ -29,3 +33,17 @@ this profile names byte 2 as `namespace` (0xFF=system, 0xFE=session,
 The original Kaitai-style seed material (chunk frame, M2 TLV grammar,
 EC-SRP5 handshake, semantic overlay) is preserved in [`strawman/`](strawman/)
 as evidence — the canonical YAML files above are derived from it.
+
+## Research and version scope
+
+The current schema incorporates client analysis and live CHR observations
+on RouterOS 6.49.23 and 7.25. Read each entry's confidence, version scope,
+and evidence before reusing a handler ID or field mapping. Native queries
+working on 7.25 do not establish full WinBox 3 client compatibility.
+
+For ongoing work and reproductions, follow the
+[client analysis](../../work/2026-10-winbox-client-re/README.md),
+[CHR analysis](../../work/2026-10-chr-extraction/README.md), and
+[live probe findings](../../work/2026-10-chr-extraction/ws3c-prober-findings.md).
+These are research trails; protocol definitions and corrected findings
+belong in the YAML above.

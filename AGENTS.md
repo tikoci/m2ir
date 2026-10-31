@@ -6,6 +6,9 @@ for the format principles before changing anything in `physical/`,
 see [`BOOTSTRAP.md`](BOOTSTRAP.md). Then read the narrower rules in
 `.github/instructions/` for the path you're touching.
 
+Use [the agent reading map](llms.txt) for a task-oriented reading map of the schema
+and active research.
+
 ## Quick commands
 
 - `bun install`
@@ -17,7 +20,7 @@ see [`BOOTSTRAP.md`](BOOTSTRAP.md). Then read the narrower rules in
 
 ## Repo map
 
-- `physical/` — profile-agnostic wire grammars (placeholder)
+- `physical/` — profile-agnostic wire grammars (`nv-message.yaml`)
 - `concepts/` — cross-profile semantic identity (placeholder)
 - `profiles/<name>/` — one usage context per directory; `winbox-ipc/strawman/` holds the imported seed material
 - `fixtures/` — raw bytes referenced from `evidence:` entries (placeholder)

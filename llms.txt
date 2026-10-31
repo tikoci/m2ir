@@ -1,0 +1,57 @@
+# m2ir
+
+> Evidence-backed YAML reference for MikroTik RouterOS binary protocols and data formats. Schema content is CC0-1.0. This file is a reading map; AGENTS.md governs repository contributions.
+
+Read canonical YAML before implementing behavior. Follow each entry's
+confidence, evidence, version scope, and revision history. Research notes
+can contain earlier beliefs that the schema has since corrected. A finding
+on RouterOS 6.49.23 or 7.25 is not a guarantee for other versions or devices.
+
+## Orientation
+
+- [README.md](README.md): Mission, coverage, WinBox compatibility context, and current research.
+- [AGENTS.md](AGENTS.md): Contributor instructions and pointers to path-scoped rules.
+- [DESIGN.md](DESIGN.md): Canonical YAML, physical/profile/concept layers, and confidence vocabulary.
+- [BOOTSTRAP.md](BOOTSTRAP.md): Bun setup, checks, and repository tooling.
+
+## WinBox transport and messages
+
+Read these in order when implementing the wire conversation:
+
+- [Profile](profiles/winbox-ipc/profile.yaml): Context, namespaces, and schema references.
+- [Wire grammar](physical/nv-message.yaml): M2 types, lengths, compact encodings, and nesting.
+- [Transport](profiles/winbox-ipc/transport.yaml): TCP chunk framing.
+- [Handshake](profiles/winbox-ipc/ec-srp5-handshake.yaml): EC-SRP5 authentication and evidence-backed encoding details.
+- [Session crypto](profiles/winbox-ipc/session-crypto.yaml): Key derivation, encrypted envelopes, and message authentication.
+
+## Native retrieval, handlers, and attributes
+
+For work such as centrs retrieve, continue here. Terminal execution does
+not establish native retrieval or notification behavior.
+
+- [GUI handlers](profiles/winbox-ipc/gui-handlers.yaml): Selected handler routes, request/reply shapes, field mappings, and gaps.
+- [System keys](profiles/winbox-ipc/sys-keys.yaml): Routing, request correlation, and message envelope attributes.
+- [Standard keys](profiles/winbox-ipc/std-keys.yaml): Session/standard attributes and object-list metadata.
+- [Standard commands](profiles/winbox-ipc/std-commands.yaml): Command identities, including retrieval and notification operations.
+- [Standard errors](profiles/winbox-ipc/std-errors.yaml): Error identities and evidence.
+- [Processes](profiles/winbox-ipc/processes.yaml): Process identities, version differences, and unresolved conflicts.
+- [Private and legacy commands](profiles/winbox-ipc/commands.yaml): Handler-specific commands, including terminal-related evidence.
+- [WinBox profile guide](profiles/winbox-ipc/README.md): Full file index, including mproxy and undo.
+
+## Active research and compatibility
+
+These are investigation trails and experimental tooling, not a replacement
+for the canonical schema. Consult them for reproductions and unresolved
+questions. RouterOS 7.25 lab queries do not prove full WinBox 3 compatibility;
+forum theories about future protocol changes are not established behavior.
+
+- [Client analysis](work/2026-10-winbox-client-re/README.md): WinBox 3.43 analysis using REA/Ghidra.
+- [CHR analysis](work/2026-10-chr-extraction/README.md): RouterOS extraction, binary analysis, quickchr probes, and promotion status.
+- [Live probe findings](work/2026-10-chr-extraction/ws3c-prober-findings.md): Version-scoped observations, transcript references, corrections, and open questions.
+
+## Other formats and sources
+
+- [The Dude profile](profiles/dude-on-disk/profile.yaml): On-disk object classification and field-table references; do not transfer WinBox naming assumptions unchanged.
+- [Profile index](profiles/README.md): Other usage contexts, including placeholder CDB and MNDP profiles.
+- [Credits](CREDITS.md): Major upstream sources; detailed citations live in the YAML.
+- [Source inventory](work/2026-05-winbox-nova-sources/winbox-nova-source-inventory.md): Additional public leads and prior scouting.

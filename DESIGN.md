@@ -109,15 +109,16 @@ README.md           # mission + how to navigate
 BOOTSTRAP.md        # repo plumbing (cortex.db, hooks, lint, scripts)
 
 physical/           # profile-agnostic wire grammars
-  nv-message.yaml   # (placeholder)
-  mndp.yaml         # (placeholder)
+  nv-message.yaml   # M2 wire grammar
+  mndp.yaml         # planned, not yet populated
 
 concepts/           # cross-profile semantic identity (placeholder)
 
 profiles/
   winbox-ipc/
+    *.yaml         # transport, auth, session crypto, keys, handlers
     strawman/       # imported .ksy + .yaml — the input to v0.1
-  dude-on-disk/     # placeholder
+  dude-on-disk/     # initial object-class and field catalogs
   winbox-cdb/       # placeholder
   mndp/             # placeholder
 
@@ -125,7 +126,7 @@ fixtures/           # raw bytes referenced by `evidence:` (placeholder)
 
 src/tooling/        # repo-local Bun tooling (audit, cortex.db log)
 test/               # anchor tests for the schema and the tooling
-work/               # imported design notes; promote to root only when stable
+work/               # research trails; promote stable findings into schema
 ```
 
 ## What this DESIGN.md doesn't decide

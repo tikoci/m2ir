@@ -1,83 +1,92 @@
 # m2ir
 
-`m2ir` is a unified schema for MikroTik RouterOS binary formats —
-nv::message ("M2"), the WinBox app protocol, the saved-connections CDB
-file, MNDP discovery, the Dude object store, and the JSProxy / RoMON
-adjacencies. Same byte grammar shows up across many surfaces with very
-different *usage*. The job of m2ir is to capture that knowledge once,
-durably, in YAML that both humans and agents can read directly.
+**An evidence-backed reference for MikroTik's binary protocols and data formats.**
 
-The format is the deliverable. Prose lives inside the schema (as
-`notes:`, `evidence:`, `revision-history:`, `aka:`), not in adjacent
-spec docs. See [`DESIGN.md`](DESIGN.md) for the principles, especially
-the YAML-canonical / Kaitai-derived inversion and the
-profile/concept/physical layering.
+`m2ir` collects hard-earned knowledge about RouterOS `nv::message` ("M2"),
+WinBox communication, and related formats in YAML that humans and tools can
+read directly. It brings together public research, binary analysis, and
+experiments against real RouterOS instances, with sources and confidence
+recorded alongside each finding.
 
-## Where things live
+The schema is the deliverable: a reusable knowledge base, with research
+probes and repo tooling alongside it. You can browse it without installing
+anything. Schema content is **CC0-1.0**.
 
-| Path | Purpose |
+## Start here
+
+- **Curious about how WinBox works?** Start with the
+  [WinBox profile guide](profiles/winbox-ipc/README.md). It connects the
+  transport, authentication, messages, and management handlers.
+- **Building a client or investigating compatibility?** Read
+  [the wire grammar](physical/nv-message.yaml) and
+  [the WinBox profile](profiles/winbox-ipc/profile.yaml), then follow the
+  relevant entries' `notes:`, `confidence:`, and `evidence:`.
+- **Sending an agent here?** Use [the agent reading map](llms.txt) as a focused reading
+  map. [AGENTS.md](AGENTS.md) contains contributor instructions.
+
+## WinBox 3, RouterOS 7.25, and the current research
+
+RouterOS 7.25 raised the minimum supported WinBox version to 4.3, prompting
+[community discussion and attempts to keep WinBox 3 working](https://forum.mikrotik.com/t/please-continue-supporting-winbox-3-many-of-us-prefer-the-classic-ui/274042).
+If that brought you here, the collected protocol evidence should help you
+investigate beyond a client version check. Successful login or a working
+menu alone does not establish full compatibility.
+
+Our [forum discussion of possible future changes](https://forum.mikrotik.com/t/general-discussion-on-stable-releases-cut-off-from-7-25-stable-announcement-thread/274031/120)
+is motivation for investigation, not a confirmed account of MikroTik's
+roadmap. The current lab work demonstrates authenticated native WinBox
+queries on RouterOS **6.49.23 and 7.25**; it does not establish compatibility
+for every client, handler, device, or later RouterOS release.
+
+The ongoing research combines WinBox client analysis with REA/Ghidra,
+RouterOS binary analysis, and live probes using
+[tikoci/quickchr](https://github.com/tikoci/quickchr). Findings have already
+landed in the canonical YAML, including handshake corrections, session
+crypto, version-scoped process identities, and GUI handler/field mappings.
+Follow the [client analysis](work/2026-10-winbox-client-re/README.md) and
+[CHR research](work/2026-10-chr-extraction/README.md) for the investigation
+trail; the [live probe findings](work/2026-10-chr-extraction/ws3c-prober-findings.md)
+record tested behavior and remaining gaps.
+
+Our implementation interest is [tikoci/centrs](https://github.com/tikoci/centrs):
+WinBox as a transport in its `--via` schemes. Terminal execution for
+`centrs execute` provides a starting point. Native data retrieval and
+listening for updates for `centrs retrieve` require a deeper understanding
+of the attribute-based messages: which handler owns a field, what its TLV
+(type-length-value) means, and how replies and notifications behave.
+The [GUI handler catalog](profiles/winbox-ipc/gui-handlers.yaml) is a key
+entrypoint for that work; retrieval and update semantics remain an active
+research area. Maintaining a patched WinBox executable is outside this
+project's scope.
+
+## What is covered
+
+| Area | Current coverage |
 |---|---|
-| [`DESIGN.md`](DESIGN.md) | Format principles. The one orientation doc. |
-| [`physical/`](physical/) | Profile-agnostic wire grammars — `nv-message.yaml` drained; `mndp.yaml` pending |
-| [`concepts/`](concepts/) | Cross-profile semantic identity (placeholder) |
-| [`profiles/`](profiles/) | One subdir per usage context — winbox-ipc, dude-on-disk, winbox-cdb, mndp |
-| [`profiles/winbox-ipc/`](profiles/winbox-ipc/) | First profile drained from the strawman: profile, transport, EC-SRP5 handshake, SYS/STD keys, commands, errors, processes |
-| [`profiles/dude-on-disk/`](profiles/dude-on-disk/) | Second profile's first grounded drain: profile rules plus the donny TAG/RANGE catalog for Dude object blobs |
-| [`profiles/winbox-ipc/strawman/`](profiles/winbox-ipc/strawman/) | Original seed material (3 `.ksy` files + 1 semantic-overlay `.yaml`) preserved as evidence |
-| [`fixtures/`](fixtures/) | Raw bytes referenced by `evidence:` (placeholder) |
-| `src/tooling/` | Repo-local Bun tooling (instruction audit, `cortex.db` event log) |
-| `test/` | Anchor tests for schema slices and tooling |
-| `work/2026-05-m2ir-bootstrap/` | Imported design notes — promote out of `work/` only when stable, and prefer promoting *into the schema's prose attributes* |
-| [`BOOTSTRAP.md`](BOOTSTRAP.md) | Repo plumbing — setup, lint, hooks, `cortex.db`, Kaitai |
-| [`CREDITS.md`](CREDITS.md) | Upstream projects whose data was drained into the schema |
+| [M2 wire grammar](physical/nv-message.yaml) | Headers, types, compact encodings, and nested messages |
+| [WinBox IPC](profiles/winbox-ipc/) | Transport, EC-SRP5 authentication, session encryption, system/session keys, commands, errors, processes, and selected GUI handlers |
+| [The Dude on disk](profiles/dude-on-disk/) | Initial object-class and field catalogs, with upstream cross-checks |
+| [WinBox CDB](profiles/winbox-cdb/) and [MNDP](profiles/mndp/) | Planned profiles; currently placeholders |
+| [Cross-profile concepts](concepts/) | Planned semantic identities shared between profiles |
 
-## Status
+Coverage is incremental. A populated schema is not a claim that an entire
+protocol is understood. Handler IDs and field meanings can depend on the
+RouterOS version and context; check the evidence attached to the entry you
+intend to use.
 
-v0.1, initial public release. m2ir is a **reference knowledge base** — the
-schema content (CC0 YAML) is the deliverable, not a runnable tool. The seed
-strawman (one profile — `winbox-ipc`) has been drained into canonical YAML;
-deeper sources still pending. Expected next steps, roughly in order:
+## Reading and contributing
 
-1. ~~Drain the `winbox-ipc/strawman/` content into canonical YAML under
-   `profiles/winbox-ipc/` and `physical/nv-message.yaml`.~~ Done — see
-   [`physical/nv-message.yaml`](physical/nv-message.yaml) and
-   [`profiles/winbox-ipc/`](profiles/winbox-ipc/).
-2. ~~Lift the Cisco-Talos `Winbox_Protocol_Dissector` Lua tables into the
-   profile (SYS_*/STD_*/CMD_*/ERROR_* enums + the typeIDCode process-id
-   table) at `confidence: documented`.~~ Done — the dissector's five
-   tables (`commandCode`, `typeCode`, `statusCode`, `errorCode`,
-   `typeIDCode`) are drained with line-range citations in each of
-   `sys-keys.yaml`, `std-keys.yaml`, `std-commands.yaml`,
-   `std-errors.yaml`, and `processes.yaml`. The handler-private command
-   tables (mepty, mproxy, undo) are NOT in the Cisco-Talos dissector;
-   they belong to step 4 (this project's PROTOCOL.md + MarginResearch).
-3. ~~Pull the donny `nova.ts` TAG/RANGE catalog into
-   `profiles/dude-on-disk/`.~~ Done — see
-   [`profiles/dude-on-disk/profile.yaml`](profiles/dude-on-disk/profile.yaml),
-   [`object-classes.yaml`](profiles/dude-on-disk/object-classes.yaml), and
-   [`fields.yaml`](profiles/dude-on-disk/fields.yaml). Cross-checked against
-   [`german77/TheDudeToHuman`](https://github.com/german77/TheDudeToHuman),
-   including the overlapping 0x5208/0x5209 note vs.
-   service-description surface.
-4. ~~MarginResearch + Tenable architecture facts into `winbox-ipc` and
-   the seeds for `mproxy` and `undo` object classes.~~ Done — see
-   [`profiles/winbox-ipc/profile.yaml`](profiles/winbox-ipc/profile.yaml),
-   [`sys-keys.yaml`](profiles/winbox-ipc/sys-keys.yaml),
-   [`processes.yaml`](profiles/winbox-ipc/processes.yaml),
-   [`commands.yaml`](profiles/winbox-ipc/commands.yaml),
-   [`mproxy.yaml`](profiles/winbox-ipc/mproxy.yaml), and
-   [`undo.yaml`](profiles/winbox-ipc/undo.yaml). Process-id conflicts are
-   recorded as version-scoped observations rather than flattened into one
-   universal numeric map.
-5. Scaffold `concepts/` from the cross-profile values that fall out of
-   the first two profiles.
+The layers separate **bytes** (`physical/`), **meaning in a usage context**
+(`profiles/`), and **shared semantic identity** (`concepts/`).
+[DESIGN.md](DESIGN.md) explains the format and confidence levels. YAML is
+canonical; the original [Kaitai strawman](profiles/winbox-ipc/strawman/)
+is preserved as source evidence.
 
-The expected sources to drain (and why each matters) are listed in
-`work/2026-05-m2ir-bootstrap/m2ir-design-review.md` §"What is already
-known and ought to land in m2ir". Follow-on scouting for additional
-public leads, duplicates, and dead ends lives in
-`work/2026-05-winbox-nova-sources/winbox-nova-source-inventory.md`.
+Protocol explanations belong in the schema's `notes:`, `evidence:`, and
+`revision-history:` attributes. Exploratory findings and reproducible
+research stay in [`work/`](work/) until ready to promote. Contributions
+are most useful when they identify the tested version, preserve a source
+or sanitized observation, and distinguish an observation from an inference.
 
-## License
-
-CC0-1.0 for the schema content (maximum reuse and re-derivation).
+See [BOOTSTRAP.md](BOOTSTRAP.md) for Bun setup and validation, and
+[CREDITS.md](CREDITS.md) for the upstream work this reference builds on.
