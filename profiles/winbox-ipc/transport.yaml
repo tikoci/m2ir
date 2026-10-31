@@ -51,13 +51,22 @@ chunk-tags:
     notes: "Observed-as-constant in MarginResearch wire dumps and the Cisco-Talos dissector; not formally named in any public source."
   0x06:
     name: encrypted_m2
-    role: "first chunk of an EC-SRP5-encrypted message; payload begins with [enc_length:u2be][iv:16][ciphertext]"
+    role: "first chunk of an EC-SRP5-encrypted message; payload begins with [enc_length:u2be][iv:16][ciphertext]. Also the chunk tag on every handshake message ([len:u1][0x06][payload])."
     confidence: observed-only
     apparent-magic: true
     notes: |
-      Same value (0x06) appears as the first byte of every EC-SRP5
-      handshake payload (see ec-srp5-handshake.yaml). Coincidence vs
-      reuse is unclear; not formally named anywhere public.
+      The 0x06 is the CHUNK TAG only — it is NOT repeated inside the
+      assembled handshake payloads (see ec-srp5-handshake.yaml). The
+      earlier reading (0x06 as a payload prefix byte) is superseded:
+      payloads without it authenticate first-try; payloads with it are
+      rejected. Not formally named anywhere public.
+    revision-history:
+      - date: 2026-10-31
+        belief: "0x06 also prefixes the assembled handshake payload (coincidence vs reuse unclear)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): --inner-tag rejected, bare accepted; see work/2026-10-chr-extraction/ws3c-prober-findings.md §1"
   0xff:
     name: continuation
     role: "carried by every non-first chunk of a multi-chunk message"

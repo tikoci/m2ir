@@ -68,6 +68,14 @@ architecture:
       `/ram/pckg/<package>/nova/etc/loader/<package>.x3` instead of the base
       `system.x3`, and some runtime-spawned processes (for example `login`)
       do not live in any x3 file at all.
+      Layout drift: v6 keeps per-package maps at
+      `nova/etc/loader/<pkg>.x3` (37 .x3 files); v7 uses
+      `nova/etc/<subsystem>/system.x3` (15 .x3 files, no `loader/` dir).
+      The old plan path `nova/etc/loader/system.x3` exists in NEITHER —
+      and v7 carries no id tables at all (loader/sermgr/sysinit spawn
+      via fork/execl), so v7 ids are recoverable only live. See
+      processes.yaml version-observations + work/2026-10-chr-extraction/
+      README.md for the format + the inventory table.
 
 structure:
   root: { repeat: tlv-entry, until: eos }
@@ -80,10 +88,18 @@ namespaces:
     abbrev: USER
     role: "application/per-handler keys (handler-private fields)"
     confidence: documented
+  0x01:
+    name: ns-1
+    abbrev: NS1
+    role: "interface fields + private control plane (0x100xx; e.g. interface rows 0x10005/0x10006/0x1000e/0x1001e/0x10065/0x10069, bridge2 sub-request keys 0x10001/0x1003b)"
+    confidence: observed-only
+    evidence:
+      - source: code
+        ref: "RouterOS net/bridge2 field tables (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §2/§4"
   0xfe:
     name: standard
     abbrev: STD
-    role: "object/session machinery (STD_* keys, STD_CMD_* codes, STD_ERROR_* values)"
+    role: "object/session machinery (STD_* keys, STD_CMD_* codes, STD_ERROR_* values). 'SESSION' in older project notes is loose naming for this 0xfe meta range — NOT a distinct byte_2 value (no 0x02xxxx id exists in any RouterOS binary)."
     confidence: documented
   0xff:
     name: system
@@ -116,12 +132,23 @@ classification:
     Within a request/reply, SYS_CMD discriminates message shape.
     Two ranges:
       * 0xFE0000-0xFE0016  -> standard commands (see std-commands.yaml)
-      * other              -> handler-private; top byte is the process_id
-                              (see processes.yaml), low 16 bits are the
-                              handler-local opcode (e.g. 0x0A0065 = mepty
-                              login command).
+      * other              -> handler-private via slot 19 cmdUnknown
+                              (see commands.yaml slot-19-private):
+                              process_id-prefixed u32 (top byte =
+                              process_id, low 16 bits the handler-local
+                              opcode, e.g. 0x0A0065 = mepty login), small
+                              integers (1,2,3,4,5,6,10), 0x100xx values, or
+                              0x60001/0x70001-style codes — opaque per
+                              handler, no global set<<16|cmd scheme.
   open-questions:
     - "Some legacy short-form commands (cmdGet=7, cmdOpen=5, ...) are u8-encoded SYS_CMD values that don't fit either range; see commands.yaml."
+  revision-history:
+    - date: 2026-10-31
+      belief: "out-of-range SYS_CMD is always process_id-prefixed (top byte = process_id)"
+      outcome: superseded
+      evidence:
+        - source: code
+          ref: "RouterOS libumsg.so handleCmd DEFAULT + observed small-int/0x100xx/0x60001/0x70001 shapes (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
 
 # ── refs ────────────────────────────────────────────────────────────────
 refs:
@@ -201,3 +228,9 @@ investigation-trail:
       second independent corroborating implementation. All additions are
       algorithm/fact descriptions written from scratch — no source from
       that implementation was reproduced.
+  - date: 2026-10-31
+    finding: |
+      WS-4 drain: added the 0x01 (NS-1) namespace, corrected the
+      classification's handler-private shape (slot-19 space, no global
+      scheme), recorded the v6/v7 .x3 layout drift + v7 id-table
+      absence, and scoped SESSION as loose naming for the 0xfe range.

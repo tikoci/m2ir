@@ -23,6 +23,11 @@ endian-policy: |
   profiles/winbox-ipc/transport.yaml) is big-endian (BE) for its own
   length/tag fields, so an M2 blob lives inside a BE frame but is
   internally LE. Keep the boundary explicit when consuming bytes.
+  EXCEPTION (handler-scoped): some u32-tcode fields carry BIG-endian
+  bytes — IPv4 address/network/netmask/broadcast on [20,1], read via
+  the first-party `be32` accessor (same wire tcode 0x08/0x09, network
+  byte order). Profiles mark such fields `tcode: be32`; see
+  profiles/winbox-ipc/gui-handlers.yaml ip-address.
 
 confidence: documented
 evidence:
@@ -97,11 +102,12 @@ tcodes:
     name: u32_wide
     payload: { fixed: 4, endian: le }
     confidence: documented
+    notes: "Handler-scoped exception: be32 fields (e.g. [20,1] IPv4) reuse this tcode with big-endian bytes — see endian-policy."
   0x09:
     name: u32_compact
     payload: { fixed: 1 }
     confidence: documented
-    notes: "1-byte unsigned value; profiles that pair with 0x08 use this as a compact-length variant."
+    notes: "1-byte unsigned value; profiles that pair with 0x08 use this as a compact-length variant. Live: u8-vs-u32 switching by magnitude is confirmed (bridge mtu auto=0/u8, 9000/u32; CMD=7/u8 vs 0xFE0000-range/u32)."
   0x10:
     name: u64_wide
     payload: { fixed: 8, endian: le }
@@ -204,3 +210,11 @@ investigation-trail:
       low bit of `tcode` is also a profile concern: winbox-ipc treats
       0x21/0x29/0x31 as the compact pairs of 0x20/0x28/0x30, but
       dude-on-disk decides compactness from `byte_2` (marker) instead.
+  - date: 2026-10-31
+    finding: |
+      WS-4 drain: be32 handler-scoped endianness exception (same tcode,
+      big-endian bytes — proven live on [20,1] IPv4 + first-party be32
+      accessor) and live confirmation of compact-pair switching by
+      magnitude (u8/u32, string_c/string_wide). A from-scratch M2 codec
+      reproduces a real-client capture byte-for-byte (asserted on every
+      WS-3C prober login).

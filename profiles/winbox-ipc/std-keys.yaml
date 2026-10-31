@@ -31,29 +31,93 @@ keys:
     canonical-name: STD_ID
     physical: { tcodes: ["*"] }
     semantic: object-id
-    role: "object identifier for SETOBJ / REMOVEOBJ / GETOBJ"
+    role: "object identifier for SETOBJ / REMOVEOBJ / GETOBJ; row-id on every list row (rendered *<hex> per CLI convention)"
     aliases:
       - { name: SESSION_ID, status: project-repurpose, source: "this project's mepty handler reuses STD_ID as session id from the auth phase" }
     confidence: documented
-    notes: "Project's `SESSION_ID = 0xFE0001` is `STD_ID` repurposed by mepty."
+    notes: "Project's `SESSION_ID = 0xFE0001` is `STD_ID` repurposed by mepty. First-party: GETOBJ-family object id = get<u32>(msg, 0xfe0001); a missing id answers ERROR_UNKNOWNID."
 
   0xfe0002:
     canonical-name: STD_OBJS
     physical: { tcodes: [0xa8] }
     semantic: object-array
+    role: "GETALL response envelope: message_array of flat per-row records"
     confidence: documented
+    notes: "First-party: ConfigHandler::cmdGetAll builds 0xfe0002 = message_array[flat_row...] via per-item getMsg(iterator, flags, 0), with optional 0xfe001d first-row (flag-gated) and 0xfe0003 next-start-id when truncated past the 16KB cap."
 
   0xfe0003:
     canonical-name: STD_GETALLID
     physical: { tcodes: [0x08, 0x09] }
     semantic: u32
+    role: "GETALL start cursor (request) / next-start token (truncated reply)"
     confidence: documented
+    notes: |
+      First-party: GETALL reads start = get<u32>(0xfe0003, default -1).
+      Live pagination loop: bare (or count-limited) GETALL -> follow
+      0xfe0003 tokens as the next start. Start semantics are PER-HANDLER
+      and only server-issued tokens are meaningful: [20,1] validates
+      start as an inclusive row-id cursor (0 or nonexistent -> UNKNOWNID
+      error); [20,0] does NOT validate — start is lower_bound(row-id)
+      in the by-id index, inclusive (nonexistent ids continue from the
+      next-higher id, beyond-max returns empty), and iteration follows
+      creation order rather than id order — which is why bare v7 order
+      is ether1 (id 2) before lo (id 1) and the s=0..8 matrix fits no
+      function of (id,s) alone. Next-token = row-id of the next
+      un-emitted entry, so pagination stays sound. There is NO slot-14
+      override on net-0: GETALL is routed by a slot-7 handleCmd
+      dispatch override to a custom async worker.
+    evidence:
+      - source: code
+        ref: "RouterOS libumsg.so ConfigHandler::cmdGetAll start/next-start handling (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+      - source: code
+        ref: "RouterOS net [20,0] slot-7 dispatch 0x80d1af8 + worker 0x80d1040 + iterator 0x807763a lower_bound (6.49.23), v7 same shape (0x80682ec/0x8066774/0x8060306); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): count/next-token chaining + per-handler start matrix; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
+      - source: sample
+        ref: "live CHR interrogation (post-WS-4 batch): lower_bound confirmed on demand both versions (v7 s=1->[lo]); see work/2026-10-chr-extraction/ws3c-prober-findings.md §15"
+    revision-history:
+      - date: 2026-10-31
+        belief: "[20,0] start is an opaque cursor with no closed form (s=0..8 matrix fits nothing tried)"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS net [20,0] iterator lower_bound decode (6.49.23) fits the matrix given bridge id 5; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
 
   0xfe0004:
     canonical-name: STD_GETALLNO
     physical: { tcodes: [0x08, 0x09] }
     semantic: u32
+    role: "GETALL count = head-limit on rows returned (request) / emitted-row count (v6 [20,0] reply echo)"
     confidence: documented
+    notes: |
+      First-party: count = get<u32>(0xfe0004), clamped to <= 1000. Live:
+      count=N returns head-N + 0xfe0003 next-token when truncated;
+      count=1 -> next=1 -> start=1 continues correctly over a 2-row
+      table. Count=0 is VERSION-DIVIDED on [20,0]: v7 means zero rows
+      (live 7.25 fixture + v7 worker static agree), v6 means ALL rows
+      (v6 worker clamps count-1 > 999 back to 1000; live-proven:
+      ev/6.49-getall-20-0-count0.json returns 1/1). Quirk: v7 count=0
+      yields 0 rows PLUS a 0xfe0003 token pointing at the SECOND entry
+      (ev/7.25-getall-20-0-count0.json) — following it skips the first
+      row. The v6 [20,0] reply echoes 0xfe0004 = emitted-row count
+      (live: 1 row -> 0xfe0004=1); v7 [20,0] drops that echo (neither
+      0xfe0004 nor 0xfe0019 on the bare reply).
+    evidence:
+      - source: code
+        ref: "RouterOS libumsg.so ConfigHandler::cmdGetAll count clamp (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+      - source: code
+        ref: "RouterOS net [20,0] worker count handling: v6 0x80d1040 clamps (count-1 > 999) -> 1000, v7 0x80675bc clamps (count > 1000) -> 1000; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): chaining + v6 reply echo 0xfe0004=1 (ev/6.49-getall-20-0.json); see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
+      - source: sample
+        ref: "live CHR interrogation (post-WS-4 batch): v6 count=0->all + v7 count=0 token quirk; see work/2026-10-chr-extraction/ws3c-prober-findings.md §15"
+    revision-history:
+      - date: 2026-10-31
+        belief: "count=0 empties the GETALL reply, unversioned"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS net [20,0] v6 worker maps count=0 -> 1000 while v7 maps it -> 0; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
 
   0xfe0005:
     canonical-name: STD_NEXTID
@@ -71,38 +135,75 @@ keys:
     canonical-name: STD_DYNAMIC
     physical: { tcodes: [0x00, 0x01] }
     semantic: bool
+    role: "row is dynamically created (not static config)"
     confidence: documented
+    notes: "Proven live: true on the DHCP-created address row. First-party: co-occurs with 0xfe000a/0xfe0009 in row builders across net+bridge2 (33-40 sites each). Present only on some row types (bridge yes, ether/lo no)."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25), REST cross-checked; see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
+      - source: code
+        ref: "RouterOS net/bridge2 row builders (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §2"
 
   0xfe0008:
     canonical-name: STD_INACTIVE
     physical: { tcodes: [0x00, 0x01] }
     semantic: bool
+    role: "row is invalid (live-proven semantics; kept under the documented STD_INACTIVE name)"
+    aliases:
+      - { name: STD_INVALID, status: live-synonym, source: "WS-3C live experiment: address on a disabled bridge flips 0xfe0008 false->true" }
     confidence: documented
+    notes: "Proven live as the invalid flag (REST cross-checked). Kept under Cisco-Talos's STD_INACTIVE label; whether INACTIVE and INVALID are one flag or two readings of it is unresolved."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
 
   0xfe0009:
     canonical-name: STD_DESCR
     physical: { tcodes: [0x20, 0x21] }
     semantic: utf8-string
+    role: "row comment"
     confidence: documented
+    notes: "First-party: session:9 comment = 0xfe0009/string, co-occurring with 0xfe0007/0xfe000a in row builders."
 
   0xfe000a:
     canonical-name: STD_DISABLED
     physical: { tcodes: [0x00, 0x01] }
     semantic: bool
+    role: "row is administratively disabled"
     confidence: documented
+    notes: "Proven live: disabling the bridge flips 0xfe000a false->true and running true->false (REST cross-checked). Presence drift: v6 omits the flag when false; v7 sends 0xfe000a=false. NOTE: absent from all 75 ops of the v6 interface row-core — disabled may arrive via a generic store-walk on that path."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
+      - source: code
+        ref: "RouterOS net interface row-core 0x80f6738 gap (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
 
   0xfe000b:
     canonical-name: STD_FINISHED
     physical: { tcodes: [0x00, 0x01] }
     semantic: bool
     confidence: documented
+    notes: "Sighting: present as a bool on the live [24,24] updater reply (v7). Role beyond the documented label not yet decoded."
 
   0xfe000c:
     canonical-name: STD_FILTER
     physical: { tcodes: [0x28, 0x29] }
     semantic: nested-message
     confidence: documented
-    notes: "Project-PROTOCOL.md identifies `FE000C` as STD_FILTER."
+    notes: |
+      Project-PROTOCOL.md identifies `FE000C` as STD_FILTER. CONFLICTING
+      first-party + live readings as a u32 GETALL flags word: ConfigHandler
+      reads flags = get<u32>(0xfe000c, default 5) for row assembly, and
+      live values 0/5/0x20000000 return byte-identical replies (ignored
+      for content on 6.49.23/7.25). The documented nested-message shape
+      and the observed u32-flags shape are both recorded; which contexts
+      use which is unresolved. As a SYS_CMD value 0xfe000c is CMD_SHUTDOWN
+      (see std-commands.yaml) — namespaces overlap numerically.
+    evidence:
+      - source: code
+        ref: "RouterOS libumsg.so ConfigHandler::cmdGetAll flags read (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): flags values ignored for content; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
 
   0xfe000d:
     canonical-name: STD_PRESET
@@ -126,7 +227,12 @@ keys:
     canonical-name: STD_NAME
     physical: { tcodes: [0x20, 0x21] }
     semantic: utf8-string
+    role: "name string; on [20,13]/[20,14] mark-registry rows this is the mark name"
     confidence: documented
+    notes: "Live: [20,13]/[20,14] rows are {0xfe0001 row-id, 0xfe0010 mark-name} ('no-mark' default + one row per mangle mark rule, proven by adding rules). Also seen: STRING 0x10 on the discover be32/addr6 neighbor row."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §7/§10"
 
   0xfe0011:
     canonical-name: STD_INTERVAL
@@ -150,7 +256,9 @@ keys:
     canonical-name: STD_COUNT
     physical: { tcodes: [0x08, 0x09] }
     semantic: u32
+    role: "CMD_GETCOUNT answer payload"
     confidence: documented
+    notes: "First-party: net-0 slot 18 (getcount) answers with u32(0xfe0014). Distinct from 0xfe0019 total-count carried on replies."
 
   0xfe0015:
     canonical-name: STD_GETALL_COOKIE
@@ -180,7 +288,12 @@ keys:
     canonical-name: STD_OBJ_COUNT
     physical: { tcodes: [0x08, 0x09] }
     semantic: u32
+    role: "TOTAL row count carried on replies (present even on error replies)"
     confidence: documented
+    notes: "Live: present even on UNKNOWNID error replies; ABSENT on [20,0] — handler-specific, not universal. Distinct from 0xfe0014 (GETCOUNT answer)."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §7/§8"
 
   0xfe001a:
     canonical-name: STD_CLASS
@@ -193,3 +306,73 @@ keys:
     physical: { tcodes: ["*"] }
     semantic: any
     confidence: documented
+    notes: "Second reading (v6-static-only, never observed live): a [20,0] GETALL request carrying nested 0xfe001b reads its start cursor from the NESTED message and iterates in id order instead of creation order (same row filter either way). How this relates to the documented SNMP-query label is unresolved."
+    evidence:
+      - source: code
+        ref: "RouterOS net [20,0] iterator 0x807763a nested-start branch (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+
+  0xfe001c:
+    canonical-name: STD_TAGS
+    physical: { tcodes: [0xa0] }
+    semantic: string-array
+    role: "row tags (project-named; no documented label)"
+    confidence: observed-only
+    notes: "Sightings: [] on a v7 bridge row, ['disabled'] on v6 [16,20]/[16,30]. First-party: 0xfe001c/string_array co-occurs in the interface row-core. Do NOT confuse with SYS key 0xff001c (v7 proxy banner, different namespace)."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
+      - source: code
+        ref: "RouterOS net interface row-core 0x80f6738 (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
+
+  0xfe001d:
+    canonical-name: STD_FIRST_ROW
+    physical: { tcodes: [0x28, 0x29] }
+    semantic: nested-message
+    role: "first row of a GETALL reply, flag-gated (project-named; no documented label)"
+    confidence: observed-only
+    notes: "First-party: ConfigHandler::cmdGetAll emits 0xfe001d = first row when a flag selects it. NEVER observed live — no truncation shape needed it (all truncated tests carried only 0xfe0003)."
+    evidence:
+      - source: code
+        ref: "RouterOS libumsg.so ConfigHandler::cmdGetAll (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25) — negative result; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
+
+# ── session naming ────────────────────────────────────────────────────────
+session-naming:
+  role: |
+    "SESSION" / "session namespace" in this project's older notes is loose
+    naming for the 0xfe meta range (row-id, comment/disabled, envelope),
+    NOT a distinct byte_2 value: no 0x02xxxx id exists in ANY RouterOS
+    binary (byte-scan over nova/bin + lib, both versions). The wire
+    namespaces are 0x00 (USER per-handler fields), 0x01 (NS-1: interface
+    fields + private control plane), 0xfe (META/session), 0xff (SYS).
+  confidence: observed-only
+  evidence:
+    - source: code
+      ref: "RouterOS nova/bin + lib byte-scan, both versions; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §2"
+
+investigation-trail:
+  - date: 2026-10-31
+    finding: |
+      WS-4 drain of first-party grounding + live CHR interrogation:
+      GETALL paging semantics on 0xfe0003 (per-handler start cursor) /
+      0xfe0004 (head-limit count) / 0xfe0019 (total count); live proofs
+      for 0xfe0007 dynamic / 0xfe0008 invalid / 0xfe000a disabled (+v7
+      presence drift); mark-name role for 0xfe0010; GETCOUNT payload
+      role for 0xfe0014; conflicting u32-flags reading on 0xfe000c;
+      new entries 0xfe001c (tags) / 0xfe001d (first-row, never observed
+      live); session-naming correction (no byte_2=0x02).
+  - date: 2026-10-31
+    finding: |
+      Post-WS-4 static re-visit (net-bridge2 §8): [20,0] start is
+      lower_bound(row-id), not opaque (0xfe0003 notes + history);
+      count=0 version-divided on [20,0] and v6 reply echo
+      0xfe0004 = emitted rows (0xfe0004 notes + history); nested
+      0xfe001b second reading as the [20,0] id-ordered filtered
+      GETALL switch (v6-static-only).
+  - date: 2026-10-31
+    finding: |
+      Live verification batch (findings §15): v6 count=0->all
+      proven (0xfe0004 notes), v7 count=0 token quirk recorded
+      (0 rows + second-entry token), lower_bound start + 0x10001
+      filter confirmed both versions.

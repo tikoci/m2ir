@@ -24,6 +24,21 @@ evidence:
     ref: "Cisco-Talos Winbox_Dissector.lua:182-196 (errorCode)"
     url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L182-L196"
 
+zero-value:
+  role: "0 = success (the errorMsg()/return convention; SYS_ERRNO is only set on a reply when SYS_STATUS == ERROR)"
+  confidence: inferred
+  notes: "Inferred from the errorMsg errno convention (failure paths pass 0xFE0000-range codes, e.g. sys2 identity setter failure -> errorMsg(0xfe0006) = ERROR_FAILED); success is the zero value, never a 0xFE0000-range code."
+  evidence:
+    - source: code
+      ref: "RouterOS sys2 identity setter 0x80719a8 failure path (6.49.23); see work/2026-10-chr-extraction/sys2-handler-tables.md"
+
+base-handler-rules:
+  role: "not-overridden nv::Handler slots answer ERROR_NOTIMP; GETOBJ-family calls without an object id answer ERROR_UNKNOWNID"
+  confidence: observed-only
+  evidence:
+    - source: code
+      ref: "RouterOS libumsg.so base cmdGet/cmdSet/cmdGetAll/cmdUnknown = errorMsg(0xfe0003), missing obj-id = errorMsg(0xfe0004) (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+
 errors:
   0xfe0001: { canonical-name: ERROR_UNKNOWN,        confidence: documented }
   0xfe0002: { canonical-name: ERROR_BRKPATH,        confidence: documented }
@@ -38,3 +53,10 @@ errors:
   0xfe000c: { canonical-name: ERROR_BUSY,           confidence: documented }
   0xfe000d: { canonical-name: ERROR_TIMEOUT,        confidence: documented }
   0xfe000e: { canonical-name: ERROR_TOOMUCH,        confidence: documented }
+
+investigation-trail:
+  - date: 2026-10-31
+    finding: |
+      WS-4 drain of first-party grounding: zero-value success convention
+      (inferred) + base-handler NOTIMP / missing-id UNKNOWNID rules (see
+      also std-commands.yaml dispatch-model).

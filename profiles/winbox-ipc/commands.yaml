@@ -2,9 +2,14 @@
 #
 # When SYS_CMD (0xFF0007) is NOT in the 0xFE0000-0xFE0016 range, it is
 # either:
-#   * a handler-private u32 with top byte = process_id (see processes.yaml)
-#     and low 16 bits the handler-local opcode, e.g. 0x0A0065 = mepty
-#     login command; or
+#   * a handler-private u32 dispatched via slot 19 cmdUnknown(msg, cmd)
+#     on v6 (see std-commands.yaml dispatch-model; "slot 19" is v6-only
+#     vocabulary — v7 shifts the Handler vtable past slot 12, see
+#     net-bridge2-handler-tables.md §8): process_id-prefixed values
+#     (top byte = process_id, low 16 bits the handler-local opcode,
+#     e.g. 0x0A0065 = mepty login), small integers, 0x100xx values, or
+#     0x60001/0x70001-style codes — opaque per handler, no global
+#     set<<16|cmd scheme; or
 #   * a legacy u8-encoded short-form value (cmdGet=7, cmdOpen=5, ...) used
 #     in pre-mepty auth flows.
 #
@@ -28,7 +33,7 @@ handler-private:
     evidence:
       - source: code
         ref: "this project's PROTOCOL.md and working code"
-    notes: "Project-named; consistent with the process_id=0x0a convention."
+    notes: "Project-named; consistent with the process_id=0x0a convention. VERSION-SCOPED: the 6.49.23 loader map assigns 0x0a to discover (mepty = 0x4c) — the 0x0a command top byte is a fossil or shared dispatch, not the v6 mepty id. See processes.yaml 0x0a/0x4c."
 
   0x0a0067:
     canonical-name: meptyData
@@ -38,6 +43,28 @@ handler-private:
     evidence:
       - source: code
         ref: "this project's PROTOCOL.md"
+    notes: "Same 0x0a version-scoping as meptyLogin above — see processes.yaml 0x0a/0x4c."
+
+# ── slot-19 private sub-commands (first-party) ─────────────────────────────
+# SYS_CMD values outside 0xfe0000-0xfe0016 reach slot 19 cmdUnknown.
+# Observed shapes (all opaque per-handler; NO global set<<16|cmd scheme):
+slot-19-private:
+  role: |
+    Out-of-range SYS_CMD values are handler-local sub-commands, not
+    global commands. Observed shapes: small integers (sys2/net use
+    1,2,3,4,5,6,10; rbbios sends SYS_CMD=5 notifies to sys2),
+    0x10003/0x10004/0x1000a/0x1000d, 0x60001 (sys2 notify), 0x70001
+    (net). net-0's slot 19 is an 800+ instruction handler (pagination
+    + 0x100xx + USER 1/2/3/8) — the slot-19 pagination case feeds
+    private cmds 2-12, not GET_ALL.
+  confidence: observed-only
+  evidence:
+    - source: code
+      ref: "RouterOS libumsg.so handleCmd DEFAULT + net slot-19 0x80d2f80 + rbbios SYS_CMD=5 notify (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1/§4/§5"
+  open-questions:
+    - "Which (process,handler) consumes rbbios's SYS_CMD=5 notify, and what does it carry?"
+    - "Decode net-0 slot 19's private cmds 2-12 (roles unknown; the old 'sibling slot-14 override' hypothesis for the [20,0] GETALL cursor is REFUTED — no slot-14 override exists, GETALL lives in the slot-7 handleCmd dispatch; see net-bridge2-handler-tables.md §8)."
+    - "Map v7's private-cmd dispatch: the Handler vtable shifts past slot 12 on v7 (v7 [20,0] slot 19 = base cmdRemoveObj; the private-cmd switch sits at v7 slot 24) — v7 libumsg DEFAULT routing is still open."
 
 # ── documented handler-scoped u8 command spaces ──────────────────────────
 handler-scoped-u8:
@@ -175,3 +202,10 @@ investigation-trail:
       handler-2 file-transfer flow: the same open/read surface underlies the
       unauthenticated list/file retrieval path, and it carries a changing
       session byte between the paired requests.
+  - date: 2026-10-31
+    finding: |
+      WS-4 drain of first-party grounding
+      (net-bridge2-handler-tables.md §1/§4/§5): slot-19 private
+      sub-command space (small integers, 0x100xx, 0x60001/0x70001 — no
+      global scheme), correcting the header's process_id-prefixed-only
+      reading of out-of-range SYS_CMD values.

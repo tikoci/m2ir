@@ -39,7 +39,28 @@ commands:
   0xfe0006: { canonical-name: CMD_REMOVEOBJ,    confidence: documented }
   0xfe0007: { canonical-name: CMD_MOVEOBJ,      confidence: documented }
   0xfe0008: { canonical-name: CMD_SETFORM,      confidence: documented }
+  0xfe0009:
+    canonical-name: UNHANDLED_0x09
+    confidence: observed-only
+    notes: "genuinely unhandled: nv::Handler::handleCmd routes 0xfe0009 to the DEFAULT case (slot 19 cmdUnknown). No named command."
+    evidence:
+      - source: code
+        ref: "RouterOS libumsg.so nv::Handler::handleCmd jump table (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+  0xfe000a:
+    canonical-name: UNHANDLED_0x0a
+    confidence: observed-only
+    notes: "genuinely unhandled (same DEFAULT route as 0xfe0009). No named command."
+    evidence:
+      - source: code
+        ref: "RouterOS libumsg.so nv::Handler::handleCmd jump table (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
   0xfe000b: { canonical-name: CMD_NOTIFY,       confidence: documented }
+  0xfe000c:
+    canonical-name: CMD_SHUTDOWN
+    confidence: observed-only
+    notes: "slot 20 = cmdShutdown (name from PLT symbols). WARNING: context-dependent — as a SYS_CMD value this is CMD_SHUTDOWN, but as a 0xfe-namespace FIELD (std-keys.yaml 0xfe000c) it is the GETALL flags word. Command/error/field namespaces overlap numerically."
+    evidence:
+      - source: code
+        ref: "RouterOS libumsg.so nv::Handler::handleCmd case 0x28737 -> slot 20 (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
   0xfe000d:
     canonical-name: CMD_GET
     confidence: documented
@@ -56,3 +77,43 @@ commands:
   0xfe0014: { canonical-name: CMD_DISCONNECTED, confidence: documented }
   0xfe0015: { canonical-name: CMD_GETCOUNT,     confidence: documented }
   0xfe0016: { canonical-name: CMD_RESET,        confidence: documented }
+
+# ── dispatch model (first-party) ──────────────────────────────────────────
+dispatch-model:
+  role: |
+    nv::Handler::handleCmd subtracts 0xfe0000 and switches via a 23-entry
+    jump table; out-of-range SYS_CMD values (small integers, 0x100xx,
+    0x60001, 0x70001 — see commands.yaml handler-private) fall to
+    DEFAULT = slot 19 cmdUnknown(msg, cmd). Base cmdGet/cmdSet/
+    cmdGetAll/cmdUnknown all answer errorMsg(0xfe0003) = ERROR_NOTIMP;
+    a missing GETOBJ-family object id answers errorMsg(0xfe0004) =
+    ERROR_UNKNOWNID. Command, error, and field namespaces overlap
+    numerically (context-dependent) — e.g. 0xfe000c is CMD_SHUTDOWN as
+    a command but the GETALL flags word as a field.
+  slot-map:
+    9: cmdGet
+    10: cmdSet
+    11: cmdReset
+    12: cmdGetObj
+    13: cmdSetObj
+    14: cmdGetAll
+    15: cmdAddObj
+    16: cmdRemoveObj
+    17: cmdMoveObj
+    18: cmdGetCount
+    19: cmdUnknown
+    20: cmdShutdown
+    24: cmdDisconnected
+  confidence: observed-only
+  evidence:
+    - source: code
+      ref: "RouterOS libumsg.so nv::Handler::handleCmd + ConfigHandler::cmdGetAll (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+
+investigation-trail:
+  - date: 2026-10-31
+    finding: |
+      WS-4 drain of first-party grounding
+      (net-bridge2-handler-tables.md §1): added CMD_SHUTDOWN (0xfe000c,
+      previously a schema gap) + UNHANDLED markers for 0xfe0009/0xfe000a
+      (previously gaps of unknown status), and the dispatch/slot model
+      with the base-NOTIMP + missing-id-UNKNOWNID error rules.

@@ -58,6 +58,10 @@ evidence:
     url: "https://devco.re/blog/2024/05/24/pwn2own-toronto-2022-a-9-year-old-bug-in-mikrotik-routeros-en/"
   - source: code
     ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available) — see ./gui-handlers.yaml for the full handler catalog this sources"
+  - source: code
+    ref: "RouterOS 6.49.23 .x3 process map + 46-binary addHandler census; see work/2026-10-chr-extraction/README.md + net-bridge2-handler-tables.md §3"
+  - source: sample
+    ref: "live CHR interrogation (WS-3C prober hscan, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
 
 version-observations:
   - version: "6.43.45"
@@ -82,6 +86,31 @@ version-observations:
       authentication handler. Treat this as another version-scoped
       corroboration of the `/nova/bin/user` -> 13 mapping, not as a
       universal claim about all RouterOS releases.
+  - version: "6.49.23"
+    source: "nova/etc/loader/system.x3 + bndl/*/loader/*.x3 + dude.x3 (91 entries, tag=30 records: attr 7 = path, attr 4 = process id)"
+    mappings:
+      - { binary: /nova/bin/mproxy, process-id: 0x02 }
+      - { binary: /nova/bin/discover, process-id: 0x0a }
+      - { binary: /nova/bin/user, process-id: 0x0d }
+      - { binary: /nova/bin/bridge2, process-id: 0x10 }
+      - { binary: /nova/bin/net, process-id: 0x14, x3-name: interface }
+      - { binary: /nova/bin/sys2, process-id: 0x18, x3-name: management }
+      - { binary: /nova/bin/cerm, process-id: 0x13 }
+      - { binary: /nova/bin/radv, process-id: 0x1f }
+      - { binary: /nova/bin/route, process-id: 0x2c }
+      - { binary: /nova/bin/rbbios, process-id: 0x3d }
+      - { binary: /nova/bin/keyman, process-id: 0x41, x3-name: license }
+      - { binary: /nova/bin/mepty, process-id: 0x4c }
+      - { binary: /nova/bin/dude, process-id: 0x67 }
+      - { binary: /nova/bin/quickset, process-id: 0x78 }
+    notes: "Key resolutions: 0x10 = bridge2 (dude = 103, resolving the Cisco-Talos conflict for this version); mepty = 76; user = 13 stable since 6.43.45; [120] = quickset (resolves the session/login-handler claim). Two pathless records (56=[24,23], 56=[20,50]) adjacent to net/www unresolved (reserved? package-conditional?). 29 map entries have no on-disk binary (uncached package NPKs + partd/msgfw/vm/cloudpingd)."
+    evidence:
+      - source: code
+        ref: "RouterOS 6.49.23 .x3 process map (process-map-6.49.23.json); see work/2026-10-chr-extraction/README.md"
+  - version: "7.25"
+    source: "DEFERRED — no static source found (no loader.x3/starter.x3; loader/sermgr/sysinit carry no id tables; v7 loader spawns /nova/bin/* via fork/execl)"
+    mappings: []
+    notes: "v7 ids are likely assigned at boot/install (readdir/spawn order?) — recoverable only live (hscan) or by deep per-binary RE. DO NOT assume v6 ids hold on v7. Live hscans confirm the interrogated paths ([24,x], [20,x], [16,x], [13,x], [65], [10,x], [2,x], [76]) answer on the same numbers on 7.25, but that is a sampled confirmation, not a full map."
 
 transient-process-observations:
   - binary: /nova/bin/login
@@ -108,6 +137,102 @@ registered-handler-observations:
     handler-ids: [1, 2]
     confidence: documented
     notes: "MarginResearch identifies handler 2 as FoisHandler."
+  - binary: /nova/bin/sys2
+    version: "6.49.23"
+    handler-ids: [0, 1, 2, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 23, 24, 25, 31]
+    confidence: observed-only
+    source-detail: "static addHandler census (17 sites) + live hscan 17/17 match"
+    notes: "NOT registered: 17. v7 live delta: drops {5,6,9} (14 handlers); data-vs-NOTIMP split v7: data {0,1,2,8,10,14,16,24,31}, NOTIMP {7,12,15,23,25}."
+    evidence:
+      - source: code
+        ref: "RouterOS sys2 addHandler sites (6.49.23); see work/2026-10-chr-extraction/sys2-handler-tables.md"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober hscan, 6.49.23 + 7.25, ev/*hscan*); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+  - binary: /nova/bin/net
+    version: "6.49.23"
+    handler-ids: "79 static (75 live in 0-95 + 103/NOTIMP + 3 registered-but-BRKPATH {37,38,60})"
+    confidence: observed-only
+    notes: "The 3 BRKPATH are package/version-gated, not reachable on this CHR. v7 live: 84 in 0-95 + 26 in 96-130 (net +~50% handlers, mostly NOTIMP stubs + 6 thin data singletons); v7 HAS 37/38/60 live. Both: [20,62]->[10,1] cross-process proxy."
+    evidence:
+      - source: code
+        ref: "RouterOS net addHandler census (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §3"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober hscan, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+  - binary: /nova/bin/bridge2
+    version: "6.49.23"
+    handler-ids: "18 static; live v6 = 15 in 0-31 {1,2,3,5-13,20,30,31}, live v7 = 13 {1,2,3,9-18}"
+    confidence: observed-only
+    notes: "[16,2]=port and [16,13]=vlan exist both versions."
+    evidence:
+      - source: code
+        ref: "RouterOS bridge2 addHandler census (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §3"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober hscan, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+  - binary: /nova/bin/user
+    version: "6.49.23/7.25"
+    handler-ids: "identical both: {1,2,3,4 NOTIMP (4=auth: legacy CMD only), 5=data, 6/7=FAILED, 8=NOTIMP}"
+    confidence: observed-only
+    notes: "No user LIST via GET/GET_ALL on 0-8 (GET_ALL->NOTIMP); user-list path unexplored. [13,6]/[13,7] are selector-gated (GETOBJ support needed)."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober hscan, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+  - binary: /nova/bin/keyman
+    version: "6.49.23/7.25"
+    handler-ids: "none — no numbered handlers 0-8 either version; bare [65] served from the looper default"
+    confidence: observed-only
+    notes: "Consistent with static: keyman imports no addHandler."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober hscan, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §6/§9"
+      - source: code
+        ref: "RouterOS keyman import table (6.49.23); see work/2026-10-chr-extraction/routerboard-hunt.md §4"
+  - binary: /nova/bin/discover
+    version: "6.49.23/7.25"
+    handler-ids: "v6 {0,1,2}, v7 {0,1,2,3} (v7 gained handler 3)"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober hscan, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+  - binary: /nova/bin/mproxy
+    version: "6.49.23/7.25"
+    handler-ids: "identical both: [2,1]={2:u32 0x2000000}, [2,2]=NOTIMP file-transfer"
+    confidence: observed-only
+    notes: "Unknown-id errors come back shorter (nfields 5, full path echoed) than other loopers."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober hscan, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+  - binary: /nova/bin/mepty
+    version: "6.49.23/7.25"
+    handler-ids: "none numbered 0-6 either version; process exists BOTH (default NOTIMP for GET), terminal speaks private cmds on bare [76]"
+    confidence: observed-only
+    notes: "The 0x0a-top-byte question needs a terminal session (follow-up)."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober hscan, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+  - binary: /nova/bin/route
+    version: "6.49.23"
+    handler-ids: "86 static"
+    confidence: observed-only
+    evidence:
+      - source: code
+        ref: "RouterOS route addHandler census (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §3"
+  - binary: /nova/bin/rbbios
+    version: "6.49.23"
+    handler-ids: [1, 2, 3]
+    confidence: observed-only
+    notes: "1+2 = AHolder('')-derived data-driven; 3 = custom (insmod csel0.ko + open /dev/csel0 in ctor; slot 10 setter touching u32:1 + bool:3-8). Server-dead on CHR: nobody addresses [61,x], board values never enter an M2 row."
+    evidence:
+      - source: code
+        ref: "RouterOS rbbios handler analysis (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §5"
+
+cross-process-proxies:
+  - from: [20, 62]
+    to: [10, 1]
+    role: "request to [20,62] answered from=[10,1] with discover-1's FAILED — a cross-process proxy, both versions"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
 
 processes:
   0x01: { canonical-name: net,      confidence: documented }
@@ -131,10 +256,58 @@ processes:
           - source: code
             ref: "tenable/routeros poc/bytheway (set_to(2,2))"
             url: "https://github.com/tenable/routeros/blob/master/poc/bytheway/src/main.cpp"
-  0x03: { canonical-name: sermgr,   confidence: documented }
+      - version: "6.49.23"
+        canonical-name: mproxy
+        confidence: observed-only
+        evidence:
+          - source: code
+            ref: "RouterOS 6.49.23 .x3 process map; see work/2026-10-chr-extraction/README.md"
+        notes: "Live hscan confirms [2,1]/[2,2] answer on both 6.49.23 and 7.25."
+  0x03:
+    canonical-name: sermgr
+    confidence: documented
+    notes: "Version-scoped: Tenable's 6.43.45 parse_x3 sample maps /nova/bin/log -> 0x03."
+    version-identities:
+      - version-source: "Cisco-Talos reference version"
+        canonical-name: sermgr
+        confidence: documented
+      - version: "6.43.45"
+        canonical-name: log
+        confidence: documented
   0x04: { canonical-name: notify,   confidence: documented }
-  0x05: { canonical-name: radv,     confidence: documented }
-  0x06: { canonical-name: system,   confidence: documented }
+  0x05:
+    canonical-name: radv
+    confidence: documented
+    notes: "Version-scoped: the 6.49.23 loader map assigns radv to 0x1f (31), not 0x05."
+    version-identities:
+      - version-source: "Cisco-Talos reference version"
+        canonical-name: radv
+        confidence: documented
+      - version: "6.49.23"
+        canonical-name: radv
+        confidence: observed-only
+        process-id: 0x1f
+        evidence:
+          - source: code
+            ref: "RouterOS 6.49.23 .x3 process map; see work/2026-10-chr-extraction/README.md"
+  0x06:
+    canonical-name: system
+    confidence: documented
+    notes: "Version-scoped: Tenable's 6.43.45 parse_x3 sample maps /nova/bin/moduler -> 0x06."
+    version-identities:
+      - version-source: "Cisco-Talos reference version"
+        canonical-name: system
+        confidence: documented
+      - version: "6.43.45"
+        canonical-name: moduler
+        confidence: documented
+  0x1f:
+    canonical-name: radv
+    confidence: observed-only
+    notes: "Not in Cisco-Talos typeIDCode (which places `radv` at 0x05). The 6.49.23 loader map assigns 31 (0x1f) to radv."
+    evidence:
+      - source: code
+        ref: "RouterOS 6.49.23 .x3 process map; see work/2026-10-chr-extraction/README.md"
   0x07: { canonical-name: ping,     confidence: documented }
   0x08:
     canonical-name: undo
@@ -148,7 +321,26 @@ processes:
   0x0a:
     canonical-name: mepty
     confidence: documented
-    notes: "Terminal PTY proxy. Owns commands 0x0A0065 (login) and 0x0A0067 (data) per this project."
+    notes: |
+      Cisco-Talos labels 0x0a as `mepty` (terminal PTY proxy; owns
+      commands 0x0A0065 login / 0x0A0067 data per this project). CONFLICT:
+      the 6.49.23 loader map assigns 0x0a to `discover`, with mepty at
+      0x4c — while the mepty login/data SYS_CMD top byte stays 0x0a. So
+      on v6 the PATH says discover but the COMMAND top byte says mepty;
+      version-scoped like 0x02 and 0x0d.
+    version-identities:
+      - version-source: "Cisco-Talos reference version"
+        canonical-name: mepty
+        confidence: documented
+      - version: "6.49.23"
+        canonical-name: discover
+        confidence: observed-only
+        evidence:
+          - source: code
+            ref: "RouterOS 6.49.23 .x3 process map; see work/2026-10-chr-extraction/README.md"
+        notes: "Live: discover answers {0,1,2} on v6, {0,1,2,3} on v7."
+    open-questions:
+      - "Why does the mepty command-code top byte (0x0a) match discover's v6 process id rather than mepty's own (0x4c)? Legacy assignment fossil, or shared dispatch?"
   0x0b: { canonical-name: pppman,   confidence: documented }
   0x0c: { canonical-name: radius,   confidence: documented }
   0x0d:
@@ -168,6 +360,13 @@ processes:
         canonical-name: user
         confidence: documented
         notes: "MarginResearch's auth trace uses [13,4]; Tenable parse_x3 maps `/nova/bin/user` -> 13."
+      - version: "6.49.23"
+        canonical-name: user
+        confidence: observed-only
+        evidence:
+          - source: code
+            ref: "RouterOS 6.49.23 .x3 process map; see work/2026-10-chr-extraction/README.md"
+        notes: "user = 13 stable since 6.43.45. Live: [13,1-8] map identical on 6.49.23 and 7.25 (4=auth legacy-CMD-only, 5=data, 6/7=FAILED)."
     revision-history:
       - date: 2026-05-03
         belief: "0x0D = user-service-or-similar (project observation [13,4]; loose attribution to MarginResearch)"
@@ -209,82 +408,183 @@ processes:
     canonical-name: dude
     confidence: documented
     notes: |
-      CONFLICT: a private third-party WinBox client implementation queries
-      [16,2] and [16,13] for /interface bridge port and /interface bridge
-      vlan respectively (see ./gui-handlers.yaml bridge-port / bridge-vlan).
-      Either process 0x10 is version-scoped like 0x02 (moduler/mproxy) and
-      0x0d (hotplug/user) above — dude in the Cisco-Talos reference
-      version, a bridge-management handler in whatever version that
-      implementation targets — or [16,2]/[16,13] are wrongly attributed in
-      that source. Not resolved; do not assume either identity is
-      universal.
+      Version-scoped, RESOLVED for v6: Cisco-Talos labels 0x10 as `dude`
+      in its reference version, but the 6.49.23 loader map assigns 0x10
+      to `bridge2` with dude at 0x67 (103) — and the private
+      implementation's [16,2]/[16,13] bridge port/vlan paths (see
+      ./gui-handlers.yaml) corroborate bridge2 functionally. dude is a
+      separate process here, not the bridge manager.
     evidence:
       - source: code
         ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+    version-identities:
+      - version-source: "Cisco-Talos reference version"
+        canonical-name: dude
+        confidence: documented
+      - version: "6.49.23"
+        canonical-name: bridge2
+        confidence: observed-only
+        evidence:
+          - source: code
+            ref: "RouterOS 6.49.23 .x3 process map; see work/2026-10-chr-extraction/README.md"
+        notes: "Live: 18 static handlers; hscan confirms [16,2]/[16,13] both versions."
+    revision-history:
+      - date: 2026-10-31
+        belief: "0x10 identity conflict (dude vs bridge) unresolved"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS 6.49.23 .x3 map: 0x10 = bridge2, dude = 103; see work/2026-10-chr-extraction/README.md"
     open-questions:
-      - "Does RouterOS reassign 0x10 from dude to a bridge-management role in some version range, matching the 0x02 and 0x0d precedents?"
-      - "Or does the third-party implementation's [16,2]/[16,13] path route through dude's own handler surface (dude managing bridge state) rather than a distinct bridge process?"
+      - "Which version range (if any) runs dude itself at 0x10, matching the Cisco-Talos label?"
   0x11: { canonical-name: console,  confidence: documented }
   0x12: { canonical-name: cerm,     confidence: documented }
   0x14:
-    canonical-name: interface
+    canonical-name: net
     confidence: observed-only
     notes: |
-      Not in Cisco-Talos typeIDCode. A private third-party WinBox client
-      implementation queries [20,0] (/interface), [20,1] (/ip address),
-      and [20,37] (/ipv6 address) — see ./gui-handlers.yaml. Named
-      `interface` here descriptively; no independent source confirms this
-      label.
+      Not in Cisco-Talos typeIDCode. The 6.49.23 loader map assigns 0x14
+      to /nova/bin/net under the x3-name `interface` — confirming this
+      file's descriptive `interface` label as the loader's own name. A
+      private third-party implementation queries [20,0] (/interface),
+      [20,1] (/ip address), and [20,37] (/ipv6 address) — see
+      ./gui-handlers.yaml. Static: 79 handlers; live: 76 + 3 gated on
+      v6, 110 on v7 (see registered-handler-observations).
     evidence:
       - source: code
         ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+      - source: code
+        ref: "RouterOS 6.49.23 .x3 process map (0x14 interface = net); see work/2026-10-chr-extraction/README.md"
+    revision-history:
+      - date: 2026-10-31
+        belief: "0x14 descriptively named `interface`; no independent source confirms the label"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS 6.49.23 .x3 map confirms 0x14 = net, x3-name interface; see work/2026-10-chr-extraction/README.md"
   0x18:
-    canonical-name: management
+    canonical-name: sys2
     confidence: observed-only
     notes: |
-      Project observes paths [24,0], [24,1], [24,2]. Not in Cisco-Talos
-      typeIDCode. Corroborated and extended by a private third-party
-      implementation, which also uses [24,1] (/system identity), [24,2]
-      (/system resource), and [24,17] (/system routerboard) — see
-      ./gui-handlers.yaml.
+      Not in Cisco-Talos typeIDCode. The 6.49.23 loader map assigns 0x18
+      to /nova/bin/sys2 under the x3-name `management` — confirming this
+      file's descriptive `management` label. Static: 17 handlers (no 17!);
+      live v7 drops {5,6,9} (see registered-handler-observations). [24,17]
+      routerboard is HOMELESS on both versions (BRKPATH live, no static
+      row-shape) — see ./gui-handlers.yaml routerboard.
     evidence:
       - source: code
         ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+      - source: code
+        ref: "RouterOS 6.49.23 .x3 process map (0x18 management = sys2); see work/2026-10-chr-extraction/README.md"
+    revision-history:
+      - date: 2026-10-31
+        belief: "0x18 descriptively named `management`; [24,17] serves routerboard"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS 6.49.23 .x3 map confirms 0x18 = sys2, x3-name management; see work/2026-10-chr-extraction/README.md"
+          - source: sample
+            ref: "live CHR interrogation (WS-3C prober): [24,17] BRKPATH both versions; see work/2026-10-chr-extraction/ws3c-prober-findings.md §5"
+  0x2c:
+    canonical-name: route
+    confidence: documented
+    notes: "Cisco-Talos label confirmed for v6: the 6.49.23 loader map assigns 0x2c to /nova/bin/route (86 static handlers)."
+    evidence:
+      - source: code
+        ref: "RouterOS 6.49.23 .x3 process map + route addHandler census; see work/2026-10-chr-extraction/README.md + net-bridge2-handler-tables.md §3"
+  0x3d:
+    canonical-name: rbbios
+    confidence: observed-only
+    notes: |
+      Not in Cisco-Talos typeIDCode. The 6.49.23 loader map assigns 0x3d
+      to /nova/bin/rbbios (BIOS device proxy, 3 handlers — NOT
+      routerboard-info; see registered-handler-observations). Server-dead
+      on CHR: sends one SYS_CMD=5 notify to sys2; handlers never
+      addressed. v7 has NO rbbios binary (board strings moved to `mode`).
+    evidence:
+      - source: code
+        ref: "RouterOS 6.49.23 .x3 process map + rbbios analysis; see work/2026-10-chr-extraction/README.md + net-bridge2-handler-tables.md §5 + routerboard-hunt.md §7"
   0x41:
-    canonical-name: license
+    canonical-name: keyman
     confidence: observed-only
     notes: |
-      Not in Cisco-Talos typeIDCode. A private third-party WinBox client
-      implementation addresses it as a bare single-element SYS_TO=[65]
-      (like mepty's [76]), for /system license — see ./gui-handlers.yaml.
+      Not in Cisco-Talos typeIDCode. The 6.49.23 loader map assigns 0x41
+      under the x3-name `license` (binary: keyman) — confirming this
+      file's descriptive `license` label as the loader's own name. Bare
+      single-element SYS_TO=[65] answered from the looper default (keyman
+      imports NO addHandler; no numbered handlers live either version);
+      bare-GET subset is {12:nlevel?, 13:software-id} — see
+      ./gui-handlers.yaml license.
     evidence:
       - source: code
         ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
-  0x2c: { canonical-name: route,    confidence: documented }
+      - source: code
+        ref: "RouterOS 6.49.23 .x3 process map (0x41 license = keyman) + keyman import table; see work/2026-10-chr-extraction/README.md + routerboard-hunt.md §4"
+    revision-history:
+      - date: 2026-10-31
+        belief: "0x41 descriptively named `license`; serves numbered handlers"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS 6.49.23 .x3 map confirms 0x41 = keyman, x3-name license; keyman has no addHandler; see work/2026-10-chr-extraction/routerboard-hunt.md §4"
+          - source: sample
+            ref: "live CHR interrogation (WS-3C prober): looper-default serve both versions; see work/2026-10-chr-extraction/ws3c-prober-findings.md §6"
   0x4c:
-    canonical-name: mepty-handler-0x4c
+    canonical-name: mepty
     confidence: observed-only
     notes: |
-      Project uses [76] as the mepty handler path. Inconsistent with
-      process_id=0x0a; likely [76] is a *handler id* under the mepty
-      process rather than a process id itself. Not in Cisco-Talos
-      typeIDCode. A private third-party implementation corroborates the
-      bare single-element SYS_TO=[76] path for mepty login/data messages,
-      while its SYS_CMD values for those same messages are 0x0A0065 /
-      0x0A0067 (top byte 0x0a) — see ./commands.yaml handler-private. The
-      path (0x4c) and the command top-byte (0x0a) disagree on which
-      number is "the" mepty process id; this project has not resolved
-      which one (if either) loader/system.x3 actually assigns to mepty.
+      Not in Cisco-Talos typeIDCode. The 6.49.23 loader map assigns 0x4c
+      (76) to /nova/bin/mepty — so [76] IS the loader-assigned mepty
+      process id, not a handler under 0x0a. Live: process exists BOTH
+      versions (default NOTIMP for GET), no numbered handlers 0-6;
+      terminal speaks private cmds on bare [76]. The command top-byte
+      (0x0a, = discover's v6 id) vs path (0x4c) mismatch is STILL
+      unexplained — see 0x0a.
     evidence:
       - source: code
         ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+      - source: code
+        ref: "RouterOS 6.49.23 .x3 process map (0x4c = mepty); see work/2026-10-chr-extraction/README.md"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober hscan, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+    revision-history:
+      - date: 2026-10-31
+        belief: "[76] is a handler under process 0x0a (mepty), or its own unresolved process"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS 6.49.23 .x3 map: 0x4c = mepty process id; see work/2026-10-chr-extraction/README.md"
     open-questions:
-      - "Is [76] a handler under process 0x0a (mepty) or its own process?"
-      - "Why does the command-code top byte (0x0a) not match the SYS_TO path (0x4c/76) for the same mepty login/data messages?"
-  0x78:
-    canonical-name: login-or-mgmt
+      - "Why does the command-code top byte (0x0a) not match the SYS_TO path (0x4c/76) for the same mepty login/data messages? (Needs a terminal session.)"
+  0x67:
+    canonical-name: dude
     confidence: observed-only
-    notes: "Project uses [120] as 'session/login handler'. Not in Cisco-Talos typeIDCode."
+    notes: |
+      Not in Cisco-Talos typeIDCode (which places `dude` at 0x10). The
+      6.49.23 loader map assigns 103 (0x67) to /nova/bin/dude — resolving
+      the 0x10 conflict for v6 (0x10 = bridge2). No live interrogation
+      yet (dude package present in the extraction but not covered by the hscan).
+    evidence:
+      - source: code
+        ref: "RouterOS 6.49.23 dude.x3 process map; see work/2026-10-chr-extraction/README.md"
+  0x78:
+    canonical-name: quickset
+    confidence: observed-only
+    notes: |
+      Not in Cisco-Talos typeIDCode. The 6.49.23 loader map assigns 120
+      (0x78) to /nova/bin/quickset — resolving the session/login-handler
+      claim (only 2 unknown: quickset's register-passed handler ids).
+    evidence:
+      - source: code
+        ref: "RouterOS 6.49.23 .x3 process map (0x78 = quickset); see work/2026-10-chr-extraction/README.md"
+    revision-history:
+      - date: 2026-10-31
+        belief: "[120] is the session/login handler"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS 6.49.23 .x3 map: 0x78 = quickset; see work/2026-10-chr-extraction/README.md"
   0xfd:
     canonical-name: local
     confidence: documented
@@ -308,3 +608,13 @@ investigation-trail:
       Also added a source-id-adoption note to 0x0d/[13,4] and a path-vs-
       command-code-top-byte discrepancy note to 0x4c/mepty. See
       ./gui-handlers.yaml for the full handler catalog this drains from.
+  - date: 2026-10-31
+    finding: |
+      WS-4 drain of the 6.49.23 .x3 process map (91 entries) + static
+      handler census (46 binaries) + live hscans both versions
+      (ws3c-prober-findings.md §9): resolved 0x10 (bridge2, dude=103),
+      0x4c (mepty process id), 0x78 (quickset), confirmed 0x14 (net)
+      / 0x18 (sys2) / 0x2c (route) labels, added 0x3d (rbbios) /
+      0x67 (dude) / 0x1f (radv), scoped 0x0a (mepty vs discover),
+      recorded the v7 static-map deferral, the full handler census,
+      and the [20,62]->[10,1] cross-process proxy.

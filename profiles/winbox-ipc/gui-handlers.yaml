@@ -24,33 +24,51 @@ maturity: exploratory
 evidence:
   - source: code
     ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+  - source: code
+    ref: "RouterOS sys2/net/bridge2/keyman disassembly (6.49.23 first-party grounding); see work/2026-10-chr-extraction/sys2-handler-tables.md + net-bridge2-handler-tables.md + routerboard-hunt.md"
+  - source: sample
+    ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25, 900+ sessions + full handler scans); see work/2026-10-chr-extraction/ws3c-prober-findings.md"
 
 # ── source-id adoption ───────────────────────────────────────────────────
 # Every request's SYS_FROM is [0, source_id] — a per-connection id the
-# GUI client picks for itself (this implementation starts at 8) and then
-# lets the server correct. Observed once per connection, before the
+# GUI client picks for itself. Observed once per connection, before the
 # first handler query.
 source-id-adoption:
   role: |
     After EC-SRP5 (or legacy MD5) auth completes, the client sends one
     GET request to [13,4] (see processes.yaml 0x0d) with SYS_FROM=[0,
     client_guess] and reads back the server's reply SYS_TO array; its
-    second element becomes the source id used in SYS_FROM for every
-    later request on the connection.
+    second element is echoed into SYS_FROM for every later request on
+    the connection.
   request:
     sys-to: [13, 4]
     sys-cmd: { value: 7, name: cmdGet, ref: "./commands.yaml legacy-short-form.0x07" }
     sys-from: [0, "<client-chosen source id, e.g. 8>"]
     sys-reqid: 0
   response:
-    sys-to: "[0, <server-assigned source id>] — element 1 becomes the client's source id for the rest of the session"
+    sys-to: "[0, <echoed source id>] — element 1 is the client's guess verbatim; use it in SYS_FROM for the rest of the session"
   confidence: observed-only
   notes: |
+    Adoption is a pure ECHO on 6.49.23 and 7.25: guesses 8/11/42/77 were
+    all returned verbatim, including a second overlapping session reusing
+    the same guess (no correction, no uniqueness enforcement). The
+    private implementation's "server corrects" reading never triggers
+    here; treat any correction behavior as version-scoped at best.
     This reuses process 0x0d / handler 4 — the same path MarginResearch's
     auth trace uses for the `user` authentication handler (see
     processes.yaml 0x0d version-identities). Whether this is the *same*
     handler serving a dual role (auth AND capability/source-id exchange)
     or a coincidental reuse of the path is an open question.
+  evidence:
+    - source: sample
+      ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): echo verified across guesses + overlapping session; see work/2026-10-chr-extraction/ws3c-prober-findings.md §3"
+  revision-history:
+    - date: 2026-10-31
+      belief: "server corrects the client guess into an assigned source id"
+      outcome: superseded
+      evidence:
+        - source: sample
+          ref: "live CHR interrogation (WS-3C prober): pure echo on both versions; see work/2026-10-chr-extraction/ws3c-prober-findings.md §3"
 
 # ── GET_ONE / GET_ALL request shape ──────────────────────────────────────
 request-shape:
@@ -60,23 +78,55 @@ request-shape:
     - { field: 0xff0005, name: SYS_REPLYEXP, value: true }
     - { field: 0xff0006, name: SYS_REQID, value: "client-chosen, echoed in the reply" }
     - { field: 0xff0007, name: SYS_CMD,  value: "CMD_GET (0xfe000d) for single-record, CMD_GETALL (0xfe0004) for list" }
-  get-all-optional-flags:
+  get-all-paging:
     role: |
-      Some RouterOS builds reject a bare CMD_GETALL and require two extra
-      session-namespace fields; others reject the request *with* them.
-      This implementation probes per-host: try bare first, and only on
-      failure reconnect and retry with the flags, then remembers which
-      mode worked for that host.
+      Bare CMD_GETALL (no extra fields) works on every list handler tried
+      on 6.49.23 and 7.25 — no flags fixture needed. Optional paging:
+      0xfe0004 count = head-limit (clamped <= 1000 server-side; count=0
+      means zero rows on v7 but ALL rows on v6 [20,0] — version drift),
+      0xfe0003 start/next-token for continuation. Working pagination
+      loop: bare (or count) -> follow 0xfe0003 tokens.
     fields:
-      - { field: 12, namespace: session, tcode: u32, value: "0x20000000 (536870912)", role: "unconfirmed — reproduces a working request, semantics not decoded" }
-      - { field: 4,  namespace: session, tcode: u8,  value: 0, role: "unconfirmed" }
+      - { field: 0xfe0004, name: STD_GETALLNO, tcode: u32, role: "count = head-limit; reply carries 0xfe0003 next-token when truncated (+ 0xfe0004 emitted-count echo on v6 [20,0])" }
+      - { field: 0xfe0003, name: STD_GETALLID, tcode: u32, role: "start cursor — PER-HANDLER; only server-issued tokens are meaningful ([20,1] validates an inclusive row-id cursor, [20,0] takes lower_bound(row-id) with no validation, iterating in creation order)" }
+      - { field: 0xfe000c, name: STD_FILTER, tcode: u32, role: "flags word (default 5); values 0/5/0x20000000 return byte-identical replies — ignored for content here" }
+    ignored: "USER-namespace (0x00) versions of count/flags are ignored entirely; rows arrive identically with or without them."
     confidence: observed-only
     notes: |
-      Field ids 12/4 have not been cross-checked against std-keys.yaml's
-      SESSION namespace catalog (namespace 0x00, session-scoped) — this
-      project's own std-keys.yaml is SYS/STD (0xff/0xfe) only and does not
-      yet enumerate the 0x00-namespace session fields used inside GET_ALL
-      framing. Treat as a fixture to reproduce, not a decoded field.
+      The private implementation's fixture (fields 12/4 as USER-namespace
+      session fields, value 0x20000000/0) is decoded now: those are the
+      0xfe-namespace 0xfe000c flags / 0xfe0004 count keys, and the
+      fixture's count=0 is what empties its reply on 7.25. The old
+      "some builds require flags" probe is unnecessary on 6.49.23/7.25
+      but retained as a version-scoped possibility for other builds.
+      See std-keys.yaml 0xfe0003/0xfe0004/0xfe000c/0xfe0019 for the key
+      semantics. [20,0]-only row filters: 0x10001 exact-match is
+      live on BOTH versions (ether type 1, loopback type 76;
+      =999 matches nothing either version); 0x10002/mask-0x10011
+      and 0x10003/mask-0x10012 bitmask pairs stay v6-static-only
+      (untested). Bit-2 entries are always skipped. See
+      net-bridge2-handler-tables.md §8 and
+      ws3c-prober-findings.md §15.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): bare GETALL + count/next-token chaining + flags sweep; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
+      - source: code
+        ref: "RouterOS libumsg.so ConfigHandler::cmdGetAll (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+      - source: code
+        ref: "RouterOS net [20,0] GETALL worker + lower_bound iterator + count drift (6.49.23 + 7.25); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+    revision-history:
+      - date: 2026-10-31
+        belief: "GETALL needs USER-namespace session fields 12/4 (fixture to reproduce, semantics not decoded)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (WS-3C prober): 0xfe-namespace keys decoded, bare works, USER-ns ignored; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
+      - date: 2026-10-31
+        belief: "[20,0] start is opaque and count=0 empties the reply, unversioned"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS net [20,0] lower_bound iterator + version-divided count clamp; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
   response-shape:
     single-record: "reply is one flat nv::message; fields keyed in a handler-specific namespace (this project observed both namespace 0x00/USER and a numeric namespace matching the handler's own id in different handlers — see per-handler notes below)"
     list: "reply carries rows in { field: 2, namespace: session }, tcode 0xa8 (msg_array); each element parses as its own nv::message record"
@@ -94,45 +144,95 @@ handlers:
     fields:
       namespace: user
       map:
-        1: { name: uptime, unit: seconds, tcode: u32 }
-        4: { name: cpu, tcode: string }
-        5: { name: cpu-frequency, tcode: u32 }
-        6: { name: cpu-load, tcode: u32 }
-        19: { name: write-sect-total, tcode: u64 }
-        20: { name: write-sect-since-reboot, tcode: u64 }
-        22: { name: version, tcode: string }
-        23: { name: bad-blocks, tcode: u32 }
-        24: { name: cpu-count, tcode: u32 }
+        1: { name: uptime, unit: seconds, tcode: u32, source: "nv::getUptime()" }
+        2: { name: total-memory-kib, tcode: u32, role: "total-memory in KiB (u32 legacy of 40); value = totalKB" }
+        3: { name: free-memory-kib, tcode: u32, role: "free-memory in KiB (u32 legacy of 41); value = freeKB" }
+        4: { name: cpu, tcode: string, source: "/proc/cpuinfo line parse, per-arch formats" }
+        5: { name: cpu-frequency, tcode: u32, source: "sscanf cpu MHz / core clock / clock (last match wins)" }
+        6: { name: cpu-load, tcode: u32, role: "avg per-cpu window-B %; OMITTED when 0 (idle-skip)", source: "avg of per-cpu window-B % over all CPUs" }
+        9: { name: cpu-load-a, tcode: u32, role: "avg per-cpu window-A % (always inserted; cf. 6)" }
+        10: { name: total-hdd-kib, tcode: u32, role: "total-hdd in KiB; value = f42 >> 10" }
+        11: { name: free-hdd-kib, tcode: u32, role: "free-hdd in KiB; value = f43 >> 10" }
+        12: { name: server-time, tcode: u32, unit: unix-seconds, role: "server unix time; value = gettimeofday().tv_sec" }
+        19: { name: write-sect-total, tcode: u64, source: "since-reboot counter + persisted base (nv::Store; base=1 on v6, 0 on v7 fresh boot)" }
+        20: { name: write-sect-since-reboot, tcode: u64, source: "yaffs n_page_writes accumulation / diskstats write sectors" }
+        22: { name: version, tcode: string, source: "getOSVersion()" }
+        23: { name: bad-blocks, tcode: u32, role: "yaffs only, per-mille; OMITTED on disk-backed CHR (idle-skip)", source: "bad*1000/(end_block-start_block)" }
+        24: { name: cpu-count, tcode: u32, source: "(obj+0x80 - obj+0x7c)/8 / 61 jiffy-ring slots" }
         25: { name: model, tcode: string }
         26: { name: architecture-name, tcode: string }
         27: { name: platform, tcode: string }
-        39: { name: build-time, tcode: string }
-        40: { name: total-memory, tcode: u64 }
-        41: { name: free-memory, tcode: u64 }
-        42: { name: total-hdd-space, tcode: u64 }
-        43: { name: free-hdd-space, tcode: u64 }
+        28: { name: used-hdd-kib, tcode: u32, role: "used-hdd in KiB; value = (total-free) >> 10" }
+        29: { name: free-hdd-percent, tcode: u32, unit: percent, role: "free-hdd percent; value = free*100/total (0 if total=0)" }
+        34: { name: per-cpu-load, tcode: u32_array, role: "per-cpu window-A % (one element per CPU)" }
+        35: { name: total-memory-mib, tcode: u32, role: "total-memory in MiB; value = totalKB >> 10" }
+        36: { name: free-memory-decimib, tcode: u32, role: "free-memory in deci-MiB; value = freeKB*10 >> 10" }
+        37: { name: total-hdd-mib, tcode: u32, role: "total-hdd in MiB; value = f42 >> 20" }
+        38: { name: free-hdd-decimib, tcode: u32, role: "free-hdd in deci-MiB, rounded; value = free*10 >> 20" }
+        39: { name: build-time, tcode: string, source: "getOSVersion()" }
+        40: { name: total-memory, tcode: u64, source: "totalKB << 10 (totalKB from /proc/cmdline mem=%dM, rounded fallback)" }
+        41: { name: free-memory, tcode: u64, source: "freeKB << 10 (nv::getFreeMemory)" }
+        42: { name: total-hdd-space, tcode: u64, source: "statfs(/rw/) blocks * bsize" }
+        43: { name: free-hdd-space, tcode: u64, source: "statfs(/rw/) bavail * bsize" }
         44: { name: board-name, tcode: string }
-        45: { name: factory-software, tcode: string }
-    notes: "Field-id -> name map is this implementation's own; not cross-checked against a public source."
+        45: { name: minimum-version, tcode: string, role: "RENAME CANDIDATE (was factory-software): v7 value equals REST minimum-version; inserted only if non-empty; empty/absent on v6 CHR" }
+        46: { name: jiffies, tcode: u32, role: "kernel jiffies since boot (100 Hz; ~= uptime*100); value = nv::getJiffies()" }
+    evidence:
+      - source: code
+        ref: "RouterOS sys2 resource getter 0x806a522, 34 insert sites (6.49.23): all 19 schema fields confirmed + 14 new; see work/2026-10-chr-extraction/sys2-handler-tables.md"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): field-for-field match incl. every derived-quantity arithmetic check (ev/{6.49,7.25}-getone-24-2.json); see work/2026-10-chr-extraction/ws3c-prober-findings.md §4"
+    notes: |
+      Storage-type discriminator at obj+0x84: 1 = disk, 2 = NAND, 3 =
+      neither (skips bad-blocks). Load windows: per cpu, two jiffy-delta
+      % from the 61-slot sample ring (x100/total); window A feeds f34/f9,
+      window B feeds f6. Read-only: slot 10 is the base cmdSet.
+      v6->v7 drifts: build-time format ("Oct/07/2026 16:05:16" vs
+      "2026-10-22 14:12:00"), board-name verbosity ("CHR" vs "CHR QEMU
+      Standard PC (i440FX + PIIX, 1996)"), version channel suffix
+      ("6.49.23 (stable)" vs bare "7.25").
+    revision-history:
+      - date: 2026-10-31
+        belief: "resource has exactly the 19 mapped fields; field 45 is factory-software"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS sys2 getter inserts 34 pairs incl. 14 unmapped ids (6.49.23); see work/2026-10-chr-extraction/sys2-handler-tables.md"
+          - source: sample
+            ref: "live CHR interrogation (WS-3C prober): v7 field-45 value equals REST minimum-version; see work/2026-10-chr-extraction/ws3c-prober-findings.md §4"
 
   system-identity:
     sys-to: [24, 1]
     process-id: 0x18
     process-ref: "./processes.yaml 0x18 (management)"
     cmd: GET_ONE
-    role: "/system identity — device name"
+    role: "/system identity — device name + version"
     confidence: observed-only
     fields:
       namespace: user
       map:
-        12: { name: name, tcode: string }
+        12: { name: name, tcode: string, source: "getter 0x8057f5c insert<string>(12); setter writes sethostname + nv::Store::set(1)" }
+        13: { name: version, tcode: string, role: "RouterOS version ('6.49.23' / '7.25', REST-confirmed)" }
+    evidence:
+      - source: code
+        ref: "RouterOS sys2 identity getter/setter (6.49.23); see work/2026-10-chr-extraction/sys2-handler-tables.md"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): {12:name, 13:version} both versions; see work/2026-10-chr-extraction/ws3c-prober-findings.md §5"
+    revision-history:
+      - date: 2026-10-31
+        belief: "identity is a single field 12"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (WS-3C prober): field 13 = version on both versions; see work/2026-10-chr-extraction/ws3c-prober-findings.md §5"
 
   routerboard:
     sys-to: [24, 17]
+    status: homeless
     process-id: 0x18
     process-ref: "./processes.yaml 0x18 (management)"
     cmd: GET_ONE
-    role: "/system routerboard — model, serial, firmware"
+    role: "/system routerboard — model, serial, firmware (ATTRIBUTION SUSPECT)"
     confidence: observed-only
     fields:
       namespace: user
@@ -152,6 +252,24 @@ handlers:
       dedicated license handler below; this implementation queries only
       the license handler for those two and the routerboard handler for
       the rest, but both appear to expose overlapping fields.
+      LIVE+STATIC WALL: [24,17] answers BRKPATH (from=[24] looper
+      default) on BOTH 6.49.23 and 7.25; sys2 registers no handler 17
+      (17-handler census certain, both the addHandler sites and the live
+      hscan); no function in 149 ELFs across both versions builds the
+      RB row-shape (bool:16 anchor + signature strings); sys2 handler
+      16 is /nova/store/chfont (console font), not an off-by-one RB.
+      Board code IS present in the images (v6 rbbios readers, v7 mode
+      strings; virtualization gating is runtime, CHR==X86 bits) but no reachable
+      M2 path serves these field ids. The sys-to is version-drifted or
+      wrong — kept as a suspect-shape record, NOT a working path.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): BRKPATH both; full sys2 hscans clean; see work/2026-10-chr-extraction/ws3c-prober-findings.md §5"
+      - source: code
+        ref: "RouterOS 149-ELF row-shape sweep + rbbios last-mile analysis (both versions); see work/2026-10-chr-extraction/routerboard-hunt.md"
+    open-questions:
+      - "Where does /system/routerboard live over M2 on 6.49.23/7.25 — text-only via terminal, or a non-sys2 process not yet hunted?"
+      - "Which version (if any) served the RB shape at [24,17]?"
 
   license:
     sys-to: [65]
@@ -163,9 +281,27 @@ handlers:
     fields:
       namespace: user
       map:
-        1: { name: software-id, tcode: string }
-        4: { name: nlevel, tcode: u32 }
-    notes: "Single-element SYS_TO, like mepty's [76] — no handler-id suffix. New process id, not previously recorded in processes.yaml."
+        12: { name: nlevel, tcode: u8, role: "plausibly nlevel for CHR-free (value 0 here); UNCONFIRMED, no numeric level in REST to compare" }
+        13: { name: software-id, tcode: string, role: "10-char system id, equals REST /system/license system-id exactly" }
+    notes: |
+      Single-element SYS_TO, like mepty's [76] — no handler-id suffix,
+      answered from the process-65 looper default (no numbered handlers
+      0-8 either version; keyman imports no addHandler). [65] GET_ALL ->
+      NOTIMP (GET-only). Static: v6 keyman builder touches str
+      {1,8,10,11,12,13} + u32:4, so a fuller row (incl. the old 1/4)
+      may exist behind another selector — the bare-GET subset is {12,13}.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): {12:u8 0, 13:software-id} both (ev/7.25-getone-65.json); see work/2026-10-chr-extraction/ws3c-prober-findings.md §6"
+      - source: code
+        ref: "RouterOS keyman builder 0x8050830 str/u32 touch-set (6.49.23); see work/2026-10-chr-extraction/routerboard-hunt.md §4"
+    revision-history:
+      - date: 2026-10-31
+        belief: "license bare-GET is {1:software-id, 4:nlevel}"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (WS-3C prober): {12,13} on both versions, matches neither {1,4}; see work/2026-10-chr-extraction/ws3c-prober-findings.md §6"
 
   interface:
     sys-to: [20, 0]
@@ -181,22 +317,48 @@ handlers:
         6: { name: name, tcode: string }
         14: { name: running, tcode: bool }
         30: { name: type, tcode: string }
-        101: { name: l2mtu, tcode: u32 }
+        100: { name: mtu-config, tcode: u32, role: "configured MTU (0 = auto, arrives as u8; else u32)" }
+        101: { name: l2mtu, tcode: u32, role: "KEEP-WITH-CAVEAT: seen ONLY as 65535 on an enabled v7 bridge; absent on ether/lo/vlan both versions; CHR virtio has no l2mtu in REST. Likely correct for hardware ether, unproven." }
         105: { name: actual-mtu, tcode: u32 }
       namespace-user:
         1001: { name: mac-address, tcode: bytes, size: 6 }
       namespace-session:
+        7: { name: dynamic, tcode: bool, role: "present only on some types (bridge yes, ether/lo no)" }
         9: { name: comment, tcode: string }
         10: { name: disabled, tcode: bool }
+    evidence:
+      - source: code
+        ref: "RouterOS net interface row-core 0x80f6738 (810 instructions, 75 ops, 6.49.23): all seven mapped fields converge here; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
+      - source: code
+        ref: "RouterOS net [20,0] slot-7 handleCmd dispatch 0x80d1af8 + GETALL worker/iterator (6.49.23), v7 same shape; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): MTU triple + session-bool behavior; see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
+      - source: sample
+        ref: "live CHR interrogation (post-WS-4 batch): lower_bound start + count/filter legs both versions; see work/2026-10-chr-extraction/ws3c-prober-findings.md §15"
     notes: |
-      Fields observed split across three byte_2 values in the same row:
-      a small-integer namespace (called `namespace-1` here — not yet
-      identified against sys-keys.yaml/std-keys.yaml's 0xff/0xfe scheme,
-      may be a per-handler private namespace), USER (0x00) for
-      mac-address, and SESSION for comment/disabled. This 3-namespace
-      split repeats across ip-address, bridge-port, and bridge-vlan below,
-      suggesting `namespace-1` is a stable convention for this handler
-      family rather than a one-off.
+      Fields split across three byte_2 values: 0x01 (NS-1: interface
+      fields + private control plane — the old `namespace-1` label is now
+      identified), USER (0x00) for mac-address, SESSION (0xfe) for
+      comment/disabled/dynamic. This 3-way split repeats across
+      ip-address, bridge-port, and bridge-vlan, confirming NS-1 as a
+      stable convention for this handler family.
+      Row shape is STATE-DEPENDENT: disabled rows are SLIM (computed
+      fields 101/105/default-name/counters drop until re-enabled). MAC
+      appears twice per row (0x3e9 always + a type-specific second field:
+      0x404 on ether, 0x82 on bridge; equal values here). GETALL start
+      on this handler is lower_bound(row-id), inclusive, with NO
+      validation — nonexistent ids continue from the next-higher id —
+      and rows iterate in creation order, not id order (see
+      get-all-paging above). This handler overrides handleCmd at slot 7
+      and serves GETALL from a custom async worker; its slots 9–17 are
+      the NOTIMP base and are never reached for GETALL.
+    revision-history:
+      - date: 2026-10-31
+        belief: "GETALL start cursor on [20,0] is opaque (no closed form)"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS net [20,0] iterator lower_bound decode fits the s-matrix given bridge id 5; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
 
   ip-address:
     sys-to: [20, 1]
@@ -208,12 +370,30 @@ handlers:
     fields:
       row-id: { namespace: session, field: 1 }
       namespace-user:
-        1: { name: address, tcode: u32, role: "IPv4 address, host byte order little-endian on the wire" }
-        3: { name: netmask, tcode: u32, role: "expressed on the wire as a bitmask; CLI shows /popcount" }
-        5: { name: interface, tcode: u32, role: "references interface row id from the interface handler" }
+        1: { name: address, tcode: be32, role: "IPv4 address, BIG-endian bytes on the wire (10.0.2.15 -> 0x0F02000A)" }
+        2: { name: network, tcode: be32, role: "network address, big-endian" }
+        3: { name: netmask, tcode: be32, role: "expressed on the wire as a bitmask (/24 -> 0x00FFFFFF); CLI shows /popcount" }
+        4: { name: broadcast, tcode: be32, role: "broadcast address, big-endian" }
+        5: { name: interface, tcode: u32, role: "references interface row id from the interface handler (verified)" }
+        10: { name: interface-or-actual, tcode: u32, role: "always equals field 5 here — duplicate or actual-interface, never discriminated (needs an interface!=actual row)" }
       namespace-session:
+        7: { name: dynamic, tcode: bool, role: "true on the DHCP-created row" }
+        8: { name: invalid, tcode: bool, role: "true when the address's bridge is disabled" }
         9: { name: comment, tcode: string }
         10: { name: disabled, tcode: bool }
+    evidence:
+      - source: code
+        ref: "RouterOS net candidate 0x80ae18e {be32:1..4, u32:5, u32:10} (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): be32 proven on 10.0.2.15/24 + 192.0.2.1/10.0.2.0/10.0.2.255 rows; see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
+    notes: "GETALL start on this handler is a VALIDATED row-id cursor (inclusive): s=0 or nonexistent -> UNKNOWNID error + total count; s=1 -> the id-1 row."
+    revision-history:
+      - date: 2026-10-31
+        belief: "IPv4 fields are u32 little-endian on the wire; only fields {1,3,5} exist"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (WS-3C prober): bytes are big-endian; fields {2,4,10} present; see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
 
   ipv6-address:
     sys-to: [20, 37]
@@ -225,17 +405,34 @@ handlers:
     fields:
       row-id: { namespace: session, field: 1 }
       namespace-user:
-        1: { name: address, tcode: bytes_16, role: "128-bit IPv6 address, ref: physical/nv-message.yaml tcode 0x18" }
-        2: { name: prefix-length, tcode: u32 }
-        3: { name: interface, tcode: u32 }
+        1: { name: address, tcode: bytes_16, role: "128-bit IPv6 address (addr6 accessor), ref: physical/nv-message.yaml tcode 0x18" }
+        2: { name: prefix-length, tcode: u8 }
+        3: { name: interface, tcode: u8 }
+        4: { name: unknown-bool-f, tcode: bool, role: "always false here" }
+        5: { name: unknown-u8, tcode: u8 }
+        6: { name: unknown-bool-f, tcode: bool, role: "always false here" }
+        7: { name: unknown-u8, tcode: u8 }
+        8: { name: unknown-empty-string, tcode: string, role: "always '' here" }
+        9: { name: unknown-bool-f, tcode: bool, role: "always false here" }
+        14: { name: unknown-bool-f, tcode: bool, role: "always false here" }
+        15: { name: unknown-bool-f, tcode: bool, role: "always false here" }
+        16: { name: unknown-bool-t, tcode: bool, role: "always true here (0x10)" }
+        17: { name: unknown-u8-zero, tcode: u8, role: "always 0 here (0x11)" }
+        19: { name: unknown-u8-zero, tcode: u8, role: "always 0 here (0x13)" }
       namespace-session:
         9: { name: comment, tcode: string }
         10: { name: disabled, tcode: bool }
+    evidence:
+      - source: code
+        ref: "RouterOS net candidate 0x81047ca {addr6:1, u32:2, u32:3, ...} (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): exact match incl. extras (::1/128 on lo, fe80::EUI-64/64 on ether1); see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
+    notes: "Static candidate confirmed live field-for-field. Extra fields beyond {1,2,3} kept raw — roles open."
 
   bridge-port:
     sys-to: [16, 2]
     process-id: 0x10
-    process-ref: "./processes.yaml 0x10 — CONFLICT: Cisco-Talos documents 0x10 as `dude`"
+    process-ref: "./processes.yaml 0x10 — version-scoped: bridge2 on v6 (dude=103)"
     cmd: GET_ALL
     role: "/interface bridge port"
     confidence: observed-only
@@ -248,14 +445,24 @@ handlers:
       namespace-session:
         9: { name: comment, tcode: string }
         10: { name: disabled, tcode: bool }
+    evidence:
+      - source: code
+        ref: "RouterOS bridge2 candidate 0x806db62 (38 inserts incl. u32:3, u32:4, u32:19 + ~30 more + meta, 6.49.23) — probable attribution (shape + handler-2-custom consistent); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): [16,2] exists both versions (empty here — no bridges at scan time); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
     notes: |
-      See processes.yaml 0x10 for the version-scoping conflict this
-      introduces against the documented `dude` assignment.
+      See processes.yaml 0x10 for the version-scoping (resolved for v6:
+      bridge2; the Cisco-Talos `dude` label is another version).
+      Static candidate is a SUPERSET (~30 more fields: 1,2,5,10-18,
+      20-31,208,216,220...) — full row shape unconfirmed live (no
+      bridges existed at scan time). Bridge2-2/13 slot-9 getters are
+      REQUEST-BUILDERS (proxy/join: SYS_CMD + 0x1003b/0x10001 +
+      string(0xfe0009) + u32(1)) — sub-request targets TBD.
 
   bridge-vlan:
     sys-to: [16, 13]
     process-id: 0x10
-    process-ref: "./processes.yaml 0x10 — same conflict as bridge-port above"
+    process-ref: "./processes.yaml 0x10 — same version-scoping as bridge-port above"
     cmd: GET_ALL
     role: "/interface bridge vlan"
     confidence: observed-only
@@ -265,11 +472,241 @@ handlers:
         1: { name: vlan-ids, tcode: u32_array, role: "pairs of (start,end); a singleton pair start==end is one vlan id" }
         2: { name: bridge, tcode: u32 }
         3: { name: tagged, tcode: u32_array, role: "interface row ids" }
+        4: { name: tagged-extra, tcode: u32_array, role: "NEW (first-party): configured-vs-current tagged/untagged?" }
         5: { name: untagged, tcode: u32_array, role: "interface row ids" }
+        6: { name: untagged-extra, tcode: u32_array, role: "NEW (first-party): configured-vs-current tagged/untagged?" }
       namespace-session:
         7: { name: dynamic, tcode: bool }
         9: { name: comment, tcode: string }
         10: { name: disabled, tcode: bool }
+    evidence:
+      - source: code
+        ref: "RouterOS bridge2 row-builder 0x806df36 (91 instructions, 6.49.23): schema {1,2,3,5} ALL MATCH + new {4,6}; attributed via /nova/store/bridge-vlans -> handler 0xd; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): [16,13] exists both versions (empty here); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+
+  system-clock:
+    sys-to: [24, 0]
+    process-id: 0x18
+    process-ref: "./processes.yaml 0x18 (management)"
+    cmd: GET_ONE
+    role: "/system clock"
+    confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        7: { name: unix-time, tcode: u32 }
+        26: { name: time-zone-name, tcode: string, role: "'manual' = REST time-zone-name" }
+        30: { name: seconds-since-midnight, tcode: u32 }
+        31: { name: day-start, tcode: u32 }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25), REST cross-checked; see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+
+  default-config:
+    sys-to: [24, 8]
+    process-id: 0x18
+    process-ref: "./processes.yaml 0x18 (management)"
+    cmd: GET_ONE
+    role: "default-configuration scripts (defconf bodies verbatim)"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+
+  updater:
+    sys-to: [24, 24]
+    process-id: 0x18
+    process-ref: "./processes.yaml 0x18 (management)"
+    cmd: GET_ONE
+    role: "system updater state"
+    confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        1: { name: version, tcode: string, role: "'7.25' here" }
+        6: { name: channel, tcode: string, role: "'NEWESTa7.stable' here" }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 7.25): {1:'7.25', 6:'NEWESTa7.stable', ...} + 0xfe000b; see work/2026-10-chr-extraction/ws3c-prober-findings.md §7/§10"
+
+  neighbor-discovery-settings:
+    sys-to: [20, 17]
+    process-id: 0x14
+    process-ref: "./processes.yaml 0x14 (new)"
+    cmd: GET_ONE
+    role: "neighbor discovery settings (/ip neighbor discovery-settings)"
+    confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        79: { name: suffix-or-mode, tcode: string, role: "'lan' = add-dns-entries-suffix here; 114 user fields total" }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): field 79 + 30000ms discover-interval; see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+    notes: "Full 114-field map not yet decoded — only field 79 identified."
+
+  packet-mark-registry:
+    sys-to: [20, 13]
+    process-id: 0x14
+    process-ref: "./processes.yaml 0x14 (new)"
+    cmd: GET_ALL
+    role: "packet-mark registry (one row per mangle packet-mark)"
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-session:
+        16: { name: mark-name, tcode: string, role: "0xfe0010: 'no-mark' default + one row per mangle rule, proven by adding a rule" }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): rows {id, 0xfe0010}; see work/2026-10-chr-extraction/ws3c-prober-findings.md §7/§10"
+
+  connection-mark-registry:
+    sys-to: [20, 14]
+    process-id: 0x14
+    process-ref: "./processes.yaml 0x14 (new)"
+    cmd: GET_ALL
+    role: "connection-mark registry (one row per mangle connection-mark)"
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-session:
+        16: { name: mark-name, tcode: string, role: "0xfe0010, same shape as packet-mark-registry" }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §7/§10"
+
+  v7-net-singleton-107:
+    sys-to: [20, 107]
+    status: role-open
+    process-id: 0x14
+    cmd: GET_ONE
+    role: "v7-only thin data singleton (role open; field 5 = 'firmware'!)"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 7.25): shape in ev/7.25-hscan-20-hi.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+
+  v7-net-singleton-114:
+    sys-to: [20, 114]
+    status: role-open
+    process-id: 0x14
+    cmd: GET_ONE
+    role: "v7-only thin data singleton (role open)"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+
+  v7-net-singleton-115:
+    sys-to: [20, 115]
+    status: role-open
+    process-id: 0x14
+    cmd: GET_ONE
+    role: "v7-only empty-data GET (role open)"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+
+  v7-net-singleton-122:
+    sys-to: [20, 122]
+    status: role-open
+    process-id: 0x14
+    cmd: GET_ONE
+    role: "v7-only thin data singleton (role open)"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+
+  v7-net-singleton-125:
+    sys-to: [20, 125]
+    status: role-open
+    process-id: 0x14
+    cmd: GET_ONE
+    role: "v7-only thin data singleton (role open)"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+
+  v7-net-singleton-126:
+    sys-to: [20, 126]
+    status: role-open
+    process-id: 0x14
+    cmd: GET_ONE
+    role: "v7-only thin data singleton (role open)"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+
+  unknown-24-10:
+    sys-to: [24, 10]
+    status: role-open
+    process-id: 0x18
+    cmd: GET_ONE
+    role: "unknown singleton, raw shape {1:F, 2:F}"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+
+  unknown-24-14:
+    sys-to: [24, 14]
+    status: role-open
+    process-id: 0x18
+    cmd: GET_ONE
+    role: "unknown singleton, raw shape {8:F, 9:T, 15:0}"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+
+  unknown-24-16:
+    sys-to: [24, 16]
+    status: role-open
+    process-id: 0x18
+    cmd: GET_ONE
+    role: "unknown singleton, raw shape {1:2, 2:10} (v6 says /nova/store/chfont — console font, unconvinced as the M2 role)"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+
+  unknown-24-31:
+    sys-to: [24, 31]
+    status: role-open
+    process-id: 0x18
+    cmd: GET_ONE
+    role: "unknown singleton: 5 range-rows + '7.13+,6.49.8+' + 16-byte blob"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+
+  unknown-13-5:
+    sys-to: [13, 5]
+    status: role-open
+    process-id: 0x0d
+    cmd: GET_ONE
+    role: "unknown singleton, raw shape {5:[], 1:F, 2:T, 4:1, 3:0}"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9/§10"
+
+  unknown-2-1:
+    sys-to: [2, 1]
+    status: role-open
+    process-id: 0x02
+    cmd: GET_ONE
+    role: "unknown singleton, raw shape {2:u32 0x2000000} (identical both versions)"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9/§10"
 
 investigation-trail:
   - date: 2026-07-14
@@ -282,3 +719,32 @@ investigation-trail:
       new process ids (0x14, 0x41) and one direct conflict with the
       Cisco-Talos 0x10=dude assignment — recorded in processes.yaml rather
       than resolved here.
+  - date: 2026-10-31
+    finding: |
+      WS-4 drain of first-party grounding (sys2-handler-tables.md,
+      net-bridge2-handler-tables.md, routerboard-hunt.md) + live CHR
+      interrogation (ws3c-prober-findings.md): source-id echo,
+      GETALL paging rewrite (bare works, count/next-token, per-handler
+      start), 14 new resource fields + field-45 rename candidate,
+      identity field 13, routerboard homeless (BRKPATH both), license
+      {12,13}, interface MTU triple + NS-1 + state-dependent rows,
+      be32 IPv4, ipv6 extras, bridge-vlan {4,6}, and 12 newly
+      identified / raw-recorded handlers ([24,0/8/24], [20,17/13/14],
+      v7 net 107/114/115/122/125/126, unknowns [24,10/14/16/31],
+      [13,5], [2,1]).
+  - date: 2026-10-31
+    finding: |
+      Post-WS-4 static re-visit (net-bridge2 §8): [20,0] GETALL
+      decoded — slot-7 handleCmd dispatch override (no slot-14
+      override exists), start = lower_bound(row-id) with
+      creation-order iteration, count=0 version-divided (v6 all /
+      v7 none), v6 reply echo 0xfe0004 = emitted rows, v6-only
+      0x10001/2/3/11/12 row filters (never live-observed).
+  - date: 2026-10-31
+    finding: |
+      Live verification batch (findings §15, 13 new ev transcripts):
+      v6 count=0->all proven, v7 start lower_bound confirmed on
+      demand (s=1->[lo]), v7 count=1 token-only truncation, v7
+      count=0 token quirk (points at second entry), 0x10001
+      exact-match filter live both versions (ether 1, loopback 76).
+      Mask-filter legs stay static-only.

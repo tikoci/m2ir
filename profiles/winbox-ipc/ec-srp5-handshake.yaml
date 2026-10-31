@@ -23,13 +23,18 @@ evidence:
     url: "https://margin.re/2022/06/pulling-mikrotik-into-the-limelight/"
   - source: code
     ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available) — independently corroborates the message shapes below and supplies the derivation algorithm section"
+  - source: code
+    ref: "RouterOS libucrypto.so + user/mproxy disassembly (6.49.23 + 7.25, first-party grounding); see work/2026-10-chr-extraction/ucrypto-grounding.md"
+  - source: sample
+    ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25, 900+ authenticated sessions); see work/2026-10-chr-extraction/ws3c-prober-findings.md"
 
 notes: |
   Elliptic-curve points are serialized as the big-endian X coordinate
   (32 bytes) plus a single byte parity flag (0 = even Y, 1 = odd Y).
   The salt is opaque 16 bytes. No length headers exist inside these
-  payloads — message identity is positional / size-based; the 0x06
-  prefix byte is conventional and not validated.
+  payloads — message identity is positional / size-based. The 0x06 is
+  the chunk tag only (see transport.yaml); it is NOT repeated inside
+  the assembled payload.
 
 # ── messages ────────────────────────────────────────────────────────────
 messages:
@@ -38,23 +43,37 @@ messages:
     phase: 1
     role: "public-key offer with username"
     seq:
-      - { name: tag,      contents: [0x06], notes: "same value as the chunk tag; conventional, not validated" }
       - { name: username, kind: strz, encoding: utf-8, notes: "NUL-terminated UTF-8 username" }
       - { name: pubkey,   size: 32, notes: "Curve25519 client public point, big-endian X coordinate" }
       - { name: parity,   width: u1, notes: "Y-parity bit (0=even, 1=odd)" }
     confidence: observed-only
     corroboration: "byte-for-byte match in the private third-party implementation: username || 0x00 || 32-byte pubkey-x || parity-byte"
+    revision-history:
+      - date: 2026-10-31
+        belief: "assembled payload starts with a 0x06 tag byte (same value as the chunk tag)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): payloads without inner 0x06 authenticate first-try; payloads with a prefixed 0x06 are rejected (server hashes the 0x06 into the username, confirmation mismatch)"
+          - source: code
+            ref: "RouterOS libucrypto ECSRP::getChallenge — returns username || 0x00 || pubkey33 with no tag byte; see work/2026-10-chr-extraction/ucrypto-grounding.md §2"
 
   server_phase1:
     direction: server-to-client
     phase: 1
     role: "public-key reply + per-user salt"
     seq:
-      - { name: tag,    contents: [0x06] }
       - { name: pubkey, size: 32, notes: "Curve25519 server public point, big-endian X coordinate" }
       - { name: parity, width: u1 }
-      - { name: salt,   size: 16, notes: "per-user salt; opaque to the client" }
+      - { name: salt,   size: 16, notes: "per-user salt; opaque to the client. Lifecycle is version-divided (see salt-lifecycle below): v7 persistent per password-set, v6 idle-expiring." }
     confidence: observed-only
+    revision-history:
+      - date: 2026-10-31
+        belief: "assembled payload starts with a 0x06 tag byte"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): 49-byte server replies (33-byte pubkey + 16-byte salt) with no tag; see work/2026-10-chr-extraction/ws3c-prober-findings.md §1"
 
   client_phase2:
     direction: client-to-server
@@ -73,9 +92,63 @@ messages:
   phase2_confirmation:
     role: "shared shape used in both phase-2 messages; only the derivation input differs"
     seq:
-      - { name: tag,          contents: [0x06] }
       - { name: confirmation, size: 32, notes: "SHA-256(...) confirmation value" }
     confidence: observed-only
+    revision-history:
+      - date: 2026-10-31
+        belief: "assembled payload starts with a 0x06 tag byte"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): 32-byte bare confirmations both directions; see work/2026-10-chr-extraction/ws3c-prober-findings.md §1"
+
+# ── salt lifecycle (version-divided) ──────────────────────────────────────
+salt-lifecycle:
+  v7-persistent:
+    behavior: "random 16 bytes generated at user-create and at every password-set, stored persistently; stable across 100+ logins over an hour and across reboot"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 7.25): salt stable per user across reboots; 300 password rotations yield 300 distinct salts, 300/300 logins OK (ws3c/ev/7.25-rot-sweep-300.log); see work/2026-10-chr-extraction/ws3c-prober-findings.md §1"
+  v6-idle-expiring:
+    behavior: "ephemeral salt rotating on an idle timeout T in (15s, 20s] with no reboot or password change; refreshed by logins (300 rapid logins hold one salt), so idle-since-last-use rather than wall-clock buckets"
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23): 10s/15s idle holds the salt, 20s/45s/60s (6/6) idle rotates it; see work/2026-10-chr-extraction/ws3c-prober-findings.md §1"
+  revision-history:
+    - date: 2026-10-31
+      belief: "salt is fresh randomness per login (inferred from the server recomputing i per login)"
+      outcome: superseded
+      evidence:
+        - source: sample
+          ref: "live CHR interrogation (WS-3C prober): v7 salt persists across reboot, v6 salt survives rapid logins — neither is fresh per login; see work/2026-10-chr-extraction/ws3c-prober-findings.md §1"
+
+# ── MSCHAP vs SRP dispatch (client-side) ──────────────────────────────────
+mschap-note:
+  role: |
+    libucrypto's generateResponse dispatches on the server phase-1 reply
+    length: 33 bytes -> MSCHAP branch, 49 bytes -> SRP branch (33-byte
+    pubkey + 16-byte salt split). This dispatch lives in the CLIENT
+    (mproxy-as-client, btest, mactel outgoing sessions). The RouterOS
+    server always speaks SRP here: ~950 live logins across 6.49.23 and
+    7.25 produced only 49-byte server replies, never the 33-byte form.
+  makeChallenge-scope: |
+    libucrypto's makeChallenge(str, vec, flag) shares the
+    SHA-1(x || zeros(40) || MAGIC || F2(40))[0:16] shape with
+    makeSessionKey but its 26/28-byte magics ("This is for peer
+    challenge" / "This is for auther challenge" [sic]) are MSCHAP
+    version 2 vocabulary (peer/authenticator challenges, cf. "Magic
+    server to client signing constant"). The EC-SRP server flow needs
+    no derived challenge (salt/ephemeral are random) and no EC-SRP
+    caller of makeChallenge was found. Do not wire makeChallenge into
+    EC-SRP implementations.
+  confidence: observed-only
+  evidence:
+    - source: code
+      ref: "RouterOS libucrypto generateResponse length dispatch + makeChallenge magics; see work/2026-10-chr-extraction/ucrypto-grounding.md §2/§4"
+    - source: sample
+      ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): 49-byte server replies on all ~950 logins; see work/2026-10-chr-extraction/ws3c-prober-findings.md §1"
 
 # ── derivation algorithm ──────────────────────────────────────────────────
 # The messages above are the wire shapes; this section is *how the values
@@ -89,30 +162,64 @@ derivation:
   evidence:
     - source: code
       ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+    - source: code
+      ref: "RouterOS libucrypto.so + user/mproxy disassembly (6.49.23 + 7.25, first-party grounding); see work/2026-10-chr-extraction/ucrypto-grounding.md"
+    - source: sample
+      ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25, 900+ authenticated sessions); see work/2026-10-chr-extraction/ws3c-prober-findings.md §2"
   confidence: observed-only
   notes: |
-    This is a description of the algorithm as implemented, not a copy of
-    its source. It has not been independently verified by this project
-    against a live RouterOS device; treat as a strong lead for
-    implementation, not a certified spec.
+    Algorithm description, not source. Every formula below is now
+    grounded twice: against first-party RouterOS code (libucrypto +
+    callers, both versions) and against live CHR logins. Remaining
+    uncertainty is noted per step.
   client-phase1:
-    - "generate a random 32-byte client private scalar sA"
+    - "generate a random 32-byte client private scalar sA (used verbatim — RouterOS does NOT clamp the ephemeral scalar; the ECSRP ctor feeds BigNum(vec) straight into the multiply)"
     - "client public point xWA = Weierstrass-to-Montgomery-x(scalar-multiply(sA, G)), plus its Y-parity byte"
     - "send username || 0x00 || xWA || parity (client_phase1 above)"
   server-phase1-received: "client receives (xWB, xWB-parity, salt) — see server_phase1 above"
   shared-secret-computation:
     - step: "password validator private scalar: i = SHA-256(salt || SHA-256(username || ':' || password))"
-      notes: "the ':' separator and this exact nesting (hash-of-hash) is implementation detail, not confirmed against a RouterOS-side spec"
+      notes: "exact nesting confirmed first-party: pwdHash does SHA-256(salt || SHA-256(user || 0x3a || pass)); the server recomputes i per login from the stored password"
     - step: "xGamma = x-coordinate of scalar-multiply(i, G) (the password-validator's own public point)"
-    - step: "v = REDP-1(xGamma, parity=1) — deterministic random-point-from-string embedding: repeatedly SHA-256 a running preimage until the result lifts to a valid curve point of the requested parity"
+      notes: "pwdVerifier = toBin(i*G) with G = map(9, parity 0), the Montgomery base"
+    - step: "v = REDP-1(xGamma) — deterministic random-point-from-string embedding: x = SHA-256(seed); loop h = SHA-256(bin(x)), P = map(BigNum(h), parity 0), return on isValid, else x += 1"
+      notes: "libucrypto iterates on MINIMAL-LENGTH bin() preimages (no 32-byte padding); iteration counts are geometric with p~0.5 live (150/69/41/22/8/5/3/1/1 over 300 rotations). The binary computes parity-0 then negates (client) / blinds with sB*G + redp1(0) (server) — the same math as this file's earlier 'parity 1, wB = serverPoint + v' phrasing."
     - step: "wB = pointAdd(liftX(xWB, xWB-parity), v) — recover the server's Weierstrass point and offset it by the password-validator embedding"
-    - step: "j = SHA-256(xWA || xWB) — a value binding both parties' public points, independent of role order"
+    - step: "j = SHA-256(clientX || serverX) — ALWAYS client-public-first on both sides (client hashes own-first, server hashes peer-first); binds both parties' public points"
     - step: "combine scalar: u = (i * j + sA) mod curve-order"
     - step: "shared point Z = scalar-multiply(u, wB); fail if Z is the identity point"
-    - step: "z = Montgomery-x(Z) — the raw shared value"
+    - step: "z = minimal-length big-endian Montgomery-x(Z) — the raw shared value (NO 32-byte left-padding)"
     - step: "secret = SHA-256(z) — this is the value handed to session-crypto.yaml's key-derivation"
     - step: "clientConfirm = SHA-256(j || z)"
     - step: "serverConfirm = SHA-256(j || clientConfirm || z)"
+  encoding-proof:
+    role: |
+      Padded-32 implementations of redp1/z diverge from RouterOS
+      whenever the value has leading zero bytes (~1/256 of logins each)
+      and would fail those logins. Minimal-length is proven live: the
+      prober defaulted to minimal-length bin() while computing the
+      padded variant alongside as a discriminator — 9 leading-zero-z
+      logins and 2 REDP1-divergent logins (11/900) were all accepted by
+      the server.
+    confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): 11 DIVERGE-ok of 900+ logins, zero failures; see work/2026-10-chr-extraction/ws3c-prober-findings.md §2"
+  revision-history:
+    - date: 2026-10-31
+      belief: "j = SHA-256(xWA || xWB), independent of role order"
+      outcome: superseded
+      evidence:
+        - source: code
+          ref: "RouterOS libucrypto generateSRPResponse (client hashes own-first) + user server flow (hashes peer-first) — always client-first; see work/2026-10-chr-extraction/ucrypto-grounding.md §2"
+    - date: 2026-10-31
+      belief: "redp1/z use 32-byte padded encodings (as in the tikoci/centrs port)"
+      outcome: superseded
+      evidence:
+        - source: code
+          ref: "RouterOS libucrypto redp1 loop + z helper (map -> bin(), no padding); see work/2026-10-chr-extraction/ucrypto-grounding.md §2/§7"
+        - source: sample
+          ref: "live CHR interrogation (WS-3C prober): 11/900 divergent logins accepted; see work/2026-10-chr-extraction/ws3c-prober-findings.md §2"
   confirmation-check:
     client-sends: clientConfirm
     client-verifies: "server's phase2 reply must equal serverConfirm, else treat as wrong username/password"
@@ -127,3 +234,14 @@ investigation-trail:
       constants used by that implementation match Curve25519's field
       prime and order, consistent with this file's existing "Curve25519"
       labels sourced from MarginResearch.
+  - date: 2026-10-31
+    finding: |
+      WS-4 drain of first-party grounding (ucrypto-grounding.md) + live
+      CHR interrogation (ws3c-prober-findings.md). Removed the wrong
+      inner-0x06 tag from all four wire shapes; fixed j to always
+      client-first; fixed redp1/z to minimal-length with a live proof
+      (11/900 divergent logins accepted); recorded the version-divided
+      salt lifecycle (v7 persistent, v6 idle-expiring); scoped the
+      33/49 dispatch + makeChallenge to client-side/MSCHAPv2; recorded
+      no scalar clamping. Curve constants verified byte-exact in
+      .rodata (prime, Weierstrass a, order, A=486662).

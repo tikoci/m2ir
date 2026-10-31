@@ -21,26 +21,35 @@ canonical-name: session-crypto
 evidence:
   - source: code
     ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+  - source: code
+    ref: "RouterOS libucrypto.so + mproxy/user disassembly (6.49.23 + 7.25, first-party grounding); see work/2026-10-chr-extraction/ucrypto-grounding.md §3/§6"
+  - source: sample
+    ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25, 900+ encrypted sessions); see work/2026-10-chr-extraction/ws3c-prober-findings.md"
 
 # ── key derivation ────────────────────────────────────────────────────────
 key-derivation:
-  input: "the EC-SRP5 shared secret z = SHA-256(shared curve point x-coordinate) — see ec-srp5-handshake.yaml derivation section"
+  input: "the EC-SRP5 shared secret = SHA-256(z), where z is the MINIMAL-LENGTH big-endian shared-point encoding — see ec-srp5-handshake.yaml derivation section"
   role: "derives 4 independent keys (client-send AES, client-receive AES, client-send HMAC, client-receive HMAC) from one shared secret"
   algorithm:
     - step: 1
       op: "tx_pre  = SHA-1(secret || zeros(40) || SEND_MAGIC  || fill(40, 0xF2))"
-      notes: "client uses SEND_MAGIC for its own tx key, server uses it for its rx key (roles swap by a `server` flag, not by a different magic string)"
+      notes: "makeSessionKey(secret, b1, b2): equal bools select the RECEIVE magic, differing bools the SEND magic. Client (mproxy) calls (1,0) for tx then (0,0) for rx; server (user) calls (1,1) then (1,0) — the role-swap is by bool pair, not by a different magic string."
     - step: 2
       op: "rx_pre  = SHA-1(secret || zeros(40) || RECEIVE_MAGIC || fill(40, 0xF2))"
     - step: 3
-      op: "each of tx_pre/rx_pre is truncated to its first 16 bytes, then expanded via an HMAC-SHA1-based construction to 36 bytes: T1 = HMAC-SHA1(PRK, 0x01), T2 = HMAC-SHA1(PRK, T1 || 0x02), output = (T1 || T2)[0:36], where PRK = HMAC-SHA1(key=zeros(64), message=<the 16-byte truncated hash>)"
-      notes: "structurally an RFC 5869 HKDF-Expand step keyed by a zero-salt HKDF-Extract; not confirmed to be literally HKDF, but matches its shape exactly"
+      op: "each of tx_pre/rx_pre is truncated to its first 16 bytes, then expanded via HKPDF(hash, salt, info, ikm, len) with salt = info = empty vecs and len = 0x24: PRK = HMAC(salt, ikm), T(i) = HMAC(PRK, T(i-1) || info || i)"
+      notes: "confirmed literally RFC 5869 Extract+Expand over HMAC-SHA1 (empty HMAC key is 64 zero bytes); the earlier 'matches its shape exactly' hedge is retired"
     - step: 4
       op: "split each 36-byte expansion into aes_key = bytes[0:16], hmac_key = bytes[16:36] (20 bytes)"
   magic-strings:
     send: "On the client side, this is the send key; on the server side, it is the receive key."
     receive: "On the client side, this is the receive key; on the server side, it is the send key."
-    notes: "ASCII, used as literal hash input material — not a label/context string in the HKDF-info sense, concatenated directly into the SHA-1 preimage."
+    notes: "ASCII, used as literal hash input material — not a label/context string in the HKDF-info sense, concatenated directly into the SHA-1 preimage. Both magics are 84 bytes and byte-identical on 6.49.23 and 7.25."
+  wiring:
+    role: "AES-128-CBC + HMAC-SHA1, keys as derived above"
+    v6: "mproxy hand-installs AES128(aes16) + HMAC(SHA1, hmac20) over an inline static SHA1 (proved by R_386_COPY relocations); CBC_MAC_Cipher"
+    v7: "same suite via factories — createCipher id 4 = CBC-16 (jump-table-verified), HashID 4 = SHA1 (the v7 HashID enum shifted +1: 3=MD5, 4=SHA1, 5=SHA256, 6=SHA384, 7=SHA512); CBC_MAC_MP_Cipher. Enum shift is internal-only, no wire drift."
+    confidence: observed-only
   output-keys:
     - { name: sendAes, size: 16, use: "AES-128-CBC key for messages this side sends" }
     - { name: receiveAes, size: 16, use: "AES-128-CBC key for messages this side receives" }
@@ -79,10 +88,21 @@ message-encryption:
       - "remaining bytes after removing the MAC are the m2 message"
     confidence: observed-only
     notes: |
-      This implementation reads and strips the MAC but does not appear to
-      reject a message on MAC mismatch (constant-time compare not
-      observed) — worth independently verifying before relying on this
-      MAC as a security boundary rather than a corruption check.
+      The private client implementation reads and strips the MAC but does
+      not appear to reject a message on MAC mismatch (constant-time
+      compare not observed) — that non-enforcement is scoped to that
+      client only. The RouterOS SERVER (CBC_MAC_Cipher::decrypt, both
+      versions) returns -1 unless ALL hold: block-aligned length, MAC
+      memcmp valid (non-constant-time but enforced), pad length sane,
+      and EVERY pad byte equals the pad value. Treat the MAC as a real
+      security boundary on the server side.
+    revision-history:
+      - date: 2026-10-31
+        belief: "MAC mismatch may not be rejected (client-side observation, unscoped)"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS libucrypto CBC_MAC_Cipher::decrypt enforces MAC + full pad (both versions); see work/2026-10-chr-extraction/ucrypto-grounding.md §3"
 
 investigation-trail:
   - date: 2026-07-14
@@ -93,3 +113,13 @@ investigation-trail:
       HKDF-Extract/Expand shape over SHA-1 with two fixed magic-string
       inputs distinguishing tx/rx roles, and a MAC-then-pad-then-encrypt
       construction (not encrypt-then-MAC).
+  - date: 2026-10-31
+    finding: |
+      WS-4 drain of first-party grounding (ucrypto-grounding.md §3/§6):
+      makeSessionKey bool-pair semantics, literal RFC 5869 HKPDF
+      confirmation (retiring the shape hedge), v6 COPY-relocation wiring
+      proof + v7 factory equivalents (HashID shift is internal-only),
+      byte-identical 84-byte magics both versions, and server-side MAC
+      + full-pad enforcement (scoping the old client-side
+      non-enforcement note). Live proof: 900+ encrypted WS-3C prober
+      sessions against 6.49.23 + 7.25.

@@ -192,3 +192,26 @@ keys:
     physical: { tcodes: [0x08, 0x09] }
     semantic: u32
     confidence: documented
+    notes: "Scope open: presumably a disconnect-reason code traveling with CMD_DISCONNECTED / cmdDisconnected contexts; no live sighting yet to confirm."
+
+  0xff001c:
+    canonical-name: SYS_PROXY_BANNER
+    physical: { tcodes: [0xa0] }
+    semantic: string-array
+    role: "v7 proxy version stamp on every reply"
+    confidence: observed-only
+    notes: "Live: every 7.25 reply carries ['msg-proxy-7.25']; 6.49.23 replies lack the key entirely (v6 envelopes are slimmer). Project-named; no documented label. Do NOT confuse with row field 0xfe001c (tags, different namespace)."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §3"
+
+investigation-trail:
+  - date: 2026-10-31
+    finding: |
+      WS-4 drain of live CHR interrogation: new SYS key 0xff001c (v7-only
+      proxy banner) + SYS_DREASON scope note (open, no live sighting).
+      Triage: the proposed STATUS_OK rename of SYS_STATUS value 1 was
+      DECLINED — OK/ERROR are verbatim Cisco-Talos statusCode members
+      (source-table lines 177-180) and renaming would break that
+      transcription; namespaced aliases can be layered if a consumer
+      needs them.
