@@ -2468,3 +2468,74 @@ trigger (nano). CLOSED this batch:
 bit-0 (static-proof: learned-import
 gate; live split proven impossible)
 + f2 re-derivation + rotation.
+
+## 37. 134 matrix: 21 negatives, driver still unknown (2026-10-31)
+
+Live matrix on twin3 (10 new
+rule/config shapes; each:
+baseline-134 → apply → GETALL
+134 → revert → GETALL 134) +
+static refinement (write-site
+context + caller chain). 1
+transcript:
+`ev/7.25-getall-20-134-dscp.json`
+(the rest observed at 1 row
+{0,"no-mark"}).
+
+- **10 new negatives (21
+  total):** set-priority,
+  change-dscp, change-ttl,
+  mark-matcher (log on
+  packet-mark), matcher+setter
+  same rule, jump/log-prefix,
+  address-list entry, NAT
+  (masquerade + netmap), IPv6
+  change-hop-limit, MPLS TE
+  tunnel. 134 NEVER moves.
+- **Static refinement:** f137
+  (0x89) is WRITE-ONLY
+  (single site: the GET at
+  0x80df80d; never echoed —
+  can't read back). Gate =
+  entry+0x1a4 string-object
+  non-empty. Write site sits
+  in a 3-deep field-apply
+  chain (0x80e4732 →
+  0x80df9b0 → 0x80de19a)
+  reached via vtable (no
+  direct caller — hid
+  untraceable statically).
+- **Lab incident:** twin3
+  wedged mid-matrix (REST +
+  WinBox dead), then double
+  BOOT_TIMEOUT (QEMU alive,
+  no HTTP). twin4 control
+  booted fine → disk fault.
+  Recovered via the §36
+  qcow2 backup (pristine
+  2-row state; stuck NAT
+  rules discarded with the
+  bad image). Lesson: keep a
+  qcow2 backup before risky
+  ops; power-cut of a wedged
+  guest can brick the image.
+- Remaining untested: LTE /
+  CAPsMAN / hotspot /
+  kid-control / PPP /
+  wireless (peers/packages/
+  hardware — out of CHR-lab
+  scope, per §18).
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (21 negatives; needs
+peers/hardware or the f137 client
+mapping), terminal surface (lower
+priority), nlevel proof (TRACTABLE
+via quickchr trial license — blocked
+on user credentials), 1028/1029/1030
+roles, rewrite-table location
+(runtime/kernel?), reaper trigger
+(nano), store-rotation trigger
+(nano). CLOSED this batch: nothing
+(134 matrix extended, parked).
