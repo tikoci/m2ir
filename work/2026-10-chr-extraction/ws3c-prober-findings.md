@@ -2539,3 +2539,164 @@ roles, rewrite-table location
 (nano), store-rotation trigger
 (nano). CLOSED this batch: nothing
 (134 matrix extended, parked).
+
+## 38. Registry decoded + retry protocol + shim roles (2026-10-31)
+
+Static (libumsg PR/HD tables fully
+decoded; loader/mproxy/family-binary
+census; kernel-image negative) + live
+twin3 (pid sweep 0–433 reliable +
+1024–1031 direct; 434–999/1032–1100
+unprobed — below registry bounds),
+hscan 0–200 all shims, verb matrix,
+slot probe, boot-race over a reboot,
+service toggles + pptp coupling, serial
+lead; all REST changes reverted; left
+RUNNING for the tail sweep, then
+STOPPED). 3 transcripts:
+`ev/7.25-getone-102{8,9,30}.json`.
+
+- **v7 pid registry FOUND —
+  libumsg `handler_info` (NOT x3,
+  NOT loader):** PR table 138
+  entries @0x7BB00 (stride 0x1c:
+  name, pid@+0x8, pkg@+0xc,
+  flags@+0x10/+0x14) — full map
+  pids 2–172 (61=ipsec-worker, NOT
+  rbbios; 76=mepty; 148 triple-booked
+  test entries). HD table 296
+  entries @0x77EE0 (stride 0x34:
+  owner-PR-ptr@+0x0, two names,
+  id2@+0x20 =
+  ((pid+1)<<24)|((hid+1)<<16)|flags)
+  = menu/store bindings (98 menus
+  incl. `cert/settings`=[19,13] —
+  calibration exact). Pid =
+  prog(binary-name); no config
+  needed. +0xc = package table
+  (0x10 stride: ppp=0x13,
+  security=0x16...).
+- **NO static alias/shim table
+  EXISTS (exhaustive negative):**
+  loader .text/.rodata (no pid
+  literals, no names, Peer-format
+  string orphaned), all 8→15 v7 x3
+  (no loader dir at all), mproxy
+  (1 looper, hids {1,2}, no fork,
+  no 0x400+ refs), PR (no 102x, no
+  alias field), HD (no shim rows;
+  shim-client pids 12/61/75/89
+  have ZERO rows), family binaries
+  (no shim-pid immediates; no
+  fork). Routing = loader dynamic
+  peer-tree (plain pid find, no
+  rewrite step) + mproxy retry
+  (below). Aliases = runtime
+  entries, boot-atomic (boot-race:
+  aliases+stubs+slots complete in
+  the FIRST M2 round, 38/38
+  rounds identical).
+- **Retry protocol DECODED
+  (unroutable pids):** one GET to
+  a dead pid yields an ENDLESS
+  ~1.42s PAIR, never an answer:
+  (A) TO=[] FROM=[0xff0003,slot]
+  CMD=0xfe0014 + (B) TO=[]
+  FROM=[2,slot] policy−1
+  CMD=0xfe0014; slot=(ctr<<8)|6
+  (global counter). Explains §23
+  TIMEOUTs (short-wait sweeps) +
+  this batch's sweep pollution
+  (pairs misattributed —
+  reqId-matching now mandatory).
+  Slots NOT addressable (GET[2,slot]
+  → UNKNOWNID; mproxy hids stay
+  {1,2}). 0xfe0014 = new verb;
+  0xff0003 = router pseudo-pid
+  (nano-open).
+- **1024 stubs EXTENDED to
+  {14,21,31,51,61}** (51/61 above
+  the §23 scan ceiling): exactly
+  ppp's SERVER handlers (pptp 21,
+  l2tp 31, ovpn 51, sstp 61, +
+  14). All stub sets ⊆ family
+  static sets (1025{3}⊆ipsec,
+  1026{8}⊆cerm, 1027{}≡ssld{}).
+  cerm≡cerm-worker (identical
+  files). Shims INERT: pptp enable
+  flips [27,21]→data, [1024,21]
+  stays NOTIMP; ftp disable moves
+  nothing.
+- **1028/1029/1030 = SPARE shim
+  slots — CLOSED.** No inbound
+  alias in reliable 0–433 (only
+  the §23 six reproduce; legacy
+  pids all <138, PR <173), no
+  handlers 0–200 (all UNKNOWNID),
+  all verbs shim-NOTIMP-shaped,
+  boot-atomic with claimed shims,
+  inert. Role: unclaimed spares in
+  the pre-created 7-slot compat
+  block (1024–1030).
+- **Rewrite-table location —
+  CLOSED as dynamic state:**
+  no static table (above); pid
+  map = PR registry; alias +
+  shim + stub entries are
+  boot-time router state
+  (loader peer-tree + claimant
+  stub registration), complete
+  before first M2 reply.
+  Residual nano: insertion agent
+  (loader-rule vs
+  self-registration —
+  externally indistinguishable)
+  + 0xff0003 identity. LEAD
+  (correlation, not proof):
+  shim order 89/61/75/12 ↔
+  PR-f10-descending
+  (0x1e0050/0x1e0032/0x0c0032/
+  0x10190) 4/4 exact — no
+  natural iteration yields it.
+- **Bonuses:** 0xff001c =
+  ["msg-proxy-7.25"] stack banner
+  (ALL bare replies — §23
+  envelope classes refined:
+  native-7+banner, shim-8=+policy,
+  pid-1-6=no errno/status);
+  [3,5]="memory" (log-buffer list,
+  not contents — log-snoop dead);
+  v7 packages monolithic
+  (routeros+user-manager only —
+  package matrix impossible);
+  serial.sock carries no console
+  (lead dead); kernel bzImage
+  extracted (x86_64 ELF) but
+  stripped/cut — kernel lead
+  unproductive, parked; login has
+  2 loopers (unchased).
+- **Lab notes:** ChunkConn
+  self-destructs on first timeout
+  — sweep MUST reconnect per dead
+  pid (/tmp/psweep.ts reconnect
+  pattern);
+  reqId-match or pollute (retry
+  pairs arrive ~0.87s); fast
+  sweep (600ms) = clean timeouts.
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (21 negatives; needs
+peers/hardware or the f137 client
+mapping), terminal surface (lower
+priority), nlevel proof (TRACTABLE
+via quickchr trial license — blocked
+on user credentials), reaper trigger
+(nano), store-rotation trigger
+(nano), 0xff0003 identity (nano),
+alias insertion agent (nano). CLOSED
+this batch: 1028/1029/1030 roles
+(spare shim slots) + rewrite-table
+location (dynamic router state) +
+v7 pid registry (libumsg PR/HD) +
+retry protocol (1.42s pair).
