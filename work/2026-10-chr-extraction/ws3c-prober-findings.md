@@ -2270,3 +2270,201 @@ ONE static target — vlan vtable
 +0xc/+0x10/+0x14 handlers). CLOSED
 this batch: token-gate mechanism
 (boot-skip; write-skip dead).
+
+## 35. Vlan vtable decoded — unhide closed, reaper narrowed (2026-10-31)
+
+Static-only batch (objdump on v7
+net + libumsg; no CHR session, no
+new transcripts). The §34 single
+static target, resolved.
+
+- **Vlan type vtable 0x81b3384:**
+  +0xc restore = 0x80559cc
+  (NO-OP, returns 0),
+  +0x10 bring-up = 0x806d298
+  (driver dance 0x806d0da +
+  apply-set), +0x14 ADD =
+  0x806d312 (gatekeeper:
+  type-enabled + count limit
+  → 0x806d0da).
+- **Driver vtable 0x81b3344**
+  (factory 0x807aa5e):
+  +0x24 create 0x807bbf4,
+  +0x2c 0x807b1e6, +0x28
+  commit 0x807d448 (builds
+  reply f3: sets bits 8/14
+  from driver state),
+  +0x14/+0x0c teardowns
+  (log-only + free — no
+  removal).
+- **ADD flow (no apply in
+  +0x14 chain):** +0x14 →
+  driver dance (netlink req +
+  SYNC Netlink::poll) →
+  reply. Persist comes via
+  poll-dispatched response +
+  async NEWLINK event → two
+  applies → the 2 store
+  records per ADD (§34).
+- **UNHIDE CLOSED — the merge
+  is the clearer:** apply-set
+  merge (0x8065de9) sets
+  +0x1c := (old&0x500000) |
+  msg.f3 — a REPLACE for
+  fresh rows (0x82/2 have no
+  20/22 bits). Driver reply
+  f3 (kernel-derived; 0 for
+  parentless husks) flows
+  through it. No AND-style
+  clearer exists (all 219
+  +0x1c writes scored;
+  entry-plausible ones
+  excluded).
+- **REMOVE mechanism
+  PINPOINTED:** force-hidden
+  block (0x806665a-0x80666af:
+  old-f3{20,22,23} | wire |
+  FORCE 0x82 → apply) →
+  recompute hidden-path →
+  destroy-tail 0x806349e.
+  The tail is the remove
+  engine, not a safety net.
+- **Echo emits +0x1c RAW**
+  (0x8064fa1, no mask) —
+  husk f3=0 ⟹ memory holds
+  0. Echo-mask theory dead.
+- **51 apply-set callers**
+  (not 10 — earlier list was
+  head-truncated). The apply
+  graph spans 0x8056xxx–
+  0x8126xxx.
+- **Reaper TOMBSTONES
+  (forensic):** post-boot
+  cfg.000a carries len-0
+  tombstones for tokened
+  rows 3 (@16000) and 5
+  (@16012), appended during
+  boot#2 (past shutdown#1's
+  16000-byte file). §34's
+  "no tombstone" claim
+  corrected (carve script
+  skipped len-0 records).
+- **Reaper trigger STILL
+  OPEN (nano):** exonerated —
+  loader (no branch), Store
+  layer in libumsg (no
+  0xff001e ref), teardowns,
+  type +0x50/+0x58, all 7
+  token push-sites (none in
+  boot decisions), all
+  +0x40/+0x3c compares. The
+  teardown funnels through
+  Store::remove (5 sites) +
+  unlink + alloc-free, but
+  the tokenee-selecting
+  read is unlocated
+  (register-keyed get or
+  non-cmp compare possible).
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (one write site), terminal
+surface (lower priority), nlevel proof
+(TRACTABLE via quickchr trial license
+— blocked on user credentials),
+1028/1029/1030 roles, rewrite-table
+location (runtime/kernel?), bit-0
+proof (micro-thread), token-reaper
+trigger (nano-thread: tombstoning
+post-restore teardown, selecting
+read unlocated). CLOSED this batch:
+ADD-unhide (merge-replace via
+driver f3) + REMOVE mechanism +
+vlan vtables.
+
+## 36. Bit-0 closed (static-proof) + store rotation (2026-10-31)
+
+Mixed batch: objdump census +
+twin3 cycles (type-hunt 7 new
+types, M2 f2-SET no-op proof,
+store offline-patch experiment
+with qcow2 backup/restore; all
+test interfaces removed, canary
+cleared, dynamics flushed,
+2-row baseline + learning
+verified on restored disk; left
+STOPPED). 2 transcripts:
+`ev/7.25-getall-20-0-bit0{clr,
+split}.json`.
+
+- **Reader census COMPLETE
+  (binary-wide):** bit0 → 3
+  readers (proc-arp import
+  0x8087397 + sweep callbacks
+  0x80870d5/0x8087105), ALL
+  learned-entry paths ANDed
+  with f3-bit10 (running).
+  bit5 → 1 reader (static
+  create-gate 0x8086d2d +
+  exact string). DISJOINT ops
+  ⟹ functionally distinct
+  flags. bit0 = learned-ARP
+  acceptance. PROVEN.
+- **No live split EXISTS:**
+  18 types co-vary (1,1) /
+  (0,0) — new: bond/wg/vxlan/
+  xfrm/macsec/mesh (1,1 or
+  0,0 as family predicts),
+  vrf (0,0). veth (no menu),
+  tap (no menu), lte/ppp
+  (need peers) untestable.
+- **M2 filters f2:** same-SET
+  comment sticks, f2 doesn't
+  (0x10002 stripped before
+  apply; apply itself would
+  write UNMASKED). CLI has no
+  f2 knob either.
+- **Store f2 decorative:**
+  offline-patched ether1 f2
+  0x4226f→0x4226e (both
+  records, debugfs rm+write,
+  verified) → boot STILL
+  yields live 0x42263, and
+  boot re-persisted 0x4226f
+  (new record) before
+  settling to the type
+  default. f2 = f(type),
+  re-derived every bring-up;
+  store/M2 values moot. bit0
+  ⟺ bit5 structurally (same
+  type-default source).
+- **Store ROTATION +
+  COMPACTION:** cfg.000a →
+  cfg.000c across boots
+  (17678 → 13156B):
+  tokened/stale/dupes GC'd.
+  §34 "append-only forever"
+  refined: appends within a
+  boot, compacting rotation
+  across boots (not every
+  boot — trigger open).
+- **Echo reads +0x14 RAW**
+  (0x8065061, no mask).
+- Baseline dynamics work:
+  ping → D-entry 10.0.2.2
+  (the import path bit0
+  gates, live-observed).
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (one write site), terminal
+surface (lower priority), nlevel proof
+(TRACTABLE via quickchr trial license
+— blocked on user credentials),
+1028/1029/1030 roles, rewrite-table
+location (runtime/kernel?), reaper
+trigger (nano), store-rotation
+trigger (nano). CLOSED this batch:
+bit-0 (static-proof: learned-import
+gate; live split proven impossible)
++ f2 re-derivation + rotation.
