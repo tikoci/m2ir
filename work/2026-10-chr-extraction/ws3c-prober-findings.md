@@ -2036,3 +2036,72 @@ mechanism (micro-thread: write-skip
 vs boot-reap). CLOSED this batch:
 M2-ADD persistence recipe (omit
 token) + M2 row-SET addressing.
+
+## 32. 0x10003 bit roles — recompute decoded (2026-10-31)
+
+One twin3 session (7.25; vlan/bridge/
+vrrp/IP touched and FULLY reverted —
+2-row baseline; left STOPPED) plus
+static (recompute 0x8062de0). 5
+transcripts: `ev/7.25-getall-20-0-
+f3{bit3,bit3b,slaveset,vrrpip,clean}.
+json`. Row SETs via §31 raw SETOBJ.
+
+- **Recompute 0x8062de0 (static,
+  full mask map):** every apply-set
+  re-derives +0x1c AFTER the msg
+  merge. Hidden (bit1/7) → keep
+  {1,7,20,22,23} + force hidden.
+  Visible: bit0 ⟸ kernel binding
+  (+0x18≠0); bits 8+10 (running)
+  ⟸ parent link state; bit9 ⟸
+  +0x198; bits 12+17 ⟺ master
+  running; bit3 ⟺ master ptr
+  (+0x188≠0, tail clear/set);
+  18/19/23 conditional sets;
+  flap timestamps (+0x174/0x178
+  jiffies, +0x17c counter).
+- **Triple SPLIT (static + live
+  both directions):** bit3 =
+  has-master (structural);
+  12+17 = master-running.
+  SETOBJ bit3-without-master →
+  cleared; SETOBJ zero-triple
+  on slave → 0xA5549 recomputed.
+- **Msg-vs-server ownership:**
+  msg.0x10003 bits stick EXCEPT
+  recomputed {0,3,6*,8,9,10,12,
+  17,18,19,23} (*6 only when
+  unbound). {2,11} (arp) stick
+  from msg — the CLI sends admin
+  via 0x10003, no dedicated keys.
+- **f3=0 condition CLOSED:** ⟺
+  client-sent ~0 AND unbound.
+  Disabled = CLI sends 0 + dev
+  gone; vrrp-no-IP: backend sends
+  0 (0x0); vrrp+IP: 0x80141
+  ({0,6,8,19}). Bit14 = client-sent
+  kernel-backed (clear on vrrp).
+- **Residuals (open):** bit-17
+  clear sub-case (+0x1c8==3,
+  observed once, stable); bits
+  20/22 setter (merge preserves,
+  writer unlocated); ADD-unhide
+  mechanism (creation +0x1c=2 →
+  live visible).
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (one write site), terminal
+surface (lower priority), nlevel proof
+(TRACTABLE via quickchr trial license
+— blocked on user credentials),
+1028/1029/1030 roles, rewrite-table
+location (runtime/kernel?), bit-0
+proof (micro-thread), token-gate
+mechanism (micro-thread: write-skip
+vs boot-reap), f3 residuals
+(micro-thread: +0x1c8==3, bits 20/22,
+ADD-unhide). CLOSED this batch:
+0x10003 bit roles (recompute + triple
+split + f3=0).
