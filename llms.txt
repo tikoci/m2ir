@@ -55,6 +55,8 @@ forum theories about future protocol changes are not established behavior.
 
 ## Other formats and sources
 
+- [Dissector proposal](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-winbox-dissector/dissector-proposal.md): Proposed Wireshark/TShark consumer, evidence, milestones, session-secret requirements, and open repository placement. Planning material, not an implemented dissector.
+
 - [The Dude profile](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/dude-on-disk/profile.yaml): On-disk object classification and field-table references; do not transfer WinBox naming assumptions unchanged.
 - [Profile index](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/README.md): Other usage contexts, including placeholder CDB and MNDP profiles.
 - [Credits](https://raw.githubusercontent.com/tikoci/m2ir/main/CREDITS.md): Major upstream sources; detailed citations live in the YAML.

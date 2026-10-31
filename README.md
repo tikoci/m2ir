@@ -48,7 +48,9 @@ Follow the [client analysis](work/2026-10-winbox-client-re/README.md) and
 trail; the [live probe findings](work/2026-10-chr-extraction/ws3c-prober-findings.md)
 record tested behavior and remaining gaps.
 
-Our implementation interest is [tikoci/centrs](https://github.com/tikoci/centrs):
+## What this knowledge enables
+
+One implementation goal is [tikoci/centrs](https://github.com/tikoci/centrs):
 WinBox as a transport in its `--via` schemes. Terminal execution for
 `centrs execute` provides a starting point. Native data retrieval and
 listening for updates for `centrs retrieve` require a deeper understanding
@@ -56,8 +58,17 @@ of the attribute-based messages: which handler owns a field, what its TLV
 (type-length-value) means, and how replies and notifications behave.
 The [GUI handler catalog](profiles/winbox-ipc/gui-handlers.yaml) is a key
 entrypoint for that work; retrieval and update semantics remain an active
-research area. Maintaining a patched WinBox executable is outside this
-project's scope.
+research area.
+
+Another goal is a **better Wireshark dissector for WinBox IPC**, with
+schema-derived field names, context-aware handler decoding, and eventually
+encrypted-session analysis when session secrets are available. The same
+dissector could serve humans in Wireshark and agents through TShark's
+structured output, supporting compatibility investigations and regression
+tests. See the [dissector proposal](work/2026-10-winbox-dissector/dissector-proposal.md)
+for the evidence, suggested milestones, and open decisions. Implementation
+has not been committed to this repo or a separate project yet; the YAML
+here remains the shared source of protocol knowledge.
 
 ## What is covered
 
