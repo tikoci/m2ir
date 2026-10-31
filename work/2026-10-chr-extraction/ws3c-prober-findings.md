@@ -1964,3 +1964,75 @@ addressing (micro-thread), 0x10003 bit
 roles (micro-thread). CLOSED this
 batch: 125 role (/tool/sms, 7/12
 fields + port triple).
+
+## 31. M2-ADD persistence — token is the switch (2026-10-31)
+
+Four twin3 graceful-reboot cycles
+(7.25; booted/probed/rebooted×4/
+stopped; all test vlans CLI-removed,
+2-row baseline verified; left
+STOPPED) plus static (creation path
++ slot-7 verbs + serializer). 10
+transcripts: `ev/7.25-getall-20-0-
+m2{persist,full,notoken,noset}-*.json`
++ `m2oncli-post` + `m2persist-clean`.
+
+- **RECIPE: omit 0xff001e.** Untokened
+  M2-ADD (+ parent 0x7d2) persists
+  across graceful reboot — WITH
+  (m2vlan3 + SETOBJ comment) and
+  WITHOUT (m2vlan4, ADD-only) any
+  follow-up SET. Tokened ADD never
+  persists (parentless m2vlan1 AND
+  fully-formed m2vlan2 + SETOBJ).
+  Token isolated 2× — it is the
+  ephemerality switch, not
+  field-completeness.
+- **Untokened M2 rows are
+  first-class:** CLI-remove works
+  (no managed lockout), M2-SETOBJ
+  comment on a CLI row persists
+  ("m2oncli" survived 3 reboots).
+- **ADD keys (vlan):** 0x10001=30
+  (type), 0x10006 (name), 0x7d1
+  (vlan-id — required, "vlan-id
+  bad" without), 0x7d2 (parent
+  ROW-ID — without it the row is a
+  parentless husk: f3=0, no ifindex,
+  zero MACs). Row keys mirror
+  message keys.
+- **Row-SET addressing CLOSED
+  (bonus, §28 micro-thread):**
+  `raw 20 0 0xfe0003` slot-7 SETOBJ
+  + 0xfe0001=rowid (NOT name, NOT
+  setone/0xfe000e). Slot-7 verbs:
+  SET=0x8066b08, GETALL=0x80675bc,
+  ADD=0x8066821, REMOVE=0x8066fb5.
+- **Static frame:** creation
+  (0x806db12) has NO Store::set;
+  apply-set persists to
+  /nova/store/net/devices gated on
+  not-dynamic + changed
+  (`0x806651e/0x8066524`); slot-7
+  dispatches on 0xff0007
+  (`0x8066774`, jump table
+  0x81b2740); serializer 0x806007a
+  emits no token. Which write skips
+  tokened rows (or whether boot
+  reaps them) stays OPEN — the
+  behavioral recipe doesn't need it.
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (one write site), terminal
+surface (lower priority), nlevel proof
+(TRACTABLE via quickchr trial license
+— blocked on user credentials),
+1028/1029/1030 roles, rewrite-table
+location (runtime/kernel?), bit-0
+proof (micro-thread), 0x10003 bit
+roles (micro-thread), token-gate
+mechanism (micro-thread: write-skip
+vs boot-reap). CLOSED this batch:
+M2-ADD persistence recipe (omit
+token) + M2 row-SET addressing.
