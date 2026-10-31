@@ -1223,15 +1223,149 @@ Closes every open thread §21 left.
   case-sensitive (uppercase sorts before
   lowercase per ASCII).
 
-Still open (updated): pid-1025 identity,
-routerboard full shape, [24,10/33/35] +
-107/122/125 + 114/115/126-family + 134 roles,
-[20,61] selector, [13,6/7] WinBox/WebFig
-split, terminal surface (lower priority),
-nlevel proof (TRACTABLE via quickchr trial
+Still open (updated — see §23): pid-1025
+identity, routerboard full shape,
+[24,10/33/35] + 107/122/125 +
+114/115/126-family + 134 roles, [20,61]
+selector, [13,6/7] WinBox/WebFig split,
+terminal surface (lower priority), nlevel
+proof (TRACTABLE via quickchr trial license
+— blocked on user credentials), 0xff001e
+sighting, 0x10002 low-byte flag meanings,
+v6-lo/v7-ether runtime typeobj names
+(docs-level micro-thread). CLOSED this
+batch: 35/62 identity, v7 key-init static,
+mixed-case ordering — §21 FULLY CLOSED.
+
+## 23. Transient-block + compat-shim census (2026-10-31)
+
+Two twin3 sessions (7.25; booted, probed,
+stopped; one reboot mid-batch; no config
+changes — M2 probes + SSH print/:delay only;
+left STOPPED) plus static census (complete
+v7 addHandler map via objdump window-scan;
+x3parse over all 8 v7 x3 files; NPK + word
+scans). **pid-1025 IDENTIFIED** and the whole
+block mapped. New transcripts: 12×
+`ev/7.25-getone-{1025,1025-3,1025-0,61,
+61-3,24-99,24-12,2-99,24-3,18,34,40}.json`,
+`ev/7.25-hscan-{1025-wide,102x,102x-wide,
+27,19}.txt`, `ev/7.25-sweep-{hi-pid,
+pid-0-130,pid-131-180,during-ssh}.txt`,
+`ev/7.25-postreboot-block.txt`.
+
+- **1024–1030 = live compat-shim block**
+  (7 loopers, contiguous, boot-persistent:
+  post-reboot bare re-probe identical, 1031
+  still dead). All answer bare-GET with the
+  same 8-field NOTIMP + policy−1 envelope
+  (FROM=[self]); all [H] probes BRKPATH
+  except the stub handlers below (NOTIMP).
+- **Alias census 0–180 (bare-GET each):**
+  exactly 4 pid-aliases — 12→1027, 61→1025,
+  75→1026, 89→1024 — plus 2 route-rewrites
+  21→[24,23], 71→[20,50] (no pid prefix:
+  pure TO-rewrite, unlike the [48,5] chained
+  proxy). Per-v6-map identities: 12=ssld,
+  61=rbbios, 75=cerm-worker, 89=ppp-worker.
+  Everything else native (FROM==TO) or
+  TIMEOUT (dead list in ev; incl. 103 dude
+  and all of 140–146/148–152/158–162/
+  165–167/169–180).
+- **Stub sets:** 1024 {14,21,31} (0–40),
+  1025 {3} (0–40), 1026 {8} (0–40),
+  1027/1028/1029/1030 {} (0–130 —
+  handlerless). Above-40 untested for
+  1024/1025/1026 (minor gap).
+- **Stub correlation:** ssld has ZERO
+  addHandlers statically → its shim (1027)
+  has zero stubs (exact); cerm-worker
+  static 15 = pid-19-live 14 + shim-stub 8
+  (complement — [19,13] serves data; 8 is
+  the unmigrated remainder); pid-27-live
+  ⊇ {14,21,31} ([27,21]+[27,31] serve
+  data) vs 1024's stubs (duplicate, not
+  complement — ppp-worker binary
+  unavailable: absent from the 7.25
+  all_packages, base-only on v7);
+  rbbios {1,2,3} vs 1025's {3} (1,2 have
+  no migration target — board-info gone
+  from M2 on v7). So [19]=cerm and
+  [27]=ppp are confirmed live on v7 by
+  handler-set match.
+- **Pathless records SOLVED:** v6 x3 attr
+  56 = forward route (21→[24,23],
+  71→[20,50] live on v7) — the README
+  "reserved? package-conditional?" is
+  retired.
+- **1028/1029/1030 = handlerless AND
+  aliasless** (no inbound alias in 0–180,
+  no handlers in 0–130). Roles open
+  (spares? conditional shims?).
+- **Envelope classes** (byte-exact JSON in
+  ev/): native-7 (no policy), shim-8
+  (native + policy−1), mproxy-5 (no
+  0x3/0x6, full-path echo), pid-1-6
+  (policy, no status, bare-success).
+  [61,x]≡[1025,x] byte-for-byte incl.
+  bare; GETALL/GETOBJ on 1025 also
+  NOTIMP-shim-shaped.
+- **Static, v7 addHandler census COMPLETE**
+  (objdump window-scan over all nova/bin;
+  method validated: sys2 = the §17 18,
+  user = 1–9 incl. v7-new 9): exactly ONE
+  dynamic site (quickset @8063afb,
+  counter-driven — cannot be single-3).
+  NO binary owns single-{3} (or {8},
+  {14,21,31}); mproxy = {1,2} only; ssld
+  imports no addHandler. The shims are
+  ownerless in base binaries. No pid map
+  in any v7 x3; no adjacent alias-pair
+  words anywhere in nova/bin+lib; mproxy
+  holds no 0x400+ words at all. Loader's
+  0x400/401/402 pushes are add_policy
+  COMMAND args, not pids (policies over
+  cmds {1, 0xfe0002–0xfe0006,
+  0x400–0x402}).
+- **Mechanism OPEN:** rewrite-table
+  location unknown (kernel IPC router?
+  shim self-registration? — no central
+  static table found). Contiguity +
+  boot-persistence + policy−1 fit
+  loader-spawned shims (unproven).
+- **SSH-spawn NEGATIVE:** held
+  authenticated SSH (:delay 90s, 4th
+  [13,4] row f4=6) → 1031–1045 ALL
+  timeout. No login-helper spawn in M2
+  space on 7.25 (DEVCORE 1039 is
+  version-conditional or non-M2).
+- **Bonuses:** [13,3] 17-row catalog ==
+  user/system.x3 tag-60 list verbatim
+  (ids 1–16+19); `www` attr-42 routes
+  confirm v7 pids (graphs→25,100,
+  scep→19,14, acme→19,17, fileshare→
+  156,3 — but /apps→159,4 while 159
+  TIMES OUT: routed-but-dead); v7-only
+  high pids live (147, 153–157, 163,
+  164, 168=reverse-proxy); bare-data
+  pids 18 {1:T}, 34 {19,26,1…}, 40
+  {7:25=smtp-port…} (email!);
+  [27,21]/[27,31] + [19,13] data shapes
+  sighted (ev hscans).
+
+Still open (updated): routerboard full
+shape, [24,10/33/35] + 107/122/125 +
+114/115/126-family + 134 roles, [20,61]
+selector, [13,6/7] WinBox/WebFig split,
+terminal surface (lower priority), nlevel
+proof (TRACTABLE via quickchr trial
 license — blocked on user credentials),
 0xff001e sighting, 0x10002 low-byte flag
 meanings, v6-lo/v7-ether runtime typeobj
-names (docs-level micro-thread). CLOSED this
-batch: 35/62 identity, v7 key-init static,
-mixed-case ordering — §21 FULLY CLOSED.
+names (docs-level micro-thread), NEW:
+1028/1029/1030 roles, rewrite-table
+location (runtime/kernel?). CLOSED this
+batch: pid-1025 identity (= pid-61
+rbbios compat shim in the 1024–1030
+block) + full alias census + pathless
+records 21/71.

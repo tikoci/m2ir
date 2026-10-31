@@ -1,0 +1,97 @@
+[
+	{
+		"key": "0xff0001",
+		"tcode": "0x88",
+		"value": [0, 11]
+	},
+	{
+		"key": "0xff0002",
+		"tcode": "0x88",
+		"value": [34]
+	},
+	{
+		"key": "0xff001c",
+		"tcode": "0xa0",
+		"value": ["msg-proxy-7.25"]
+	},
+	{
+		"key": "0x000013",
+		"tcode": "0x88",
+		"value": [180092930]
+	},
+	{
+		"key": "0x00001a",
+		"tcode": "0xa8",
+		"value": []
+	},
+	{
+		"key": "0x000001",
+		"tcode": "0x0",
+		"value": false
+	},
+	{
+		"key": "0x00001d",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0x00000d",
+		"tcode": "0x9",
+		"value": 1
+	},
+	{
+		"key": "0xfe0012",
+		"tcode": "0x9",
+		"value": 1
+	},
+	{
+		"key": "0x000011",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0x000012",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0xff0003",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0xff0006",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0x00001c",
+		"tcode": "0x18",
+		"value": "bytes:00000000000000000000000000000000"
+	},
+	{
+		"key": "0x00000a",
+		"tcode": "0x21",
+		"value": ""
+	},
+	{
+		"key": "0x00001e",
+		"tcode": "0x21",
+		"value": "80003a8c04085031072323f6cba06e6c21fb3e81e4c2c6d7958d95da6ab47433"
+	},
+	{
+		"key": "0x000003",
+		"tcode": "0x21",
+		"value": ""
+	},
+	{
+		"key": "0x000002",
+		"tcode": "0x21",
+		"value": ""
+	},
+	{
+		"key": "0x000004",
+		"tcode": "0x21",
+		"value": "public"
+	}
+]

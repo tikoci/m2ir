@@ -1,0 +1,67 @@
+[
+	{
+		"key": "0xff0001",
+		"tcode": "0x88",
+		"value": [0, 11]
+	},
+	{
+		"key": "0xff0002",
+		"tcode": "0x88",
+		"value": [40]
+	},
+	{
+		"key": "0xff001c",
+		"tcode": "0xa0",
+		"value": ["msg-proxy-7.25"]
+	},
+	{
+		"key": "0x000007",
+		"tcode": "0x9",
+		"value": 25
+	},
+	{
+		"key": "0x00000d",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0x000012",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0x000013",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0xff0003",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0x000001",
+		"tcode": "0x9",
+		"value": 0
+	},
+	{
+		"key": "0xff0006",
+		"tcode": "0x9",
+		"value": 2
+	},
+	{
+		"key": "0x000009",
+		"tcode": "0x21",
+		"value": ""
+	},
+	{
+		"key": "0x000008",
+		"tcode": "0x21",
+		"value": ""
+	},
+	{
+		"key": "0x000003",
+		"tcode": "0x21",
+		"value": "<>"
+	}
+]

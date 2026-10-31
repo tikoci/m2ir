@@ -145,13 +145,22 @@ keys:
       mask settable via the WinBox GUI, and bit 0x80000000 as the
       super-admin gate checked by `www` handler 2 ("FoisHandler"). Internal
       RouterOS messages may carry 0xFFFFFFFF — seen live on every v7
-      pid-1025-routed error reply (consistent with internal origin).
+      compat-shim reply (1024-1030 block) and bare-[1], but on NO
+      native service reply (sys2/net/mproxy shapes all lack it):
+      the shim-8 envelope is the native-7 envelope plus policy−1.
+      Loader programs the policy table at boot (add_policy over
+      cmds {1, 0xfe0002-0xfe0006, 0x400-0x402}, v7 loader
+      0x80532e3 block).
     evidence:
       - source: doc
         ref: "MarginResearch — policy bitmask values"
       - source: sample
         ref: "live CHR interrogation (census batch, 7.25): 0xff000b=-1 on all [61,H]->[1025,H] errors; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
         url: "https://margin.re/2022/06/pulling-mikrotik-into-the-limelight/"
+      - source: sample
+        ref: "live CHR interrogation (shim census, 7.25): byte-exact envelope classes (native-7/shim-8/mproxy-5/pid-1-6); see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
+      - source: code
+        ref: "RouterOS v7 loader add_policy sequence (0x805323f-0x8053330); see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
 
   0xff000d:
     canonical-name: SYS_CTRL

@@ -86,7 +86,9 @@ resolutions for `processes.yaml` (all version-scoped to 6.49.23):
   `[120]` 'login' ⟺ **quickset** (120) — conflicts with the
   session/login-handler claim, needs WS-4 note.
 - Two pathless records (21: `56=[24,23]`, 71: `56=[20,50]`) adjacent
-  to net=20/www=70 — unresolved (reserved? package-conditional?).
+  to net=20/www=70 — SOLVED (ws3c-prober-findings.md §23): attr 56
+  is a forward route, both live on v7 (bare [21]→from=[24,23],
+  bare [71]→from=[20,50], pure TO-rewrite).
 - 29 map entries have no on-disk binary (package NPKs not cached for
   v6: dhcp/hotspot/ppp/wireless/…; plus partd/msgfw/vm/cloudpingd).
 
