@@ -7,36 +7,40 @@ confidence, evidence, version scope, and revision history. Research notes
 can contain earlier beliefs that the schema has since corrected. A finding
 on RouterOS 6.49.23 or 7.25 is not a guarantee for other versions or devices.
 
+Links below fetch plain-text files from the main branch. In a local checkout,
+the path after `/main/` identifies the same file. For reproducible work,
+record the commit used alongside the RouterOS version.
+
 ## Orientation
 
-- [README.md](README.md): Mission, coverage, WinBox compatibility context, and current research.
-- [AGENTS.md](AGENTS.md): Contributor instructions and pointers to path-scoped rules.
-- [DESIGN.md](DESIGN.md): Canonical YAML, physical/profile/concept layers, and confidence vocabulary.
-- [BOOTSTRAP.md](BOOTSTRAP.md): Bun setup, checks, and repository tooling.
+- [README.md](https://raw.githubusercontent.com/tikoci/m2ir/main/README.md): Mission, coverage, WinBox compatibility context, and current research.
+- [AGENTS.md](https://raw.githubusercontent.com/tikoci/m2ir/main/AGENTS.md): Contributor instructions and pointers to path-scoped rules.
+- [DESIGN.md](https://raw.githubusercontent.com/tikoci/m2ir/main/DESIGN.md): Canonical YAML, physical/profile/concept layers, and confidence vocabulary.
+- [BOOTSTRAP.md](https://raw.githubusercontent.com/tikoci/m2ir/main/BOOTSTRAP.md): Bun setup, checks, and repository tooling.
 
 ## WinBox transport and messages
 
 Read these in order when implementing the wire conversation:
 
-- [Profile](profiles/winbox-ipc/profile.yaml): Context, namespaces, and schema references.
-- [Wire grammar](physical/nv-message.yaml): M2 types, lengths, compact encodings, and nesting.
-- [Transport](profiles/winbox-ipc/transport.yaml): TCP chunk framing.
-- [Handshake](profiles/winbox-ipc/ec-srp5-handshake.yaml): EC-SRP5 authentication and evidence-backed encoding details.
-- [Session crypto](profiles/winbox-ipc/session-crypto.yaml): Key derivation, encrypted envelopes, and message authentication.
+- [Profile](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/profile.yaml): Context, namespaces, and schema references.
+- [Wire grammar](https://raw.githubusercontent.com/tikoci/m2ir/main/physical/nv-message.yaml): M2 types, lengths, compact encodings, and nesting.
+- [Transport](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/transport.yaml): TCP chunk framing.
+- [Handshake](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/ec-srp5-handshake.yaml): EC-SRP5 authentication and evidence-backed encoding details.
+- [Session crypto](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/session-crypto.yaml): Key derivation, encrypted envelopes, and message authentication.
 
 ## Native retrieval, handlers, and attributes
 
 For work such as centrs retrieve, continue here. Terminal execution does
 not establish native retrieval or notification behavior.
 
-- [GUI handlers](profiles/winbox-ipc/gui-handlers.yaml): Selected handler routes, request/reply shapes, field mappings, and gaps.
-- [System keys](profiles/winbox-ipc/sys-keys.yaml): Routing, request correlation, and message envelope attributes.
-- [Standard keys](profiles/winbox-ipc/std-keys.yaml): Session/standard attributes and object-list metadata.
-- [Standard commands](profiles/winbox-ipc/std-commands.yaml): Command identities, including retrieval and notification operations.
-- [Standard errors](profiles/winbox-ipc/std-errors.yaml): Error identities and evidence.
-- [Processes](profiles/winbox-ipc/processes.yaml): Process identities, version differences, and unresolved conflicts.
-- [Private and legacy commands](profiles/winbox-ipc/commands.yaml): Handler-specific commands, including terminal-related evidence.
-- [WinBox profile guide](profiles/winbox-ipc/README.md): Full file index, including mproxy and undo.
+- [GUI handlers](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/gui-handlers.yaml): Selected handler routes, request/reply shapes, field mappings, and gaps.
+- [System keys](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/sys-keys.yaml): Routing, request correlation, and message envelope attributes.
+- [Standard keys](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/std-keys.yaml): Session/standard attributes and object-list metadata.
+- [Standard commands](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/std-commands.yaml): Command identities, including retrieval and notification operations.
+- [Standard errors](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/std-errors.yaml): Error identities and evidence.
+- [Processes](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/processes.yaml): Process identities, version differences, and unresolved conflicts.
+- [Private and legacy commands](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/commands.yaml): Handler-specific commands, including terminal-related evidence.
+- [WinBox profile guide](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/README.md): Full file index, including mproxy and undo.
 
 ## Active research and compatibility
 
@@ -45,13 +49,13 @@ for the canonical schema. Consult them for reproductions and unresolved
 questions. RouterOS 7.25 lab queries do not prove full WinBox 3 compatibility;
 forum theories about future protocol changes are not established behavior.
 
-- [Client analysis](work/2026-10-winbox-client-re/README.md): WinBox 3.43 analysis using REA/Ghidra.
-- [CHR analysis](work/2026-10-chr-extraction/README.md): RouterOS extraction, binary analysis, quickchr probes, and promotion status.
-- [Live probe findings](work/2026-10-chr-extraction/ws3c-prober-findings.md): Version-scoped observations, transcript references, corrections, and open questions.
+- [Client analysis](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-winbox-client-re/README.md): WinBox 3.43 analysis using REA/Ghidra.
+- [CHR analysis](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-chr-extraction/README.md): RouterOS extraction, binary analysis, quickchr probes, and promotion status.
+- [Live probe findings](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-chr-extraction/ws3c-prober-findings.md): Version-scoped observations, transcript references, corrections, and open questions.
 
 ## Other formats and sources
 
-- [The Dude profile](profiles/dude-on-disk/profile.yaml): On-disk object classification and field-table references; do not transfer WinBox naming assumptions unchanged.
-- [Profile index](profiles/README.md): Other usage contexts, including placeholder CDB and MNDP profiles.
-- [Credits](CREDITS.md): Major upstream sources; detailed citations live in the YAML.
-- [Source inventory](work/2026-05-winbox-nova-sources/winbox-nova-source-inventory.md): Additional public leads and prior scouting.
+- [The Dude profile](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/dude-on-disk/profile.yaml): On-disk object classification and field-table references; do not transfer WinBox naming assumptions unchanged.
+- [Profile index](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/README.md): Other usage contexts, including placeholder CDB and MNDP profiles.
+- [Credits](https://raw.githubusercontent.com/tikoci/m2ir/main/CREDITS.md): Major upstream sources; detailed citations live in the YAML.
+- [Source inventory](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-05-winbox-nova-sources/winbox-nova-source-inventory.md): Additional public leads and prior scouting.
