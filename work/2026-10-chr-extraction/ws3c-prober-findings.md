@@ -2105,3 +2105,54 @@ vs boot-reap), f3 residuals
 ADD-unhide). CLOSED this batch:
 0x10003 bit roles (recompute + triple
 split + f3=0).
+
+## 33. f3 residuals — narrowed, parked (2026-10-31)
+
+No live session (objdump on v7 net
+only; no transcripts). Time-boxed
+static pass over the §32 residuals.
+
+- **+0x1c8 model (PROBABLE,
+  untested):** init 3 (0x80633bc/
+  0x80638cc); bridge private-cmd
+  zeroes it (0x8069150, gated on
+  peer type 12); msg-bool writer
+  (0x8069721); recompute ==3 →
+  slave-bit12-without-17. Reads as
+  STP/port-state (3=forwarding) →
+  bit17 = blocked/learning slave.
+  Fits the single observed 17-clear
+  (§32). Live STP-matrix never run.
+- **Bits 20/22 (LOCATED,
+  unobserved):** writers 0x806307a
+  (any-member-qualifies via
+  0x8062cd2 over the +0x190/+0x18c
+  row-id list) and 0x8063122
+  (vtable bool-setter, no direct
+  callers). All live samples clear
+  (incl. bridge-with-slave) —
+  master-side/hyperscale bits with
+  no CHR trigger. Parked.
+- **ADD-unhide (STILL OPEN):**
+  creation sets +0x1c=2 but live
+  rows read bit1 clear with no SET;
+  recompute KEEPS bit1 (hidden
+  path); examined candidates
+  rejected (0x807bfbb vlan-internal;
+  0x807b25d refresh-copy). The
+  clearer is unlocated.
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (one write site), terminal
+surface (lower priority), nlevel proof
+(TRACTABLE via quickchr trial license
+— blocked on user credentials),
+1028/1029/1030 roles, rewrite-table
+location (runtime/kernel?), bit-0
+proof (micro-thread), token-gate
+mechanism (micro-thread: write-skip
+vs boot-reap), ADD-unhide
+(micro-thread). CLOSED this batch:
+f3 residuals (narrowed: +0x1c8 model,
+20/22 located; unhide still open).
