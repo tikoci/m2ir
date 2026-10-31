@@ -381,6 +381,8 @@ handlers:
         ref: "RouterOS net [20,0] iteration mechanism (6.49.23 + 7.25): (class, name) tree — comparator v6 0x8056c59/0x805d9f4, v7 0x8069faa/0x8064cf4 (u32 entry+0x20 first, name string-less tie-break); class from typeobj+4 via key-init v6 0x805bfb8 (1->0, 35/62->1, else->2); rename = unconditional unlink + write + insert_equal (v6 apply-set 0x80cec4c/0x805bbba, v7 0x8065d9c/0x806bd1c); nodes embed entry+0x28 (name at +0x24); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
       - source: sample
         ref: "live CHR interrogation re-fit (mechanism batch, no new transcripts): all 56 changing [20,0] pairs (deep/2nic/iter/v6iter/ws20/ws21/twin4) have fully (class, name)-sorted post-states, 0 fails; 102-row + 194-row bulk tables statically sorted; R1–R4 collapse to a (class, name) shadow (R4 day-0-NIC = ether count; no mode state); see work/2026-10-chr-extraction/ws3c-prober-findings.md §21"
+      - source: code
+        ref: "RouterOS interface-type registry (NPK carve + x3parse, no CHR): class 1 = types 35/62 (wlan/wlan60-) via the wireless NPK net-remote overlay (CHR-absent); full wireless + ppp overlay maps, v7 local registry (+macvtap/xfrm/vxlan/wg/veth/lo/vrf vs v6), v6 ether alias key 63, v7 key-init 0x8062d26 (identical mapping), strncmp tie-break both; see work/2026-10-chr-extraction/ws3c-prober-findings.md §22"
     notes: |
       Fields split across three byte_2 values: 0x01 (NS-1: interface
       fields + private control plane — the old `namespace-1` label is now
@@ -393,11 +395,13 @@ handlers:
       Iteration ORDER is MECHANISM-SOLVED (both versions):
       the table is a tree ordered by (u32 class key at
       entry+0x20, name) — class 0 = type-1 ether, class 1 =
-      types 35/62 (unidentified, unobserved live), class 2 =
-      everything else — and every rename unconditionally
-      unlinks + reinserts (full re-sort); creation inserts
-      sorted; reboot persists trivially (sorted order is the
-      tree invariant). The §19 R1–R4 dual-mode fixup is
+      types 35/62 (wlan/wlan60-, wireless-NPK overlay,
+      CHR-absent), class 2 = everything else — and every
+      rename unconditionally unlinks + reinserts (full
+      re-sort); creation inserts sorted; reboot persists
+      trivially (sorted order is the tree invariant).
+      Name tie-break is byte-order strncmp
+      (case-sensitive). The §19 R1–R4 dual-mode fixup is
       SUPERSEDED as mechanism: R2 pos0-freeze/one-short =
       class-0 singleton + class boundary, R3 = class-0
       multi, R4 day-0-NIC = ether count (no mode state
@@ -1154,3 +1158,13 @@ investigation-trail:
       else→2); R1–R4 SUPERSEDED as mechanism;
       entry+0x28 node correction; partial v6 type
       registry; 35/62 identity open.
+  - date: 2026-10-31
+    finding: |
+      Registry batch (findings §22, no CHR —
+      NPK carve + x3parse + objdump): 35/62 =
+      wlan/wlan60- (wireless overlay,
+      CHR-absent); full wireless + ppp
+      overlay maps; v7 local registry; v6
+      ether alias 63; v7 key-init 0x8062d26
+      (identical); strncmp tie-break both.
+      §21 FULLY CLOSED.

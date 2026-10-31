@@ -456,9 +456,13 @@ v6 registry: 1 ether, 17 eoip, 21 ipip, 30 vlan, 32 ?,
 40 ?, 43 6to4, 55 gre, 56 ipipv6, 57 ?,
 58 lte, 59 gre6 (+ live-only {3,12,18,66,70,75,76}
 via undecoded paths). Types 35/62 (class 1)
-unidentified and
-unobserved live — every observed table is ethers-first
-with the rest name-sorted within class.
+= wlan/wlan60- (wireless NPK net-remote
+overlay; findings §22) — CHR-absent, hence
+unobserved live. Every observed table is
+ethers-first with the rest name-sorted
+within class. Name tie-break is `strncmp`
+both versions (v6 `0x805d8fa`, v7 `0x8064be8`):
+byte order, case-sensitive.
 
 Rename path (v6 apply-set `0x80cec4c` name block
 `0x80cf19f`; v7 `0x8065d9c` / `0x8066341`): new != old
@@ -473,8 +477,15 @@ persistent mode state exists). Reboot "persists" = tree
 invariant. Creation = sorted insert (v6 `0x80d19f7` /
 `0x80d0cb6` / `0x80e665e`; v7 `0x8066acf` /
 `0x806de52` / …). The §8 3-row order REQUIRES the §18
-custom-named-bridge inference. ws19 run≥3 MOOT. Open:
-35/62 identity, v7 key-init static location.
+custom-named-bridge inference. ws19 run≥3 MOOT.
+v7 key-init `0x8062d26` (from entry ctor
+`0x8063264`): mapping IDENTICAL (branchless
+`2 − ((t==0x3e)|(t==0x23))`); the v7 ctor
+proves entry+0x60 ⟸ typeobj+4 explicitly.
+Remote registrar v6 `0x80aeb2e`; v6 ether
+alias key 63; NPK carve = squashfs@0x1000
+(see findings §22). Open: v6-lo/v7-ether
+runtime typeobj names (docs-level).
 
 Prior retraction kept: the `lower_bound`-shaped helpers
 at v6 `0x807edc4/0x807ee08/0x807ee4c` (comparing node−4

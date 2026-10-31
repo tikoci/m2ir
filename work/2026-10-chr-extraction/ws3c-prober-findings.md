@@ -1147,3 +1147,91 @@ ordering. CLOSED this batch:
 ITERATION-MECHANISM (static, dual-version);
 ws19-run≥3 MOOT; R1–R4 SUPERSEDED AS
 MECHANISM (retained as emergent behavior).
+ALL THREE REMAINING §21 THREADS CLOSED BY
+§22 (2026-10-31, same day, no CHR session).
+
+## 22. Registry + key-init + strncmp close-out (2026-10-31)
+
+Static-only batch (objdump + NPK carve +
+x3parse, no CHR session, no new transcripts).
+Closes every open thread §21 left.
+
+- **35 = wlan, 62 = wlan60- (class 1 =
+  wireless).** NEITHER is registered by the
+  base system: both arrive via the wireless
+  NPK's `/nova/etc/net-remote/wireless.x3`
+  overlay (parsed with x3parse: attr 38 =
+  type code, 43 = name, 7 = provider
+  pid/coords). Lab CHRs never install
+  wireless → class 1 unobservable live, as
+  seen. Full overlay registries: wireless
+  {35 wlan, 36 wds, 38 nstreme, 61 cap,
+  62 wlan60-, 64 wlan60-station-}; ppp
+  {10 pptp-in, 11 pptp-out, 16 pppoe-in,
+  18 pppoe-out (matches live t18!), 19 ppp-in,
+  20 ppp-out, 33 l2tp-in, 34 l2tp-out,
+  44 ovpn-out, 45 ovpn-in, 51 sstp-in,
+  52 sstp-out}. Base net-remote/system.x3:
+  v6 {3 vrrp, 12 bridge, 46 mesh, 50 vif,
+  69 extport}, v7 adds {47 vpls ×2,
+  65 macsec}. Remote registrar: v6
+  `0x80aeb2e` (XML DocumentCollection walk;
+  type code logged as `type:`).
+- **Method note (NPK carve):** RouterOS
+  `.npk` = small header + squashfs at file
+  offset 0x1000 (`hsqs` magic) — `dd
+  bs=4096 skip=1` + unsquashfs extracts it
+  (proven on wireless + ppp 6.49.23 from the
+  public all_packages zip, `/tmp/npk`,
+  not committed). Packages overlay
+  `/nova/etc/net-remote/*.x3` (and
+  loader/radius/pciinfo dirs).
+- **v7 local registry decoded** (family
+  ctors pass code in edx; base ctor
+  `0x806d3e2` stores code→+4, name→+8,
+  same layout as v6): {17 eoip, 21 ipip,
+  25 macvtap, 30 vlan, 31 xfrm, 32 tap,
+  40 bond, 43 6to4, 55 gre, 56 ipipv6,
+  57 eoip6, 58 lte, 59 gre6, 66 vxlan,
+  70 wg, 71 veth, 75 macvlan, 76 lo,
+  77 vrf} (+ v6: same minus
+  {25,31,66,70,71,75,76,77}; v6 names
+  bond/eoip/tap/lte resolve to the same
+  codes). v6 ether carries an ALIAS key:
+  registered under both 1 and 63
+  (`0x8079358` twin call with ecx 0x3f;
+  all other families use the -1 default =
+  typeobj+4). v6 lo (76) and v7 ether (1)
+  typeobjs are built without C-string
+  names in their binaries (runtime/store
+  names — open micro-thread, docs-level).
+- **v7 key-init `0x8062d26` LOCATED —
+  mapping IDENTICAL** (branchless: `t==1`
+  yields 0, else 2 minus one iff type is
+  0x23/0x3e), called from v7 entry ctor
+  `0x8063264` (malloc 0x1e4; same +0x1c =
+  0x82 marker as v6). The v7 ctor ALSO
+  proves entry+0x60 (0x10001) ⟸ typeobj+4
+  explicitly (`mov 0x4(%esi),%edx; mov
+  %edx,0x60(%ebx)`) — the §21 link is now
+  direct, not circumstantial.
+- **Mixed-case ordering CLOSED
+  statically (no live probe needed):**
+  the name tie-break is `strncmp@plt`
+  both versions (v6 `0x805d8fa`, v7
+  `0x8064be8`) — byte order,
+  case-sensitive (uppercase sorts before
+  lowercase per ASCII).
+
+Still open (updated): pid-1025 identity,
+routerboard full shape, [24,10/33/35] +
+107/122/125 + 114/115/126-family + 134 roles,
+[20,61] selector, [13,6/7] WinBox/WebFig
+split, terminal surface (lower priority),
+nlevel proof (TRACTABLE via quickchr trial
+license — blocked on user credentials),
+0xff001e sighting, 0x10002 low-byte flag
+meanings, v6-lo/v7-ether runtime typeobj
+names (docs-level micro-thread). CLOSED this
+batch: 35/62 identity, v7 key-init static,
+mixed-case ordering — §21 FULLY CLOSED.
