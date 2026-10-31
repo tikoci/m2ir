@@ -1903,3 +1903,64 @@ recipe (micro-thread), bit-0 proof
 (micro-thread). CLOSED this batch:
 [13,6/7] split (6=WinBox/7=WebFig,
 static).
+
+## 30. 125 = /tool/sms — role closed (2026-10-31)
+
+One twin3 session (7.25; booted,
+probed, stopped; /tool/sms touched
+and FULLY reverted — 125
+revert-identical to baseline, CLI
+verified; left STOPPED) plus static
+(v7 net: registration + ctor + reader
+cluster). 7 transcripts:
+`ev/7.25-getone-20-125-sms{base,set,
+set2,set3,set4,unport,revert}.json`.
+
+- **Static: store
+  `/nova/store/sms-config`.**
+  Registration `0x805e126` (hid
+  0x7d), object at looper+0x71c
+  (22 readers); ctor defaults incl
+  0x04=max + 0x0e=max (u32) beside
+  the §26 set. Readers cluster in
+  modem/LTE code (0x8167xxx–
+  0x816cexx; "SIM PIN required!",
+  AT+CPIN, QMI/MBIM/SMS strings).
+- **Field map PROVEN 7/12 live
+  (perturbation → 125 tracks):**
+  0x09=secret, 0x0d=sim-pin,
+  0x11=allowed-number (string
+  ARRAY), 0x07=receive-enabled,
+  0x0c=channel, 0x17=polling,
+  0x18=remove-sent-sms-after-send.
+- **Port-state triple:** port=none
+  ⟺ {0x10=T, 0x04 absent,
+  0x0e=max}; port=serial0 ⟺
+  {0x10=F, 0x04=1, 0x0e absent}
+  (set + revert, exact). The port
+  NAME appears nowhere in 125.
+- **Open (CHR-untestable):**
+  0x65:"" (status/last-ussd?),
+  0x64:F, 0x15:1 (sms-storage
+  enum, sim=1? — only `sim`
+  accepted on CHR), 0x04/0x0e
+  precise semantics.
+- **Quirk:** allowed-number cleared
+  by a later unrelated SET (rmsent
+  or port change) — cause
+  unattributed.
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (one write site), terminal
+surface (lower priority), nlevel proof
+(TRACTABLE via quickchr trial license
+— blocked on user credentials),
+1028/1029/1030 roles, rewrite-table
+location (runtime/kernel?), M2-ADD
+persistence recipe (micro-thread),
+bit-0 proof (micro-thread), M2 row-SET
+addressing (micro-thread), 0x10003 bit
+roles (micro-thread). CLOSED this
+batch: 125 role (/tool/sms, 7/12
+fields + port triple).
