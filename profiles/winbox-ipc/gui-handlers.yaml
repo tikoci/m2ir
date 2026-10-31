@@ -345,7 +345,7 @@ handlers:
         3: { name: flags-b, tcode: u32, role: "entry+0x1c word (ether1 542529, lo 525633 — stable across boots); doubles as the 0x10003/mask-0x10012 GETALL filter leg; bit 2 set = hidden/deleted (skipped by the bare default); bits 0x500 both set = running" }
         4: { name: kernel-ifindex, tcode: u32, role: "kernel interface index (entry+0x18 -> +0x28): lo=1, sequential per creation batch, gap at deleted interfaces, ABSENT on VRRP (no kernel device)" }
         5: { name: default-name, tcode: string }
-        6: { name: name, tcode: string, role: "display name; ALSO the rename-fixup comparator input (crossing-gate R1 vs neighbors; creation sorted-insert key) — NOT a tree re-sort key (no re-sort on rename; §18 head+tree DEAD)" }
+        6: { name: name, tcode: string, role: "display name; the iteration-tree SECONDARY sort key (primary = u32 class at entry+0x20: type 1 ether -> 0, types 35/62 -> 1, else -> 2): every rename unconditionally unlinks + reinserts (full re-sort); creation sorted-inserts; R1-R4 dual-mode SUPERSEDED as mechanism (emergent shadow)" }
         14: { name: running, tcode: bool, role: "first-party: (entry+0x1c & 0x500) == 0x500" }
         30: { name: type, tcode: string }
         100: { name: mtu-config, tcode: u32, role: "configured MTU (0 = auto, arrives as u8; else u32)" }
@@ -375,6 +375,12 @@ handlers:
         ref: "live CHR interrogation (identity batch, 7.25 + 6.49.23): iteration key SOLVED (slot-0 first-created + rest name-ascending; 4 renames + del/add + reboot; ev/7.25-getall-20-0-iter{1..6}.json + ev/6.49-getall-20-0-v6br.json); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18 — MODEL SUPERSEDED BY §19 (transcripts re-interpreted as T1–T9)"
       - source: sample
         ref: "live CHR interrogation (dual-mode batch, 7.25 + 7.26b3 1NIC: R1–R4 crossing-gated rename fixup over ~43 transitions (deep{0..24}, 2nic{5..19}, ws20/ws21/twin4 series); day-0-NIC-gated modes; see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+      - source: sample
+        ref: "live CHR interrogation (v6-transfer batch, 6.49.23: R1–R4 transfer to v6 — day-0-1NIC ws3c6 shows R2 over 6 transitions (pos1-freeze, one-short, rightward-move, noncross-freeze, pos0-freeze); v6 has no lo row; ev/6.49-getall-20-0-v6iter{0..7}.json); see work/2026-10-chr-extraction/ws3c-prober-findings.md §20"
+      - source: code
+        ref: "RouterOS net [20,0] iteration mechanism (6.49.23 + 7.25): (class, name) tree — comparator v6 0x8056c59/0x805d9f4, v7 0x8069faa/0x8064cf4 (u32 entry+0x20 first, name string-less tie-break); class from typeobj+4 via key-init v6 0x805bfb8 (1->0, 35/62->1, else->2); rename = unconditional unlink + write + insert_equal (v6 apply-set 0x80cec4c/0x805bbba, v7 0x8065d9c/0x806bd1c); nodes embed entry+0x28 (name at +0x24); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+      - source: sample
+        ref: "live CHR interrogation re-fit (mechanism batch, no new transcripts): all 56 changing [20,0] pairs (deep/2nic/iter/v6iter/ws20/ws21/twin4) have fully (class, name)-sorted post-states, 0 fails; 102-row + 194-row bulk tables statically sorted; R1–R4 collapse to a (class, name) shadow (R4 day-0-NIC = ether count; no mode state); see work/2026-10-chr-extraction/ws3c-prober-findings.md §21"
     notes: |
       Fields split across three byte_2 values: 0x01 (NS-1: interface
       fields + private control plane — the old `namespace-1` label is now
@@ -384,15 +390,20 @@ handlers:
       stable convention for this handler family. Row fields 0x10001/2/3
       double as the GETALL filter legs (see get-all-paging above) —
       the request keys and the row keys are the same numbers.
-      Iteration ORDER is behavior-SOLVED (dual-mode
-      crossing-gated rename fixup R1–R4, day-0-NIC-gated):
-      renames swap past strictly-between neighbors only
-      (R1); day-0-1NIC boxes freeze pos0 and bubble
-      one-short (R2); day-0-2NIC+ boxes single-swap
-      exactly when crossed-run == 1 (R3); creation inserts
-      sorted (incl. pos0); reboot persists order and
-      mode. Only server-issued tokens chain soundly,
-      which they do (306-row proof).
+      Iteration ORDER is MECHANISM-SOLVED (both versions):
+      the table is a tree ordered by (u32 class key at
+      entry+0x20, name) — class 0 = type-1 ether, class 1 =
+      types 35/62 (unidentified, unobserved live), class 2 =
+      everything else — and every rename unconditionally
+      unlinks + reinserts (full re-sort); creation inserts
+      sorted; reboot persists trivially (sorted order is the
+      tree invariant). The §19 R1–R4 dual-mode fixup is
+      SUPERSEDED as mechanism: R2 pos0-freeze/one-short =
+      class-0 singleton + class boundary, R3 = class-0
+      multi, R4 day-0-NIC = ether count (no mode state
+      exists). v6 [20,0] has no lo row. Only
+      server-issued tokens chain soundly, which they do
+      (306-row proof).
       Row shape is STATE-DEPENDENT: disabled rows are SLIM (computed
       fields 101/105/default-name/counters drop until re-enabled). MAC
       appears twice per row (0x3e9 always + a type-specific second field:
@@ -422,6 +433,14 @@ handlers:
         evidence:
           - source: sample
             ref: "live CHR interrogation (dual-mode batch): no re-sort on rename — dual-mode crossing-gated fixup R1–R4 over ~43 transitions (ws19 pos1-entries + pos0-exits disprove pinning); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+      - date: 2026-10-31
+        belief: "GETALL iteration order on [20,0] is a dual-mode crossing-gated rename fixup (R1–R4, day-0-NIC-gated, no re-sort)"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS net static decode: rename is an unconditional unlink + write + insert_equal into a (u32 class entry+0x20, name) tree — full re-sort, no gate/mode/pos0-guard, both versions; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+          - source: sample
+            ref: "live CHR interrogation re-fit: all 56 changing pairs fully (class, name)-sorted post-state, 0 fails; R1–R4 retained as emergent behavior only; see work/2026-10-chr-extraction/ws3c-prober-findings.md §21"
 
   ip-address:
     sys-to: [20, 1]
@@ -1116,3 +1135,22 @@ investigation-trail:
       routerboard REST menu absent both versions
       (build-gated); 0xff001e 6-row hunt negative; 0x98
       tcode (bytes16_array) for PPPoE rows.
+  - date: 2026-10-31
+    finding: |
+      v6-transfer batch (findings §20, 8 new ev
+      transcripts): R1–R4 transfer to 6.49.23 —
+      day-0-1NIC ws3c6 shows R2 over 6 transitions;
+      v6 [20,0] has no lo row; v6 tooling notes
+      (direct prober flags, numbers=*ID sets).
+  - date: 2026-10-31
+    finding: |
+      Mechanism batch (findings §21, no new
+      transcripts — static objdump + 56/56 re-fit):
+      [20,0] iteration is a (u32 class
+      entry+0x20, name) tree with unconditional
+      rename re-sort, both versions (v6
+      0x80cec4c/0x8056c59/0x805bfb8, v7
+      0x8065d9c/0x8069faa; class 1→0, 35/62→1,
+      else→2); R1–R4 SUPERSEDED as mechanism;
+      entry+0x28 node correction; partial v6 type
+      registry; 35/62 identity open.

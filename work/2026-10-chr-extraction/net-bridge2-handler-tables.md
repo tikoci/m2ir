@@ -265,12 +265,14 @@ v7 dispatch adds a cmd-`0xe` fast path (MAC-presence check via
 
 - Entries are dual-indexed: a **by-id tree** (obj+0x9c, key = entry+0
   = row-id) and an **iteration tree** (obj+0xac, begin obj+0xb0;
-  nodes embed at entry+0x24). Bare GETALL walks the iteration tree
-  from begin. The iteration ORDER is behavior-SOLVED (findings
-  §19): stored order maintained by a dual-mode crossing-gated
-  rename fixup (R1–R4, day-0-NIC-gated) — see "Iteration key:
-  SUPERSEDED — dual-mode crossing-gated rename fixup". The §18
-  head+tree model and the §17 creation-order label are both dead.
+  nodes embed at entry+0x28; +0x24 is the name string). Bare GETALL
+  walks the iteration tree from begin. The iteration ORDER is
+  MECHANISM-SOLVED (findings §21): the tree is ordered by (u32
+  class key at entry+0x20, name), and every rename unconditionally
+  unlinks + reinserts (full re-sort) — see "Iteration mechanism
+  SOLVED". The §19 R1–R4 dual-mode fixup is superseded as mechanism
+  (retained as emergent behavior); the §18 head+tree model and the
+  §17 creation-order label are both dead.
 - **start = lower_bound(row-id)** in the by-id tree, INCLUSIVE, with
   NO validation: nonexistent ids continue from the next-higher id,
   beyond-max returns empty, absent (−1) starts at begin. Modeled,
@@ -420,43 +422,65 @@ Live values (both versions, stable across boots): ether1
 both versions in findings §16 (16 transcripts, all predictions
 confirmed incl. both default-mask rules and the hidden-row select).
 
-### Iteration key: SUPERSEDED — dual-mode crossing-gated rename fixup (2026-10-31)
+### Iteration mechanism SOLVED — (class, name) re-sort (2026-10-31)
 
-The §18 "head + name-tree" model recorded here is DEAD
-(findings §19 retraction; compacted "#1–#8/A/B/C"
-details were unsaved confabulation — ground truth is
-T1–T9 from iter1–6/2nic1–4). Behavior (~43 rename
-transitions, all fit): R1 universal crossing-gate (swap
-past adjacent N ⟺ N strictly between old and new, both
-directions); R2 1NIC-mode (day-0 1-NIC: crossed-bubble
-with a FROZEN pos0 slot — occupant immobile +
-unenterable; leftward one-short, rightward full-run);
-R3 2NIC+-mode (day-0 2/3-NIC: MOVE ⟺ crossed-run == 1,
-single adjacent swap, no pos0-specialness); R4 mode ⟺
-day-0 NIC count (fresh-box 4-way: twin4-F + ws19-day0-M
-plus ws20-M + ws21-M). Creation = sorted-insert (incl.
-pos0); reboot persists order and mode. 1NIC invariant:
-sorted-except-possibly-(0,1). The §8 3-row order
-[ether1, lo, bridge] still constrains relative order
-under creation-insert. v6 iteration not yet probed (no
-[20,0]-rename series on ws3c6); ws19 run≥3 untested.
+The §19 R1–R4 dual-mode fixup is SUPERSEDED AS
+MECHANISM (findings §21; behavior rules retained as
+emergent): no fixup branch exists in either binary.
+Rename is an UNCONDITIONAL unlink + write + reinsert
+(a full re-sort on every rename) into a tree ordered
+by (u32 class key, name). 56/56 changing transcript
+pairs re-fit (49 v7 + 7 v6, 0 fails); every post-state
+is fully (class, name)-sorted.
 
-The static +0x20-u32-key lead stays RETRACTED for this
-tree (see below). NEW static entry point: the RENAME
-fixup path in net (not the iterator) — it branches on
-day-0-NIC-persistent state (tree birth-shape? lo depth?
-phys-count field?) into a pos0-guarded bubble (1NIC)
-vs a run-1-only single swap (2NIC+). Needs Ghidra/REA,
-not objdump; v6 iterator `0x807763a` (+0x9c lower_bound
-by id, `lea 0x24(%ecx)`, walk +0xac/begin +0xb0) is now
-secondary to the rename path.
+Entry layout (CORRECTION: the iteration node embeds at
+entry+0x28, not +0x24 as §8 said — +0x24 is the name
+string): +0x20 = class key (u32, set once at creation),
++0x24 = name (`lea` → row field 0x10006), +0x28 = iter
+node, +0x4 = by-id node (key entry+0 = row-id). Same
+both versions (v7 entry identical through +0x60).
+
+Comparator (v6 `0x8056c59` → `0x805d9f4`; v7 `0x8069faa`
+→ `0x8064cf4`, identical logic): u32 class first, name
+string-less tie-break. The §18 "name-string comparator"
+claim is refined: name is the SECONDARY key. The
+`lower_bound`-helper retraction below stands (those
+serve the by-id tree / other objects, not this tree).
+
+Class key (v6 key-init `0x805bfb8`, from the entry ctor
+`0x80fbde0`): typeobj+4 == 1 → 0; ∈ {0x23, 0x3e}
+→ 1; else → 2. typeobj+4 == 0x10001: base typeobj ctor
+`0x805e0bc` stores code→+4, name→+8 (→ 0x1001e), and
+family literals match live codes (1/17/21/30). Partial
+v6 registry: 1 ether, 17 eoip, 21 ipip, 30 vlan, 32 ?,
+40 ?, 43 6to4, 55 gre, 56 ipipv6, 57 ?,
+58 lte, 59 gre6 (+ live-only {3,12,18,66,70,75,76}
+via undecoded paths). Types 35/62 (class 1)
+unidentified and
+unobserved live — every observed table is ethers-first
+with the rest name-sorted within class.
+
+Rename path (v6 apply-set `0x80cec4c` name block
+`0x80cf19f`; v7 `0x8065d9c` / `0x8066341`): new != old
+→ `secmap_node::unlink` + write + `insert_equal` (v6
+`0x805bbba`, tree handler+0xac; v7 `0x806bd1c`, tree
+handler+0xf8) → row-core rebuild. No gate, no mode, no
+pos0 guard. R1–R4 collapse: R1 = same-class resort in
+name space; R2 pos0/one-short = class-0 singleton +
+class boundary at pos1; R3 = class-0 multi; R4 "day-0
+NIC" = ether count (fresh-box 4-way = composition; no
+persistent mode state exists). Reboot "persists" = tree
+invariant. Creation = sorted insert (v6 `0x80d19f7` /
+`0x80d0cb6` / `0x80e665e`; v7 `0x8066acf` /
+`0x806de52` / …). The §8 3-row order REQUIRES the §18
+custom-named-bridge inference. ws19 run≥3 MOOT. Open:
+35/62 identity, v7 key-init static location.
 
 Prior retraction kept: the `lower_bound`-shaped helpers
 at v6 `0x807edc4/0x807ee08/0x807ee4c` (comparing node−4
 as u32) serve other +0xac trees in other objects
 (generic template coincidence — dozens of callers
-across 0x80a–0x810); the iteration comparator is
-name-string. Live-proof beats the objdump reading.
+across 0x80a–0x810).
 
 Related anomaly RESOLVED (findings §18): the v7
 0xfe0007=False bridge row is version drift in the

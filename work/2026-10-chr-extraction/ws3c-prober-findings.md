@@ -371,7 +371,10 @@ client-side).
   bridge-port enslavement splits them — **f5 =
   actual-interface, f10 = configured interface** (labels were
   swapped). License f12: nlevel proof (needs tiered license —
-  likely untractable); mepty terminal surface (0x0a question).
+  TRACTABLE via a quickchr trial license, blocked on user
+  credentials per §20 — not untractable); mepty terminal
+  surface (0x0a
+  question; lower priority per §20).
 - ~~Upstream: tikoci/centrs#§7c (padded-32 REDP1/z) — file with the
   11/900 divergence instances.~~ FILED 2026-10-31 as
   [tikoci/centrs#565](https://github.com/tikoci/centrs/issues/565)
@@ -920,6 +923,10 @@ twin4-{1,2}}.json`.
     day-0-NIC-persistent state — tree
     birth-shape? lo depth? phys-count
     field? needs Ghidra, not objdump).
+    SUPERSEDED BY §21: no fixup branch exists
+    (unconditional re-sort); R1–R4 are a
+    (class, name) shadow; run≥3 MOOT
+    (closed by §20 for v6-iteration first).
 - **Lab notes.** twin4 PRE-EXISTED dirty
   (dockers-bridge + veth1 residue) → cleaned
   to a fresh 7.26b3 image; ws20/ws21 NEW
@@ -948,3 +955,195 @@ CLOSED this batch: iteration BEHAVIOR
 (dual-mode R1–R4), user-list path,
 [13,4]-duality, UserPrefs identity +
 semantics, routerboard gate, 0x98 tcode.
+
+## 20. v6 iteration transfer batch (2026-10-31)
+
+One short ws3c6 session (6.49.23, day-0 1-NIC):
+does R1–R4 transfer to v6? 8 transcripts
+(`ev/6.49-getall-20-0-v6iter{0..7}.json`).
+YES — v6 = R2, 6/6 R2-consistent:
+
+- V0 baseline [ether1]: v6 has NO lo row in
+  [20,0] (1 row, not 2).
+- V1 creation-sorted-insert: +m-vlan →
+  [ether1, m-vlan] (existing rows unmoved).
+- V2 pos1-cross below head: m-vlan→a-vlan
+  FROZE at pos1 (T6-geometry; R3 would move).
+- V4 need-2: p-vlan→0-p pos2→pos1
+  (one-short; R3 would freeze).
+- V5 rightward run-1: 0-p→zzz moved to end.
+- V6 noncross-rightward: m-av froze (G1
+  analog — R1 gate holds on v6).
+- V7 pos0 crossed-right: ether1→z-e1 FROZE
+  at pos0 (T4 analog — pos0-immobile on v6).
+
+R4 predicted R2 for this box and was right.
+Static mechanism hunt is now constrained: the
+fixup branch exists in BOTH versions' net
+binaries (v6's is findable too — same
+behavior, older code). v6 tooling notes:
+probe.ts --quickchr fails on v6 (inspect has
+no rest-api auth) — use direct
+--host/--port/--user/--pass; centrs
+native-api takes no [find] in set (unknown
+parameter) — use numbers=*ID; --via ssh is
+refused (no batch auth); remove takes
+numbers=*2,*3 lists. Lab left clean
+([ether1], 0 vlans, stopped).
+
+Still open (updated): pid-1025 identity,
+routerboard full shape, [24,10/33/35] +
+107/122/125 + 114/115/126-family + 134 roles,
+[20,61] selector, [13,6/7] WinBox/WebFig
+split, terminal surface (lower priority),
+nlevel proof (TRACTABLE via quickchr trial
+license — blocked on user credentials, not
+untractable), 0xff001e sighting, 0x10002
+low-byte flag meanings,
+ITERATION-MECHANISM (static fixup-branch,
+now dual-version) + ws19-run≥3. CLOSED this
+batch: v6-iteration transfer (v6 = R2).
+SUPERSEDED BY §21 (2026-10-31): no fixup
+branch exists — rename is an unconditional
+re-sort; R1–R4 collapse to a (class, name)
+shadow; ws19-run≥3 is MOOT.
+
+## 21. Iteration MECHANISM solved — (class, name) re-sort (2026-10-31)
+
+Static hunt (objdump over `/tmp/net{,6,7}-asm.txt`,
+no CHR session, no new transcripts):
+the R1–R4 dual-mode fixup does not exist in
+the binaries. Rename is an UNCONDITIONAL
+unlink + write + reinsert into a tree ordered
+by (u32 class key, name) — a full re-sort on
+every rename, both versions. All 56 changing
+transcript pairs re-fit: every post-state is
+fully (class, name)-sorted, 0 fails.
+
+- **Entry layout (CORRECTION to §8: node is
+  +0x28, not +0x24):** +0x20 = u32 class key
+  (set once at creation), +0x24 = name string
+  (row-core `lea 0x24` → 0x10006), +0x28 =
+  iteration-tree node (insert wrappers
+  `add $0x28,%ecx`), +0x4 = by-id-tree node
+  (key = entry+0 = row-id). Same both versions
+  (v7 entry layout identical through +0x60;
+  only the handler object shifted).
+- **Comparator (v6 `0x8056c59` →
+  `0x805d9f4`; v7 `0x8069faa` → `0x8064cf4`,
+  identical logic):** `if (keyA != keyB)
+  return keyA < keyB; else return string-less
+  (nameA, nameB)`. Primary = u32 class,
+  tie-break = name (byte order over the
+  observed `[0-9a-z-]` range; mixed-case
+  untested — no uppercase names live).
+- **Class key (v6 key-init `0x805bfb8`,
+  called from entry ctor `0x80fbde0` with the
+  type object):** typeobj+4 == 1 → 0;
+  ∈ {0x23, 0x3e} (35, 62) → 1; else → 2.
+  typeobj+4 == 0x10001 PROVEN: base typeobj
+  ctor `0x805e0bc` stores its code arg at +4
+  and its name arg at +8 (→ row field
+  0x1001e), and the family-code literals match
+  live 0x10001 values (1 ether, 17 eoip,
+  21 ipip, 30 vlan). Partial v6 registry from
+  the net-startup registrations: 1 ether,
+  17 eoip, 21 ipip, 30 vlan, 32 ?, 40 ?,
+  43 6to4, 55 gre, 56 ipipv6, 57 ? (eoip
+  family 2nd), 58 lte, 59 gre6. Live-only
+  types {3 vrrp, 12 bridge, 18 pppoe,
+  66 vxlan, 70 wg, 75 macvlan, 76 lo} register
+  via undecoded (register-passed) paths.
+  **Types 35/62 (class 1) are not among the
+  decoded v6-net registrations — identity
+  OPEN** (other-binary registration? undecoded
+  path?). Class 1 is unobserved live on both
+  versions, so every observed table is
+  ethers-first (class 0) + rest (class 2),
+  name-sorted within class.
+- **Rename = unconditional re-sort (v6
+  apply-set `0x80cec4c`, name block
+  `0x80cf19f`; v7 apply-set `0x8065d9c`, name
+  block `0x8066341`):** if new name != old →
+  `secmap_node::unlink` + write name +
+  `insert_equal` (v6 `0x805bbba`, tree at
+  handler+0xac; v7 `0x806bd1c`, tree at
+  handler+0xf8) → row-core rebuild. NO
+  crossing gate, NO mode branch, NO pos0
+  guard anywhere on the path (SETOBJ worker →
+  validate `0x808f10a` → entry virtual apply →
+  `0x80cec4c`). The §20 "fixup branch in
+  BOTH net binaries" prediction is refuted —
+  the branch was never there.
+- **Creation = sorted insert** (v6 ADDOBJ
+  `0x80d19f7`, boot/load `0x80d0cb6`,
+  factory `0x80e665e`; v7 `0x8066acf`,
+  `0x806de52`, …). Reboot "persists order"
+  trivially: the tree invariant IS sorted
+  order. The §8 3-row relative order
+  [ether1 < lo < bridge] now REQUIRES the
+  §18 inference (bridge custom-named >"lo") —
+  a default `bridge` sorts before `lo`.
+- **Fit: 56/56 changing pairs, 0 fails** (49
+  v7: deep 24 + 2nic 18 + iter 5 + ws20 2 +
+  ws21 1 + twin4 1; 7 v6: v6iter 7; plus 2
+  identical-state pairs; 7 multi-change pairs
+  included — post-state sorted in all).
+  Bulk tables statically sorted: 102-row +
+  194-row (bulk1/2), ffhunt/enslaved spot
+  checks. Method: post-state rows re-sorted by
+  (key(type), name) and compared order-equal
+  (`/tmp/fit.ts` + companion extractor, scratch —
+  not committed). Includes every §19 "killer"
+  transition by value: T4/T7 pos0-freezes =
+  class-0 resort no-ops; T2/T6 displacements =
+  same-class re-sorts; V2/V4/V6/V7 =
+  class-barrier stops; p2/w1 "run-2 freezes" =
+  name-crossed but key-separated (tree-run 0).
+- **R1–R4 collapse (mechanism SUPERSEDED;
+  behavior rules retained as emergent):**
+  R1 crossing-gate = same-class resort
+  measured in name space (cross-class pairs
+  can never swap — the "gate"); R2 pos0
+  "frozen/unenterable" = class-0 singleton
+  (one ether leads; non-ethers can never
+  enter class 0); R2 "one-short stopping at
+  pos1" = same-class bubble stopping at the
+  class boundary (which sits at pos1 exactly
+  when one ether leads); R3 "run-1 moves" =
+  same-class single crosses; R4 "day-0 NIC
+  count gates mode" = ETHER COUNT in the
+  table (fresh-box 4-way = composition:
+  twin4 1 ether → singleton phenomenology,
+  ws19/ws20 2 + ws21 3 → ether-swap
+  phenomenology); "reboot persists mode" =
+  composition persists. NO persistent mode
+  state exists. ws19-run≥3: MOOT (no
+  run-length term exists in the mechanism).
+- v7 mirror status: fixup block, comparator,
+  entry layout, and insert wrapper statically
+  mirrored; key-VALUE mapping behaviorally
+  identical (49/49). v7 key-init function
+  itself not yet located (open micro-thread);
+  v7 `cmp $0x23` sighted in a type-switch
+  (`0x806218f`) — consistent with, not proof
+  of, the same 3-class map.
+- Minor: v7 `0x80752c1`-analog upper_bound
+  user (v6 `0x80752c1`) still unidentified
+  (name lookup for CLI completion? dup-check
+  helper?) — not on the rename path.
+
+Still open (updated): pid-1025 identity,
+routerboard full shape, [24,10/33/35] +
+107/122/125 + 114/115/126-family + 134 roles,
+[20,61] selector, [13,6/7] WinBox/WebFig
+split, terminal surface (lower priority),
+nlevel proof (TRACTABLE via quickchr trial
+license — blocked on user credentials),
+0xff001e sighting, 0x10002 low-byte flag
+meanings, class-1 types 35/62 identity, v7
+key-init static location, mixed-case name
+ordering. CLOSED this batch:
+ITERATION-MECHANISM (static, dual-version);
+ws19-run≥3 MOOT; R1–R4 SUPERSEDED AS
+MECHANISM (retained as emergent behavior).
