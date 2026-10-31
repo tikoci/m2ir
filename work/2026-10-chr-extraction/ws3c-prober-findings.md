@@ -1545,11 +1545,12 @@ New transcripts: `ev/7.25-getone-24-33-
   (looper+0x71c) — identity still
   unknown.
 
-Still open (updated): routerboard full
-shape (+ [24,35]-on-hardware lead),
-134 driver (one write site), 125 role,
-[13,6/7] WinBox/WebFig split, terminal
-surface (lower priority), nlevel proof
+Still open (updated — see §26):
+routerboard full shape (+ [24,35]-
+on-hardware lead), 134 driver (one
+write site), 125 role, [13,6/7]
+WinBox/WebFig split, terminal surface
+(lower priority), nlevel proof
 (TRACTABLE via quickchr trial license
 — blocked on user credentials),
 0xff001e sighting, 0x10002 low-byte
@@ -1563,3 +1564,95 @@ location (runtime/kernel?), v6-61 role
 (+116/117/120/121 QoS octet), bit-29
 idiom 4/4 + first 0xfe001d sightings,
 prober `--xbool`.
+
+## 26. 0xff001e sighted — the interface owner token (2026-10-31)
+
+Four twin3 sessions (7.25; ADD/SET/
+REMOVE probes; one power-cycle + one
+graceful cycle; test vlans added +
+removed incl. one M2-remove-with-token;
+left STOPPED, 2-row baseline). Static
+lifecycle map (7 sites in v7 net; 0 in
+v6 — v7-only). CLOSES the 0xff001e
+thread. Prober gained `raw` (arbitrary
+CMD sender; ADDOBJ=0xfe0005 per
+strawman). New transcripts:
+`ev/7.25-raw-20-0-addobj.json`,
+`ev/7.25-getall-20-0-ff001e.json`.
+
+- **FIRST SIGHTING:** M2-ADDed vlan
+  carries `0xff001e = 12345` (the
+  supplied token); REST-created vlan
+  lacks it. Rows otherwise
+  byte-identical in shape (no dynamic
+  marker).
+- **Lifecycle (static + live):**
+  ADDOBJ stores request-0xff001e →
+  entry+0x40 (0x8066a2a; default
+  -1); rows echo it when != -1
+  (0x806515e); boot restores it from
+  store (0x806ddf5); notify matcher
+  takes it as an arg (0x80601f2);
+  SETOBJ/REMOVEOBJ compare it
+  (0x8066bee/0x8066f03/0x8067087).
+  Slot-7 (0x8066774) dispatches obj
+  verbs on 0xff0007 (0xfe0003 SET /
+  0xfe0004 GETALL / 0xfe0005 ADD /
+  0xfe0006 REMOVE — mirroring the
+  strawman CMD enum).
+- **Guard truth table (live):** exact
+  match required — tokened row +
+  no-token SET/REMOVE → FAILED
+  ("can not change/remove managed
+  interface"); tokened + token →
+  passes (SET then fails on later
+  mtu/queue validation; REMOVE
+  succeeds). A row without a token +
+  no token (default -1 == -1) →
+  passes; that row + a token →
+  managed error. So EVERY interface
+  is token-managed; -1 = unmanaged.
+- **CLI/REST lockout (live):**
+  `/interface/vlan/remove` on a
+  tokened vlan fails ("can not
+  remove managed interface") —
+  no CLI spelling for the token.
+  M2-only until reboot.
+- **Ephemerality (live x2):** M2-ADDed
+  vlans vanish across BOTH power-cut
+  and graceful-shutdown cycles (no
+  store write from this recipe).
+  Real WinBox must persist via extra
+  fields/commands (open micro-
+  thread). The boot-restore path is
+  unreachable in practice.
+- **Bonuses:** ADDOBJ reply = bare
+  success + 0xfe0001 = new row id;
+  [20,0] CMD_SET is base-NOTIMP
+  (mutation rides slot-7 obj verbs,
+  not SETOBJ/SET confusion — note
+  0xfe0003=setobj vs 0xfe000e=set);
+  vlan-id field 0x7d1=2001 mapped
+  from a live row.
+- Micro-open: guard compares at
+  offset +0x3c while rows echo +0x40
+  (behaviorally identical — shadowing
+  or alias; +0x3c writer unlocated).
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (one write site), 125 role,
+[13,6/7] WinBox/WebFig split, terminal
+surface (lower priority), nlevel proof
+(TRACTABLE via quickchr trial license
+— blocked on user credentials),
+0x10002 low-byte flag meanings,
+v6-lo/v7-ether runtime typeobj names
+(docs-level micro-thread), 1028/1029/
+1030 roles, rewrite-table location
+(runtime/kernel?), v6-61 role
+(micro-thread), M2-ADD persistence
+recipe (micro-thread). CLOSED this
+batch: 0xff001e (owner-token
+lifecycle, first sighting, guard
+table, ephemerality) + prober `raw`.

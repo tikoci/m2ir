@@ -554,6 +554,35 @@ async function cmdSetOne(
 	s.conn.close();
 }
 
+async function cmdRaw(
+	a: Args,
+	t: { host: string; port: number; user: string; pass: string },
+	pid: number,
+	hid: number | undefined,
+	cmd: number,
+): Promise<void> {
+	const s = await login(t.host, t.port, t.user, t.pass, a);
+	if ("mschap" in s) {
+		console.log("MSCHAP-33 branch");
+		return;
+	}
+	const to = hid === undefined ? [pid] : [pid, hid];
+	const extra = encodeExtras(a);
+	const reply = await roundTrip(
+		s.conn,
+		s.keys,
+		buildRequest(to, cmd, s.sourceId, 2, extra),
+	);
+	if (a.json) console.log(JSON.stringify(toJSON(reply)));
+	else {
+		console.log(
+			`RAW [${to}] cmd=0x${cmd.toString(16)} (sourceId=${s.sourceId})${customSpec(a)}:`,
+		);
+		console.log(fmtMessage(reply));
+	}
+	s.conn.close();
+}
+
 async function cmdSweep(
 	a: Args,
 	t: { host: string; port: number; user: string; pass: string },
@@ -744,6 +773,20 @@ async function main(): Promise<void> {
 			throw new Error("setone <pid> [hid] (--xfield/--xstr payload)");
 		}
 		await cmdSetOne(a, t, pid, hid);
+	} else if (a.cmd === "raw") {
+		const pid = Number(a.rest[0]);
+		const hid = a.rest[1] === undefined ? undefined : Number(a.rest[1]);
+		const cmd = Number(a.rest[2] ?? "0xfe0005");
+		if (
+			!Number.isInteger(pid) ||
+			(hid !== undefined && !Number.isInteger(hid)) ||
+			!Number.isInteger(cmd)
+		) {
+			throw new Error(
+				"raw <pid> [hid] [cmd] (--xfield/--xstr/--xbool payload)",
+			);
+		}
+		await cmdRaw(a, t, pid, hid, cmd);
 	} else if (a.cmd === "sweep") await cmdSweep(a, t);
 	else if (a.cmd === "hscan") {
 		const pid = Number(a.rest[0]);
@@ -763,7 +806,7 @@ async function main(): Promise<void> {
 		await cmdRedp1Sweep(a, t, n);
 	} else
 		throw new Error(
-			`unknown command ${a.cmd} (auth|getone|getall|getobj|setone|sweep|hscan|redp1sweep)`,
+			`unknown command ${a.cmd} (auth|getone|getall|getobj|setone|raw|sweep|hscan|redp1sweep)`,
 		);
 	process.exit(0);
 }

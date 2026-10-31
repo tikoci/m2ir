@@ -218,15 +218,26 @@ keys:
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §3"
 
   0xff001e:
-    canonical-name: SYS_OBSERVED_1E
+    canonical-name: SYS_OWNER_TOKEN
     physical: { tcodes: [0x08, 0x09] }
     semantic: u32
-    role: "unknown u32 in interface rows (project-named; no documented label)"
+    role: "per-interface owner/manager token (project-named; no documented label). Client-supplied u32 at ADDOBJ (stored entry+0x40, default -1 = unmanaged); echoed in rows when != -1; SETOBJ/REMOVEOBJ without the matching token fail ('can not change/remove managed interface'); CLI/REST cannot spell it, so a tokened interface is M2-only until reboot. M2-ADDed interfaces do not persist (running-config only, graceful shutdown included)."
     confidence: observed-only
-    notes: "STATIC-ONLY, no live sighting: the v7 [20,0] row-core (0x806515c) inserts entry+0x40 here when != 0xffffffff. Absent from every captured row (ether/lo/vlan/bridge/tunnel both versions), so the field's live value and role are open."
+    notes: "Full lifecycle proven live (§26): ADD stores, rows echo, SET/REMOVE gated by exact match (default -1 passes unmanaged rows), boot restores from store (static-only path — unreachable in practice since M2-ADDs don't persist). Also feeds the notify matcher (shouldNotify arg). Guard compares against a per-entry token shadowing +0x40 (offset read +0x3c; aliasing micro-open). v7-only (0 sites in v6 net)."
     evidence:
       - source: code
         ref: "RouterOS v7 net row-core 0x8064f1a; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+      - source: code
+        ref: "RouterOS v7 net 7-site lifecycle (ADD-store 0x8066a2a, SET-guards 0x8066bee/0x8066f03/0x8067087, boot-restore 0x806ddf5, notify-arg 0x80601f2, slot-7 0xff0007 subcommand dispatch); see work/2026-10-chr-extraction/ws3c-prober-findings.md §26"
+      - source: sample
+        ref: "live CHR interrogation (token batch, 7.25): ev/7.25-raw-20-0-addobj.json + ev/7.25-getall-20-0-ff001e.json (first sighting ff001e=12345; guard truth table; remove-with-token; ephemerality x2); see work/2026-10-chr-extraction/ws3c-prober-findings.md §26"
+    revision-history:
+      - date: 2026-10-31
+        belief: "SYS_OBSERVED_1E: unknown u32, static-only, no live sighting"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (token batch, 7.25): owner-token lifecycle; see work/2026-10-chr-extraction/ws3c-prober-findings.md §26"
 
 investigation-trail:
   - date: 2026-10-31
@@ -238,3 +249,10 @@ investigation-trail:
       (source-table lines 177-180) and renaming would break that
       transcription; namespaced aliases can be layered if a consumer
       needs them.
+  - date: 2026-10-31
+    finding: |
+      Token batch (findings §26): 0xff001e renamed
+      SYS_OBSERVED_1E -> SYS_OWNER_TOKEN (per-interface
+      owner/manager token: ADD stores, rows echo, SET/REMOVE
+      gated, CLI/REST locked out, M2-ADDs ephemeral; first
+      live sighting 12345).
