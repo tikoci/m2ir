@@ -263,3 +263,172 @@ enumerant
 unwired
 subhandler
 subixonfire
+ECSRP
+HKPDF
+MSCHAP
+vtable
+vtables
+vec
+vecs
+memcmp
+ikm # HKDF input keying material
+libucrypto
+ucrypto
+rodata
+relocs
+objdump
+dynsym
+mactel
+btest
+figman
+ECDH
+CFB
+KEM
+srand
+auther # verbatim "This is for auther challenge" string in libucrypto (sic)
+addrs
+preimages
+mtwei
+mul # assembly/intrinsic multiply mnemonic
+regenerable
+ucut # throwaway objdump slicer name (/tmp/ucut.ts)
+rbscan # routerboard row-shape scanner (work/2026-10-chr-extraction/rbscan.ts)
+ws3c # WinBox wire prober workstream (work/2026-10-chr-extraction/ws3c/probe.ts)
+getone # WS-3C prober single-record query subcommand
+hscan # WS-3C prober handler-range sweep subcommand
+xfield # WS-3C prober raw extra-field flag (--xfield)
+xfields
+nrows # WS-3C prober row-count label
+nfields # WS-3C prober field-count label
+fmt # format-function name prefix (fmtHex/fmtMessage)
+weier # Weierstrass curve-form name fragment (xWeier variables)
+keypair
+fullkey # M2 24-bit full-key identifier without underscore
+ecpesvdp # IEEE P1363.2 EC-SRP verifier derivation primitive family name
+defconf # RouterOS default-configuration scripts (system default-configuration)
+chfont # RouterOS console-font store path element (/nova/store/chfont)
+virtio # QEMU paravirtual network/block driver (CHR ether1 has no l2mtu on virtio)
+piix # Intel PIIX chipset in the QEMU board-name string
+libumsg # RouterOS nv::message + handler-framework shared library
+hscans
+deci # SI tenth prefix (deci-MiB derived resource fields)
+eui # Extended Unique Identifier (IPv6 EUI-64 interface IDs)
+bignum # libucrypto arbitrary-precision integer type (BigNum)
+kib # kibibyte (KiB resource fields)
+decimib # deci-mebibyte (deci-MiB resource fields)
+bavail # statfs free-blocks-for-unprivileged field
+cmdline # /proc/cmdline kernel command line
+diskstats # /proc/diskstats block-device counters
+gettimeofday # POSIX wall-clock syscall (resource server-time source)
+sethostname # POSIX hostname syscall (identity setter path)
+sscanf # C string-scanf (cpu-frequency parse)
+statfs # POSIX filesystem-stats syscall (hdd space source)
+yaffs # Yet Another Flash File System (NAND storage path)
+execl # POSIX exec syscall variant (v7 loader spawn path)
+sysinit # RouterOS v7 early-init binary
+insmod # Linux kernel-module loader (rbbios csel0 path)
+csel # RouterOS console-selector device/driver (csel0)
+bndl # RouterOS bundle path element (bndl/*/loader/*.x3)
+partd # RouterOS partition daemon (map entry without on-disk binary)
+msgfw # RouterOS message-forwarding component (map entry without on-disk binary)
+cloudpingd # RouterOS cloud-ping daemon (map entry without on-disk binary)
+PLT # Procedure Linkage Table (ELF lazy-call trampolines)
+NAND # NAND flash storage type
+quickset # RouterOS Quick Set binary (process 120 on v6)
+rbbios # RouterOS RouterBOARD BIOS proxy binary (process 61 on v6)
+attrlen # .x3 attribute-list length field (work/2026-10-chr-extraction)
+calea # RouterOS CALEA lawful-intercept binary name fragment
+cdecl # C calling-convention name in demangled symbols
+cenum # WinBox client string-enum constructor (work/2026-10-winbox-client-re)
+Clibc
+CNT # SYS_COLUMNS_CNT client-internal counter fragment
+cpuid
+CPUID
+cstart # CHR extraction start-sector label
+debugfs # ext filesystem debugger (rootless CHR extraction chain)
+demangled
+disasm # disassembly shorthand in RE notes
+eax # x86 register name in objdump listings
+ebp # x86 register name in objdump listings
+ebt # RouterOS binary name fragment in handler census
+ecx # x86 register name in objdump listings
+ECX
+enbeep # RouterOS board-beep gate symbol fragment (sys2)
+esize # .x3 element-size table (libuxml++)
+ESIZE
+esz # element-size shorthand in .x3 parser
+etype # .x3 attribute element-type field
+extdev # RouterOS external-device field fragment
+EXTR
+fileman # RouterOS file-manager binary name
+filt # WS-3C prober filter-transcript filename fragment
+fns # function-list shorthand in RE tools
+Frameless
+Freescale
+fwf # RouterBOARD firmware field-table fragment (rbbios)
+ghidra
+Ghidra
+hdr # ELF header shorthand in RE tools
+idscan # WinBox client ID-scan tool (work/2026-10-winbox-client-re/idscan.ts)
+idx # index shorthand in RE tools
+immediates # instruction immediate operands in disassembly
+imul # x86 multiply mnemonic in objdump listings
+insn # single-instruction shorthand in RE notes
+insns # instruction-count shorthand in RE notes
+ints # integer-array shorthand in RE notes
+ipt # RouterOS IP-tools binary name fragment
+jmps # jump-table shorthand in RE notes
+keyptr # ObjectMap key-pointer field (WinBox client)
+libc
+libuxml # RouterOS .x3 XML-derived parser library (libuxml++.so)
+LMA # ELF load-memory-address field
+lstream # RouterOS log-stream binary name fragment
+malloc
+meshports # bridge mesh-ports field fragment
+messageix # nv::message insert-with-index call shorthand
+misattributes
+miscaptured # mis-captured without hyphen so cspell does not split off "mis"
+modprobed # kernel-module probe state in routerboard hunt
+movl # x86 move mnemonic in objdump listings
+msti # bridge MST-instance field fragment
+ncpu # CPU-count shorthand in RE tools
+nend # node-end offset shorthand in .x3 parser
+NETREMOTE # RouterOS net-remote .x3 root-tag name
+ntoa # inet_ntoa name-oracle fallback (WinBox client)
+OOM # out-of-memory abort shorthand
+pci
+PCI
+pciinfo # RouterOS PCI-info .x3 file/tag name
+pdb # RouterOS package-database path element (/var/pdb)
+pids # Linux process-id list shorthand
+portcntrl # RouterOS port-controller binary name fragment
+portext # RouterOS port-extension field fragment
+portman # RouterOS port-manager binary name fragment
+ppp
+ptr
+PTR
+qid # query-id shorthand in RE tools
+queuetypes # RouterOS queue-types handler fragment
+rbtype # RouterBOARD type field fragment
+rdata # PE read-only-data section (WinBox client)
+REA # REA reverse-engineering-agent tooling (WS-0/WS-1)
+roff # ELF raw-offset shorthand in RE tools
+rva # ELF relative-virtual-address shorthand in RE tools
+SIGABRT # abort signal in gate-outage notes
+strdup
+strs # string-table shorthand in RE tools
+Temurin # Eclipse Temurin JDK (Ghidra headless runtime)
+totlen # .x3 total-length header field
+trafficgen # RouterOS traffic-generator binary name
+undecoded
+unloadable
+unsquashfs # squashfs extractor (rootless CHR extraction chain)
+userland
+virt # virtualization shorthand in RE notes
+VMA # ELF virtual-memory-address field
+vrrp
+VRRP
+xfe # 0xfe STD-namespace shorthand in RE notes
+xff # 0xff SYS-namespace shorthand in RE notes
+xmlnames # RouterOS nova/lib/xmlnames2 .x3 tag-enum header
+ZNK # Itanium C++ mangled-name const fragment

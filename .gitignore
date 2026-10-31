@@ -8,3 +8,21 @@ cortex.db
 
 scratch/*
 !scratch/AGENTS.md
+
+# regenerable RE/extraction artifacts under work/ (re-extract from cache)
+work/**/*.ext3
+work/**/*.image
+work/**/*.raw
+work/**/*.squashfs
+work/**/root-*/
+
+# work/*.json: only distilled diffs/maps are committed; raw REA evidence
+# dumps (multi-MB single-line envelopes, regenerable) stay local
+work/**/*.json
+!work/**/id-name-diff.json
+!work/**/id-name-diff-w32.json
+!work/**/process-map-*.json
+# WS-3C prober transcripts: small decoded replies cited by findings notes
+!work/**/ws3c/ev/*.json
+work/**/*.snapshot
+work/**/*.stderr.log

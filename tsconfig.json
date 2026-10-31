@@ -27,5 +27,9 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noPropertyAccessFromIndexSignature": true
-	}
+	},
+	// Extracted third-party filesystem trees under work/ carry absolute
+	// symlinks (e.g. var/tmp -> /tmp) that would otherwise pull the host's
+	// /tmp scratch files into typechecking. Never typecheck them.
+	"exclude": ["node_modules", "dist", "work/**/root-*", "work/**/dude-*"]
 }
