@@ -1736,3 +1736,119 @@ CLOSED this batch: v6-61 (LTE aux,
 entry-coupled; v6→v7 delta) +
 v6-lo/v7-ether typeobj names
 (runtime-provided).
+
+## 28. 0x10002 low-byte flags — 6 of 8 closed (2026-10-31)
+
+One twin3 session (7.25; booted,
+probed, stopped; config touched and
+FULLY reverted — 2-row baseline
+verified pre-stop; left STOPPED) plus
+static (v7 net writer/reader census
+via objdump). 22 transcripts: 18×
+`ev/7.25-getall-20-0-f2*.json` + 4×
+`ev/7.25-setone-20-0-*.json`.
+
+- **Writer census (static): exactly
+  3.** Ctor `0x8063299` (= 0);
+  creation `0x806dcbb` (ADDOBJ path
+  `0x806db12`: = msg.0x10002 &
+  ~0x11c — bits 2,3,4,6,8 forced
+  clear — plus +0x1c = 2 hidden);
+  apply-set `0x8066155` (=
+  msg.0x10002 UNMASKED, default
+  current, change-gated commit
+  `0x806da54`). No in-place RMW
+  anywhere — every +0x14 change
+  flows through M2 SET. (Excluded
+  lookalikes: 0x8063c5a/0x8064dcc/
+  0x8069cf3-cluster/0x806d3e2/
+  0x806f137/0x805c2b8-init — all
+  other structs; +0x14 is a
+  popular offset.)
+- **Low-byte map (11 type samples:
+  ether/vlan/eoip/macvlan/bridge/
+  vrrp/gre/ipip/6to4/lo):**
+  - bit 0 (0x01): PROBABLE
+    broadcast/L2 capability —
+    gates /proc/net/arp-entry
+    acceptance (`0x8087397`,
+    with f3-bit10 running);
+    11/11 MAC-correlated. No
+    toggle found; proof OPEN.
+  - bit 1 (0x02): macvlan-parent
+    — PROVEN. Clear → "macvlan
+    not supported on %s"
+    (`0x81105ef`); live: refused
+    on gre99 (exact string),
+    accepted on vrrp99 (and
+    mv99-on-ether1).
+  - bits 2,3,4: RESERVED —
+    creation-masked, never set
+    in any sample.
+  - bit 5 (0x20): ARP support —
+    PROVEN. Clear → "target
+    device does not support arp"
+    (`0x8086d33`); live: refused
+    on gre99 (exact string),
+    accepted on vlan99.
+  - bit 6 (0x40): enslavable/
+    L2-stackable — PROVEN live
+    (8/8 type correlation + gre
+    bridge-port refusal + eoip
+    acceptance); static: two
+    +0x188 chain-walk loops gate
+    on (f3-bit12 & f2-bit6)
+    (`0x808a1b6/0x808a5c9`). Set
+    post-creation via SET
+    (creation clears it).
+  - bit 7 (0x80): dynamic (prior
+    static: row-core `0x80650e6`).
+- **f2 is static per type:** vlan99
+  f2=0x2263 across disable/enable/
+  slave/unslave/comment/arp-mode
+  cycles — all runtime state moves
+  in f3 (0x10003).
+- **f3 bonuses (0x10003):** slave =
+  triple {3,12,17} (0x21008), 2×
+  confirmed (vlan + eoip) + exact
+  revert; disabled vlan → f3=0
+  (but fresh vrrp also reads 0 —
+  condition OPEN); arp modes →
+  f3 bit 2 (disabled|proxy-arp|
+  reply-only) + bit 11
+  (reply-only); proxy-arp ≡
+  disabled in f3 (delta lives
+  elsewhere); running
+  (w&0x500)==0x500 holds all rows.
+- **Above-low-byte f2 (recorded,
+  not chased):** bit 9 set on
+  ether/vlan/eoip/vrrp; bit 13 ⟺
+  bit 6 in all samples; bits
+  16,17 bridge-only; bit 18
+  ether-only.
+- **M2 row-SET blocked (new
+  micro-thread):** 4 no-op SETs
+  (row-id / name / both / comment
+  canary — identical ACK, no
+  write). `0xfe000e` looks like
+  the singleton-attr path, not
+  table-row SET; row-SET
+  addressing unknown.
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (one write site), 125 role,
+[13,6/7] WinBox/WebFig split, terminal
+surface (lower priority), nlevel proof
+(TRACTABLE via quickchr trial license
+— blocked on user credentials),
+1028/1029/1030 roles, rewrite-table
+location (runtime/kernel?), M2-ADD
+persistence recipe (micro-thread),
+bit-0 proof (micro-thread), M2 row-SET
+addressing (micro-thread), 0x10003 bit
+roles (micro-thread). CLOSED this
+batch: 0x10002 low-byte flags (6/8:
+macvlan/ARP/enslavable proven,
+reserved×3, dynamic prior; bit 0
+probable).

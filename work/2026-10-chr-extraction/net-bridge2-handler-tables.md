@@ -520,6 +520,19 @@ $0x80,0x14(%ebx)` → present-True else absent,
 proven live: lo=1, sequential, gap at a deleted interface,
 absent on VRRP).
 
+### +0x14 (0x10002) writer census (2026-10-31)
+
+Exactly 3 writers, no in-place RMW: ctor `0x8063299` (=
+0); creation `0x806dcbb` (= msg.0x10002 & ~0x11c, bits
+2,3,4,6,8 forced clear; +0x1c = 2); apply-set `0x8066155`
+(= msg.0x10002 unmasked, change-gated commit `0x806da54`).
+Low-byte readers: bit 5 → "target device does not support
+arp" (`0x8086d33`); bit 1 → "macvlan not supported on %s"
+(`0x81105ef`); bit 6 → +0x188 chain-walk loops
+(`0x808a1b6/0x808a5c9`, with f3-bit12); bit 0 → ARP-table
+acceptance (`0x8087397`, with f3-bit10). Full bit map +
+live proofs: findings §28.
+
 ### Handler 134: third mark-registry instance (2026-10-31)
 
 v7 net builds 13/14/134 from ONE factory (`0x8056724`,
