@@ -383,6 +383,8 @@ handlers:
         ref: "live CHR interrogation re-fit (mechanism batch, no new transcripts): all 56 changing [20,0] pairs (deep/2nic/iter/v6iter/ws20/ws21/twin4) have fully (class, name)-sorted post-states, 0 fails; 102-row + 194-row bulk tables statically sorted; R1–R4 collapse to a (class, name) shadow (R4 day-0-NIC = ether count; no mode state); see work/2026-10-chr-extraction/ws3c-prober-findings.md §21"
       - source: code
         ref: "RouterOS interface-type registry (NPK carve + x3parse, no CHR): class 1 = types 35/62 (wlan/wlan60-) via the wireless NPK net-remote overlay (CHR-absent); full wireless + ppp overlay maps, v7 local registry (+macvtap/xfrm/vxlan/wg/veth/lo/vrf vs v6), v6 ether alias key 63, v7 key-init 0x8062d26 (identical mapping), strncmp tie-break both; see work/2026-10-chr-extraction/ws3c-prober-findings.md §22"
+      - source: code
+        ref: "RouterOS interface-type provider audit (objdump, no CHR): v7-ether (1) has no builder in net (all 14 base-ctor sites + eoip/tunnel custom ctors mapped; no x3 entry) — runtime/driver-provided, effective name 'ether'; v6-lo (76) likewise runtime-provided, effective name 'lo'; v7 family string block 0x81954de+ recorded; see work/2026-10-chr-extraction/ws3c-prober-findings.md §27"
     notes: |
       Fields split across three byte_2 values: 0x01 (NS-1: interface
       fields + private control plane — the old `namespace-1` label is now
@@ -407,7 +409,11 @@ handlers:
       multi, R4 day-0-NIC = ether count (no mode state
       exists). v6 [20,0] has no lo row. Only
       server-issued tokens chain soundly, which they do
-      (306-row proof).
+      (306-row proof). Provider note: v7-ether (1) and
+      v6-lo (76) typeobjs have no builder in net and no
+      x3 entry — runtime/driver-provided (effective
+      names 'ether'/'lo'); v6 lo is a type without an
+      instance on CHR.
       Row shape is STATE-DEPENDENT: disabled rows are SLIM (computed
       fields 101/105/default-name/counters drop until re-enabled). MAC
       appears twice per row (0x3e9 always + a type-specific second field:
@@ -1141,7 +1147,7 @@ handlers:
     status: identified-chr-absent
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7 net/modem_aux store handler (LTE-modem aux area; lte/wwan type 58 adjacent; near net/apn + /nova/store/sms-config). GET selector = request field 7 (string modem key): miss -> UNKNOWNID; hit -> nested message 0x411 as reply, else raw_array 0x3fa single-field, else UNKNOWNID. SET/GETOBJ/GETALL = base = NOTIMP (GET-only). Slot-7 pre-filter claims 0xfe000f/0xfe0011 + private 5/6/7 + 0x3e8-0x404 field-id commands (29->12 targets, undecoded); GET never pre-claimed. Policy vocabulary: 29 field ids in 4 mask classes (0x200/0x240/0x280/0x80000000-gated 0x3e8,0x3ee,0x400). CHR-absent (no modem hardware): live legs are negative-only (f7=lte1/foo -> UNKNOWNID from=[20,61]; SET -> NOTIMP); positive leg needs LTE hardware. v6 net registers 0x3d too but has zero modem_aux strings — v6-61 is NOT modem_aux (role open)."
+    role: "v7 net/modem_aux store handler (LTE-modem aux area; lte/wwan type 58 adjacent; near net/apn + /nova/store/sms-config). GET selector = request field 7 (string modem key): miss -> UNKNOWNID; hit -> nested message 0x411 as reply, else raw_array 0x3fa single-field, else UNKNOWNID. SET/GETOBJ/GETALL = base = NOTIMP (GET-only). Slot-7 pre-filter claims 0xfe000f/0xfe0011 + private 5/6/7 + 0x3e8-0x404 field-id commands (29->12 targets, undecoded); GET never pre-claimed. Policy vocabulary: 29 field ids in 4 mask classes (0x200/0x240/0x280/0x80000000-gated 0x3e8,0x3ee,0x400). CHR-absent (no modem hardware): live legs are negative-only (f7=lte1/foo -> UNKNOWNID from=[20,61]; SET -> NOTIMP); positive leg needs LTE hardware. v6-61 is the SAME handler class but entry-coupled: field-7 selector -> lookup against the LTE TYPEOBJ (code 58, slot 0x38 scans for an LTE-typed entry with the name), 0x3fa-only reply (no 0x411 leg), 8-id policy vocab. v6->v7 delta: lookup entry-coupled -> net/modem_aux store; reply +0x411; vocab 8 -> 29. Live v6: bare + f7 -> UNKNOWNID."
     confidence: observed-only
     evidence:
       - source: code
@@ -1152,6 +1158,10 @@ handlers:
         ref: "RouterOS v7 net handler-61 slot-9 cmdGet 0x8127366 (field-7 selector + 0x411/0x3fa reply shape), slot-7 pre-filter 0x812e00c, ctor policy vocabulary, vtable 0x81c5740; see work/2026-10-chr-extraction/ws3c-prober-findings.md §24"
       - source: sample
         ref: "live CHR interrogation (selector batch, 7.25): ev/7.25-getone-20-61-f7.json (f7=lte1/foo UNKNOWNID, SET NOTIMP); see work/2026-10-chr-extraction/ws3c-prober-findings.md §24"
+      - source: code
+        ref: "RouterOS v6 net handler-61 slot-9 0x80fea78 (field-7 selector, LTE-typeobj lookup 0x808dfa0, 0x3fa-only tail); see work/2026-10-chr-extraction/ws3c-prober-findings.md §27"
+      - source: sample
+        ref: "live CHR interrogation (quick-wins batch, 6.49.23): bare + f7=lte1 -> UNKNOWNID from=[20,61] (no transcript; single-session observation)"
     revision-history:
       - date: 2026-10-31
         belief: "unknown-20-61: modem-adjacent handler, selector unknown"
@@ -1289,3 +1299,17 @@ investigation-trail:
       134 narrowed to one write site;
       125 narrowed; first 0xfe001d
       sightings; prober --xbool.
+  - date: 2026-10-31
+    finding: |
+      Quick-wins batch (findings §27,
+      1 ws3c6 session + static): v6-61
+      = LTE aux entry-coupled (same
+      class as v7 modem_aux; lookup
+      via LTE typeobj, 0x3fa-only
+      reply, 8-id vocab; full v6->v7
+      delta); v6-lo/v7-ether typeobjs
+      runtime/driver-provided
+      (effective names 'lo'/'ether';
+      provider unlocated, out of
+      scope); v7 family string block
+      recorded.

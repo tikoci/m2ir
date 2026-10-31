@@ -1639,11 +1639,12 @@ strawman). New transcripts:
   (behaviorally identical — shadowing
   or alias; +0x3c writer unlocated).
 
-Still open (updated): routerboard full
-shape (+ [24,35]-on-hardware lead),
-134 driver (one write site), 125 role,
-[13,6/7] WinBox/WebFig split, terminal
-surface (lower priority), nlevel proof
+Still open (updated — see §27):
+routerboard full shape (+ [24,35]-
+on-hardware lead), 134 driver (one
+write site), 125 role, [13,6/7]
+WinBox/WebFig split, terminal surface
+(lower priority), nlevel proof
 (TRACTABLE via quickchr trial license
 — blocked on user credentials),
 0x10002 low-byte flag meanings,
@@ -1656,3 +1657,82 @@ recipe (micro-thread). CLOSED this
 batch: 0xff001e (owner-token
 lifecycle, first sighting, guard
 table, ephemerality) + prober `raw`.
+
+## 27. Quick wins — v6-61 + typeobj names (2026-10-31)
+
+One ws3c6 session (6.49.23; 2 probes,
+stopped; prober needs explicit
+--host/--port/--user/--pass on v6 —
+--quickchr fails with "no rest-api
+auth", boot-only has no REST) plus
+static decodes (v6 net slot-9
+0x80fea78, LTE lookup 0x808dfa0;
+v7 family-ctor audit). No new ev
+files (observations only).
+
+- **v6-61 = LTE aux, entry-coupled
+  — CLOSED.** Same handler class as
+  v7 modem_aux (field-7 string
+  selector → lookup → miss =
+  UNKNOWNID; same 0x3fa reply tail)
+  but the lookup target is the LTE
+  TYPEOBJ (code 58, 'lte', slot
+  0x38 = index 14 = 0x808dfa0),
+  which scans the interface list
+  for an LTE-typed entry with the
+  name — i.e. v6 serves LTE aux
+  FROM THE ENTRY ITSELF, v7 from
+  the decoupled net/modem_aux
+  store. Deltas: lookup
+  entry-coupled → store; reply
+  0x3fa-only → 0x411-then-0x3fa
+  (v7 ADDED the 0x411 leg); policy
+  vocab 8 ids → 29. Live v6:
+  bare + f7=lte1 → UNKNOWNID
+  from=[20,61] (no LTE on CHR).
+- **Typeobj names (docs-level) —
+  CLOSED as far as static goes.**
+  Verified: v7-ether (1) has NO
+  builder in net (all 14 base-ctor
+  sites + eoip/tunnel custom ctors
+  mapped — codes cover every
+  §22 local family EXCEPT 1; no
+  x3 entry either) → provided at
+  runtime (driver/kernel-side
+  enumeration; CHR ether1).
+  Effective name 'ether' (default-
+  name prefix 0x81a11db + live
+  rows). v6-lo (76): likewise
+  absent from v6 local/x3 maps →
+  runtime-provided; effective
+  name 'lo' (and v6 [20,0] carries
+  no lo row — type without
+  instance). Provider mechanism
+  (kernel enumeration vs driver-
+  process IPC registration):
+  unlocated, out of scope.
+- **Family string block (v7,
+  0x81954de+):** bond, eoip, wg,
+  eoip6-, eoipv6-, greip4-,
+  gre-tunnel, greip6-, gre6-tunnel,
+  ip4ip4-, ipip-tunnel, ip6ip4-,
+  6to4-tunnel, ipip6-, ipipv6-tunnel,
+  macvlan, macvtap, xfrm, lo,
+  loopback, lte, ... (recorded for
+  the registry record).
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (one write site), 125 role,
+[13,6/7] WinBox/WebFig split, terminal
+surface (lower priority), nlevel proof
+(TRACTABLE via quickchr trial license
+— blocked on user credentials),
+0x10002 low-byte flag meanings,
+1028/1029/1030 roles, rewrite-table
+location (runtime/kernel?), M2-ADD
+persistence recipe (micro-thread).
+CLOSED this batch: v6-61 (LTE aux,
+entry-coupled; v6→v7 delta) +
+v6-lo/v7-ether typeobj names
+(runtime-provided).
