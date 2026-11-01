@@ -1,0 +1,6 @@
+=== hscan 1024 0 70 (twin3 7.25 §44) ===
+[1024,14] status=2 errno=0xfe0003 from=[1024,14] nfields=8 user={}
+[1024,21] status=2 errno=0xfe0003 from=[1024,21] nfields=8 user={}
+[1024,31] status=2 errno=0xfe0003 from=[1024,31] nfields=8 user={}
+[1024,51] status=2 errno=0xfe0003 from=[1024,51] nfields=8 user={}
+[1024,61] status=2 errno=0xfe0003 from=[1024,61] nfields=8 user={}

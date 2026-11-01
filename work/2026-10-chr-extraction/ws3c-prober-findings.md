@@ -3219,3 +3219,154 @@ zombie-bearing boot). CLOSED this
 batch: shim route-insert mechanism
 (§43 — partial: allocator named,
 trigger open).
+
+## 44. Workers ARE the shims — trigger + absence + stubs unified (2026-11-01)
+
+Live twin3 (7.25; serial-log boot,
+phase1/phase2 sweeps, hscans; left
+STOPPED) + live ws3c6 (6.49.23; shim
+census + hscans; left STOPPED) +
+static (v7/v6 servants, loaders,
+libumsg PR; no REST/config changes;
+M2 store untouched). 5 transcripts:
+`ev/7.25-serial-boot.txt`,
+`ev/7.25-sweep-p1-0-260-990-1040.txt`,
+`ev/7.25-hscan-1024-0-70.txt`,
+`ev/7.25-hscan-masters-27-85-19.txt`,
+`ev/6.49-shim-census.txt`. Closes
+THREE sub-nanos in one model.
+
+- **Serial/boot-log lead GATED
+  (negative + refinement).**
+  QUICKCHR_SERIAL_LOG=1 captures
+  41B only (clear-seq + "MikroTik
+  7.25 / CHR Login: " — the ev
+  file) — loader lines go to VGA,
+  not serial. /log carries no
+  loader lines either. §43's lead
+  is dead via serial; the
+  ttyS0-cmdline route is parked
+  (motivation reduced: trigger +
+  absence closed below without
+  it).
+- **This boot clean (lottery
+  lost).** Phase2 drain (5.2s/pid,
+  /tmp/zsweep.ts, fresh conn per
+  pid) on all 17 §38 zombie pids
+  plus 10 dead controls = all
+  TIMEOUT; alive controls answer
+  ([2], [20], [24] reqid-matched).
+  Phase1 (0–260, 990–1040,
+  700ms): 213 timeouts, 0 errors;
+  alive-set matches §42; aliases
+  89/61/75/12 → from 0x400–403
+  IN ORDER (allocator assignment
+  order confirmed live); spares
+  1028–1030 → 0x404–406. Live
+  [1024] hscan 0–70: stubs
+  exactly {14,21,31,51,61}
+  (0xfe0003 + from=[1024,h]);
+  hid 1 and 34 → 0xfe0002.
+- **v6 HAS the compat block
+  (live).** 89→1024 {14,21,31,
+  51,61}, 75→1025 {8}, 12→1026
+  {}, 1027 spare {}. v7 = v6 +
+  ipsec-worker inserted at 1025
+  (cerm 1025→1026, ssld
+  1026→1027) + spares 1028–1030.
+  Stub sets preserved verbatim
+  across versions.
+- **v6+V7 net-remote/ppp.x3 (12
+  +1 rows): (27,*) in/out pairs;
+  stubs = the five tunnel-server
+  -in hids** (ppp-in excluded,
+  v7-new l2tp-ether 34 excluded).
+  14's HD-absence explained
+  (net-remote has it, HD
+  doesn't). No static hid-list in
+  either loader (u32le/u16le
+  scans, numeric + x3-file
+  orders, all negative).
+- **Servant static census
+  (addHandler window-scan):**
+  ppp≡ppp-worker 32 sites / 27
+  hids ⊇ stubs; ipsec≡
+  ipsec-worker 17 sites ∋ 3
+  (plus a -2 site); cerm-worker
+  15 ∋
+  8 (v7) / 12 (v6, symlink to
+  cerm); ssld 0 (exact).
+  Master-live: v6/v7 [27] ⊇
+  stubs (duplicate — 21/31/51/
+  61 serve data); [85] lacks 3,
+  [19] lacks 8 (complement —
+  cerm EXACT both versions: v6
+  12=11+{8}, v7 15=14+{8}).
+- **MODE SELECTION FOUND:**
+  strstr(argv0, "X-worker")
+  then branch (ppp 80932fd,
+  ipsec 8059ee6, cerm 805f3ae,
+  v6 cerm 80534a9). Worker
+  branches register EXACTLY the
+  stub sets (ppp 5 sites
+  809337d–80934fc; ipsec
+  8059f88; cerm 805f3fc; v6
+  cerm 80534f1) then
+  Looper::run (ppp 8093504,
+  ipsec 8059f90, cerm shared
+  tail 805fd62).
+- **UNIFICATION: workers never
+  die — they RUN AS the shim
+  loopers under compat pids.**
+  Peers loop spawns the 4
+  multiplepeer PRs (re-census
+  at the true base after a
+  +4/+8 field swap: exactly
+  {89,61,75,12}, percpu
+  80/50/50/400); spawn loop
+  8053bec posts one pid-less
+  (+4=0) node per worker (N =
+  sysconf×percpu/100, imul/div
+  sited); AddEvent assigns
+  0x400+i in post order; each
+  worker registers its subset
+  and runs; the loader aliases
+  native pid → compat pid.
+  Explains boot-atomicity,
+  [61,x]≡[1025,x], shim
+  INERTNESS (worker's objects ≠
+  master's), the §41 pkg-19
+  puzzle (both alive), the
+  v6→v7 insertion (a new
+  worker), ssld handlerless.
+  CLOSED: route-insert TRIGGER,
+  worker-absence, stub-subset
+  criterion. Residual: spare
+  posters (3× 0x404–406;
+  narrowed to 5 single-shot
+  postEvent sites — 8051484,
+  8051551, 8053341, 8053c54,
+  8053c76; +4 dataflow TBD) +
+  alias-creation site + ppp
+  master sub-modes (strcmp
+  8093534; 27 static vs 20
+  live) + ipsec -2 site.
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (40 negatives; needs
+peers or WinBox-native capture —
+bounded to fabric-only writers),
+terminal surface (lower
+priority), nlevel proof (TRACTABLE
+via quickchr trial license — blocked
+on user credentials), reaper trigger
+(nano), store-rotation trigger
+(nano), spare-poster sites (residue;
+narrowed to 5), zombie-set membership
+rule + 1.42s re-measurement (need a
+zombie-bearing boot; this boot
+clean). CLOSED this batch:
+route-insert trigger + worker
+absence + stub-subset criterion
+(§44 — worker-shim unification).

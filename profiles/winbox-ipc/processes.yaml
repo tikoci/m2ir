@@ -168,11 +168,28 @@ handler-info-registry:
       handler 0x8054286 (pid-less nodes get smallest-free
       pid ≥ +0xd8, init 0x400, wrap 0x10000→0x400; links
       into the +0xbc pid-map), posted via 0x8051366.
-      Residual sub-nanos: per-shim TRIGGER (which pid-less
-      nodes post in shim order; narrowed, needs boot-log
-      capture); worker-absence trigger (suppression is
-      per-package yet 27-alive/89-dead share pkg 19);
-      stub-subset criterion (v6-row-survival hypothesis).
+      UNIFICATION (§44): workers ARE the shims — they never
+      die, they run as the shim loopers under compat pids.
+      TRIGGER = worker-spawn posts: the Peers-loop spawn
+      loop (0x8053bec) posts one pid-less node per worker
+      for exactly the 4 multiplepeer PRs {89,61,75,12}
+      (percpu 80/50/50/400; N = sysconf×percpu/100),
+      AddEvent assigns 0x400+i in post order (confirmed
+      live: aliases answer from 0x400-403 in order).
+      ABSENCE dissolved: each servant strstr-branches on
+      argv0 "X-worker" (ppp 0x80932fd, ipsec 0x8059ee6,
+      cerm 0x805f3ae) and the worker branch runs its
+      looper (no death; the §41 pkg-19 puzzle dissolves —
+      both master and worker are alive). STUBS = the
+      worker branches' registrations, exactly: ppp
+      {14,21,31,51,61}, ipsec {3}, cerm {8}, ssld {}
+      (v6 identical: cerm-worker branch registers {8}).
+      v6 already has the compat block (89→1024,
+      75→1025, 12→1026, 1027 spare); v7 inserts
+      ipsec-worker at 1025. Residual: spare posters
+      (0x404-406; 5 single-shot postEvent sites),
+      alias-creation site, serial carries login
+      prompt only (no loader lines).
   confidence: observed-only
   evidence:
     - source: code
@@ -183,6 +200,10 @@ handler-info-registry:
       ref: "RouterOS 7.25 loader shim-insertion rule (PR-order, 1024-arithmetic, suppression predicate, claimant negative census) + package table decode; see work/2026-10-chr-extraction/ws3c-prober-findings.md §41"
     - source: code
       ref: "RouterOS 7.25 loader route-insert mechanism (AddEvent allocator 0x8054286, boot phases, Peers callback, 0x400-site refutation, PR true-base re-decode); see work/2026-10-chr-extraction/ws3c-prober-findings.md §43"
+    - source: code
+      ref: "worker-shim unification (strstr mode selection, worker-branch stub registrations, spawn-loop pid-less posts, multiplepeer re-census); see work/2026-10-chr-extraction/ws3c-prober-findings.md §44"
+    - source: sample
+      ref: "live CHR interrogation (serial capture, zombie drain, v6 compat-block census, master handler sets, 7.25 + 6.49.23); see work/2026-10-chr-extraction/ws3c-prober-findings.md §44"
 
 transient-process-observations:
   - binary: /nova/bin/login

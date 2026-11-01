@@ -1,0 +1,71 @@
+=== bare pids (ws3c6 6.49.23 §44) ===
+bare [27]: SYS_FROM u32_array [27]
+bare [89]: SYS_FROM u32_array [1024]
+bare [1024]: SYS_FROM u32_array [1024]
+bare [1025]: SYS_FROM u32_array [1025]
+bare [1026]: SYS_FROM u32_array [1026]
+bare [1027]: SYS_FROM u32_array [1027]
+bare [85]: SYS_FROM u32_array [85]
+bare [75]: SYS_FROM u32_array [1025]
+bare [12]: SYS_FROM u32_array [1026]
+bare [19]: SYS_FROM u32_array [19]
+bare [61]: SYS_FROM u32_array [61]
+=== hscan 89 0 70 (ws3c6 6.49.23 §44) ===
+[89,14] status=2 errno=0xfe0003 from=[1024,14] nfields=7 user={}
+[89,21] status=2 errno=0xfe0003 from=[1024,21] nfields=7 user={}
+[89,31] status=2 errno=0xfe0003 from=[1024,31] nfields=7 user={}
+[89,51] status=2 errno=0xfe0003 from=[1024,51] nfields=7 user={}
+[89,61] status=2 errno=0xfe0003 from=[1024,61] nfields=7 user={}
+=== hscan 1024 0 70 (ws3c6 6.49.23 §44) ===
+[1024,14] status=2 errno=0xfe0003 from=[1024,14] nfields=7 user={}
+[1024,21] status=2 errno=0xfe0003 from=[1024,21] nfields=7 user={}
+[1024,31] status=2 errno=0xfe0003 from=[1024,31] nfields=7 user={}
+[1024,51] status=2 errno=0xfe0003 from=[1024,51] nfields=7 user={}
+[1024,61] status=2 errno=0xfe0003 from=[1024,61] nfields=7 user={}
+=== hscan 1025 0 40 (ws3c6 6.49.23 §44) ===
+[1025,8] status=2 errno=0xfe0003 from=[1025,8] nfields=7 user={}
+=== hscan 1026 0 40 (ws3c6 6.49.23 §44) ===
+=== hscan 1027 0 40 (ws3c6 6.49.23 §44) ===
+=== hscan 27 0 70 (ws3c6 6.49.23 §44) ===
+[27,1] status=2 errno=0xfe0003 from=[27,1] nfields=6 user={}
+[27,2] status=2 errno=0xfe0003 from=[27,2] nfields=6 user={}
+[27,3] status=2 errno=0xfe0003 from=[27,3] nfields=6 user={}
+[27,11] status=2 errno=0xfe0003 from=[27,11] nfields=6 user={}
+[27,12] status=2 errno=0xfe0003 from=[27,12] nfields=6 user={}
+[27,13] status=2 errno=0xfe0003 from=[27,13] nfields=6 user={}
+[27,14] status=2 errno=0xfe0003 from=[27,14] nfields=6 user={}
+[27,15] status=2 errno=0xfe0003 from=[27,15] nfields=6 user={}
+[27,21] status=undefined errno=undefined from=[27,21] nfields=11 user={200:bool_false 202:u32 203:u32 204:u32 205:u8 206
+[27,22] status=2 errno=0xfe0003 from=[27,22] nfields=6 user={}
+[27,31] status=undefined errno=undefined from=[27,31] nfields=18 user={200:bool_false 211:bool_false 213:bool_false 208:
+[27,32] status=2 errno=0xfe0003 from=[27,32] nfields=6 user={}
+[27,33] status=2 errno=0xfe0003 from=[27,33] nfields=6 user={}
+[27,51] status=undefined errno=undefined from=[27,51] nfields=16 user={210:bool_false 200:bool_false 202:u32 204:u8 205:
+[27,52] status=2 errno=0xfe0003 from=[27,52] nfields=6 user={}
+[27,61] status=undefined errno=undefined from=[27,61] nfields=17 user={11:bool_false 12:bool_false 3:bool_false 8:bool_f
+[27,62] status=2 errno=0xfe0003 from=[27,62] nfields=6 user={}
+=== hscan 19 0 20 (ws3c6 6.49.23 §44) ===
+[19,1] status=2 errno=0xfe0003 from=[19,1] nfields=6 user={}
+[19,2] status=2 errno=0xfe0003 from=[19,2] nfields=6 user={}
+[19,3] status=2 errno=0xfe0003 from=[19,3] nfields=6 user={}
+[19,4] status=2 errno=0xfe0003 from=[19,4] nfields=6 user={}
+[19,5] status=2 errno=0xfe0003 from=[19,5] nfields=6 user={}
+[19,6] status=2 errno=0xfe0003 from=[19,6] nfields=6 user={}
+[19,7] status=2 errno=0xfe0003 from=[19,7] nfields=6 user={}
+[19,10] status=2 errno=0xfe0003 from=[19,10] nfields=6 user={}
+[19,11] status=2 errno=0xfe0003 from=[19,11] nfields=6 user={}
+[19,12] status=2 errno=0xfe0003 from=[19,12] nfields=6 user={}
+[19,13] status=undefined errno=undefined from=[19,13] nfields=7 user={1:bool_false 2:bool_false 3:u8}
+=== hscan 85 0 20 (ws3c6 6.49.23 §44) ===
+[85,1] status=2 errno=0xfe0003 from=[85,1] nfields=6 user={}
+[85,2] status=2 errno=0xfe0003 from=[85,2] nfields=6 user={}
+[85,4] status=2 errno=0xfe0003 from=[85,4] nfields=6 user={}
+[85,5] status=2 errno=0xfe0003 from=[85,5] nfields=6 user={}
+[85,6] status=2 errno=0xfe0003 from=[85,6] nfields=6 user={}
+[85,7] status=2 errno=0xfe0003 from=[85,7] nfields=6 user={}
+[85,8] status=undefined errno=undefined from=[85,8] nfields=29 user={1:u8 2:u8 3:u8 4:u8 5:u8 6:u8 7:u8 8:u8 9:u8 10:u8 
+[85,9] status=2 errno=0xfe0003 from=[85,9] nfields=6 user={}
+[85,10] status=2 errno=0xfe0003 from=[85,10] nfields=6 user={}
+[85,12] status=undefined errno=undefined from=[85,12] nfields=8 user={1:bool_false 2:bool_true 4:u8 3:u8}
+[85,13] status=2 errno=0xfe0003 from=[85,13] nfields=6 user={}
+[85,14] status=2 errno=0xfe0003 from=[85,14] nfields=6 user={}

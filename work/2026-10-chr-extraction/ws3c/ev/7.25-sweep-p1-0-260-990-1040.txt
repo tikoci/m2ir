@@ -1,0 +1,314 @@
+=== zsweep phase1 0-260 + 990-1040 deadline=700ms (twin3 7.25 §44; /tmp/zsweep.ts, fresh conn per pid) ===
+--- PHASE1 fast scan 312 pids deadline=700ms ---
+[0] TIMEOUT@700ms
+[1] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x1]
+[2] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x2]
+[3] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x3]
+[4] +11ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x4]
+[5] +29ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x5]
+[6] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x6]
+[7] TIMEOUT@700ms
+[8] +16ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x8]
+[9] TIMEOUT@700ms
+[10] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0xa]
+[11] TIMEOUT@700ms
+[12] +11ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x403]
+[13] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0xd]
+[14] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0xe]
+[15] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0xf]
+[16] +4ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x10]
+[17] +11ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x11]
+[18] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x12]
+[19] +36ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x13]
+[20] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x14]
+[21] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x18,0x17]
+[22] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x16]
+[23] +4ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x17]
+[24] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x18]
+[25] +13ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x19]
+[26] +10ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x1a]
+[27] +25ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x1b]
+[28] +5ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x1c]
+[29] +0ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x1d]
+[30] +0ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x1e]
+[31] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x1f]
+[32] TIMEOUT@700ms
+[33] TIMEOUT@700ms
+[34] +19ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x22]
+[35] TIMEOUT@700ms
+[36] TIMEOUT@700ms
+[37] TIMEOUT@700ms
+[38] +8ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x26]
+[39] TIMEOUT@700ms
+[40] +11ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x28]
+[41] TIMEOUT@700ms
+[42] +5ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x2a]
+[43] +0ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x2b]
+[44] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x2c]
+[45] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x2d]
+[46] TIMEOUT@700ms
+[47] +3ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x2f]
+[48] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x30]
+[49] +18ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x31]
+[50] TIMEOUT@700ms
+[51] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x33]
+[52] +0ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x34]
+[53] +0ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x35]
+[54] +8ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x36]
+[55] TIMEOUT@700ms
+[56] TIMEOUT@700ms
+[57] +7ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x39]
+[58] TIMEOUT@700ms
+[59] TIMEOUT@700ms
+[60] TIMEOUT@700ms
+[61] +21ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x401]
+[62] TIMEOUT@700ms
+[63] +19ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x3f]
+[64] +12ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x40]
+[65] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x41]
+[66] TIMEOUT@700ms
+[67] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x43]
+[68] +0ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x44]
+[69] TIMEOUT@700ms
+[70] +0ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x46]
+[71] +0ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x14,0x32]
+[72] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x48]
+[73] TIMEOUT@700ms
+[74] TIMEOUT@700ms
+[75] +4ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x402]
+[76] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x4c]
+[77] +8ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x4d]
+[78] +12ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x4e]
+[79] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x4f]
+[80] +10ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x50]
+[81] TIMEOUT@700ms
+[82] +7ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x52]
+[83] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x53]
+[84] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x54]
+[85] +23ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x55]
+[86] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x56]
+[87] TIMEOUT@700ms
+[88] TIMEOUT@700ms
+[89] +3ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x400]
+[90] TIMEOUT@700ms
+[91] TIMEOUT@700ms
+[92] TIMEOUT@700ms
+[93] +10ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x5d]
+[94] TIMEOUT@700ms
+[95] TIMEOUT@700ms
+[96] +8ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x60]
+[97] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x61]
+[98] TIMEOUT@700ms
+[99] TIMEOUT@700ms
+[100] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x64]
+[101] +8ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x65]
+[102] TIMEOUT@700ms
+[103] TIMEOUT@700ms
+[104] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x68]
+[105] TIMEOUT@700ms
+[106] TIMEOUT@700ms
+[107] TIMEOUT@700ms
+[108] TIMEOUT@700ms
+[109] TIMEOUT@700ms
+[110] TIMEOUT@700ms
+[111] TIMEOUT@700ms
+[112] TIMEOUT@700ms
+[113] TIMEOUT@700ms
+[114] TIMEOUT@700ms
+[115] TIMEOUT@700ms
+[116] TIMEOUT@700ms
+[117] TIMEOUT@700ms
+[118] +3ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x76]
+[119] +10ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x77]
+[120] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x78]
+[121] TIMEOUT@700ms
+[122] TIMEOUT@700ms
+[123] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x7b]
+[124] +12ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x7c]
+[125] TIMEOUT@700ms
+[126] TIMEOUT@700ms
+[127] +14ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x7f]
+[128] TIMEOUT@700ms
+[129] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x81]
+[130] +10ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x82]
+[131] TIMEOUT@700ms
+[132] +8ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x84]
+[133] TIMEOUT@700ms
+[134] +11ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x86]
+[135] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x87]
+[136] TIMEOUT@700ms
+[137] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x89]
+[138] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x8a]
+[139] TIMEOUT@700ms
+[140] TIMEOUT@700ms
+[141] TIMEOUT@700ms
+[142] TIMEOUT@700ms
+[143] TIMEOUT@700ms
+[144] TIMEOUT@700ms
+[145] TIMEOUT@700ms
+[146] TIMEOUT@700ms
+[147] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x93]
+[148] TIMEOUT@700ms
+[149] TIMEOUT@700ms
+[150] TIMEOUT@700ms
+[151] TIMEOUT@700ms
+[152] TIMEOUT@700ms
+[153] +11ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x99]
+[154] +10ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x9a]
+[155] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x9b]
+[156] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x9c]
+[157] +11ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x9d]
+[158] TIMEOUT@700ms
+[159] TIMEOUT@700ms
+[160] TIMEOUT@700ms
+[161] TIMEOUT@700ms
+[162] TIMEOUT@700ms
+[163] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0xa3]
+[164] +9ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0xa4]
+[165] TIMEOUT@700ms
+[166] TIMEOUT@700ms
+[167] TIMEOUT@700ms
+[168] +0ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0xa8]
+[169] TIMEOUT@700ms
+[170] TIMEOUT@700ms
+[171] TIMEOUT@700ms
+[172] TIMEOUT@700ms
+[173] TIMEOUT@700ms
+[174] TIMEOUT@700ms
+[175] TIMEOUT@700ms
+[176] TIMEOUT@700ms
+[177] TIMEOUT@700ms
+[178] TIMEOUT@700ms
+[179] TIMEOUT@700ms
+[180] TIMEOUT@700ms
+[181] TIMEOUT@700ms
+[182] TIMEOUT@700ms
+[183] TIMEOUT@700ms
+[184] TIMEOUT@700ms
+[185] TIMEOUT@700ms
+[186] TIMEOUT@700ms
+[187] TIMEOUT@700ms
+[188] TIMEOUT@700ms
+[189] TIMEOUT@700ms
+[190] TIMEOUT@700ms
+[191] TIMEOUT@700ms
+[192] TIMEOUT@700ms
+[193] TIMEOUT@700ms
+[194] TIMEOUT@700ms
+[195] TIMEOUT@700ms
+[196] TIMEOUT@700ms
+[197] TIMEOUT@700ms
+[198] TIMEOUT@700ms
+[199] TIMEOUT@700ms
+[200] TIMEOUT@700ms
+[201] TIMEOUT@700ms
+[202] TIMEOUT@700ms
+[203] TIMEOUT@700ms
+[204] TIMEOUT@700ms
+[205] TIMEOUT@700ms
+[206] TIMEOUT@700ms
+[207] TIMEOUT@700ms
+[208] TIMEOUT@700ms
+[209] TIMEOUT@700ms
+[210] TIMEOUT@700ms
+[211] TIMEOUT@700ms
+[212] TIMEOUT@700ms
+[213] TIMEOUT@700ms
+[214] TIMEOUT@700ms
+[215] TIMEOUT@700ms
+[216] TIMEOUT@700ms
+[217] TIMEOUT@700ms
+[218] TIMEOUT@700ms
+[219] TIMEOUT@700ms
+[220] TIMEOUT@700ms
+[221] TIMEOUT@700ms
+[222] TIMEOUT@700ms
+[223] TIMEOUT@700ms
+[224] TIMEOUT@700ms
+[225] TIMEOUT@700ms
+[226] TIMEOUT@700ms
+[227] TIMEOUT@700ms
+[228] TIMEOUT@700ms
+[229] TIMEOUT@700ms
+[230] TIMEOUT@700ms
+[231] TIMEOUT@700ms
+[232] TIMEOUT@700ms
+[233] TIMEOUT@700ms
+[234] TIMEOUT@700ms
+[235] TIMEOUT@700ms
+[236] TIMEOUT@700ms
+[237] TIMEOUT@700ms
+[238] TIMEOUT@700ms
+[239] TIMEOUT@700ms
+[240] TIMEOUT@700ms
+[241] TIMEOUT@700ms
+[242] TIMEOUT@700ms
+[243] TIMEOUT@700ms
+[244] TIMEOUT@700ms
+[245] TIMEOUT@700ms
+[246] TIMEOUT@700ms
+[247] TIMEOUT@700ms
+[248] TIMEOUT@700ms
+[249] TIMEOUT@700ms
+[250] TIMEOUT@700ms
+[251] TIMEOUT@700ms
+[252] TIMEOUT@700ms
+[253] TIMEOUT@700ms
+[254] TIMEOUT@700ms
+[255] TIMEOUT@700ms
+[256] TIMEOUT@700ms
+[257] TIMEOUT@700ms
+[258] TIMEOUT@700ms
+[259] TIMEOUT@700ms
+[260] TIMEOUT@700ms
+[990] TIMEOUT@700ms
+[991] TIMEOUT@700ms
+[992] TIMEOUT@700ms
+[993] TIMEOUT@700ms
+[994] TIMEOUT@700ms
+[995] TIMEOUT@700ms
+[996] TIMEOUT@700ms
+[997] TIMEOUT@700ms
+[998] TIMEOUT@700ms
+[999] TIMEOUT@700ms
+[1000] TIMEOUT@700ms
+[1001] TIMEOUT@700ms
+[1002] TIMEOUT@700ms
+[1003] TIMEOUT@700ms
+[1004] TIMEOUT@700ms
+[1005] TIMEOUT@700ms
+[1006] TIMEOUT@700ms
+[1007] TIMEOUT@700ms
+[1008] TIMEOUT@700ms
+[1009] TIMEOUT@700ms
+[1010] TIMEOUT@700ms
+[1011] TIMEOUT@700ms
+[1012] TIMEOUT@700ms
+[1013] TIMEOUT@700ms
+[1014] TIMEOUT@700ms
+[1015] TIMEOUT@700ms
+[1016] TIMEOUT@700ms
+[1017] TIMEOUT@700ms
+[1018] TIMEOUT@700ms
+[1019] TIMEOUT@700ms
+[1020] TIMEOUT@700ms
+[1021] TIMEOUT@700ms
+[1022] TIMEOUT@700ms
+[1023] TIMEOUT@700ms
+[1024] +0ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x400]
+[1025] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x401]
+[1026] +1ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x402]
+[1027] +3ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x403]
+[1028] +3ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x404]
+[1029] +2ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x405]
+[1030] +2ms cmd=- reqid=0x2 to=[0x0,0xb] from=[0x406]
+[1031] TIMEOUT@700ms
+[1032] TIMEOUT@700ms
+[1033] TIMEOUT@700ms
+[1034] TIMEOUT@700ms
+[1035] TIMEOUT@700ms
+[1036] TIMEOUT@700ms
+[1037] TIMEOUT@700ms
+[1038] TIMEOUT@700ms
+[1039] TIMEOUT@700ms
+[1040] TIMEOUT@700ms

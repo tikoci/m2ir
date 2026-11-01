@@ -1,0 +1,51 @@
+=== hscan 27 0 70 (twin3 7.25 §44) ===
+[27,1] status=2 errno=0xfe0003 from=[27,1] nfields=7 user={}
+[27,2] status=2 errno=0xfe0003 from=[27,2] nfields=7 user={}
+[27,3] status=2 errno=0xfe0003 from=[27,3] nfields=7 user={}
+[27,11] status=2 errno=0xfe0003 from=[27,11] nfields=7 user={}
+[27,12] status=2 errno=0xfe0003 from=[27,12] nfields=7 user={}
+[27,13] status=2 errno=0xfe0003 from=[27,13] nfields=7 user={}
+[27,14] status=2 errno=0xfe0003 from=[27,14] nfields=7 user={}
+[27,15] status=2 errno=0xfe0003 from=[27,15] nfields=7 user={}
+[27,21] status=undefined errno=undefined from=[27,21] nfields=13 user={200:bool_false 202:u32 203:u32 204:u32 205:u8 206:u8 207:u8}
+[27,22] status=2 errno=0xfe0003 from=[27,22] nfields=7 user={}
+[27,31] status=undefined errno=undefined from=[27,31] nfields=26 user={220:bool_false 200:bool_false 211:bool_false 213:bool_false 208:bool_false 223:u8 202:u32 203:u32 204:u32 205:u8 206:u8 207:u8 208:u8 210:u8 212:u8 216:u8 219:u8 221:u32 222:u8 217:string_c 209:string_c}
+[27,32] status=2 errno=0xfe0003 from=[27,32] nfields=7 user={}
+[27,33] status=2 errno=0xfe0003 from=[27,33] nfields=7 user={}
+[27,34] status=2 errno=0xfe0003 from=[27,34] nfields=7 user={}
+[27,51] status=2 errno=0xfe0003 from=[27,51] nfields=7 user={}
+[27,52] status=2 errno=0xfe0003 from=[27,52] nfields=7 user={}
+[27,53] status=2 errno=0xfe0003 from=[27,53] nfields=7 user={}
+[27,54] status=2 errno=0xfe0003 from=[27,54] nfields=7 user={}
+[27,61] status=undefined errno=undefined from=[27,61] nfields=18 user={3:bool_false 8:bool_false 4:u8 5:u32 6:u8 7:u8 9:u8 10:u8 13:u8 14:u8 15:u8 1:u32 2:u32}
+[27,62] status=2 errno=0xfe0003 from=[27,62] nfields=7 user={}
+=== hscan 85 0 20 (twin3 7.25 §44) ===
+[85,1] status=2 errno=0xfe0003 from=[85,1] nfields=7 user={}
+[85,2] status=2 errno=0xfe0003 from=[85,2] nfields=7 user={}
+[85,4] status=2 errno=0xfe0003 from=[85,4] nfields=7 user={}
+[85,5] status=2 errno=0xfe0003 from=[85,5] nfields=7 user={}
+[85,6] status=2 errno=0xfe0003 from=[85,6] nfields=7 user={}
+[85,7] status=2 errno=0xfe0003 from=[85,7] nfields=7 user={}
+[85,8] status=undefined errno=undefined from=[85,8] nfields=30 user={1:u8 2:u8 3:u8 4:u8 5:u8 6:u8 7:u8 8:u8 9:u8 10:u8 11:u8 12:u8 13:u8 14:u8 15:u8 16:u8 17:u8 18:u8 19:u8 20:u8 21:u8 22:u8 23:u8 24:u8 25:u8}
+[85,9] status=2 errno=0xfe0003 from=[85,9] nfields=7 user={}
+[85,10] status=2 errno=0xfe0003 from=[85,10] nfields=7 user={}
+[85,12] status=undefined errno=undefined from=[85,12] nfields=10 user={1:bool_false 2:bool_true 4:u8 12:u8 3:u8}
+[85,13] status=2 errno=0xfe0003 from=[85,13] nfields=7 user={}
+[85,14] status=2 errno=0xfe0003 from=[85,14] nfields=7 user={}
+[85,15] status=2 errno=0xfe0001 from=[85,15] nfields=7 user={}
+[85,16] status=2 errno=0xfe0003 from=[85,16] nfields=7 user={}
+=== hscan 19 0 20 (twin3 7.25 §44) ===
+[19,1] status=2 errno=0xfe0003 from=[19,1] nfields=7 user={}
+[19,2] status=2 errno=0xfe0003 from=[19,2] nfields=7 user={}
+[19,3] status=2 errno=0xfe0003 from=[19,3] nfields=7 user={}
+[19,4] status=2 errno=0xfe0003 from=[19,4] nfields=7 user={}
+[19,5] status=2 errno=0xfe0003 from=[19,5] nfields=7 user={}
+[19,6] status=2 errno=0xfe0003 from=[19,6] nfields=7 user={}
+[19,7] status=2 errno=0xfe0003 from=[19,7] nfields=7 user={}
+[19,10] status=2 errno=0xfe0003 from=[19,10] nfields=7 user={}
+[19,11] status=2 errno=0xfe0003 from=[19,11] nfields=7 user={}
+[19,12] status=2 errno=0xfe0003 from=[19,12] nfields=7 user={}
+[19,13] status=undefined errno=undefined from=[19,13] nfields=11 user={1:bool_false 2:bool_false 6:u32 8:u32 3:u8}
+[19,14] status=2 errno=0xfe0003 from=[19,14] nfields=7 user={}
+[19,15] status=2 errno=0xfe0003 from=[19,15] nfields=7 user={}
+[19,17] status=2 errno=0xfe0003 from=[19,17] nfields=7 user={}
