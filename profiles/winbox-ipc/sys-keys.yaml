@@ -228,9 +228,9 @@ keys:
     canonical-name: SYS_OWNER_TOKEN
     physical: { tcodes: [0x08, 0x09] }
     semantic: u32
-    role: "per-interface owner/manager token (project-named; no documented label). Client-supplied u32 at ADDOBJ (stored entry+0x40, default -1 = unmanaged); echoed in rows when != -1; SETOBJ/REMOVEOBJ without the matching token fail ('can not change/remove managed interface'); CLI/REST cannot spell it, so a tokened interface is M2-only until reboot. M2-ADDed interfaces do not persist (running-config only, graceful shutdown included)."
+    role: "per-interface owner/manager token (project-named; no documented label). Client-supplied u32 at ADDOBJ (stored entry+0x40, default -1 = unmanaged); echoed in rows when != -1; SETOBJ/REMOVEOBJ without the matching token fail ('can not change/remove managed interface'); CLI/REST cannot spell it, so a tokened interface is M2-only until reboot. Token is the ephemerality switch: untokened M2 rows persist across reboots (first-class, CLI-removable); tokened rows are reaped at every boot (see notes)."
     confidence: observed-only
-    notes: "Full lifecycle proven live (§26): ADD stores, rows echo, SET/REMOVE gated by exact match (default -1 passes unmanaged rows), boot restores from store (static-only path — unreachable in practice since M2-ADDs don't persist). Also feeds the notify matcher (shouldNotify arg). Guard compares against a per-entry token shadowing +0x40 (offset read +0x3c; aliasing micro-open). v7-only (0 sites in v6 net)."
+    notes: "Full lifecycle proven live (§26): ADD stores, rows echo, SET/REMOVE gated by exact match (default -1 passes unmanaged rows). Tokened rows ARE in the store (record carries 0xff001e) but never instantiate: sstore's boot-load reaper selects token != -1 per record (selecting read 0x804d4d0, token-index trees 0x8063450/0x8063454) and appends len-0 tombstones during boot, before the first client re-persist — shutdown plays no role (proven over power-cut-only cycles). Selection is value-free (4 token values reaped live); no periodic in-memory reaper (180s timed window + multi-session survival). Guard compares against a per-entry token shadowing +0x40 (offset read +0x3c; aliasing micro-open). Also feeds the notify matcher (shouldNotify arg). v7-only (0 sites in v6 net). Tombstoned rowids stay reserved from auto-assign; explicit-rowid ADD reclaims them (live rowid -> ERROR_EXISTS); auto-assign is high-water max+1 (see ./gui-handlers.yaml interface notes). Store GC later compacts tombstones away (rotation, cfg.%04x generations)."
     evidence:
       - source: code
         ref: "RouterOS v7 net row-core 0x8064f1a; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
@@ -238,6 +238,14 @@ keys:
         ref: "RouterOS v7 net 7-site lifecycle (ADD-store 0x8066a2a, SET-guards 0x8066bee/0x8066f03/0x8067087, boot-restore 0x806ddf5, notify-arg 0x80601f2, slot-7 0xff0007 subcommand dispatch); see work/2026-10-chr-extraction/ws3c-prober-findings.md §26"
       - source: sample
         ref: "live CHR interrogation (token batch, 7.25): ev/7.25-raw-20-0-addobj.json + ev/7.25-getall-20-0-ff001e.json (first sighting ff001e=12345; guard truth table; remove-with-token; ephemerality x2); see work/2026-10-chr-extraction/ws3c-prober-findings.md §26"
+      - source: sample
+        ref: "live CHR interrogation + store forensics (persistence batch, 7.25): untokened M2-ADD persists ADD-only across graceful reboots, token isolated 2x as the ephemerality switch; see work/2026-10-chr-extraction/ws3c-prober-findings.md §31"
+      - source: sample
+        ref: "live CHR interrogation + store forensics (token-gate batch, 7.25): tokened rows present in /rw/store (record shape, m2.ts decode), never instantiate at boot, tombstone = len-0 record, latest-decisive; see work/2026-10-chr-extraction/ws3c-prober-findings.md §34"
+      - source: code
+        ref: "RouterOS v7 sstore token-index + boot-load reaper (selecting read 0x804d4d0, index trees 0x8063450/0x8063454, boot scan 0x804f2fb); net fully exonerated (all 5 Store::remove sites + all 5 row-destructor callers classified, none token-selected); see work/2026-10-chr-extraction/ws3c-prober-findings.md §47"
+      - source: sample
+        ref: "live CHR interrogation + store forensics (forensics batch, 7.25): 8 boots / 6 carves, boot-only tombstoning (power-cut cycles), value-free selection (4 tokens), no periodic reaper (180s timed), rowid reservation + explicit-reclaim + high-water; ev/7.25-getall-20-0-rp47-{base,live,post,clean}.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §47"
     revision-history:
       - date: 2026-10-31
         belief: "SYS_OBSERVED_1E: unknown u32, static-only, no live sighting"
@@ -245,6 +253,14 @@ keys:
         evidence:
           - source: sample
             ref: "live CHR interrogation (token batch, 7.25): owner-token lifecycle; see work/2026-10-chr-extraction/ws3c-prober-findings.md §26"
+      - date: 2026-11-01
+        belief: "M2-ADDed interfaces do not persist; boot-restore of 0xff001e is a static-only unreachable path"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (persistence batch, 7.25): untokened M2 rows persist; see work/2026-10-chr-extraction/ws3c-prober-findings.md §31"
+          - source: sample
+            ref: "live CHR interrogation + store forensics (token-gate batch, 7.25): tokened rows are in the store; boot skips them; see work/2026-10-chr-extraction/ws3c-prober-findings.md §34"
 
 investigation-trail:
   - date: 2026-10-31

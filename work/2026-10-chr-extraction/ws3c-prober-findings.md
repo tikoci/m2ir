@@ -3592,3 +3592,169 @@ vector-fill (timing bound, site
 excluded to libumsg depth), lottery
 (reboot-only excluded as trigger)
 (§46 — smalls).
+
+## 47. Reaper + rotation triggers CLOSED — sstore owns both (2026-11-01)
+
+Matrix on twin3 (7.25; 8 boots /
+6 carves C0–C6: seed tokened×4
+values + untokened, reuse probe,
+explicit-rowid ADDs, 30× SET
+churn, CLI-remove; all reverted,
+2-row baseline M2+REST verified;
+STOPPED) plus static (sstore
+42KB + net 1.6MB disassembly).
+4 transcripts:
+`ev/7.25-getall-20-0-rp47-{base,
+live,post,clean}.json`.
+
+- **Store record grammar CLOSED:**
+  u32 table + u32 rowid +
+  u32 len + payload (no magic,
+  no padding). Table 0 =
+  directory
+  (rowid→path, e.g. 0x430→
+  "net/devices"). Payload =
+  "M2" + message. Tombstone =
+  len-0 (12B). Carver
+  clean-parses all 6 carves
+  (176–225 records, 0 trailing).
+- **Reaper location CLOSED —
+  sstore, not net.** Selecting
+  read at sstore 0x804d4d0:
+  get u32 key 0xff001e
+  (default −1); inc/je —
+  token≠−1 selects.
+  Token-index trees
+  0x8063450/0x8063454 (+0x14 =
+  token value; absent→erase).
+  net FULLY exonerated: all 5
+  Store::remove sites + all 5
+  destructor callers classified
+  (REMOVE tail, ADD error-path,
+  type-58 purge, VRF purge,
+  restore "bad id", Apple
+  cleanup, commit path) — none
+  token-selected. §35's
+  unlocated read was never in
+  net (its libumsg exclusion
+  holds; sstore is a separate
+  binary).
+- **Reaper timing CLOSED —
+  boot-load.** C1: rows alive
+  at power-cut, 0 tombs. C2:
+  tombs 3,4 after boot (+
+  graceful shutdown). C5: tombs
+  7,8 with ZERO graceful
+  shutdown (2 power-cuts) ⟹
+  boot writes them, shutdown
+  plays no role. Tombs precede
+  the first client re-persist
+  (early-boot file position).
+  Boot scan 0x804f2fb builds
+  the index (Site B 0x804f8d7:
+  get token + tree find, in
+  the boot function).
+- **Selection = token
+  presence, value-free:**
+  12345/67890/11111/22222 all
+  reaped; untokened always
+  survive. No periodic
+  in-memory reaper (timed 180s
+  window + ~10 min across
+  sessions, all alive; owner
+  sessions long dead).
+- **Rowid lifecycle CLOSED:**
+  tombstoned rowids RESERVED
+  from auto-assign (got 6, not
+  3); explicit-rowid ADD
+  reclaims iff tombstoned (3
+  ok, live 5 → ERROR_EXISTS
+  0xfe0007); GC'd rowids also
+  skipped (high-water max+1:
+  got 6 post-GC). §34 "reuse"
+  reconciled as explicit-
+  reclaim (same experiment as
+  the §34 bonus, now proven
+  live).
+- **Rotation gates CLOSED
+  (static):** GCCHECK 0x804da8e:
+  junk = total−live bytes;
+  gate-1 junk > 4096 else
+  silent return; gate-2
+  free(/rw/store, statvfs) ≥
+  8×junk (edx=1 fresh /
+  edx=0 cached); gate-2-fail →
+  ≤1s retry (functor
+  0x804e152); take → GC
+  executor 0x804d878; GC
+  re-checks per step (edx=1).
+  Rotation = new cfg.%04x
+  (max+1), latest-decisive
+  copy-forward, oldest chunk
+  deleted.
+- **Rotation live proof:**
+  C1/C2 under-or-short (no
+  fire); C3 fires on the
+  crossing write (~4.4KB →
+  0017); C4 fires with ZERO
+  WinBox traffic (6KB → 0018);
+  per-write firing EXCLUDED
+  (C5-boot2 post-crossing
+  writes, no fire). +1 steps
+  (0016→17→18); §36's +2 =
+  two GCs between carves.
+  Schedule: minute-scale,
+  write-independent; best-fit
+  ~5 min from sstore start (C4
+  ≤6, C6 miss at 4.5, C5-boot2
+  miss at 90s; C3 consistent
+  iff slow boot) — exact
+  anchor/period RESIDUE
+  (dedicated timing run).
+- **Bonus — login table:**
+  per-auth timestamped records
+  (M2{0x1f:u32}, guest clock;
+  NTP jump observed); sstore
+  buffers writes (out-of-order
+  pair; power-cut loses the
+  last record; tombstones are
+  write-through). Compaction
+  keeps LATEST (07:09:24
+  survivor). echosave = sticky
+  last-unclean message
+  (graceful never clears).
+  CLI-remove tombstones (U1's
+  tomb-5).
+- Residue: sweep→writer edge
+  (writer 0x804c290 has no
+  direct callers — vtable/
+  functor-reached); GC timer
+  anchor/period; owner-
+  liveness consultation (moot:
+  no owner survives reboot).
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (40 negatives; needs
+peers or WinBox-native capture —
+bounded to fabric-only writers),
+terminal surface (lower
+priority), nlevel proof (TRACTABLE
+via quickchr trial license — blocked
+on user credentials), alias-vector
+append site (residue), ssld motive +
+liveness (residue; VGA-gated),
+hid-100 enabling message (residue),
+zombie-set membership rule + 1.42s
+re-measurement (need a
+zombie-bearing boot; reboot-only
+lottery 0/12 — churn history
+required), sstore sweep→writer
+edge (residue), GC timer
+anchor/period (residue; best-fit
+~5 min). CLOSED this batch: reaper
+trigger (sstore boot-load select +
+tombstone) + store-rotation trigger
+(sstore GC gates + live proof) +
+record grammar + rowid lifecycle
+(§47 — forensics).

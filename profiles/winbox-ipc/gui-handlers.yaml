@@ -385,6 +385,10 @@ handlers:
         ref: "RouterOS interface-type registry (NPK carve + x3parse, no CHR): class 1 = types 35/62 (wlan/wlan60-) via the wireless NPK net-remote overlay (CHR-absent); full wireless + ppp overlay maps, v7 local registry (+macvtap/xfrm/vxlan/wg/veth/lo/vrf vs v6), v6 ether alias key 63, v7 key-init 0x8062d26 (identical mapping), strncmp tie-break both; see work/2026-10-chr-extraction/ws3c-prober-findings.md §22"
       - source: code
         ref: "RouterOS interface-type provider audit (objdump, no CHR): v7-ether (1) has no builder in net (all 14 base-ctor sites + eoip/tunnel custom ctors mapped; no x3 entry) — runtime/driver-provided, effective name 'ether'; v6-lo (76) likewise runtime-provided, effective name 'lo'; v7 family string block 0x81954de+ recorded; see work/2026-10-chr-extraction/ws3c-prober-findings.md §27"
+      - source: code
+        ref: "RouterOS v7 sstore record grammar (u32 table + rowid + len + M2 payload, table-0 directory, len-0 tombstones) + GCCHECK rotation gates (junk > 4096, free ≥ 8×junk, 0x804da8e) + boot-load token reaper (0x804d4d0); see work/2026-10-chr-extraction/ws3c-prober-findings.md §47"
+      - source: sample
+        ref: "live CHR interrogation + store forensics (forensics batch, 7.25): 8 boots / 6 carves (rowid reservation + explicit-reclaim + high-water auto-assign + ERROR_EXISTS on live id); ev/7.25-getall-20-0-rp47-{base,live,post,clean}.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §47"
     notes: |
       Fields split across three byte_2 values: 0x01 (NS-1: interface
       fields + private control plane — the old `namespace-1` label is now
@@ -424,6 +428,19 @@ handlers:
       overrides handleCmd at slot 7 and serves GETALL from a custom
       async worker; its slots 9–17 are the NOTIMP base and are never
       reached for GETALL.
+      Row-id lifecycle (7.25): the store record is u32 table +
+      u32 rowid + u32 len + ("M2" + message); table 0 is the
+      table→path directory (0x430 = net/devices); deletion is a
+      len-0 tombstone record and the latest record per rowid wins.
+      Tombstoned rowids stay RESERVED from auto-assign (which is
+      high-water max+1, never reusing dead ids); an explicit-rowid
+      ADD reclaims a tombstoned id but answers ERROR_EXISTS on a
+      live one. The sstore daemon owns the /rw/store/cfg.%04x
+      files: its GCCHECK compacts (latest-decisive copy-forward
+      into max+1 generation, oldest chunk deleted) when junk
+      (total−live bytes) exceeds 4096 with free ≥ 8×junk, on a
+      minute-scale write-independent check (~5 min best-fit) —
+      this rotation is what GCs tombstones and stale versions.
     revision-history:
       - date: 2026-10-31
         belief: "GETALL start cursor on [20,0] is opaque (no closed form)"
