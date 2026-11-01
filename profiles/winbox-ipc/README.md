@@ -162,7 +162,7 @@ count of nova TLVs, because field numbering is local to each handler.
 | Process entries catalogued | 41 |
 | GUI handlers catalogued | 44 |
 | Handlers with at least one field mapped | 27 of 44 |
-| Handler field entries mapped | 182 (158 named, 24 `unknown-*`) |
+| Handler field entries mapped | 185 (159 named, 26 `unknown-*`) |
 | Distinct TLV keys seen in live transcripts | 278 |
 | Menu bindings in the v7 registry (HD table) | 296 (98 menus) |
 | Distinct CLI command-tree nodes in restraml | 43,189 |
@@ -174,7 +174,7 @@ How to read this:
 - The **envelope is essentially complete**: the 51 SYS/STD keys, 23
   commands, and 13 errors cover the shared machinery every handler
   uses, drained from the Cisco-Talos enum and then corrected live.
-- **Per-handler config fields are the long tail.** 182 mapped field
+- **Per-handler config fields are the long tail.** 185 mapped field
   entries is under 1% of restraml's 37,240 CLI args. That ratio is
   only a proxy — CLI args and nova fields are not 1:1 (args share
   fields, some fields have no CLI arg) — but it gives the right
@@ -187,7 +187,7 @@ How to read this:
   (80 of 80) actually appears in the live transcripts. The gap is
   handlers and fields never probed, not keys invented on paper.
 - Quality counts: 284 confidence-tagged entries (150 documented,
-  131 observed-only, 3 inferred), 479 evidence references, and 67
+  131 observed-only, 3 inferred), 498 evidence references, and 68
   kept revision-history entries recording beliefs live work corrected.
 
 The CLI-reference total includes repeated records across three manual

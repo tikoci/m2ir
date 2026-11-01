@@ -597,3 +597,5 @@ iff # if-and-only-if shorthand (biconditional claims in schema roles)
 tikapp # v6 [13,3] policy name + Tik-App client (queue-3 user-family fixtures/YAML/tests)
 tik # Tik-App hyphen fragment in the verbatim v6 'connect to the router via Tik-App' description
 nosuchuser # verbatim synthetic probe username in queue-3 [13,6]/[13,7] miss legs ('nosuchuser-q3'; JSON fixtures cannot carry file-local cspell ignores)
+q3setprobe # verbatim synthetic [13,7] write-leg selector in queue-3 SET-overwrite fixtures/YAML/tests (record ids use the cspell-clean 'synthetic-selector' expansion instead)
+mipsbe # RouterOS big-endian MIPS architecture label (queue-3 item-5 LTE leg: 7.16.2 mipsbe real hardware, fixtures/YAML/tests)

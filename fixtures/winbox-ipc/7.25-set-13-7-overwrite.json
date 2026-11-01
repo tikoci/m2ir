@@ -1,0 +1,2178 @@
+{
+	"provenance": {
+		"report": "queue-3 mutation capture batch, 2026-11-01 (live CHR interrogation; machine + ROS build in note)",
+		"routeros_version": "7.25",
+		"route": [13, 7],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. ROS 7.25 build 2026-10-22 14:12:00, x86_64 CHR. Source manifests retain full envelopes. SET-overwrite leg on [13,7] with a synthetic selector: empty-SET rejection, key-only create, full create, A-to-B overwrite, and two failed restore-to-empty attempts, each with native GET read-back (main session; fresh EC-SRP5 sessions on the create/overwrite/restore legs) plus independent REST /user reads (admin row stable throughout; prefs have no REST surface \u2014 see the user-prefs-13-7 schema notes). Every SET reply is a bare SYS-only ack that does not echo state. The 8 async records are mproxy CMD_DISCONNECTED fabric pairs drawn by session churn, not prefs notifications."
+	},
+	"records": [
+		{
+			"id": "recon-get-admin-1-tx",
+			"role": "recon get admin 1 tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=2 tx",
+			"hex": "4d320500ff010600ff09020700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210561646d696e",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "admin"
+				}
+			]
+		},
+		{
+			"id": "recon-get-admin-1-rx",
+			"role": "recon get admin 1 reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=2 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "recon-get-admin-2-tx",
+			"role": "recon get admin 2 tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=3 tx",
+			"hex": "4d320500ff010600ff09030700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210561646d696e",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "admin"
+				}
+			]
+		},
+		{
+			"id": "recon-get-admin-2-rx",
+			"role": "recon get admin 2 reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=3 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "recon-get-ws19u-tx",
+			"role": "recon get ws19u tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=4 tx",
+			"hex": "4d320500ff010600ff09040700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b0000000100002106777331392d75",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 4,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 4
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "ws19-u"
+				}
+			]
+		},
+		{
+			"id": "recon-get-ws19u-rx",
+			"role": "recon get ws19u reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=4 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0904",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 4,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 4
+				}
+			]
+		},
+		{
+			"id": "recon-get-nosuchuser-q3-tx",
+			"role": "recon get nosuchuser q3 tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=5 tx",
+			"hex": "4d320500ff010600ff09050700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210d6e6f73756368757365722d7133",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "nosuchuser-q3"
+				}
+			]
+		},
+		{
+			"id": "recon-get-nosuchuser-q3-rx",
+			"role": "recon get nosuchuser q3 reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=5 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "pre-create-baseline-get-synthetic-selector-tx",
+			"role": "pre create baseline get synthetic selector tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=6 tx",
+			"hex": "4d320500ff010600ff09060700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 6,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 6
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "pre-create-baseline-get-synthetic-selector-rx",
+			"role": "pre create baseline get synthetic selector reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=6 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0906",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 6,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 6
+				}
+			]
+		},
+		{
+			"id": "set-a1-empty-set-tx",
+			"role": "set a1 empty set tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=7 tx",
+			"hex": "4d320500ff010600ff09070700ff080e00fe000100ff8802000d000000070000000200ff880200000000000b000000",
+			"cmd": 16646158,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "set-a1-empty-set-rx",
+			"role": "set a1 empty set reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=7 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350800ff080600fe000300ff09020400ff09020600ff09070900ff21156e6f2075736572206e616d652070726f7669646564",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646150
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0xff0009",
+					"tcode": "0x21",
+					"value": "no user name provided"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a1-empty-set-tx",
+			"role": "get synthetic selector a1 empty set tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=8 tx",
+			"hex": "4d320500ff010600ff09080700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 8,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 8
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a1-empty-set-rx",
+			"role": "get synthetic selector a1 empty set reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=8 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0908",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 8,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 8
+				}
+			]
+		},
+		{
+			"id": "set-a2-key-only-set-tx",
+			"role": "set a2 key only set tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=9 tx",
+			"hex": "4d320500ff010600ff09090700ff080e00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646158,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 9,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 9
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "set-a2-key-only-set-ack",
+			"role": "set a2 key only set ack",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=9 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0909",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 9,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 9
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a2-key-only-set-tx",
+			"role": "get synthetic selector a2 key only set tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=10 tx",
+			"hex": "4d320500ff010600ff090a0700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 10,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 10
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a2-key-only-set-rx",
+			"role": "get synthetic selector a2 key only set reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=10 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff090a010000210a713373657470726f6265",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 10,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 10
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "set-a3-create-tx",
+			"role": "set a3 create tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=11 tx",
+			"hex": "4d320500ff010600ff090b0700ff080e00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265020000210971332d626c6f622d410300000907",
+			"cmd": 16646158,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 11,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 11
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x21",
+					"value": "q3-blob-A"
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 7
+				}
+			]
+		},
+		{
+			"id": "set-a3-create-ack",
+			"role": "set a3 create ack",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=11 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff090b",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 11,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 11
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a3-create-tx",
+			"role": "get synthetic selector a3 create tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=12 tx",
+			"hex": "4d320500ff010600ff090c0700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 12,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 12
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a3-create-rx",
+			"role": "get synthetic selector a3 create reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=12 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff090c0300000907010000210a713373657470726f6265020000210971332d626c6f622d41",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 12,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 12
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x21",
+					"value": "q3-blob-A"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a3-create-independent-session-tx",
+			"role": "get synthetic selector a3 create independent session tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=9022 tx",
+			"hex": "4d320500ff010600ff083e2300000700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 9022,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x8",
+					"value": 9022
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a3-create-independent-session-rx",
+			"role": "get synthetic selector a3 create independent session reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=9022 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff083e2300000300000907010000210a713373657470726f6265020000210971332d626c6f622d41",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 9022,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x8",
+					"value": 9022
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x21",
+					"value": "q3-blob-A"
+				}
+			]
+		},
+		{
+			"id": "set-a4-overwrite-tx",
+			"role": "set a4 overwrite tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=13 tx",
+			"hex": "4d320500ff010600ff090d0700ff080e00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265020000210971332d626c6f622d420300000909",
+			"cmd": 16646158,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 13,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 13
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x21",
+					"value": "q3-blob-B"
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 9
+				}
+			]
+		},
+		{
+			"id": "async-zombie-slot518-leg-a",
+			"role": "async zombie slot 518 leg a",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=async rx",
+			"hex": "4d320100ff8800000200ff8802000300ff00060200000700ff081400fe00",
+			"cmd": 16646164,
+			"to": [],
+			"from": [16711683, 518],
+			"reqId": null,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": []
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16711683, 518]
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646164
+				}
+			]
+		},
+		{
+			"id": "async-zombie-slot518-leg-b",
+			"role": "async zombie slot 518 leg b",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=async rx",
+			"hex": "4d320100ff8800000200ff88020002000000060200000b00ff08ffffffff0700ff081400fe00",
+			"cmd": 16646164,
+			"to": [],
+			"from": [2, 518],
+			"reqId": null,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": []
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [2, 518]
+				},
+				{
+					"key": "0xff000b",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646164
+				}
+			]
+		},
+		{
+			"id": "set-a4-overwrite-ack",
+			"role": "set a4 overwrite ack",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=13 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff090d",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 13,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 13
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a4-overwrite-tx",
+			"role": "get synthetic selector a4 overwrite tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=14 tx",
+			"hex": "4d320500ff010600ff090e0700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 14,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 14
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a4-overwrite-rx",
+			"role": "get synthetic selector a4 overwrite reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=14 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff090e0300000909010000210a713373657470726f6265020000210971332d626c6f622d42",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 14,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 14
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 9
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x21",
+					"value": "q3-blob-B"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a4-overwrite-independent-session-tx",
+			"role": "get synthetic selector a4 overwrite independent session tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=9030 tx",
+			"hex": "4d320500ff010600ff08462300000700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 9030,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x8",
+					"value": 9030
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a4-overwrite-independent-session-rx",
+			"role": "get synthetic selector a4 overwrite independent session reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=9030 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff08462300000300000909010000210a713373657470726f6265020000210971332d626c6f622d42",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 9030,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x8",
+					"value": 9030
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 9
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x21",
+					"value": "q3-blob-B"
+				}
+			]
+		},
+		{
+			"id": "set-a5-restore-empty-tx",
+			"role": "set a5 restore empty tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=15 tx",
+			"hex": "4d320500ff010600ff090f0700ff080e00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646158,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 15,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 15
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "async-zombie-slot774-leg-a",
+			"role": "async zombie slot 774 leg a",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=async rx",
+			"hex": "4d320100ff8800000200ff8802000300ff00060300000700ff081400fe00",
+			"cmd": 16646164,
+			"to": [],
+			"from": [16711683, 774],
+			"reqId": null,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": []
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16711683, 774]
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646164
+				}
+			]
+		},
+		{
+			"id": "async-zombie-slot774-leg-b",
+			"role": "async zombie slot 774 leg b",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=async rx",
+			"hex": "4d320100ff8800000200ff88020002000000060300000b00ff08ffffffff0700ff081400fe00",
+			"cmd": 16646164,
+			"to": [],
+			"from": [2, 774],
+			"reqId": null,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": []
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [2, 774]
+				},
+				{
+					"key": "0xff000b",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646164
+				}
+			]
+		},
+		{
+			"id": "set-a5-restore-empty-ack",
+			"role": "set a5 restore empty ack",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=15 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff090f",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 15,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 15
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a5-restore-empty-tx",
+			"role": "get synthetic selector a5 restore empty tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=16 tx",
+			"hex": "4d320500ff010600ff09100700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 16,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 16
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a5-restore-empty-rx",
+			"role": "get synthetic selector a5 restore empty reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=16 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0910010000210a713373657470726f6265",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 16,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 16
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a5-restore-empty-independent-session-tx",
+			"role": "get synthetic selector a5 restore empty independent session tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=9038 tx",
+			"hex": "4d320500ff010600ff084e2300000700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 9038,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x8",
+					"value": 9038
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a5-restore-empty-independent-session-rx",
+			"role": "get synthetic selector a5 restore empty independent session reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=9038 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff084e230000010000210a713373657470726f6265",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 9038,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x8",
+					"value": 9038
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "set-a5-restore-retry-tx",
+			"role": "set a5 restore retry tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=17 tx",
+			"hex": "4d320500ff010600ff09110700ff080e00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646158,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 17,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 17
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "async-zombie-slot1030-leg-a",
+			"role": "async zombie slot 1030 leg a",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=async rx",
+			"hex": "4d320100ff8800000200ff8802000300ff00060400000700ff081400fe00",
+			"cmd": 16646164,
+			"to": [],
+			"from": [16711683, 1030],
+			"reqId": null,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": []
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16711683, 1030]
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646164
+				}
+			]
+		},
+		{
+			"id": "async-zombie-slot1030-leg-b",
+			"role": "async zombie slot 1030 leg b",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=async rx",
+			"hex": "4d320100ff8800000200ff88020002000000060400000b00ff08ffffffff0700ff081400fe00",
+			"cmd": 16646164,
+			"to": [],
+			"from": [2, 1030],
+			"reqId": null,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": []
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [2, 1030]
+				},
+				{
+					"key": "0xff000b",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646164
+				}
+			]
+		},
+		{
+			"id": "set-a5-restore-retry-ack",
+			"role": "set a5 restore retry ack",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=17 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0911",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 17,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 17
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a5-restore-retry-tx",
+			"role": "get synthetic selector a5 restore retry tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=18 tx",
+			"hex": "4d320500ff010600ff09120700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 18,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 18
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a5-restore-retry-rx",
+			"role": "get synthetic selector a5 restore retry reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=18 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0912010000210a713373657470726f6265",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 18,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 18
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a5-restore-retry-independent-session-tx",
+			"role": "get synthetic selector a5 restore retry independent session tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=9046 tx",
+			"hex": "4d320500ff010600ff08562300000700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210a713373657470726f6265",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 9046,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x8",
+					"value": 9046
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "get-synthetic-selector-a5-restore-retry-independent-session-rx",
+			"role": "get synthetic selector a5 restore retry independent session reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=9046 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0856230000010000210a713373657470726f6265",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 9046,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x8",
+					"value": 9046
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "q3setprobe"
+				}
+			]
+		},
+		{
+			"id": "final-get-admin-untouched-probe-tx",
+			"role": "final get admin untouched probe tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=19 tx",
+			"hex": "4d320500ff010600ff09130700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210561646d696e",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 19,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 19
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "admin"
+				}
+			]
+		},
+		{
+			"id": "async-zombie-slot1286-leg-a",
+			"role": "async zombie slot 1286 leg a",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=async rx",
+			"hex": "4d320100ff8800000200ff8802000300ff00060500000700ff081400fe00",
+			"cmd": 16646164,
+			"to": [],
+			"from": [16711683, 1286],
+			"reqId": null,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": []
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16711683, 1286]
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646164
+				}
+			]
+		},
+		{
+			"id": "async-zombie-slot1286-leg-b",
+			"role": "async zombie slot 1286 leg b",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=async rx",
+			"hex": "4d320100ff8800000200ff88020002000000060500000b00ff08ffffffff0700ff081400fe00",
+			"cmd": 16646164,
+			"to": [],
+			"from": [2, 1286],
+			"reqId": null,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": []
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [2, 1286]
+				},
+				{
+					"key": "0xff000b",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646164
+				}
+			]
+		},
+		{
+			"id": "final-get-admin-untouched-probe-rx",
+			"role": "final get admin untouched probe reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=19 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0913",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 19,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 19
+				}
+			]
+		},
+		{
+			"id": "final-get-nosuchuser-q3-untouched-probe-tx",
+			"role": "final get nosuchuser q3 untouched probe tx",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=20 tx",
+			"hex": "4d320500ff010600ff09140700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000010000210d6e6f73756368757365722d7133",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 20,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 20
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "nosuchuser-q3"
+				}
+			]
+		},
+		{
+			"id": "final-get-nosuchuser-q3-untouched-probe-rx",
+			"role": "final get nosuchuser q3 untouched probe reply",
+			"source": "twin3 7.25 cap9a-set-overwrite reqId=20 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0914",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 20,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 20
+				}
+			]
+		}
+	]
+}

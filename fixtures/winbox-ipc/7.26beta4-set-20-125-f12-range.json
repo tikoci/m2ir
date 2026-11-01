@@ -1,0 +1,2408 @@
+{
+	"provenance": {
+		"report": "queue-3 mutation capture batch, 2026-11-01 (live CHR interrogation; machine + ROS build in note)",
+		"routeros_version": "7.26beta4",
+		"route": [20, 125],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. ROS 7.26beta4 build 2026-10-27 09:25:44, x86_64 CHR. Source manifests retain full envelopes. f12 range leg on [20,125]: channel values 1/255/256/65535/max each took-and-restored with native GET read-back; independent REST /tool/sms channel tracked every step (see the sms-20-125 schema notes). Every SET reply is a bare SYS-only ack that does not echo state."
+	},
+	"records": [
+		{
+			"id": "leg2-anchor-get-tx",
+			"role": "leg2 anchor get tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=38 tx",
+			"hex": "4d320500ff010600ff09260700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 38,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 38
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "leg2-anchor-get-rx",
+			"role": "leg2 anchor get reply",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=38 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e32366265746134110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff09260e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 38,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 38
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "set-f12-1-tx",
+			"role": "set f12 1 tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=39 tx",
+			"hex": "4d320500ff010600ff09270700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000c00000901",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 39,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 39
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 1
+				}
+			]
+		},
+		{
+			"id": "set-f12-1-ack",
+			"role": "set f12 1 ack",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=39 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e323662657461340300ff09020600ff0927",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 39,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 39
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-1-tx",
+			"role": "get after f12 1 tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=40 tx",
+			"hex": "4d320500ff010600ff09280700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 40,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 40
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-1-rx",
+			"role": "get after f12 1 reply",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=40 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e32366265746134110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009010600ff09280e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 40,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 40
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "f12-1-restore-tx",
+			"role": "f12 1 restore tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=41 tx",
+			"hex": "4d320500ff010600ff09290700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000c00000900",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 41,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 41
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				}
+			]
+		},
+		{
+			"id": "f12-1-restore-ack",
+			"role": "f12 1 restore ack",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=41 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e323662657461340300ff09020600ff0929",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 41,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 41
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-1-restore-tx",
+			"role": "get after f12 1 restore tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=42 tx",
+			"hex": "4d320500ff010600ff092a0700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 42,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 42
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-1-restore-rx",
+			"role": "get after f12 1 restore reply",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=42 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e32366265746134110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff092a0e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 42,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 42
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "set-f12-255-tx",
+			"role": "set f12 255 tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=43 tx",
+			"hex": "4d320500ff010600ff092b0700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000c000009ff",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 43,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 43
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 255
+				}
+			]
+		},
+		{
+			"id": "set-f12-255-ack",
+			"role": "set f12 255 ack",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=43 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e323662657461340300ff09020600ff092b",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 43,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 43
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-255-tx",
+			"role": "get after f12 255 tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=44 tx",
+			"hex": "4d320500ff010600ff092c0700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 44,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 44
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-255-rx",
+			"role": "get after f12 255 reply",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=44 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e32366265746134110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009ff0600ff092c0e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 44,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 255
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 44
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "f12-255-restore-tx",
+			"role": "f12 255 restore tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=45 tx",
+			"hex": "4d320500ff010600ff092d0700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000c00000900",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 45,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 45
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				}
+			]
+		},
+		{
+			"id": "f12-255-restore-ack",
+			"role": "f12 255 restore ack",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=45 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e323662657461340300ff09020600ff092d",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 45,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 45
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-255-restore-tx",
+			"role": "get after f12 255 restore tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=46 tx",
+			"hex": "4d320500ff010600ff092e0700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 46,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 46
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-255-restore-rx",
+			"role": "get after f12 255 restore reply",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=46 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e32366265746134110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff092e0e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 46,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 46
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "set-f12-256-tx",
+			"role": "set f12 256 tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=47 tx",
+			"hex": "4d320500ff010600ff092f0700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000c00000800010000",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 47,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 47
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x8",
+					"value": 256
+				}
+			]
+		},
+		{
+			"id": "set-f12-256-ack",
+			"role": "set f12 256 ack",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=47 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e323662657461340300ff09020600ff092f",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 47,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 47
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-256-tx",
+			"role": "get after f12 256 tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=48 tx",
+			"hex": "4d320500ff010600ff09300700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 48,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 48
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-256-rx",
+			"role": "get after f12 256 reply",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=48 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e32366265746134110000a00000170000001800000064000000100000010700000015000009010300ff09020c000008000100000600ff09300e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 48,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x8",
+					"value": 256
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 48
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "f12-256-restore-tx",
+			"role": "f12 256 restore tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=49 tx",
+			"hex": "4d320500ff010600ff09310700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000c00000900",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 49,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 49
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				}
+			]
+		},
+		{
+			"id": "f12-256-restore-ack",
+			"role": "f12 256 restore ack",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=49 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e323662657461340300ff09020600ff0931",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 49,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 49
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-256-restore-tx",
+			"role": "get after f12 256 restore tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=50 tx",
+			"hex": "4d320500ff010600ff09320700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 50,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 50
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-256-restore-rx",
+			"role": "get after f12 256 restore reply",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=50 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e32366265746134110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff09320e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 50,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 50
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "set-f12-65535-tx",
+			"role": "set f12 65535 tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=51 tx",
+			"hex": "4d320500ff010600ff09330700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000c000008ffff0000",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 51,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 51
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x8",
+					"value": 65535
+				}
+			]
+		},
+		{
+			"id": "set-f12-65535-ack",
+			"role": "set f12 65535 ack",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=51 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e323662657461340300ff09020600ff0933",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 51,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 51
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-65535-tx",
+			"role": "get after f12 65535 tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=52 tx",
+			"hex": "4d320500ff010600ff09340700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 52,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 52
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-65535-rx",
+			"role": "get after f12 65535 reply",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=52 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e32366265746134110000a00000170000001800000064000000100000010700000015000009010300ff09020c000008ffff00000600ff09340e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 52,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x8",
+					"value": 65535
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 52
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "f12-65535-restore-tx",
+			"role": "f12 65535 restore tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=53 tx",
+			"hex": "4d320500ff010600ff09350700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000c00000900",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 53,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 53
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				}
+			]
+		},
+		{
+			"id": "f12-65535-restore-ack",
+			"role": "f12 65535 restore ack",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=53 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e323662657461340300ff09020600ff0935",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 53,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 53
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-65535-restore-tx",
+			"role": "get after f12 65535 restore tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=54 tx",
+			"hex": "4d320500ff010600ff09360700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 54,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 54
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-65535-restore-rx",
+			"role": "get after f12 65535 restore reply",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=54 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e32366265746134110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff09360e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 54,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 54
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "set-f12-4294967295-tx",
+			"role": "set f12 4294967295 tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=55 tx",
+			"hex": "4d320500ff010600ff09370700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000c000008ffffffff",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 55,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 55
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x8",
+					"value": 4294967295
+				}
+			]
+		},
+		{
+			"id": "set-f12-4294967295-ack",
+			"role": "set f12 4294967295 ack",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=55 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e323662657461340300ff09020600ff0937",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 55,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 55
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-4294967295-tx",
+			"role": "get after f12 4294967295 tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=56 tx",
+			"hex": "4d320500ff010600ff09380700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 56,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 56
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-4294967295-rx",
+			"role": "get after f12 4294967295 reply",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=56 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e32366265746134110000a00000170000001800000064000000100000010700000015000009010300ff09020c000008ffffffff0600ff09380e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 56,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 56
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "f12-4294967295-restore-tx",
+			"role": "f12 4294967295 restore tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=57 tx",
+			"hex": "4d320500ff010600ff09390700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000c00000900",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 57,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 57
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				}
+			]
+		},
+		{
+			"id": "f12-4294967295-restore-ack",
+			"role": "f12 4294967295 restore ack",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=57 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e323662657461340300ff09020600ff0939",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 57,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 57
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-4294967295-restore-tx",
+			"role": "get after f12 4294967295 restore tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=58 tx",
+			"hex": "4d320500ff010600ff093a0700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 58,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 58
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "get-after-f12-4294967295-restore-rx",
+			"role": "get after f12 4294967295 restore reply",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=58 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e32366265746134110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff093a0e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 58,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 58
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "leg2-final-get-tx",
+			"role": "leg2 final get tx",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=59 tx",
+			"hex": "4d320500ff010600ff093b0700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 59,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 59
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "leg2-final-get-rx",
+			"role": "leg2 final get reply",
+			"source": "winbox-beta4 7.26beta4 cap11-f12-range reqId=59 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa0010013006d73672d70726f78792d372e32366265746134110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff093b0e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 59,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 59
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		}
+	]
+}

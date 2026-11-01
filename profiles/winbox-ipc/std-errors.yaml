@@ -51,6 +51,8 @@ errors:
         ref: "live CHR interrogation (queue-2 mutation capture batch, 6.49.23, 2026-11-01): [20,125] GET + probe SET -> 0xff0008=16646146 from=[20], errstr null — fixtures/winbox-ipc/6.49-set-20-125-sms-absent.json"
       - source: sample
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GET [24,17] -> BRKPATH from=[24]; v6 GET/GETALL [13,9] -> BRKPATH from=[13]; v6 GET [20,125] -> BRKPATH from=[20]; no total/errstr on any — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-3 mutation capture batch, 6.49.23, 2026-11-01): v6 5-verb [20,125] census (GET x2 + GETALL + GETOBJ + GETCOUNT -> 0xff0008=16646146 from=[20], errstr null, no banner) — fixtures/winbox-ipc/6.49-verbs-20-125-absent.json"
   0xfe0003:
     canonical-name: ERROR_NOTIMP
     confidence: documented
@@ -61,18 +63,22 @@ errors:
   0xfe0004:
     canonical-name: ERROR_UNKNOWNID
     confidence: documented
-    notes: "First live samples: queue-3 census missing-id leg + neg-20-61 GET-miss legs on all 3 versions; no total, no errstr."
+    notes: "First live samples: queue-3 census missing-id leg + neg-20-61 GET-miss legs on all 3 versions; no total, no errstr. Singleton verb-level sample (queue-3 item 4, both 7.x): GETOBJ [20,125] obj=1 -> UNKNOWNID from=[20,125]."
     evidence:
       - source: sample
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GETOBJ [20,1] without 0xfe0001 -> UNKNOWNID from=[20,1]; GET bare/f7/f999 [20,61] -> UNKNOWNID from=[20,61]; no total/errstr — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json and {6.49,7.25,7.26beta4}-neg-20-61.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-3 mutation capture batch, 7.25 + 7.26beta4, 2026-11-01): GETOBJ [20,125] obj=1 -> UNKNOWNID from the full route — fixtures/winbox-ipc/{7.25,7.26beta4}-set-20-125-map.json"
   0xfe0005: { canonical-name: ERROR_MISSING,        confidence: documented }
   0xfe0006:
     canonical-name: ERROR_FAILED
     confidence: documented
-    notes: "First live sighting: bare GET on [13,6]/[13,7] (selector missing) -> FAILED + 0xff0009/0x21='no user name provided' (21 bytes), identical all 3 versions x both handlers. 0xff0009 rides ONLY these FAILED replies in the census (see sys-keys.yaml SYS_ERRSTR); TOOBIG/MISSING/BUSY errstr legs stay open."
+    notes: "First live sighting: bare GET on [13,6]/[13,7] (selector missing) -> FAILED + 0xff0009/0x21='no user name provided' (21 bytes), identical all 3 versions x both handlers. 0xff0009 rides ONLY these FAILED replies in the census (see sys-keys.yaml SYS_ERRSTR); TOOBIG/MISSING/BUSY errstr legs stay open. Second sighting, write path (queue-3 item 3, [13,7], 7.25): SET{} (no f1 selector) -> FAILED + the identical 0xff0009 string (write-path mirror of GET-bare)."
     evidence:
       - source: sample
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): bare GET [13,6]/[13,7] -> FAILED + errstr — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-3 mutation capture batch, 7.25, 2026-11-01): SET{} [13,7] -> FAILED + errstr (write-path mirror) — fixtures/winbox-ipc/7.25-set-13-7-overwrite.json"
   0xfe0007: { canonical-name: ERROR_EXISTS,         confidence: documented }
   0xfe0009: { canonical-name: ERROR_NOTALLOWED,     confidence: documented }
   0xfe000a: { canonical-name: ERROR_TOOBIG,         confidence: documented }

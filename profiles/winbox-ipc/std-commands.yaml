@@ -124,11 +124,25 @@ commands:
       for effective writes and silent-ignore no-ops (wrong-tcode f07,
       unknown f999, empty SET). See gui-handlers.yaml sms-20-125
       `set:`.
+      Third leg (queue-3 item 3, [13,7] WebUserPrefs, 7.25):
+      username-keyed whole-record overwrite proven (create +
+      A->B overwrite move exactly the written fields); the ack is
+      again the bare SYS-only shape (62B here), shared by effective
+      writes, key-only creates, and failed deletes. Write-path
+      rejection exists: SET{} (no f1 selector) -> FAILED 0xfe0006 +
+      0xff0009 (see gui-handlers.yaml user-prefs-13-7 `set:`).
+      Fourth leg (queue-3 item 4, [20,125], both 7.x): 82 more SET
+      ack replies (41 per version), all bare SYS-only across took +
+      ignored-with-ok + error-candidate writes.
     evidence:
       - source: sample
         ref: "controlled-change proof (harness/prove-identity.ts, 7.25): work/2026-11-winbox-attributes/proof/7.25-identity/{report.yaml,step-05-ro-probe.jsonl,step-06-native-set.jsonl}"
       - source: sample
         ref: "live CHR interrogation (queue-2 mutation capture batch, 7.25 + 7.26beta4, 2026-11-01): f07 toggle + silent-ignore legs — fixtures/winbox-ipc/{7.25,7.26beta4}-set-20-125-sms.json and {7.25,7.26beta4}-set-20-125-sms-negative.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-3 mutation capture batch, 7.25, 2026-11-01): [13,7] overwrite + write-path FAILED — fixtures/winbox-ipc/7.25-set-13-7-overwrite.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-3 mutation capture batch, 7.25 + 7.26beta4, 2026-11-01): [20,125] map + range + candidacy legs (82 ack replies) — fixtures/winbox-ipc/{7.25,7.26beta4}-set-20-125-map.json, {7.25,7.26beta4}-set-20-125-f12-range.json, and {7.25,7.26beta4}-set-20-125-error-failed.json"
   0xfe000f: { canonical-name: CMD_START,        confidence: documented }
   0xfe0010: { canonical-name: CMD_POLL,         confidence: documented }
   0xfe0011: { canonical-name: CMD_CANCEL,       confidence: documented }
@@ -162,6 +176,17 @@ commands:
       a 12-cycle reboot-only lottery drew 0 zombie boots
       (§46) — the trigger needs churn history (service
       toggles / dirty restore), not mere reboots.
+      Trigger characterization (queue-3 item 3, 7.25 — same
+      phenomenon, new trigger data): sequential WinBox session
+      open/close is sufficient churn on this boot. Each of 4
+      fresh-session closes was followed by exactly one finite pair
+      on the surviving main transport, arriving immediately before
+      the reply to the next request (request ids 13/15/17/19); the 9
+      pre-first-close requests (request ids 2-12) and request id 20
+      (no close before it) drew zero pairs. Slots 518/774/1030/1286
+      = (ctr<<8)|6, ctr=2..5; leg A 30B, leg B 38B. No
+      handler-related async exists on the [13,7] SET legs — all 8
+      async are these fabric pairs.
     evidence:
       - source: sample
         ref: "live CHR interrogation (registry batch, 7.25): retry pair on zombie pids; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
@@ -171,6 +196,8 @@ commands:
         ref: "live CHR re-sweep + artifact archaeology (7.25): finite-pair correction, zombie trigger, ping-pong refuted, 1.42s unprovenanced; see work/2026-10-chr-extraction/ws3c-prober-findings.md §42"
       - source: sample
         ref: "live CHR reboot lottery (7.25): 12 plain-reboot cycles, 204 leg-slots, all silent — reboot-only excluded as zombie trigger; see work/2026-10-chr-extraction/ws3c-prober-findings.md §46"
+      - source: sample
+        ref: "live CHR interrogation (queue-3 mutation capture batch, 7.25, 2026-11-01): session-churn trigger pairs (4/4 + negative control) — fixtures/winbox-ipc/7.25-set-13-7-overwrite.json"
   0xfe0015:
     canonical-name: CMD_GETCOUNT
     confidence: documented
@@ -187,13 +214,24 @@ commands:
       even where GETALL/GETOBJ do not: [20,61] replies ok +
       4294967295 (0xFFFFFFFF) in the version slot on all
       versions — wire fact only; whether other GET-only
-      handlers answer the same is untested. GETCOUNT beyond
-      these 8 routes untested.
+      handlers answer the same is untested. Queue-3 item 4 adds
+      a 9th 7.x route: [20,125] answers ok + 0 (singleton
+      total-0, first transcript); v6 answers BRKPATH (handler
+      absent), so the version division is unextended. Queue-3 item 5
+      extends the division below 7.25 and off x86/CHR: 7.16.2/mipsbe
+      real hardware answers [20,61] GETCOUNT ok + 4294967295
+      (0xFFFFFFFF) in 0xfe0019/0x8 (wire `1900fe08ffffffff`);
+      0xfe0014 absent — wire fact only. GETCOUNT beyond these 9
+      routes untested.
     evidence:
       - source: sample
         ref: "live CHR interrogation (queue-1 capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getcount-20-1.json"
       - source: sample
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): division on 7 more routes + ok + 0xFFFFFFFF on [20,61] — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-{neg-20-61,nat-raw-f40,user-family}.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-3 mutation capture batch, 7.25 + 7.26beta4, 2026-11-01): [20,125] GETCOUNT ok + 0 (first transcript) — fixtures/winbox-ipc/{7.25,7.26beta4}-set-20-125-map.json"
+      - source: sample
+        ref: "live RouterOS interrogation (queue-3 item-5 read-only LTE leg, 7.16.2 stable mipsbe real hardware, 2026-11-01): [20,61] GETCOUNT ok + 0xFFFFFFFF in 0xfe0019 — fixtures/winbox-ipc/7.16-neg-20-61-lte.json"
   0xfe0016: { canonical-name: CMD_RESET,        confidence: documented }
 
 # ── dispatch model (first-party) ──────────────────────────────────────────

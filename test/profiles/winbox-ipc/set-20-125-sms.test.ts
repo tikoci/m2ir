@@ -98,7 +98,11 @@ describe("sms [20,125] SET toggle replay", () => {
 		expect(fields["12"]?.tcode).toBe("u32");
 		expect(fields["12"]?.access).toBe("read-write");
 		// A UI write control is enabled exactly for read-write fields.
-		expect(fields["9"]?.access).toBeUndefined();
+		// Queue-3 item 4 proved secret/sim-pin/port-ref/allowed-number/
+		// sms-storage/polling/remove-sent writable and port-absent/
+		// unknown-100/unknown-101 read-only (see set-20-125-map.test.ts
+		// for the full access binding); field 9 now carries access.
+		expect(fields["9"]?.access).toBe("read-write");
 
 		expect(sms.set.cmd.value).toBe(0xfe000e);
 		expect(sms.set.cmd.name).toBe("CMD_SET");

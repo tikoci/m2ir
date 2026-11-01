@@ -1,0 +1,440 @@
+{
+	"provenance": {
+		"report": "queue-3 item-5 read-only LTE leg, 2026-11-01 (live RouterOS interrogation, read-only; machine + ROS build in note)",
+		"routeros_version": "7.16.2",
+		"route": [20, 61],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. ROS 7.16.2 (stable) build 2024-11-26 12:09:40, mipsbe, board RB953GS-5HnT (model class), real hardware (non-CHR). Source manifest retains full envelopes. [20,61] LTE-hardware negative: GET bare/f7=lte1/f7=lte2/f7=foo miss, GETCOUNT ok + 0xFFFFFFFF. Device context: /interface/lte 2 rows (sim-not-present, running=false) + /tool/sms off/none (see gui-handlers.yaml modem-aux-20-61)."
+	},
+	"records": [
+		{
+			"id": "lte-neg-20-61-get-bare-tx",
+			"role": "lte2061 get bare tx",
+			"source": "lte-device 7.16.2 cap13-lte-20-61 reqId=2 tx",
+			"hex": "4d320500ff010600ff09020700ff080d00fe000100ff880200140000003d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "lte-neg-20-61-get-bare-rx",
+			"role": "lte2061 get bare reply",
+			"source": "lte-device 7.16.2 cap13-lte-20-61 reqId=2 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa0010010006d73672d70726f78792d372e31362e320800ff080400fe000300ff09020400ff09020600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.16.2"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "lte-neg-20-61-get-f7-lte1-tx",
+			"role": "lte2061 get f7=lte1 tx",
+			"source": "lte-device 7.16.2 cap13-lte-20-61 reqId=3 tx",
+			"hex": "4d320500ff010600ff09030700ff080d00fe000100ff880200140000003d0000000200ff880200000000000b00000007000021046c746531",
+			"cmd": 16646157,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x21",
+					"value": "lte1"
+				}
+			]
+		},
+		{
+			"id": "lte-neg-20-61-get-f7-lte1-rx",
+			"role": "lte2061 get f7=lte1 reply",
+			"source": "lte-device 7.16.2 cap13-lte-20-61 reqId=3 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa0010010006d73672d70726f78792d372e31362e320800ff080400fe000300ff09020400ff09020600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.16.2"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "lte-neg-20-61-get-f7-lte2-tx",
+			"role": "lte2061 get f7=lte2 tx",
+			"source": "lte-device 7.16.2 cap13-lte-20-61 reqId=4 tx",
+			"hex": "4d320500ff010600ff09040700ff080d00fe000100ff880200140000003d0000000200ff880200000000000b00000007000021046c746532",
+			"cmd": 16646157,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 4,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 4
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x21",
+					"value": "lte2"
+				}
+			]
+		},
+		{
+			"id": "lte-neg-20-61-get-f7-lte2-rx",
+			"role": "lte2061 get f7=lte2 reply",
+			"source": "lte-device 7.16.2 cap13-lte-20-61 reqId=4 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa0010010006d73672d70726f78792d372e31362e320800ff080400fe000300ff09020400ff09020600ff0904",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 4,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.16.2"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 4
+				}
+			]
+		},
+		{
+			"id": "lte-neg-20-61-get-f7-foo-tx",
+			"role": "lte2061 get f7=foo tx",
+			"source": "lte-device 7.16.2 cap13-lte-20-61 reqId=5 tx",
+			"hex": "4d320500ff010600ff09050700ff080d00fe000100ff880200140000003d0000000200ff880200000000000b0000000700002103666f6f",
+			"cmd": 16646157,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x21",
+					"value": "foo"
+				}
+			]
+		},
+		{
+			"id": "lte-neg-20-61-get-f7-foo-rx",
+			"role": "lte2061 get f7=foo reply",
+			"source": "lte-device 7.16.2 cap13-lte-20-61 reqId=5 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa0010010006d73672d70726f78792d372e31362e320800ff080400fe000300ff09020400ff09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.16.2"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "lte-neg-20-61-getcount-bare-tx",
+			"role": "lte2061 getcount bare tx",
+			"source": "lte-device 7.16.2 cap13-lte-20-61 reqId=6 tx",
+			"hex": "4d320500ff010600ff09060700ff081500fe000100ff880200140000003d0000000200ff880200000000000b000000",
+			"cmd": 16646165,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 6,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 6
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646165
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "lte-neg-20-61-getcount-bare-rx",
+			"role": "lte2061 getcount bare reply",
+			"source": "lte-device 7.16.2 cap13-lte-20-61 reqId=6 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa0010010006d73672d70726f78792d372e31362e320300ff09021900fe08ffffffff0600ff0906",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 6,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.16.2"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 6
+				}
+			]
+		}
+	]
+}

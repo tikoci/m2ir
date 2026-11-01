@@ -317,12 +317,14 @@ keys:
     semantic: u32
     role: "CMD_GETCOUNT answer payload on v6 (v7 answers in 0xfe0019)"
     confidence: documented
-    notes: "First-party: net-0 slot 18 (getcount) answers with u32(0xfe0014). Live: v6 [20,1] GETCOUNT replies 0xfe0014=1 with NO 0xfe0019; 7.25+7.26beta4 reply 0xfe0019=1 with NO 0xfe0014 — the GETCOUNT answer slot is version-divided (first live GETCOUNT evidence). Distinct from 0xfe0019 GETALL total-count (present on EVERY version). Queue-3: the division holds on [20,61]/[20,5]/[20,87]/[13,1]/[13,2]/[13,3]/[13,8] (v6 answers in 0xfe0014, other slot absent each way); GETCOUNT [20,61] answers ok + 4294967295 (0xFFFFFFFF) in the version slot — wire fact, no wider reading claimed."
+    notes: "First-party: net-0 slot 18 (getcount) answers with u32(0xfe0014). Live: v6 [20,1] GETCOUNT replies 0xfe0014=1 with NO 0xfe0019; 7.25+7.26beta4 reply 0xfe0019=1 with NO 0xfe0014 — the GETCOUNT answer slot is version-divided (first live GETCOUNT evidence). Distinct from 0xfe0019 GETALL total-count (present on EVERY version). Queue-3: the division holds on [20,61]/[20,5]/[20,87]/[13,1]/[13,2]/[13,3]/[13,8] (v6 answers in 0xfe0014, other slot absent each way); GETCOUNT [20,61] answers ok + 4294967295 (0xFFFFFFFF) in the version slot — wire fact, no wider reading claimed. Queue-3 item 5 extends the division below 7.25 and off x86/CHR: 7.16.2/mipsbe real hardware answers [20,61] GETCOUNT in the v7 slot (0xfe0019) — wire fact, no wider reading claimed."
     evidence:
       - source: sample
         ref: "live CHR interrogation (queue-1 capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): bare GETCOUNT [20,1] rx reqId 2 per version — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getcount-20-1.json"
       - source: sample
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GETCOUNT division on 7 more routes + ok + 0xFFFFFFFF on [20,61] — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-{neg-20-61,nat-raw-f40,user-family}.json"
+      - source: sample
+        ref: "live RouterOS interrogation (queue-3 item-5 read-only LTE leg, 7.16.2 stable mipsbe real hardware, 2026-11-01): [20,61] GETCOUNT in the v7 slot — fixtures/winbox-ipc/7.16-neg-20-61-lte.json"
 
   0xfe0015:
     canonical-name: STD_GETALL_COOKIE
@@ -354,7 +356,7 @@ keys:
     semantic: u32
     role: "TOTAL row count carried on replies (present even on SOME error replies — cursor-UNKNOWNID carries it, queue-3 census errors do not); doubles as the v7 GETCOUNT answer slot"
     confidence: documented
-    notes: "Live: present on [20,1] cursor-UNKNOWNID errors (=1); ABSENT on [20,0] (incl. the 306-row truncated replies) but present (=1) on [20,134] and on [20,1] (=1 all 3 versions) — handler-specific, not universal. Precision: 0xfe0019 is the GETALL total slot on EVERY version — only the GETCOUNT answer slot is version-divided (v6: 0xfe0014, v7: 0xfe0019; first live GETCOUNT evidence). Queue-3 refinement: 0xfe0019 (and 0xfe0014) ride NONE of the 26 census errors (BRKPATH/NOTIMP/UNKNOWNID/FAILED) — total-on-error is per-verb/per-handler: [20,1] cursor-UNKNOWNID carries 0xfe0019=1, while selector/verb-miss errors carry no total. The v7 GETCOUNT slot holds on [20,61]/[20,5]/[20,87]/[13,1]/[13,2]/[13,3]/[13,8] incl. ok + 0xFFFFFFFF on [20,61]."
+    notes: "Live: present on [20,1] cursor-UNKNOWNID errors (=1); ABSENT on [20,0] (incl. the 306-row truncated replies) but present (=1) on [20,134] and on [20,1] (=1 all 3 versions) — handler-specific, not universal. Precision: 0xfe0019 is the GETALL total slot on EVERY version — only the GETCOUNT answer slot is version-divided (v6: 0xfe0014, v7: 0xfe0019; first live GETCOUNT evidence). Queue-3 refinement: 0xfe0019 (and 0xfe0014) ride NONE of the 26 census errors (BRKPATH/NOTIMP/UNKNOWNID/FAILED) — total-on-error is per-verb/per-handler: [20,1] cursor-UNKNOWNID carries 0xfe0019=1, while selector/verb-miss errors carry no total. The v7 GETCOUNT slot holds on [20,61]/[20,5]/[20,87]/[13,1]/[13,2]/[13,3]/[13,8] incl. ok + 0xFFFFFFFF on [20,61]. Queue-3 item 5: the v7 slot holds on 7.16.2/mipsbe real hardware ([20,61] GETCOUNT ok + 0xFFFFFFFF in 0xfe0019/0x8, 0xfe0014 absent) — below 7.25 and off x86/CHR."
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §7/§8"
@@ -366,6 +368,8 @@ keys:
         ref: "live CHR interrogation (queue-1 capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GETALL total =1 on [20,1] every version + v7 GETCOUNT answers in 0xfe0019 — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getcount-20-1.json"
       - source: sample
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): no total on any of the 26 census errors; v7 GETCOUNT slot on 7 more routes — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-{error-census,neg-20-61,nat-raw-f40,user-family}.json"
+      - source: sample
+        ref: "live RouterOS interrogation (queue-3 item-5 read-only LTE leg, 7.16.2 stable mipsbe real hardware, 2026-11-01): v7 GETCOUNT slot below 7.25 and off x86/CHR — fixtures/winbox-ipc/7.16-neg-20-61-lte.json"
     revision-history:
       - date: 2026-11-01
         belief: "0xfe0019 rides error replies (observed on cursor-UNKNOWNID, assumed general)"

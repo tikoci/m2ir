@@ -137,10 +137,12 @@ keys:
     semantic: utf8-string
     role: "human-readable error string riding some ERROR replies (last key, after SYS_REQID)"
     confidence: documented
-    notes: "First sighting anywhere (queue-3 census): bare GET on [13,6]/[13,7] -> FAILED + 0xff0009/0x21='no user name provided' (len 0x15=21, wire tail `0900ff21156e6f2075736572206e616d652070726f7669646564`), identical all 3 versions x both handlers (6 replies). Absent on every other census reply (all BRKPATH/NOTIMP/UNKNOWNID/timeout legs + all oks). TOOBIG/MISSING/BUSY errstr legs stay open."
+    notes: "First sighting anywhere (queue-3 census): bare GET on [13,6]/[13,7] -> FAILED + 0xff0009/0x21='no user name provided' (len 0x15=21, wire tail `0900ff21156e6f2075736572206e616d652070726f7669646564`), identical all 3 versions x both handlers (6 replies). Absent on every other census reply (all BRKPATH/NOTIMP/UNKNOWNID/timeout legs + all oks). TOOBIG/MISSING/BUSY errstr legs stay open. Second sighting, write path (queue-3 item 3, [13,7], 7.25): SET{} -> FAILED + the identical string."
     evidence:
       - source: sample
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): first 0xff0009 sighting on the FAILED legs — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-3 mutation capture batch, 7.25, 2026-11-01): second 0xff0009 sighting on the SET{} FAILED leg — fixtures/winbox-ipc/7.25-set-13-7-overwrite.json"
 
   0xff000a:
     canonical-name: SYS_USER
@@ -231,10 +233,12 @@ keys:
     semantic: string-array
     role: "v7 proxy version stamp on every reply"
     confidence: observed-only
-    notes: "Live: every 7.25 reply carries ['msg-proxy-7.25']; 6.49.23 replies lack the key entirely (v6 envelopes are slimmer). Project-named; no documented label. Do NOT confuse with row field 0xfe001c (tags, different namespace)."
+    notes: "Live: every 7.25 reply carries ['msg-proxy-7.25']; every 7.16.2/mipsbe reply carries ['msg-proxy-7.16.2'] (first pre-7.25 + non-CHR sighting, real hardware); 6.49.23 replies lack the key entirely (v6 envelopes are slimmer). Project-named; no documented label. Do NOT confuse with row field 0xfe001c (tags, different namespace)."
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §3"
+      - source: sample
+        ref: "live RouterOS interrogation (queue-3 item-5 read-only LTE leg, 7.16.2 stable mipsbe real hardware, 2026-11-01): msg-proxy-7.16.2 on every reply — fixtures/winbox-ipc/7.16-neg-20-61-lte.json"
 
   0xff001e:
     canonical-name: SYS_OWNER_TOKEN

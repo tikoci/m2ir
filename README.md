@@ -91,7 +91,7 @@ here remains the shared source of protocol knowledge.
 | Area | Current coverage |
 |---|---|
 | [M2 wire grammar](physical/nv-message.yaml) | Headers, types, compact encodings, and nested messages |
-| [WinBox IPC](profiles/winbox-ipc/) | Transport, EC-SRP5 authentication, session encryption, system/session keys, commands, errors, processes, and selected GUI handlers (51 envelope keys, 44 handlers, 182 field entries mapped; see the profile guide's coverage counts) |
+| [WinBox IPC](profiles/winbox-ipc/) | Transport, EC-SRP5 authentication, session encryption, system/session keys, commands, errors, processes, and selected GUI handlers (51 envelope keys, 44 handlers, 185 field entries mapped; see the profile guide's coverage counts) |
 | [The Dude on disk](profiles/dude-on-disk/) | Initial object-class and field catalogs, with upstream cross-checks |
 | [WinBox CDB](profiles/winbox-cdb/) and [MNDP](profiles/mndp/) | Planned profiles; currently placeholders |
 | [Cross-profile concepts](concepts/) | Planned semantic identities shared between profiles |
