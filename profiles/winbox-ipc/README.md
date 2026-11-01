@@ -207,6 +207,32 @@ answer would not change a client implementation:
 The full still-open list, with evidence counts, is the tail of
 [`ws3c-prober-findings.md`](../../work/2026-10-chr-extraction/ws3c-prober-findings.md).
 
+### Queued next phase — the handler field tail (not blocked)
+
+Unlike the parked items above, this one needs nothing the lab lacks;
+it is simply not done yet. It is the expansion work implied by the
+coverage counts, tracked here so it is not lost:
+
+- **Scope:** the 17 of 43 catalogued handlers with no fields mapped
+  yet, handlers among the 296 v7 menu bindings not yet catalogued,
+  and naming the 19 `unknown-*` field entries already recorded.
+- **Method:** per handler, `hscan` + GETONE/GETALL on CHR 6.49.23 and
+  7.25, with transcripts kept in `ws3c/ev/`. Use the Rosetta/restraml
+  CLI reference for the corresponding menu (32,875 documented fields)
+  only as candidate names and types; a field is promoted into
+  [`gui-handlers.yaml`](gui-handlers.yaml) only with live or static
+  evidence of its own, at `observed-only` until corroborated.
+- **Priority:** WinBox-visible menus first, then handlers a native
+  retrieval client (for example `centrs retrieve`) would query;
+  singleton and settings handlers before niche drivers.
+- **Done per handler:** every field seen live has a `tcode` and a
+  role (or an explicit `unknown-*` with its transcript), and the
+  coverage counts above are refreshed.
+
+This phase is deliberately separate from the §§16–47 series: that
+series closed the protocol machinery, and this one only widens the
+catalogue that machinery carries.
+
 ## Layout
 
 - [`profile.yaml`](profile.yaml) — top-level: namespaces, byte-2-as,

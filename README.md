@@ -56,7 +56,9 @@ record tested behavior and remaining gaps.
 That CHR-lab series (§§16–47 of the findings) is at a natural stopping
 point: its remaining items need real RouterBOARD hardware, LTE/CAPsMAN/PPP
 peers, or user credentials, or are small bounded residues. They are listed
-as parked in the profile guide rather than chased further here.
+as parked in the profile guide rather than chased further here. One
+unblocked follow-on is queued there as its own phase: widening the
+per-handler field catalogue (the “field tail” in the coverage counts).
 
 ## What this knowledge enables
 
