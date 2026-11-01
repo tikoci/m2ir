@@ -548,3 +548,12 @@ oncli # on-CLI evidence tag (CLI-created row baseline)
 slaveset # slave-set evidence tag (master/slave SET probes)
 webprefs # WebFig preferences handler shorthand ([13,7])
 rmsent # evidence tag fragment (remove-sent probes)
+fnfields # /tmp field-dump helper (function field-offset maps, §39 batch)
+notrack # firewall raw notrack action (conntrack bypass)
+postrouting # firewall postrouting chain / ipt-postrouting store
+prerouting # firewall prerouting chain
+reloc # relocation-table shorthand (PLT reloc-index false positives)
+roteros # WebFig roteros.*.jg.gz descriptor bundle basename
+rsrc # PE resource section shorthand (WinBox client .rsrc)
+socksify # RouterOS SOCKS5-redirect subsystem (pid 164, /ip/socksify)
+wfig # WebFig descriptor bundle shorthand (/tmp/wfig.js, §39 batch)

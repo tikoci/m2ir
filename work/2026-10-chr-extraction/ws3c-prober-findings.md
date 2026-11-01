@@ -2700,3 +2700,261 @@ this batch: 1028/1029/1030 roles
 location (dynamic router state) +
 v7 pid registry (libumsg PR/HD) +
 retry protocol (1.42s pair).
+
+## 39. f137: mechanism proven, driver bounded (2026-11-01)
+
+Task-1 close-out (§37's parked
+driver). Static net7 pass + one live
+twin3 batch (backup pre39, all REST
+reverted, twin STOPPED).
+
+Family map (static). f137's apply
+0x80de19a is the SHARED base-row
+apply of a firewall family: 6 row
+VTs (slot 9 = 0x80de19a /
+0x80df9b0 / 0x80e4732), 163-field
+map dumped (/tmp/fnfields.ts). The
+SOLE 134 write site (0x80df846)
+sits in the base apply next to two
+sibling feeds in the SAME function
+— f30→13 (packet-mark) at 0x80de6ac
+and f33→14 (connection-mark) at
+0x80de725, identical
+get-gate-insert idiom. Handler→row
+attribution via ctor store-strings:
+ONLY nat [20,5] (E4732 rows,
+store ipt-nat, HD cross-check
+exact), raw [20,87] (F9B0c4 rows)
+and the calea postrouting sub-table
+use the family apply. Filter,
+mangle, ebt, v6 tables have OWN
+applies with NO 134 site (verified:
++0x5a0 loads only at 0x80df846 +
+registration + 134's own
+iteration). So §37's mangle/filter
+negatives NEVER could hit — wrong
+tables. Bonus: NAT rows notify
+socksify(164) REMOVEOBJ on delete
+(row dtor 0x80e38b7); NAT ctor
+store-string method also decoded
+ipt-filter/ipt6-{filter,nat,mangle}
+/ebt-filter/ipt-postrouting/
+ipt-raw.
+
+Live mechanism proof. M2 SETOBJ on
+[20,5] row 1 with f137="m2mark1"
+→ 134 gains {1,"m2mark1"}
+(ev/7.25-getall-20-134-m2mark1.json;
+row in
+ev/7.25-getall-20-5-f137.json).
+§37 CORRECTION: f137 ECHOES
+(0x89 string in GETALL rows) — not
+write-only; the serializer path
+just has no push-$0x89.
+
+Live matrices (each: set → dump
+driver row → GETALL 134 → revert).
+NAT string map (new): f39=chain,
+f40=action, f45=log-prefix,
+f89/f90=src/dst-address-list,
+f91=address-list (target),
+f30=packet-mark, f33=connection-mark,
+f11=protocol, f128=log,
+f1000/1001=to-addresses,
+f1002/1003=to-ports,
+comment=0xfe0009; time+limit=u32s;
+routing-mark matcher=f88 be32
+(table id); interfaces=u32s.
+NEGATIVES (new): minimal NAT,
+comment, log-prefix, src-nat
+addrs/ports, addr-lists ×2,
+target-list, mark matchers ×3,
+interfaces ×4, limit, time,
+raw-minimal, raw-notrack,
+calea-minimal ([20,39] row:
+f110/f111 target/port,
+ev/7.25-getall-20-39-calea.json),
+kid-control, hotspot-setup (no
+dynamics w/o peer),
+socksify-link (u3f3/u3f5 set, no
+router-set f137). Routing marks
+populate NOTHING (table-gated, not
+registry). Registries GC on rule
+removal (13/14/134 all back to
+no-mark — bonus).
+
+WebFig (static, wfig.js
+roteros-*.jg.gz descriptors — ids
+are M2 user-field hex): NO `*89`
+field in NAT/RAW/Filter/Mangle
+dialogs (180/138/183/194 ids
+scanned); no [20,134] item (Marks
+menu = 13+14 only). NAT dialog
+names f41=Jump Target; socksify
+trio u3f3/u3f4/u3f5 (service/
+server/port, values from [164,0])
+is M2-only (REST lacks it —
+precedent for M2-only NAT fields).
+
+Client: WinBox 3.43 embeds NO
+dialog labels (ascii/utf16/
+compressed/rsrc all negative) →
+dialogs are server-driven; the
+f137 label (if any UI has it)
+lives router-side.
+
+BOUND (§37's 21 + 19 new = 40
+negatives): NO REST/CLI/WebFig
+writer exists (NAT surface
+complete; RAW shares numbering).
+Driver ∈ {WinBox-native-only
+field, internal process sync}.
+Spelled next: H-UPnP (dynamic NAT
+lease hostname; needs UPnP peer +
+L2 link) and H-HOTSPOT-LOGIN
+(dynamic hotspot NAT rules; needs
+login peer) — both out of
+CHR-lab scope per §18; else
+WinBox-native descriptor capture
+via scripted client.
+
+## 40. 0xff0003 identity (2026-11-01)
+
+Nano (a) CLOSED, static-only
+(externally indistinguishable
+live, as predicted).
+
+0xff0003 is the LOOPER-FABRIC
+pseudo-pid ("self"), never a
+process — hence absent from PR/HD
+(§38's exhaustive negative
+explained). Three libumsg7
+(v7 objdump) sites: (1)
+nv::Handler::pushNotifies
+(0x362b2/0x362c5) addresses
+notification messages TO
+[0xff0003]; (2)
+nv::Looper::sendMessage (0x3e099)
+dispatches TO-head 0xff0003 →
+popLooperTo + prependLooperFrom
+(msg, 0xff0003) + queueMessage
+(consume the fabric hop, stamp
+the sender, queue locally);
+(3) the forward path scans TO
+vectors for 0xff0003 as a routing
+marker (0x3e151). Retry leg A
+(TO=[] FROM=[0xff0003,slot]) is
+EXACTLY the branch-(2) output
+shape (TO-head consumed, FROM
+stamped, CMD preserved).
+Supporting: mproxy leg-B worker
+0x8050c30 (slot=(obj+8<<8)|6,
+SYS_TO=[orig], SYS_CMD=0xfe0014,
+entered via socket-close
+0x8052bfa tail-jump); loader
+policy-1 disconnect notice
+(0x80575d3, " ZOMBIE" log).
+OPEN sub-nano: A↔B pairing
+mechanics + the 1.42s emergence
+— NO 1420ms timer exists (mproxy:
+100/6000/18000ms; loader: none;
+one 0x590 hit was a PLT reloc
+index). Ping-pong hypothesis:
+mproxy's cmdDisconnected receive
+path re-sends leg B per leg A.
+
+## 41. Shim insertion agent (2026-11-01)
+
+Nano (b) CLOSED: LOADER-RULE
+confirmed, self-registration
+refuted, flags lead superseded —
+static-only.
+
+Loader-rule evidence: (1) shim
+order 89/61/75/12 = PR TABLE
+ENCOUNTER order (PR[30] <
+PR[34] < PR[45] < PR[93]) — the
+each(PRinf) order. The §38
+PR-flags-descending 4/4 is
+COINCIDENCE: 45 non-shim pids
+have f10 ≥ shim-min (mostly
+0x1010000), so flags cannot gate
+shims. (2) 1024-arithmetic IN
+THE LOADER: add/lea/cmp $0x400
+(0x805632b/0x80563e5/0x8056609/
+0x8057b89/0x80592f7) inside a
+pid-table builder. (3) Spawn
+machinery: each(PRinf),
+PRinf::isSuppressed,
+handler_info::prog(pid); the
+suppressed path logs + skips
+spawn. (4) isSuppressed =
+!rosMode.hasFeature(pkg-feature)
+(libumsg 0x61c24; HDinf
+delegates to owner PR) —
+DYNAMIC per-package gating,
+consistent with "compat =
+boot-atomic router state".
+Decoded package table (id→name):
+0=system … 19=ppp, 22=security;
+ppp+pppoe-worker share pkg 19,
+ipsec pair shares 22.
+Self-registration refuted: ZERO
+claimant machinery after
+false-positive elimination —
+"shim" ⊂ HashImpl (crypto),
+"compat" = L2TP/TLS text,
+"redirect" = OpenVPN gateway /
+IKE notify / X.509 dITRedirect;
+u32 1024-1027 hits = ELF header
+plus unaligned accidents (cerm
+0x80a03fc/0x808bc68 verified);
+ppp/ipsec servants live under
+`bndl/<pkg>/nova/bin` (earlier
+"no binary" was a search miss);
+workers + ssld binaries EXIST
+but never serve. ssld (no
+claimant) owning handlerless
+1027 is impossible under pure
+self-registration. Model:
+aliases AND stubs are
+LOADER PEER-TREE ROUTES
+([1024+i,h]→[parent,h]), not
+registrations — explains zero
+claimant refs plus boot-atomicity
+plus no static table.
+OPEN sub-nanos: exact
+route-insert fn (partial:
+0x805632b-region builder);
+worker-absence trigger
+(suppression is per-package yet
+27-alive/89-dead share pkg 19,
+and system-pkg 75/12 cannot be
+feature-suppressed — spawn-fail/
+exit vs boot-list needs live
+loader logs); stub-subset
+criterion ({14,21,31,51,61} =
+five VPN-server singletons?; no
+loader list, no HD flag, 14
+lacks an HD row — v6-row-
+survival hypothesis needs v6
+HD decode); spare-slot rule.
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (40 negatives; needs
+peers or WinBox-native capture —
+bounded to fabric-only writers),
+terminal surface (lower
+priority), nlevel proof (TRACTABLE
+via quickchr trial license — blocked
+on user credentials), reaper trigger
+(nano), store-rotation trigger
+(nano), retry-pairing mechanics
+(sub-nano), shim route-insert site
+(sub-nano), worker-absence trigger
+(sub-nano), stub-subset criterion
+(sub-nano). CLOSED this batch:
+f137 mechanism + echo + NAT map +
+WebFig method (§39), 0xff0003
+identity (§40), shim agent (§41).

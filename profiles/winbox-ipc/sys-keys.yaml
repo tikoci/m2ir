@@ -66,6 +66,13 @@ keys:
       does not list 0xFF0003 at all and uses the boolean SYS_REPLYEXP
       (0xFF0005) for the same purpose; the two fields likely coexist
       with overlapping meaning.
+      DUAL ROLE (§40): 0xff0003 is ALSO the looper-fabric pseudo-pid
+      ("self") — nv::Handler::pushNotifies addresses notifications
+      TO [0xff0003], and nv::Looper::sendMessage dispatches TO-head
+      0xff0003 via popLooperTo + prependLooperFrom(msg, 0xff0003) +
+      queueMessage (libumsg 0x3e099). Retry-pair leg A
+      (TO=[] FROM=[0xff0003,slot]) is exactly that branch's output
+      shape. Never a process; absent from PR/HD by design.
 
   0xff0004:
     canonical-name: SYS_STATUS

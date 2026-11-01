@@ -1006,7 +1006,7 @@ handlers:
     status: role-open
     process-id: 0x14
     cmd: GET_ALL
-    role: "v7-only THIRD mark-registry instance — same factory class as [20,13]/[20,14] (max 0xfff/0xffff/0x7ffe, name 'no-mark', adjacent registration; v6 has 13/14 only) — that NEVER populates: 11 negatives (mangle routing/packet/connection, IPv6 packet+connection, bridge-filter, routing-table, route, routing-rule, VRF member, queue-referenced marks). NARROWED (§25): the three registries differ ONLY by max; the SOLE 134 write site is net 0x80df846 (insert request-string-field-137, gated on non-empty entry 0x1a4-string, inside firewall-row-shaped apply 0x80de19a); driver still unknown."
+    role: "v7-only THIRD mark-registry instance — same factory class as [20,13]/[20,14] (max 0xfff/0xffff/0x7ffe, name 'no-mark', adjacent registration; v6 has 13/14 only). MECHANISM PROVEN (§39): M2 SETOBJ f137 on a [20,5] row inserts into 134 (gated non-empty); f30→13/f33→14/f137→134 share one apply idiom (0x80de6ac/0x80de725/0x80df846); f137 ECHOES in rows (0x89). Driver BOUNDED after 40 negatives: no REST/CLI/WebFig writer exists (NAT surface complete, RAW shares numbering, WebFig has no *89 firewall field and no [20,134] item) — driver in {WinBox-native-only field, internal process sync}. Registries GC on rule removal."
     confidence: observed-only
     evidence:
       - source: code
@@ -1017,6 +1017,78 @@ handlers:
         ref: "live CHR interrogation (identity batch, 7.25): 7 more negatives (IPv6 conn-mark shares 14, bridge mark shares 13, table/route/rule/VRF/queue silent); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
       - source: code
         ref: "RouterOS v7 net 134 write-site hunt (sole site 0x80df846, readers 0x81903dd/0x819076f/0x81912fe); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+      - source: sample
+        ref: "live CHR interrogation (f137 batch, 7.25): M2 SETOBJ proof ev/7.25-getall-20-134-m2mark1.json + ev/7.25-getall-20-5-f137.json; NAT/RAW/calea/kid-control/socksify matrices; see work/2026-10-chr-extraction/ws3c-prober-findings.md §39"
+      - source: code
+        ref: "RouterOS v7 net firewall family map (shared base apply 0x80de19a, 6 row VTs, f137-capable = [20,5]+[20,87]+calea-sub; WebFig wfig.js descriptor census: no *89 firewall field, no [20,134] item); see work/2026-10-chr-extraction/ws3c-prober-findings.md §39"
+    revision-history:
+      - date: 2026-11-01
+        belief: "f137 is WRITE-ONLY (never echoed — can't read back)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (f137 batch, 7.25): 0x89 string echoes in GETALL rows after M2 SET; ev/7.25-getall-20-5-f137.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §39"
+
+  nat-20-5:
+    sys-to: [20, 5]
+    process-id: 0x14
+    cmd: GET_ALL
+    role: "/ip/firewall/nat rule table (store net/ipt-nat; E4732 row class, 612-byte entries; row dtor notifies socksify(164) REMOVEOBJ). Sparse echo: rows carry only set fields. M2-only fields exist (socksify trio u3f3/u3f4/u3f5, REST lacks them). f137-capable (family apply)."
+    confidence: observed-only
+    fields:
+      namespace-user:
+        39: { name: chain, tcode: string }
+        40: { name: action, tcode: u32 }
+        45: { name: log-prefix, tcode: string }
+        30: { name: packet-mark, tcode: string, role: "matcher; feeds registry 13" }
+        33: { name: connection-mark, tcode: string, role: "matcher; feeds registry 14" }
+        89: { name: src-address-list, tcode: string }
+        90: { name: dst-address-list, tcode: string }
+        91: { name: address-list, tcode: string, role: "add-src/dst-to-address-list target" }
+        41: { name: jump-target, tcode: string, role: "WebFig dialog only; NAT cannot jump" }
+        11: { name: protocol, tcode: u32 }
+        128: { name: log, tcode: bool }
+        137: { name: unknown-f137, tcode: string, role: "feeds registry 134 when non-empty; no REST/CLI/WebFig writer (§39)" }
+        1000: { name: to-addresses-start, tcode: be32 }
+        1001: { name: to-addresses-end, tcode: be32 }
+        1002: { name: to-ports-start, tcode: u32 }
+        1003: { name: to-ports-end, tcode: u32 }
+        1011: { name: socksify-service, tcode: u32, role: "M2-only; values from [164,0]" }
+        1013: { name: socks5-port, tcode: u32, role: "M2-only" }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (f137 batch, 7.25): REST-set field correlation + row dumps ev/7.25-getall-20-5-f137.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §39"
+      - source: code
+        ref: "RouterOS v7 net NAT handler (ctor store-string ipt-nat, HD cross-check [20,5] exact, E4732 rows) + WebFig wfig.js NAT dialog ids; see work/2026-10-chr-extraction/ws3c-prober-findings.md §39"
+
+  raw-20-87:
+    sys-to: [20, 87]
+    process-id: 0x14
+    cmd: GET_ALL
+    role: "/ip/firewall/raw rule table (store net/ipt-raw; F9B0c4 rows; chains prerouting/output; same field numbering as NAT). f137-capable (family apply); minimal + notrack rules do not populate 134."
+    confidence: observed-only
+    fields:
+      namespace-user:
+        39: { name: chain, tcode: string }
+        40: { name: action, tcode: u32 }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (f137 batch, 7.25): minimal + notrack negatives ev/7.25-getall-20-87-raw.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §39"
+
+  calea-20-39:
+    sys-to: [20, 39]
+    process-id: 0x14
+    cmd: GET_ALL
+    role: "/ip/firewall/calea intercept table (store net/ipt-calea; requires chain + sniff-target + sniff-target-port). Minimal rule does not populate 134."
+    confidence: observed-only
+    fields:
+      namespace-user:
+        39: { name: chain, tcode: string }
+        110: { name: sniff-target, tcode: be32 }
+        111: { name: sniff-target-port, tcode: u32 }
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (f137 batch, 7.25): minimal-rule negative ev/7.25-getall-20-39-calea.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §39"
 
   security-advisory-24-34:
     sys-to: [24, 34]

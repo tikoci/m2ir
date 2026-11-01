@@ -95,15 +95,20 @@ commands:
       PAIR, never an answer — (A) TO=[] FROM=[0xff0003,slot]
       and (B) TO=[] FROM=[2,slot] (policy -1), both carrying
       SYS_CMD=0xfe0014 with slot=(ctr<<8)|6 from a global
-      counter. FROM[0]=0xff0003 is a router pseudo-pid (identity
-      open, nano); the slots are not addressable (GET [2,slot]
+      counter. FROM[0]=0xff0003 is the looper-fabric pseudo-pid
+      (§40: leg A = sendMessage's 0xff0003-branch output);
+      the slots are not addressable (GET [2,slot]
       -> UNKNOWNID). Probes must match on SYS_REQID — unmatched
       reads misattribute these pairs. Distinct from the
       0xfe0014 FIELD in std-keys.yaml (GETCOUNT answer, other
-      namespace).
+      namespace). No 1420ms timer exists (mproxy: 100/6000/18000ms;
+      loader: none) — the period is emergent (ping-pong
+      hypothesis, sub-nano open).
     evidence:
       - source: sample
         ref: "live CHR interrogation (registry batch, 7.25): endless 1.42s retry pair on dead pids; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+      - source: code
+        ref: "RouterOS 7.25 libumsg/mproxy/loader retry-path decode (pushNotifies TO=[0xff0003], sendMessage 0xff0003 branch, leg-B worker, timer census); see work/2026-10-chr-extraction/ws3c-prober-findings.md §40"
   0xfe0015: { canonical-name: CMD_GETCOUNT,     confidence: documented }
   0xfe0016: { canonical-name: CMD_RESET,        confidence: documented }
 

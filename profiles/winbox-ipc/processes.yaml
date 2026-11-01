@@ -136,9 +136,13 @@ handler-info-registry:
     HD table: 296 entries @0x77EE0, stride 0x34 (owner-PR-ptr@+0x0, two
     names, id2@+0x20 = ((pid+1)<<24)|((hid+1)<<16)|flags) = menu/store
     bindings (98 menus; `cert/settings` = [19,13] calibration exact).
-    pkg@+0xc indexes a package table (0x10 stride: ppp=0x13,
-    security=0x16). Thesis: pid identity is compiled in; compat
-    (aliases/shims/stubs) is pure boot-time router state, not a table.
+    pkg@+0xc indexes a package table (0x10 stride: 0=system …
+    19=ppp, 22=security; each PR's pkg points at its package's
+    entry). PRinf::isSuppressed = !rosMode.hasFeature(pkg-id)
+    (libumsg 0x61c24; HDinf delegates to owner PR) — suppression
+    is DYNAMIC per-package gating evaluated at boot. Thesis: pid
+    identity is compiled in; compat (aliases/shims/stubs) is pure
+    boot-time router state, not a table.
   alias-table:
     verdict: "NO static alias/shim table exists (exhaustive negative)"
     searched: "loader .text/.rodata (no pid literals/names), all v7 x3 (no loader dir), mproxy (hids {1,2}, no fork, no 0x400+ refs), PR (no 102x, no alias field), HD (no shim rows; client pids 12/61/75/89 have ZERO rows), family binaries (no shim-pid immediates/fork), kernel image (stripped, unproductive)"
@@ -147,15 +151,28 @@ handler-info-registry:
       step) + mproxy retry (see std-commands.yaml 0xfe0014). Aliases,
       shims and stub entries are boot-time router state, complete
       before the first M2 reply (boot-race: 38/38 rounds identical).
-      Residual nano: insertion agent (loader-rule vs self-registration
-      — externally indistinguishable). Correlation lead (not proof):
-      shim order 89/61/75/12 matches PR flags-descending 4/4 exact.
+      Insertion agent CLOSED (§41): LOADER-RULE — shim order =
+      PR encounter order (PR[30] < PR[34] < PR[45] < PR[93]),
+      1024-arithmetic in the loader (add/lea/cmp $0x400), zero
+      claimant machinery after false-positive elimination
+      (HashImpl/L2TP/OpenVPN/IKE/X.509 vocab, unaligned u32
+      accidents). Self-registration REFUTED (ssld owns
+      handlerless 1027 with no claimant). Aliases AND stubs
+      are loader peer-tree ROUTES ([1024+i,h]→[parent,h]),
+      not registrations. The §38 flags-descending 4/4 is
+      coincidence (45 non-shim pids ≥ shim-min f10).
+      Residual sub-nanos: exact route-insert fn;
+      worker-absence trigger (suppression is per-package
+      yet 27-alive/89-dead share pkg 19); stub-subset
+      criterion (v6-row-survival hypothesis).
   confidence: observed-only
   evidence:
     - source: code
       ref: "RouterOS 7.25 libumsg handler_info PR @0x7BB00 / HD @0x77EE0 full decode + alias-table negative census; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
     - source: sample
       ref: "live CHR interrogation (registry batch, 7.25): pid sweep 0-433 + boot-race 38/38; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+    - source: code
+      ref: "RouterOS 7.25 loader shim-insertion rule (PR-order, 1024-arithmetic, suppression predicate, claimant negative census) + package table decode; see work/2026-10-chr-extraction/ws3c-prober-findings.md §41"
 
 transient-process-observations:
   - binary: /nova/bin/login
@@ -177,8 +194,9 @@ transient-process-observations:
       0xff000b=-1). Every v7 [61,H] rewrites to [1025,H]
       byte-for-byte. Mechanism (§38): no static table exists —
       aliases/shims/stubs are boot-atomic dynamic router state
-      (loader peer-tree); only the insertion agent (loader-rule vs
-      self-registration) stays open as a nano. No /nova/bin owner.
+      (loader peer-tree); insertion agent CLOSED as loader-rule
+      (§41: PR-order + 1024-arithmetic, self-registration
+      refuted). No /nova/bin owner.
       See processes.0x401 + handler-info-registry.
 
 registered-handler-observations:
