@@ -3085,3 +3085,137 @@ rule + 1.42s re-measurement (need a
 zombie-bearing boot). CLOSED this
 batch: retry-pairing mechanics
 (§42 — finite-pair correction).
+
+## 43. Shim route-insert: mechanism bounded (2026-11-01)
+
+Sub-nano 2 PARTIAL close,
+static-only (loader + libumsg7
+objdump; no live work, twins
+untouched/STOPPED). The
+insertion MECHANISM is named
+and bounded; the per-shim
+TRIGGER stays open.
+
+- **§41 site-(2) REFUTED —
+  all five 0x400 sites
+  reclassified, no pid-table
+  builder there.**
+  0x8057b89/0x80592f7 = fd-close
+  loops (fds 3..1023, the
+  second before execl —
+  spawn hygiene). 0x8056609 =
+  M2 user-field-id insert
+  (0x400|(x&0x3ff) as raw_id;
+  ptrace + SYS_TO build
+  nearby). 0x805632b/0x80563e5
+  = length args to crypto
+  helper 0x804ee83 (RC4-style
+  byte-mixer; the 259B
+  zeroed buffers + 256-entry
+  s-box loop are its setup).
+  Loader-rule still stands
+  on encounter order (below),
+  not on these sites.
+- **Boot sequence mapped**
+  (loader 0x8055acd): "reading
+  configuration" (each HDinf
+  0x8053cba → nv::Store tree
+  0x805d52c) → "creating
+  loader" (peer-tree 0x805d524,
+  ctor 0x80518fe sets
+  +0xd8=0x400) → "sigusr1" →
+  "scheduling service
+  startup..." (0x8055514:
+  Features → Peers (each
+  PRinf 0x8053a8f) → Start)
+  → "entering run...".
+  PRinf layout from the
+  callback: +8=pid,
+  +0x10=percpu u16,
+  +0x12=maxproc u8,
+  +0x13=flag. Suppressed →
+  " !name" log + SKIP (no
+  insert). Else multiplepeer
+  ("init multiplepeer pid,
+  cpu count..." + spawn N =
+  sysconf×percpu/100, min
+  maxproc, ≥1) or singleton
+  (percpu=0,maxproc=1:
+  local node, no spawn).
+  Start phase sends only the
+  two forward-route msgs
+  (21, 71 — no alias/shim
+  route-msgs).
+- **Compat-pid allocator
+  NAMED: AddEvent handler
+  0x8054286–0x8054377** (VT
+  0x805b130 slot 0; posted
+  via postEvent 0x8051366,
+  copied by 0x80506b0).
+  Pid-less nodes (+4==0) get
+  the smallest-free pid at
+  or above +0xd8 (init
+  0x400, linear probe,
+  wrap 0x10000→0x400);
+  preset-pid nodes skip
+  allocation; every node
+  links into the +0xbc
+  pid-map, then tail-calls
+  node VT+0xc. Error path
+  logs "    AddEvent ".
+  Sibling 0x805131e posts
+  the REMOVE-event (VT
+  0x805b148) used by the
+  ZOMBIE notice — peer
+  removal, not insertion.
+- **PR re-decoded at the
+  TRUE base** (GOT=0x7DFF4
+  from two independent
+  sites; file-off = VA-0x1000
+  in .data.rel.ro — the
+  earlier miss): PR[30/34/
+  45/93] = 89/61/75/12 with
+  §41's exact f10 values —
+  encounter order
+  RECONFIRMED. Shim clients
+  take the multiplepeer path
+  (percpu≠0), so their
+  absence is spawn/death
+  (worker-absence sub-nano),
+  and shim slots are NOT
+  created directly by the
+  Peers loop for them.
+- **Trigger still OPEN
+  (narrowed):** which
+  pid-less nodes post in
+  89/61/75/12 order (+ 3
+  spares)? NOT the Peers
+  loop direct, NOT Start
+  route-msgs, NOT the
+  suppressed path, NOT the
+  zombie notice. Next lead:
+  loader boot-log capture
+  ("init multiplepeer"
+  lines + AddEvent errors;
+  needs console/log access).
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (40 negatives; needs
+peers or WinBox-native capture —
+bounded to fabric-only writers),
+terminal surface (lower
+priority), nlevel proof (TRACTABLE
+via quickchr trial license — blocked
+on user credentials), reaper trigger
+(nano), store-rotation trigger
+(nano), shim route-insert TRIGGER
+(sub-nano; mechanism bounded §43),
+worker-absence trigger
+(sub-nano), stub-subset criterion
+(sub-nano), zombie-set membership
+rule + 1.42s re-measurement (need a
+zombie-bearing boot). CLOSED this
+batch: shim route-insert mechanism
+(§43 — partial: allocator named,
+trigger open).
