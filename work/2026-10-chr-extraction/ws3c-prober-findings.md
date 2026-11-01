@@ -3370,3 +3370,121 @@ clean). CLOSED this batch:
 route-insert trigger + worker
 absence + stub-subset criterion
 (§44 — worker-shim unification).
+
+## 45. Spare identity + alias vectors + high-hid close-out (2026-11-01)
+
+Static loader/libumsg/servant decode
+plus live twin3 (7.25; high-hid
+scans, [1031] probes, TLS attempts;
+left STOPPED; no config changes).
+1 transcript:
+`ev/7.25-hscan-high-27-85.txt`.
+Closes the §44 residue except two
+boot-log-gated details.
+
+- **SPARES = unix-accept
+  connection peers — CLOSED.**
+  Loader listens on AF_UNIX
+  /ram/novasock (bind len 110,
+  path 0x805b264) plus AF_INET
+  port 3986 (0x920f0002). Accept
+  handlers post pid-less nodes
+  (ctor 8050ff4 stamps +4=0):
+  unix 80513a6 ("building
+  dynamic peer"), TCP 8051494
+  ("made remote peer from "
+  plus IP). Zero TCP peers at
+  boot. The 3 spares (0x404–406)
+  are the surviving worker
+  unix-connects (ppp, ipsec,
+  cerm); ssld's 4th accept is
+  REMOVED (below). No servant
+  names novasock (0/5) — the
+  client lives in libumsg
+  (connectLoader, called
+  unconditionally from the
+  attached Looper ctor).
+- **Count closed (7 linked =
+  4 spawn plus 4 accept minus 1
+  removed).** Spawn loop: 4
+  pid-less (0x400–403). Tree-self
+  post 8053341: preset pid 1
+  (+4=1 stored at 8052fae; the
+  loader answers bare [1]; no
+  slot). Aliases (8053c54) and
+  singletons (8053c76) are preset
+  (no slots). ssld's accept-node
+  removed via notice plus REMOVE
+  (below) → steady-state 7.
+- **ALIAS mechanism CLOSED:**
+  preset node (+4=PR pid at
+  8053b15, VT 0x805affc) posted
+  per multiplepeer PR (8053c54);
+  slot0 logs "multiple(" plus
+  count; slot4 iterates the
+  +0x1c/+0x20 worker-vector;
+  insert tail (slot3) is ret —
+  vectors fill post-insert (by
+  worker registration or
+  connect; timing TBD, residue).
+- **REMOVE always announces:**
+  both REMOVE posters (80575ea,
+  805771e) build SYS_FROM plus
+  policy-1 plus CMD 0xfe0014
+  first (the §42 leg-B shape),
+  then post REMOVE. Node removal
+  is one-shot notice plus event —
+  consistent with §42 (finite
+  pairs, no pacer).
+- **ssld exception narrowed:**
+  PR name "ssld" (no worker
+  sibling, no strstr); imports
+  the full Looper API; 2
+  attached-ctor plus 3 run calls
+  → connects (4th accept) then
+  disconnects (notice plus
+  REMOVE). TLS triggers
+  inconclusive (CHR ships no
+  cert: https exit 35, api-ssl
+  alert 40; [1031] still dead
+  after). Residue: ssld-side
+  motive plus process liveness
+  (boot-log / VGA-gated).
+- **ppp sub-mode plus high hids
+  CLOSED:** strcmp "pppoe"
+  (8093534) selects master
+  sub-modes; live [27,101–106]
+  and [85,100–101] claimed (104
+  and 106 serve data) → master
+  registers 26 of 27 static.
+  Residue: hid 100 only
+  (conditional; address-outlier
+  site 0x8067429).
+- **ipsec -2 CLOSED:** framework
+  wildcard (17 libumsg refs,
+  dispatch compares); ipsec
+  overrides the default handler
+  (late getLooper plus addHandler
+  809b28a, object in .bss).
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (40 negatives; needs
+peers or WinBox-native capture —
+bounded to fabric-only writers),
+terminal surface (lower
+priority), nlevel proof (TRACTABLE
+via quickchr trial license — blocked
+on user credentials), reaper trigger
+(nano), store-rotation trigger
+(nano), alias-vector fill timing
+(residue), ssld motive + liveness
+(residue; VGA-gated), hid-100
+condition (residue; single hid),
+zombie-set membership rule + 1.42s
+re-measurement (need a
+zombie-bearing boot). CLOSED this
+batch: spare identity + count +
+alias mechanism + REMOVE shape +
+ppp high hids + ipsec wildcard
+(§45 — residue close-out).

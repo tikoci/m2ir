@@ -186,10 +186,22 @@ handler-info-registry:
       (v6 identical: cerm-worker branch registers {8}).
       v6 already has the compat block (89→1024,
       75→1025, 12→1026, 1027 spare); v7 inserts
-      ipsec-worker at 1025. Residual: spare posters
-      (0x404-406; 5 single-shot postEvent sites),
-      alias-creation site, serial carries login
-      prompt only (no loader lines).
+      ipsec-worker at 1025. SPARE identity CLOSED
+      (§45): unix-accept connection peers on
+      /ram/novasock (pid-less via ctor 0x8050ff4;
+      0x404-406 = the 3 surviving worker
+      connects; ssld's 4th accept is removed).
+      Count: 4 spawn + 4 accept - 1 removed = 7
+      linked (tree-self is preset pid 1; aliases
+      and singletons are preset). ALIAS mechanism
+      CLOSED (§45): preset node (+4=PR pid) with
+      a "multiple(" worker-vector forward (VT
+      0x805affc). REMOVE always announces (both
+      REMOVE posters build policy-1 + 0xfe0014
+      first). Serial carries login prompt only.
+      Residual: alias-vector fill timing, ssld
+      motive + liveness (VGA-gated), hid-100
+      condition (single hid).
   confidence: observed-only
   evidence:
     - source: code
@@ -204,6 +216,10 @@ handler-info-registry:
       ref: "worker-shim unification (strstr mode selection, worker-branch stub registrations, spawn-loop pid-less posts, multiplepeer re-census); see work/2026-10-chr-extraction/ws3c-prober-findings.md §44"
     - source: sample
       ref: "live CHR interrogation (serial capture, zombie drain, v6 compat-block census, master handler sets, 7.25 + 6.49.23); see work/2026-10-chr-extraction/ws3c-prober-findings.md §44"
+    - source: code
+      ref: "spare/alias/REMOVE decode (novasock accepts, pid-1 tree-self, multiple-vector aliases, notice+REMOVE pairing, ssld exception); see work/2026-10-chr-extraction/ws3c-prober-findings.md §45"
+    - source: sample
+      ref: "live CHR interrogation (high-hid scans [27,101-106] + [85,100-101], [1031] probes, TLS attempts, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §45"
 
 transient-process-observations:
   - binary: /nova/bin/login

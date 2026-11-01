@@ -1,0 +1,12 @@
+=== hscan 27 100 106 (twin3 7.25 §45) ===
+[27,101] status=2 errno=0xfe0003 from=[27,101] nfields=7 user={}
+[27,102] status=2 errno=0xfe0003 from=[27,102] nfields=7 user={}
+[27,103] status=2 errno=0xfe0003 from=[27,103] nfields=7 user={}
+[27,104] status=undefined errno=undefined from=[27,104] nfields=10 user={1:bool_false 2:bool_true 4:bool_false 5:bool_false 3:u8}
+[27,105] status=2 errno=0xfe0003 from=[27,105] nfields=7 user={}
+[27,106] status=undefined errno=undefined from=[27,106] nfields=6 user={1:bool_false}
+=== hscan 85 100 101 (twin3 7.25 §45) ===
+[85,100] status=2 errno=0xfe0003 from=[85,100] nfields=7 user={}
+[85,101] status=2 errno=0xfe0003 from=[85,101] nfields=7 user={}
+=== bare 1031 post-TLS-attempt (twin3 7.25 §45; expect dead) ===
+ws3c: ws3c: socket timeout
