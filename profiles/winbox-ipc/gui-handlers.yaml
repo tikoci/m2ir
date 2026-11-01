@@ -226,18 +226,44 @@ handlers:
     process-id: 0x18
     process-ref: "./processes.yaml 0x18 (management)"
     cmd: GET_ONE
-    role: "/system identity — device name + version"
+    role: "/system identity singleton — device name (field 12, read-write) + version (field 13, read-only). Write path proven both directions on 7.25: control-interface renames move exactly field 12, and native CMD_SET 0xfe000e of field 12 reads back via an independent control read."
     confidence: observed-only
     fields:
       namespace: user
       map:
-        12: { name: name, tcode: string, source: "getter 0x8057f5c insert<string>(12); setter writes sethostname + nv::Store::set(1)" }
-        13: { name: version, tcode: string, role: "RouterOS version ('6.49.23' / '7.25', REST-confirmed)" }
+        12: { name: name, tcode: string, access: read-write, cli-alias: "/system/identity name", role: "device name; native SET 0xfe000e {12: string} takes effect (7.25 proof)", source: "getter 0x8057f5c insert<string>(12); setter writes sethostname + nv::Store::set(1)" }
+        13: { name: version, tcode: string, access: read-only, role: "RouterOS version ('6.49.23' / '7.25'); native SET returns ok yet changes nothing — read-back discriminates" }
+    set:
+      cmd: { value: 0xfe000e, name: CMD_SET, ref: "./std-commands.yaml 0xfe000e" }
+      scope: "singleton-attr path on [24,1]; request carries USER field 12 (tcode string 0x21)"
+      ack: "bare SYS-only success, no USER fields, no statusWord — byte-identical shape whether the write took effect (field 12) or was silently ignored (field 13)"
+      versions: ["7.25"]
+    notes: |
+      Controlled-change proof (7.25, disposable CHR): baseline GET
+      twice differs only in the 0xff0006 reqid echo; control renames A/B
+      plus reversal each move exactly 0x00000c (tcode 0x21) plus reqid;
+      native SET 0xfe000e 0x00000c='m2ir-native-w1' reads back as the
+      new name via an independent REST read; restore returns 'CHR'.
+      Field 13 stays '7.25' across all renames and across a native SET
+      of 0x00000d='9.99-proof' whose reply is ok-shaped — status alone
+      proves nothing, so consumers must read back after SET and must not
+      offer a write control for field 13. CLI alias `name` is the
+      /system/identity `name` argument (Rosetta CLI reference:
+      7.24 page source line 11, 7.25/7.26 page source line 13; inspect
+      /system/identity/set/name + /system/identity/reset/name) — a CLI
+      name only, not wire identity; the numeric association stays
+      observed-only per DESIGN.md §4 (no public source names it).
+      7.26 scoping open: the SET proof ran on 7.25 only; inspect
+      presence covers 7.26beta4, not a stable 7.26 build.
     evidence:
       - source: code
         ref: "RouterOS sys2 identity getter/setter (6.49.23); see work/2026-10-chr-extraction/sys2-handler-tables.md"
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): {12:name, 13:version} both versions; see work/2026-10-chr-extraction/ws3c-prober-findings.md §5"
+      - source: sample
+        ref: "controlled-change proof (harness/prove-identity.ts, 7.25): report + lossless captures work/2026-11-winbox-attributes/proof/7.25-identity/{report.yaml,step-*.jsonl,control-*.json}; verdicts field_12_is_writable_name + field_13_is_readonly_version hold"
+      - source: code
+        ref: "Rosetta CLI reference 7.24/7.25/7.26 system/identity page (name argument; inspect set/reset verbs); inventory work/2026-11-winbox-attributes/candidates.yaml"
     revision-history:
       - date: 2026-10-31
         belief: "identity is a single field 12"

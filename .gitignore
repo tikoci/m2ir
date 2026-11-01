@@ -24,5 +24,7 @@ work/**/*.json
 !work/**/process-map-*.json
 # WS-3C prober transcripts: small decoded replies cited by findings notes
 !work/**/ws3c/ev/*.json
+# Phase C proof transcripts: small control-interface envelopes cited by proof reports
+!work/**/proof/**/*.json
 work/**/*.snapshot
 work/**/*.stderr.log

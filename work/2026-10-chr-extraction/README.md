@@ -1,5 +1,11 @@
 # WS-3A working notes — CHR offline extraction (7.25 + 6.49.23)
 
+For the next configuration-field and native-verb phase, start with the
+[attribute discovery execution plan](../2026-11-winbox-attributes/attribute-discovery-plan.md).
+It reuses this directory's evidence and prober while adding controlled
+experiments and schema validation. The historical sequence below records
+the earlier extraction work; canonical YAML contains its corrected results.
+
 Source images (quickchr cache, `~/.local/share/quickchr/cache/`):
 `chr-7.25.img` (128M), `chr-6.49.23.img` (64M). Fully rootless chain:
 `dd` → `debugfs` → carve → `~/.local/bin/unsquashfs` (4.7.5).

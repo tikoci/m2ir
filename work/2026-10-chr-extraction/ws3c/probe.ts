@@ -145,13 +145,48 @@ function asRecord(v: unknown): Record<string, unknown> {
 	return v as Record<string, unknown>;
 }
 
+/**
+ * Pinned quickchr release. Must match package.json devDependencies
+ * `@tikoci/quickchr`. Never resolve `@latest`: an unpinned launcher can
+ * silently change the list/inspect JSON contract under the prober.
+ */
+export const QUICKCHR_PIN = "0.5.2";
+
+let quickchrBin: string | null = null;
+
+/** Resolve the quickchr binary: PATH install, version-checked. No bunx fallback. */
+function quickchrBinary(): string {
+	if (quickchrBin) return quickchrBin;
+	let versionOut: string | null = null;
+	try {
+		const r = Bun.spawnSync(["quickchr", "--version"]);
+		if (r.success) versionOut = r.stdout.toString().trim();
+	} catch {
+		versionOut = null;
+	}
+	if (versionOut === null || versionOut === "") {
+		throw new Error(
+			"quickchr: no PATH-installed quickchr (wanted " +
+				`${QUICKCHR_PIN}; install it, do not bunx @latest)`,
+		);
+	}
+	const wantPrefix = `quickchr ${QUICKCHR_PIN.split(".").slice(0, 2).join(".")}.`;
+	if (!versionOut.startsWith(wantPrefix)) {
+		throw new Error(
+			`quickchr: version mismatch: got "${versionOut}", want ${QUICKCHR_PIN} (same major.minor)`,
+		);
+	}
+	quickchrBin = "quickchr";
+	return quickchrBin;
+}
+
 function quickchrJson(args: string[]): unknown {
-	const r = Bun.spawnSync(["bunx", "@tikoci/quickchr@latest", ...args]);
+	const r = Bun.spawnSync([quickchrBinary(), ...args]);
 	if (!r.success) throw new Error(`quickchr ${args.join(" ")} failed`);
 	return JSON.parse(r.stdout.toString());
 }
 
-function resolveQuickchr(name: string): {
+export function resolveQuickchr(name: string): {
 	host: string;
 	port: number;
 	user: string;
@@ -311,7 +346,7 @@ function customSpec(a: Args): string {
 	return parts.length > 0 ? ` custom ${parts.join(" ")}` : "";
 }
 
-function buildRequest(
+export function buildRequest(
 	to: number[],
 	cmd: number,
 	fromId: number,
@@ -342,10 +377,10 @@ async function roundTrip(
 	);
 }
 
-const CMD_GET = 0xfe000d;
-const CMD_GETALL = 0xfe0004;
-const CMD_GETOBJ = 0xfe0002;
-const CMD_SET = 0xfe000e;
+export const CMD_GET = 0xfe000d;
+export const CMD_GETALL = 0xfe0004;
+export const CMD_GETOBJ = 0xfe0002;
+export const CMD_SET = 0xfe000e;
 
 function toJSON(m: M2Message): unknown {
 	return m.entries.map((e) => ({

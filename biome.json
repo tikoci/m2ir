@@ -37,6 +37,12 @@
 			"formatter": {
 				"enabled": false
 			}
+		},
+		{
+			"includes": ["work/**/proof/**"],
+			"formatter": {
+				"enabled": false
+			}
 		}
 	]
 }

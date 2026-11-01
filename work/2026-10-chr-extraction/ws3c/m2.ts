@@ -228,25 +228,116 @@ export interface EncEntry {
 	value: M2Value;
 }
 
+function checkKey(fullKey: number): void {
+	if (!Number.isInteger(fullKey) || fullKey < 0 || fullKey > 0xffffff) {
+		throw new Error(`m2: fullKey ${fullKey} out of 24-bit range`);
+	}
+}
+
+function checkU32(v: number, what: string): void {
+	if (!Number.isInteger(v) || v < 0 || v > 0xffffffff) {
+		throw new Error(`m2: ${what} ${v} out of u32 range`);
+	}
+}
+
 export function encU32(fullKey: number, v: number): EncEntry {
-	return { fullKey, tcode: v >= 0 && v < 256 ? 0x09 : 0x08, value: v };
+	checkKey(fullKey);
+	checkU32(v, "u32");
+	return { fullKey, tcode: v < 256 ? 0x09 : 0x08, value: v };
 }
 
 export function encBool(fullKey: number, v: boolean): EncEntry {
+	checkKey(fullKey);
 	return { fullKey, tcode: v ? 0x01 : 0x00, value: v };
 }
 
 export function encStr(fullKey: number, s: string): EncEntry {
+	checkKey(fullKey);
 	const n = new TextEncoder().encode(s).length;
+	if (n > 0xffff) throw new Error(`m2: string ${n}B exceeds u16 length`);
 	return { fullKey, tcode: n < 256 ? 0x21 : 0x20, value: s };
 }
 
 export function encBytes(fullKey: number, b: Uint8Array): EncEntry {
+	checkKey(fullKey);
+	if (b.length > 0xffff) {
+		throw new Error(`m2: bytes ${b.length}B exceed u16 length`);
+	}
 	return { fullKey, tcode: b.length < 256 ? 0x31 : 0x30, value: b };
 }
 
 export function encU32Array(fullKey: number, vs: number[]): EncEntry {
+	checkKey(fullKey);
+	if (vs.length > 0xffff) {
+		throw new Error(`m2: u32 array count ${vs.length} exceeds u16`);
+	}
+	for (const v of vs) checkU32(v, "u32 array item");
 	return { fullKey, tcode: 0x88, value: vs };
+}
+
+export function encU64(fullKey: number, v: bigint): EncEntry {
+	checkKey(fullKey);
+	if (v < 0n || v > 0xffffffffffffffffn) {
+		throw new Error(`m2: u64 ${v} out of range`);
+	}
+	return { fullKey, tcode: 0x10, value: v };
+}
+
+export function encBytes16(fullKey: number, b: Uint8Array): EncEntry {
+	checkKey(fullKey);
+	if (b.length !== 16) {
+		throw new Error(`m2: bytes16 needs exactly 16B, got ${b.length}`);
+	}
+	return { fullKey, tcode: 0x18, value: b };
+}
+
+export function encMsg(fullKey: number, m: M2Message): EncEntry {
+	checkKey(fullKey);
+	const nested = encodeM2MessageValue(m);
+	if (nested.length > 0xffff) {
+		throw new Error(`m2: nested message ${nested.length}B exceeds u16 length`);
+	}
+	return { fullKey, tcode: nested.length < 256 ? 0x29 : 0x28, value: m };
+}
+
+export function encBytes16Array(fullKey: number, vs: Uint8Array[]): EncEntry {
+	checkKey(fullKey);
+	if (vs.length > 0xffff) {
+		throw new Error(`m2: bytes16 array count ${vs.length} exceeds u16`);
+	}
+	for (const v of vs) {
+		if (v.length !== 16) {
+			throw new Error(`m2: bytes16 array item needs 16B, got ${v.length}`);
+		}
+	}
+	return { fullKey, tcode: 0x98, value: vs };
+}
+
+export function encStrArray(fullKey: number, vs: string[]): EncEntry {
+	checkKey(fullKey);
+	if (vs.length > 0xffff) {
+		throw new Error(`m2: string array count ${vs.length} exceeds u16`);
+	}
+	const enc = new TextEncoder();
+	for (const s of vs) {
+		if (enc.encode(s).length > 0xffff) {
+			throw new Error("m2: string array item exceeds u16 length");
+		}
+	}
+	return { fullKey, tcode: 0xa0, value: vs };
+}
+
+export function encMsgArray(fullKey: number, vs: M2Message[]): EncEntry {
+	checkKey(fullKey);
+	if (vs.length > 0xffff) {
+		throw new Error(`m2: message array count ${vs.length} exceeds u16`);
+	}
+	for (const m of vs) {
+		if (encodeM2MessageValue(m).length > 0xffff) {
+			throw new Error("m2: message array item exceeds u16 length");
+		}
+	}
+	return { fullKey, tcode: 0xa8, value: vs };
 }
 
 function concatParts(parts: Uint8Array[]): Uint8Array {
@@ -264,6 +355,7 @@ function encodeEntries(entries: EncEntry[]): Uint8Array {
 	const parts: Uint8Array[] = [new Uint8Array([0x4d, 0x32])];
 	const enc = new TextEncoder();
 	for (const e of entries) {
+		checkKey(e.fullKey);
 		const keyLow = e.fullKey & 0xff;
 		const keyHigh = (e.fullKey >> 8) & 0xff;
 		const byte2 = (e.fullKey >> 16) & 0xff;
@@ -290,21 +382,70 @@ function encodeValue(
 		case 0x00:
 		case 0x01:
 			return new Uint8Array(0);
-		case 0x08:
-			return u32(value as number);
-		case 0x09:
-			return new Uint8Array([value as number]);
+		case 0x08: {
+			const v = value as number;
+			checkU32(v, "u32");
+			return u32(v >>> 0);
+		}
+		case 0x09: {
+			const v = value as number;
+			if (!Number.isInteger(v) || v < 0 || v > 255) {
+				throw new Error(`m2: compact u8 value ${v} out of range`);
+			}
+			return new Uint8Array([v]);
+		}
+		case 0x10: {
+			const v = value as bigint;
+			if (typeof v !== "bigint" || v < 0n || v > 0xffffffffffffffffn) {
+				throw new Error(`m2: u64 ${String(v)} out of range`);
+			}
+			const out = new Uint8Array(8);
+			new DataView(out.buffer).setBigUint64(0, v, true);
+			return out;
+		}
+		case 0x18: {
+			const b = value as Uint8Array;
+			if (!(b instanceof Uint8Array) || b.length !== 16) {
+				throw new Error(`m2: bytes16 needs exactly 16B`);
+			}
+			return new Uint8Array(b);
+		}
 		case 0x20:
 		case 0x21: {
 			const b = enc.encode(value as string);
+			if (tcode === 0x21 && b.length > 255) {
+				throw new Error(`m2: compact string ${b.length}B exceeds u8 length`);
+			}
+			if (b.length > 0xffff) {
+				throw new Error(`m2: string ${b.length}B exceeds u16 length`);
+			}
 			return concatParts([
 				tcode === 0x20 ? u16(b.length) : new Uint8Array([b.length]),
 				b,
 			]);
 		}
+		case 0x28:
+		case 0x29: {
+			const nested = encodeM2MessageValue(value as M2Message);
+			if (tcode === 0x29 && nested.length > 255) {
+				throw new Error(
+					`m2: compact message ${nested.length}B exceeds u8 length`,
+				);
+			}
+			return concatParts([
+				tcode === 0x28 ? u16(nested.length) : new Uint8Array([nested.length]),
+				nested,
+			]);
+		}
 		case 0x30:
 		case 0x31: {
 			const b = value as Uint8Array;
+			if (tcode === 0x31 && b.length > 255) {
+				throw new Error(`m2: compact bytes ${b.length}B exceed u8 length`);
+			}
+			if (b.length > 0xffff) {
+				throw new Error(`m2: bytes ${b.length}B exceed u16 length`);
+			}
 			return concatParts([
 				tcode === 0x30 ? u16(b.length) : new Uint8Array([b.length]),
 				b,
@@ -312,11 +453,61 @@ function encodeValue(
 		}
 		case 0x88: {
 			const vs = value as number[];
-			return concatParts([u16(vs.length), ...vs.map(u32)]);
+			for (const v of vs) checkU32(v, "u32 array item");
+			return concatParts([u16(vs.length), ...vs.map((v) => u32(v >>> 0))]);
 		}
+		case 0x98: {
+			const vs = value as Uint8Array[];
+			for (const v of vs) {
+				if (!(v instanceof Uint8Array) || v.length !== 16) {
+					throw new Error("m2: bytes16 array item needs exactly 16B");
+				}
+			}
+			return concatParts([u16(vs.length), ...vs.map((v) => new Uint8Array(v))]);
+		}
+		case 0xa0: {
+			const vs = value as string[];
+			const parts: Uint8Array[] = [u16(vs.length)];
+			for (const s of vs) {
+				const b = enc.encode(s);
+				if (b.length > 0xffff) {
+					throw new Error("m2: string array item exceeds u16 length");
+				}
+				parts.push(u16(b.length), b);
+			}
+			return concatParts(parts);
+		}
+		case 0xa8: {
+			const vs = value as M2Message[];
+			const parts: Uint8Array[] = [u16(vs.length)];
+			for (const m of vs) {
+				const nested = encodeM2MessageValue(m);
+				if (nested.length > 0xffff) {
+					throw new Error("m2: message array item exceeds u16 length");
+				}
+				parts.push(u16(nested.length), nested);
+			}
+			return concatParts(parts);
+		}
+		case 0x80:
+		case 0x90:
+			throw new Error(
+				`m2: refused tcode 0x${tcode.toString(16)} (declared-unwired per physical/nv-message.yaml)`,
+			);
 		default:
 			throw new Error(`m2: encode of tcode 0x${tcode.toString(16)} not wired`);
 	}
+}
+
+/** Encode a decoded M2Message back to bytes, preserving each entry's tcode. */
+function encodeM2MessageValue(m: M2Message): Uint8Array {
+	return encodeEntries(
+		m.entries.map((e) => ({
+			fullKey: e.fullKey,
+			tcode: e.tcode,
+			value: e.value,
+		})),
+	);
 }
 
 /** Encode a root M2 message from entries. */

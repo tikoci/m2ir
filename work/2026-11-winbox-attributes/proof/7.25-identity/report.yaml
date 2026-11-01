@@ -1,0 +1,128 @@
+proof: "phase-C pilot slice 1: /system/identity route [24,1] on 7.25"
+provenance:
+  machine: twin3
+  routeros_version: "7.25"
+  original_name: CHR
+  values:
+    a: m2ir-proof-a
+    b: m2ir-proof-b
+    native: m2ir-native-w1
+  generated_by: harness/prove-identity.ts
+steps:
+  - id: step-1-baseline
+    control: none (two unchanged native reads)
+    native_manifest: step-01-baseline.jsonl
+    observation: two GET [24,1] replies; 1 differing entries
+  - id: step-2-set-a
+    control: centrs set name=m2ir-proof-a
+    control_manifest: control-02-set-a.json
+    native_manifest: step-02-after-a.jsonl
+  - id: step-3-set-b
+    control: centrs set name=m2ir-proof-b
+    control_manifest: control-03-set-b.json
+    native_manifest: step-03-after-b.jsonl
+  - id: step-4-reverse-a
+    control: centrs set name=m2ir-proof-a (reversal)
+    control_manifest: control-04-reverse-a.json
+    native_manifest: step-04-after-reverse.jsonl
+  - id: step-5-ro-probe
+    control: none (native SET field 13 to 9.99-proof, then GET + control read)
+    native_manifest: step-05-ro-probe.jsonl
+    control_manifest: control-05-ro-verify.json
+    observation: SET outcome=ok errno=null;
+      reply=[{"key":"0xff0001","tcode":"0x88","value":[0,11]},{"key":"0xff0002","tcode":"0x88","value":[24,1]},{"key":"0xff001c","tcode":"0xa0","value":["msg-proxy-7.25"]},{"key":"0xff0003","tcode":"0x9","value":2},{"key":"0xff0006","tcode":"0x9","value":7}]
+  - id: step-6-inverse-write
+    control: independent centrs retrieve after native SET (want m2ir-native-w1)
+    native_manifest: step-06-native-set.jsonl
+    control_manifest: control-06-native-verify.json
+    observation: SET outcome=ok statusWord=absent;
+      reply=[{"key":"0xff0001","tcode":"0x88","value":[0,11]},{"key":"0xff0002","tcode":"0x88","value":[24,1]},{"key":"0xff001c","tcode":"0xa0","value":["msg-proxy-7.25"]},{"key":"0xff0003","tcode":"0x9","value":2},{"key":"0xff0006","tcode":"0x9","value":9}];
+      independent name="m2ir-native-w1"
+  - id: step-7-restore
+    control: centrs set name=CHR (restore)
+    control_manifest: control-07-restore.json + control-07-final.json
+    native_manifest: step-07-restored.jsonl
+diffs:
+  - from: baseline-read-1
+    to: baseline-read-2
+    changed: &a1
+      - key: "0xff0006"
+        tcode: "0x9"
+        from: 2
+        to: 3
+  - from: baseline
+    to: control=m2ir-proof-a
+    changed:
+      - key: "0xff0006"
+        tcode: "0x9"
+        from: 2
+        to: 4
+      - key: "0x00000c"
+        tcode: "0x21"
+        from: CHR
+        to: m2ir-proof-a
+  - from: control=m2ir-proof-a
+    to: control=m2ir-proof-b
+    changed:
+      - key: "0xff0006"
+        tcode: "0x9"
+        from: 4
+        to: 5
+      - key: "0x00000c"
+        tcode: "0x21"
+        from: m2ir-proof-a
+        to: m2ir-proof-b
+  - from: control=m2ir-proof-b
+    to: reverse=m2ir-proof-a
+    changed:
+      - key: "0xff0006"
+        tcode: "0x9"
+        from: 5
+        to: 6
+      - key: "0x00000c"
+        tcode: "0x21"
+        from: m2ir-proof-b
+        to: m2ir-proof-a
+  - from: reverse=m2ir-proof-a
+    to: after-ro-probe
+    changed:
+      - key: "0xff0006"
+        tcode: "0x9"
+        from: 6
+        to: 8
+  - from: after-ro-probe
+    to: native=m2ir-native-w1
+    changed:
+      - key: "0xff0006"
+        tcode: "0x9"
+        from: 8
+        to: 10
+      - key: "0x00000c"
+        tcode: "0x21"
+        from: m2ir-proof-a
+        to: m2ir-native-w1
+  - from: native=m2ir-native-w1
+    to: restored=CHR
+    changed:
+      - key: "0xff0006"
+        tcode: "0x9"
+        from: 10
+        to: 11
+      - key: "0x00000c"
+        tcode: "0x21"
+        from: m2ir-native-w1
+        to: CHR
+verdicts:
+  field_12_is_writable_name:
+    holds: true
+    evidence: control A/B/reverse move only 0x00000c; native SET
+      0x00000c=m2ir-native-w1 reads back "m2ir-native-w1" via independent
+      control
+  field_13_is_readonly_version:
+    holds: true
+    evidence: version stays "7.25" across control renames and native SET attempt
+      (outcome=ok); control name after probe="m2ir-proof-a"
+  volatile_baseline:
+    changed_entries: 1
+    user_changed_entries: 0
+    detail: *a1

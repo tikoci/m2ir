@@ -57,8 +57,11 @@ That CHR-lab series (§§16–47 of the findings) is at a natural stopping
 point: its remaining items need real RouterBOARD hardware, LTE/CAPsMAN/PPP
 peers, or user credentials, or are small bounded residues. They are listed
 as parked in the profile guide rather than chased further here. One
-unblocked follow-on is queued there as its own phase: widening the
-per-handler field catalogue (the “field tail” in the coverage counts).
+unblocked follow-on now has an
+[agent execution plan](work/2026-11-winbox-attributes/attribute-discovery-plan.md):
+mapping native configuration attributes and verbs through Rosetta candidate
+metadata, a schema-aware WinBox experiment harness, controlled CHR changes,
+and bounded parallel handler research.
 
 ## What this knowledge enables
 

@@ -150,7 +150,7 @@ seed files.
 
 Counted from the YAML in this directory, the 249 live transcripts in
 `work/2026-10-chr-extraction/ws3c/ev/`, and the Rosetta database
-(`ros-help` 0.12.0, manual 7.26) behind tikoci/restraml. Treat the
+(`ros-help` 0.12.0, manuals 7.24–7.26) behind tikoci/restraml. Treat the
 ratios as scale indicators, not exact percentages: nobody has a total
 count of nova TLVs, because field numbering is local to each handler.
 
@@ -165,9 +165,9 @@ count of nova TLVs, because field numbering is local to each handler.
 | Handler field entries mapped | 173 (154 named, 19 `unknown-*`) |
 | Distinct TLV keys seen in live transcripts | 278 |
 | Menu bindings in the v7 registry (HD table) | 296 (98 menus) |
-| CLI command-tree nodes in restraml | 43,189 |
-| CLI args among those nodes | 37,240 |
-| Documented CLI-reference fields in Rosetta | 32,875 |
+| Distinct CLI command-tree nodes in restraml | 43,189 |
+| Distinct CLI argument paths (also the 7.25 argument count) | 37,240 |
+| CLI-reference field records across manuals 7.24 / 7.25 / 7.26 | 32,875 total: 10,758 / 10,833 / 11,284 |
 
 How to read this:
 
@@ -190,6 +190,13 @@ How to read this:
   129 observed-only, 3 inferred), 427 evidence references, and 61
   kept revision-history entries recording beliefs live work corrected.
 
+The CLI-reference total includes repeated records across three manual
+versions; CLI argument paths also repeat properties under different verbs.
+Neither is a count of distinct configuration properties or native TLVs.
+The [attribute discovery plan](../../work/2026-11-winbox-attributes/attribute-discovery-plan.md)
+records reproducible source queries and replaces these scale proxies with
+version-scoped native field and operation coverage for future batches.
+
 ## What is not known yet — and why it is parked
 
 These are deliberately separated from the results above. Each needs
@@ -209,29 +216,25 @@ The full still-open list, with evidence counts, is the tail of
 
 ### Queued next phase — the handler field tail (not blocked)
 
-Unlike the parked items above, this one needs nothing the lab lacks;
-it is simply not done yet. It is the expansion work implied by the
-coverage counts, tracked here so it is not lost:
+The CHR-capable portion can start now; individual hardware-dependent fields
+may still need separate equipment. The
+[attribute and verb discovery plan](../../work/2026-11-winbox-attributes/attribute-discovery-plan.md)
+is the agent execution entrypoint. It covers the 17 catalogued handlers
+without fields, unknown entries, additional registry bindings, and native
+configuration operations useful to UIs and `centrs explain`.
 
-- **Scope:** the 17 of 43 catalogued handlers with no fields mapped
-  yet, handlers among the 296 v7 menu bindings not yet catalogued,
-  and naming the 19 `unknown-*` field entries already recorded.
-- **Method:** per handler, `hscan` + GETONE/GETALL on CHR 6.49.23 and
-  7.25, with transcripts kept in `ws3c/ev/`. Use the Rosetta/restraml
-  CLI reference for the corresponding menu (32,875 documented fields)
-  only as candidate names and types; a field is promoted into
-  [`gui-handlers.yaml`](gui-handlers.yaml) only with live or static
-  evidence of its own, at `observed-only` until corroborated.
-- **Priority:** WinBox-visible menus first, then handlers a native
-  retrieval client (for example `centrs retrieve`) would query;
-  singleton and settings handlers before niche drivers.
-- **Done per handler:** every field seen live has a `tcode` and a
-  role (or an explicit `unknown-*` with its transcript), and the
-  coverage counts above are refreshed.
+Start by extracting version-scoped candidates from Rosetta and hardening
+the existing native prober for lossless evidence, correlated replies,
+pagination, and schema checks. Then calibrate on identity and IP addresses,
+add an unmapped configuration slice and a grounded private-verb candidate,
+and expand through independent handler-family workers. Controlled changes
+and inverse native writes establish field meanings and write support;
+CLI names/types alone establish neither. Proven results belong in the
+canonical YAML, with unknowns and version limits preserved.
 
 This phase is deliberately separate from the §§16–47 series: that
-series closed the protocol machinery, and this one only widens the
-catalogue that machinery carries.
+series established the shared protocol machinery, and this one develops
+the configuration field and operation catalogue that machinery carries.
 
 ## Layout
 

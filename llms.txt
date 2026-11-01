@@ -52,6 +52,7 @@ forum theories about future protocol changes are not established behavior.
 - [Client analysis](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-winbox-client-re/README.md): WinBox 3.43 analysis using REA/Ghidra.
 - [CHR analysis](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-chr-extraction/README.md): RouterOS extraction, binary analysis, quickchr probes, and promotion status.
 - [Live probe findings](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-chr-extraction/ws3c-prober-findings.md): Version-scoped observations, transcript references, corrections, and open questions.
+- [Configuration attribute and verb plan](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-11-winbox-attributes/attribute-discovery-plan.md): Next-phase agent entrypoint: local Rosetta tables and extraction queries, existing prober gaps, controlled configuration experiments, native verb mapping, schema promotion gates, and parallel handler batches.
 
 ## Other formats and sources
 

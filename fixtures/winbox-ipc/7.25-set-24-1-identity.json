@@ -1,0 +1,310 @@
+{
+	"provenance": {
+		"proof": "work/2026-11-winbox-attributes/proof/7.25-identity",
+		"report": "work/2026-11-winbox-attributes/proof/7.25-identity/report.yaml",
+		"routeros_version": "7.25",
+		"route": [24, 1],
+		"note": "Sanitized M2 hex plus decoded entries only: no timestamps, hosts, ports, or credentials. Source captures retain full envelopes."
+	},
+	"records": [
+		{
+			"id": "baseline-get-reply",
+			"role": "GET [24,1] reply; name=CHR version=7.25",
+			"source": "step-01-baseline.jsonl reqId=2",
+			"hex": "4d320100ff880200000000000b0000000200ff88020018000000010000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff09020d00002104372e32350c00002103434852",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24, 1],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": "7.25"
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x21",
+					"value": "CHR"
+				}
+			]
+		},
+		{
+			"id": "ro-probe-set-tx",
+			"role": "SET field 13 to 9.99-proof (read-only probe)",
+			"source": "step-05-ro-probe.jsonl reqId=7",
+			"hex": "4d320500ff010600ff09070700ff080e00fe000100ff88020018000000010000000200ff880200000000000b0000000d0000210a392e39392d70726f6f66",
+			"cmd": 16646158,
+			"to": [24, 1],
+			"from": [0, 11],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [24, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": "9.99-proof"
+				}
+			]
+		},
+		{
+			"id": "ro-probe-set-ack",
+			"role": "ok-shaped ack despite no-op; compare shape with native-set-ack",
+			"source": "step-05-ro-probe.jsonl reqId=7",
+			"hex": "4d320100ff880200000000000b0000000200ff88020018000000010000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0907",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24, 1],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				}
+			]
+		},
+		{
+			"id": "ro-probe-verify-get",
+			"role": "GET after probe; version still 7.25, name still m2ir-proof-a",
+			"source": "step-05-ro-probe.jsonl reqId=8",
+			"hex": "4d320100ff880200000000000b0000000200ff88020018000000010000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff09080d00002104372e32350c0000210c6d3269722d70726f6f662d61",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24, 1],
+			"reqId": 8,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 8
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": "7.25"
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x21",
+					"value": "m2ir-proof-a"
+				}
+			]
+		},
+		{
+			"id": "native-set-tx",
+			"role": "SET field 12 to m2ir-native-w1",
+			"source": "step-06-native-set.jsonl reqId=9",
+			"hex": "4d320500ff010600ff09090700ff080e00fe000100ff88020018000000010000000200ff880200000000000b0000000c0000210e6d3269722d6e61746976652d7731",
+			"cmd": 16646158,
+			"to": [24, 1],
+			"from": [0, 11],
+			"reqId": 9,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 9
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [24, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x21",
+					"value": "m2ir-native-w1"
+				}
+			]
+		},
+		{
+			"id": "native-set-ack",
+			"role": "ok ack; shape identical to ro-probe-set-ack modulo reqid echo",
+			"source": "step-06-native-set.jsonl reqId=9",
+			"hex": "4d320100ff880200000000000b0000000200ff88020018000000010000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0909",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24, 1],
+			"reqId": 9,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 9
+				}
+			]
+		},
+		{
+			"id": "native-set-verify-get",
+			"role": "GET after native SET; field 12 moved to m2ir-native-w1",
+			"source": "step-06-native-set.jsonl reqId=10",
+			"hex": "4d320100ff880200000000000b0000000200ff88020018000000010000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff090a0d00002104372e32350c0000210e6d3269722d6e61746976652d7731",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24, 1],
+			"reqId": 10,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 10
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": "7.25"
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x21",
+					"value": "m2ir-native-w1"
+				}
+			]
+		}
+	]
+}
