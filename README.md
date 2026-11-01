@@ -40,13 +40,23 @@ for every client, handler, device, or later RouterOS release.
 
 The ongoing research combines WinBox client analysis with REA/Ghidra,
 RouterOS binary analysis, and live probes using
-[tikoci/quickchr](https://github.com/tikoci/quickchr). Findings have already
-landed in the canonical YAML, including handshake corrections, session
-crypto, version-scoped process identities, and GUI handler/field mappings.
-Follow the [client analysis](work/2026-10-winbox-client-re/README.md) and
+[tikoci/quickchr](https://github.com/tikoci/quickchr). Findings have landed
+in the canonical YAML: handshake corrections, session crypto,
+version-scoped process identities, GUI handler/field mappings, native
+retrieval and pagination semantics, the worker/shim process registry, and
+the on-disk persistence rules for rows created over the protocol
+(owner-token rows are reaped at boot; untokened rows persist).
+The [WinBox profile guide](profiles/winbox-ipc/README.md) summarizes what
+is known, in administrator terms. Follow the
+[client analysis](work/2026-10-winbox-client-re/README.md) and
 [CHR research](work/2026-10-chr-extraction/README.md) for the investigation
 trail; the [live probe findings](work/2026-10-chr-extraction/ws3c-prober-findings.md)
 record tested behavior and remaining gaps.
+
+That CHR-lab series (§§16–47 of the findings) is at a natural stopping
+point: its remaining items need real RouterBOARD hardware, LTE/CAPsMAN/PPP
+peers, or user credentials, or are small bounded residues. They are listed
+as parked in the profile guide rather than chased further here.
 
 ## What this knowledge enables
 
@@ -57,8 +67,9 @@ listening for updates for `centrs retrieve` require a deeper understanding
 of the attribute-based messages: which handler owns a field, what its TLV
 (type-length-value) means, and how replies and notifications behave.
 The [GUI handler catalog](profiles/winbox-ipc/gui-handlers.yaml) is a key
-entrypoint for that work; retrieval and update semantics remain an active
-research area.
+entrypoint for that work. Retrieval, pagination, and write/persistence
+semantics are now proven for the catalogued handlers; notification
+behavior and wider handler coverage remain open.
 
 Another goal is a **better Wireshark dissector for WinBox IPC**, with
 schema-derived field names, context-aware handler decoding, and eventually

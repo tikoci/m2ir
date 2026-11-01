@@ -40,7 +40,7 @@ not establish native retrieval or notification behavior.
 - [Standard errors](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/std-errors.yaml): Error identities and evidence.
 - [Processes](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/processes.yaml): Process identities, version differences, and unresolved conflicts.
 - [Private and legacy commands](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/commands.yaml): Handler-specific commands, including terminal-related evidence.
-- [WinBox profile guide](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/README.md): Full file index, including mproxy and undo.
+- [WinBox profile guide](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/README.md): Human summary of what is known (routing, native retrieval, persistence, parked items) plus the full file index, including mproxy and undo.
 
 ## Active research and compatibility
 

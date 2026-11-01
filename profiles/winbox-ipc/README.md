@@ -5,6 +5,164 @@ router. Same `nv::message` grammar as `dude-on-disk/` and `winbox-cdb/`;
 this profile names byte 2 as `namespace` (0xFF=system, 0xFE=session,
 0x00=user) and uses the low bit of the tcode to signal compact length.
 
+This page is the human summary. The YAML files next to it are canonical:
+when this page and a YAML entry disagree, the YAML entry — with its
+`confidence:`, `evidence:`, and `revision-history:` — wins.
+
+## Who this is for
+
+You administer RouterOS and know basic CS concepts (TLV encodings,
+request/reply RPC, key derivation). You want to know what WinBox actually
+says to the router, what parts of that are proven, and what you could
+build or debug with it. You do not need to reverse binaries to use this;
+the evidence trail is linked for when you want to check a claim.
+
+## The conversation in one picture
+
+```text
+WinBox ──TCP/8291──► mproxy ──► loader ──► process (e.g. net, user, sys2)
+           chunked      │         │            │
+           framing      │         └─ routes by SYS_TO [pid, handler, …]
+           EC-SRP5      │            replies swap SYS_TO / SYS_FROM
+           handshake    └─ front-end proxy, handler 2 = file transfer
+           AES-128-CBC session crypto after login
+```
+
+Five layers, each in its own file:
+
+| Layer | File | What it covers |
+|---|---|---|
+| Wire grammar | [`../../physical/nv-message.yaml`](../../physical/nv-message.yaml) | `M2` TLV types, compact lengths, nested messages |
+| Transport | [`transport.yaml`](transport.yaml) | TCP chunk framing (tags 0x01/0x06/0xFF), HKDF magic strings |
+| Login | [`ec-srp5-handshake.yaml`](ec-srp5-handshake.yaml) | Four EC-SRP5 handshake messages, pre-encryption |
+| Session crypto | [`session-crypto.yaml`](session-crypto.yaml) | Key derivation, AES-128-CBC envelopes, MAC, padding |
+| Messages | files below | Handlers, commands, keys, errors, processes |
+
+## What we know, as of RouterOS 6.49.23 / 7.25
+
+Everything below was tested live against CHR instances of those two
+versions plus static binary analysis. It is not a promise about other
+versions, hardware, or every handler.
+
+### Addressing is a path, not a port number
+
+A request carries `SYS_TO = [process-id, handler-id, …]`. The `loader`
+process (the router's internal message router) strips the destination
+process id, prepends the caller id to `SYS_FROM`, and forwards. Each
+process's Looper strips the next handler id and dispatches. Replies swap
+`SYS_TO`/`SYS_FROM`. Practical consequences:
+
+- Process ids are **version-scoped**. They come from loader config
+  (`system.x3`); v6 and v7 maps differ, and v7 ids are only recoverable
+  live. Never hard-code a pid from one version into another.
+- Special routes exist: broadcast `[0xff0001]`, multicast prefix
+  `0xff0002`, and pseudo-pids such as `0xff0003` (the looper fabric
+  itself, not a process).
+- Asking a dead or unroutable pid does not hang forever: the router
+  emits **one finite retry pair** (about 0.9 s after the request, over
+  inside ~4 s), then silence. Earlier notes claimed an endless 1.42 s
+  retry loop; live measurement corrected that.
+
+See [`profile.yaml`](profile.yaml) for the routing model and
+[`processes.yaml`](processes.yaml) for the per-version pid census.
+
+### Processes, workers, and the 1024–1030 shim block
+
+RouterOS services are separate processes (`net`, `user`, `sys2`, …),
+each registering numbered handlers. The confusing part — several pids
+answering as one, worker processes appearing and disappearing — is now
+closed:
+
+- **Workers are the shims.** Processes such as the PPP, IPsec, and
+  certificate workers run as loopers in a boot-persistent block at
+  pids 1024–1030. They never die and re-spawn the way a Unix daemon
+  would; the worker branch is selected inside the same binary.
+- The block holds seven slots: real shims (PPP server handlers
+  {14, 21, 31, 51, 61}, IPsec {3}, certificate {8}, and one empty
+  ssld slot) plus **spare slots** that accept on the internal
+  `/ram/novasock` socket and otherwise stay inert.
+- There is **no static alias table** anywhere in the firmware. Aliases
+  and stubs are boot-time router state built by the loader, which is
+  why they look inconsistent across boots and versions.
+
+### Reading data natively: GETALL, GETONE, ADD, SET, REMOVE
+
+This is the part a tool like `centrs retrieve` needs — asking a handler
+for its objects without driving the CLI. Proven semantics:
+
+- `GETALL` returns a message array (`0xfe0002`) and, when truncated at
+  the ~16 KB cap, a continuation token in `0xfe0003`. Pagination is a
+  lower-bound on row id, not an opaque cursor: pass the last row id to
+  get the rest.
+- **Row order is not creation order and not simple name order.** It is
+  a dual-mode mechanism keyed on (class, name) with a rename fixup, and
+  it differs subtly between v6 and v7. If you diff two GETALL replies,
+  sort by row id yourself; do not read meaning into reply order.
+- `ADD`/`SET`/`REMOVE` address rows by row id (`0xfe0001`) through
+  slot-7 verbs. `SET` with a mistyped field is **silently ignored** —
+  strict typing, no error. Server-derived fields (the `0x10002`/`0x10003`
+  flag words on interfaces) cannot be set at all; they are recomputed
+  by the router from its own state on every bring-up.
+- Field flags are decoded: for example interface flag word `0x10002`
+  bits cover MACVLAN parent, ARP support, and being enslavable, with
+  matching live refusal/acceptance behavior.
+
+See [`gui-handlers.yaml`](gui-handlers.yaml) for per-handler routes and
+field maps, [`std-commands.yaml`](std-commands.yaml) and
+[`std-keys.yaml`](std-keys.yaml) / [`sys-keys.yaml`](sys-keys.yaml) for
+the shared vocabulary, and [`std-errors.yaml`](std-errors.yaml) for
+error codes.
+
+### Persistence: the token is the switch
+
+The most operationally surprising finding. Rows you create over M2 are
+stored by the `sstore` process in `/rw/store/cfg.*` files (u32
+table/rowid/length records wrapping an `M2` payload):
+
+- A row created **without** an owner token (`0xff001e`) **persists**
+  across reboot — and then must be removed explicitly, or it pollutes
+  every later experiment (and, on a real router, stays as config you
+  did not type into the CLI).
+- A row created **with** a token is ephemeral: at the next boot,
+  `sstore`'s boot-load scan tombstones it (a 12-byte length-0 record)
+  and it never instantiates. No periodic reaper exists; this is
+  boot-only, value-free (any token value reaps), and shutdown plays
+  no role.
+- Tombstoned row ids are reserved: automatic allocation is
+  high-water-mark + 1, never reuse; an explicit-rowid ADD can reclaim
+  a tombstoned id and fails with `ERROR_EXISTS` on a live one.
+- The store file rotates and compacts when junk exceeds 4 KB and free
+  space is at least 8× the junk (checked on a minute-scale timer).
+
+Treat untokened M2 writes on a production router as configuration
+changes, because that is what the router does.
+
+### Handlers beyond the GUI
+
+The catalog also covers, among others: the `[13, 6]` = WinBox /
+`[13, 7]` = WebFig split in the `user` process, `/tool/sms` at handler
+125 with its port-state triple, user-list and UserPrefs handlers, and
+the terminal surface (handler 76 privates — a separate protocol, only
+seeded here). mproxy (the TCP/8291 front end) and undo have their own
+seed files.
+
+## What is not known yet — and why it is parked
+
+These are deliberately separated from the results above. Each needs
+something the CHR lab cannot provide, or is a small residue whose
+answer would not change a client implementation:
+
+| Open item | Why parked |
+|---|---|
+| Full RouterBOARD row shape over M2 | Needs real hardware; CHR has no board. Lead: `[24, 35]` on hardware |
+| Handler-134 driver | 40 negative probes; needs LTE/CAPsMAN/PPP peers or a WinBox-native capture |
+| Trial-license (`nlevel`) proof | Blocked on user trial credentials |
+| Terminal surface in depth | Separate protocol; own effort, not a gap in the above |
+| Nano-residues (ssld motive, hid-100 enabling message, alias-vector append site, GC timer exact period, zombie-set membership) | Bounded and recorded in the findings; chasing them needs boot-log/churn setups with marginal payoff |
+
+The full still-open list, with evidence counts, is the tail of
+[`ws3c-prober-findings.md`](../../work/2026-10-chr-extraction/ws3c-prober-findings.md).
+
 ## Layout
 
 - [`profile.yaml`](profile.yaml) — top-level: namespaces, byte-2-as,
@@ -37,9 +195,10 @@ as evidence — the canonical YAML files above are derived from it.
 ## Research and version scope
 
 The current schema incorporates client analysis and live CHR observations
-on RouterOS 6.49.23 and 7.25. Read each entry's confidence, version scope,
-and evidence before reusing a handler ID or field mapping. Native queries
-working on 7.25 do not establish full WinBox 3 client compatibility.
+on RouterOS 6.49.23 and 7.25 (§§16–47 of the probe findings). Read each
+entry's confidence, version scope, and evidence before reusing a handler
+ID or field mapping. Native queries working on 7.25 do not establish
+full WinBox 3 client compatibility.
 
 For ongoing work and reproductions, follow the
 [client analysis](../../work/2026-10-winbox-client-re/README.md),
