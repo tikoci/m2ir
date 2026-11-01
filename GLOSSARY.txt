@@ -594,3 +594,6 @@ echosave # /rw/store/echosave sticky last-unclean-shutdown message (§47)
 reaper # sstore boot-load pass tombstoning tokened store rows (§47)
 tombstone # len-0 store record marking a deleted rowid (12 bytes, §47)
 iff # if-and-only-if shorthand (biconditional claims in schema roles)
+tikapp # v6 [13,3] policy name + Tik-App client (queue-3 user-family fixtures/YAML/tests)
+tik # Tik-App hyphen fragment in the verbatim v6 'connect to the router via Tik-App' description
+nosuchuser # verbatim synthetic probe username in queue-3 [13,6]/[13,7] miss legs ('nosuchuser-q3'; JSON fixtures cannot carry file-local cspell ignores)

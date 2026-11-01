@@ -38,6 +38,8 @@ base-handler-rules:
   evidence:
     - source: code
       ref: "RouterOS libumsg.so base cmdGet/cmdSet/cmdGetAll/cmdUnknown = errorMsg(0xfe0003), missing obj-id = errorMsg(0xfe0004) (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+    - source: sample
+      ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GETOBJ [20,1] without 0xfe0001 -> UNKNOWNID from=[20,1], no total, all versions — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json"
 
 errors:
   0xfe0001: { canonical-name: ERROR_UNKNOWN,        confidence: documented }
@@ -47,10 +49,30 @@ errors:
     evidence:
       - source: sample
         ref: "live CHR interrogation (queue-2 mutation capture batch, 6.49.23, 2026-11-01): [20,125] GET + probe SET -> 0xff0008=16646146 from=[20], errstr null — fixtures/winbox-ipc/6.49-set-20-125-sms-absent.json"
-  0xfe0003: { canonical-name: ERROR_NOTIMP,         confidence: documented }
-  0xfe0004: { canonical-name: ERROR_UNKNOWNID,      confidence: documented }
+      - source: sample
+        ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GET [24,17] -> BRKPATH from=[24]; v6 GET/GETALL [13,9] -> BRKPATH from=[13]; v6 GET [20,125] -> BRKPATH from=[20]; no total/errstr on any — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json"
+  0xfe0003:
+    canonical-name: ERROR_NOTIMP
+    confidence: documented
+    notes: "First live samples: queue-3 census GETALL/GETOBJ legs (not-overridden slots on live handlers) on all 3 versions; no total, no errstr."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GETALL [13,9]/[13,6]/[13,7] + GETOBJ [13,6] obj=1 -> NOTIMP from the full route; no total/errstr — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json"
+  0xfe0004:
+    canonical-name: ERROR_UNKNOWNID
+    confidence: documented
+    notes: "First live samples: queue-3 census missing-id leg + neg-20-61 GET-miss legs on all 3 versions; no total, no errstr."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GETOBJ [20,1] without 0xfe0001 -> UNKNOWNID from=[20,1]; GET bare/f7/f999 [20,61] -> UNKNOWNID from=[20,61]; no total/errstr — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json and {6.49,7.25,7.26beta4}-neg-20-61.json"
   0xfe0005: { canonical-name: ERROR_MISSING,        confidence: documented }
-  0xfe0006: { canonical-name: ERROR_FAILED,         confidence: documented }
+  0xfe0006:
+    canonical-name: ERROR_FAILED
+    confidence: documented
+    notes: "First live sighting: bare GET on [13,6]/[13,7] (selector missing) -> FAILED + 0xff0009/0x21='no user name provided' (21 bytes), identical all 3 versions x both handlers. 0xff0009 rides ONLY these FAILED replies in the census (see sys-keys.yaml SYS_ERRSTR); TOOBIG/MISSING/BUSY errstr legs stay open."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): bare GET [13,6]/[13,7] -> FAILED + errstr — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json"
   0xfe0007: { canonical-name: ERROR_EXISTS,         confidence: documented }
   0xfe0009: { canonical-name: ERROR_NOTALLOWED,     confidence: documented }
   0xfe000a: { canonical-name: ERROR_TOOBIG,         confidence: documented }
@@ -65,3 +87,27 @@ investigation-trail:
       WS-4 drain of first-party grounding: zero-value success convention
       (inferred) + base-handler NOTIMP / missing-id UNKNOWNID rules (see
       also std-commands.yaml dispatch-model).
+  - date: 2026-11-01
+    finding: |
+      Queue-3 read-only error census (11 legs x 3 versions, 26 errors +
+      4 oks + 3 timeouts; fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-
+      error-census.json). Per leg (twin3 7.25 / beta4 7.26beta4 /
+      ws3c6 6.49.23): GET [24,17] -> BRKPATH from=[24] all;
+      GETOBJ [20,1] w/o 0xfe0001 -> UNKNOWNID from=[20,1] all;
+      GET [13,9] -> ok {1:0,2:0} on 7.x, BRKPATH from=[13] on
+      v6; GETALL [13,9] -> NOTIMP 7.x, BRKPATH v6; GET [13,6]
+      + GET [13,7] bare -> FAILED + 0xff0009 'no user name
+      provided' all (first 0xff0009 sighting anywhere — closes
+      the slice-c FAILED errstr-hunt leg; TOOBIG/MISSING/BUSY
+      stay open); GETALL [13,6]/[13,7] + GETOBJ [13,6] obj=1 ->
+      NOTIMP all; GET [20,125] -> ok 17-key singleton on 7.x,
+      BRKPATH from=[20] on v6; GET [999,1] -> SOCKET TIMEOUT on
+      all versions (tx-only, 3s wait, async=0 — first
+      transcript of the truly-unknown-pid timeout). Envelope on
+      every router-error: ff0001/ff0002/[ff001c]/ff0008/
+      ff0003=2/ff0004=2/ff0006=reqid. Cross-cuts: 0xfe0019 AND
+      0xfe0014 absent on every census error (total-on-error is
+      per-verb/per-handler, not universal — refines the
+      total-rides note; cursor-UNKNOWNID still carries it);
+      0xff0009 present ONLY on the 6 FAILED replies; 0xff0004=2
+      on every router-error, absent on every ok.

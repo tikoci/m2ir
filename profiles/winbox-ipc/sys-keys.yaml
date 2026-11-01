@@ -87,6 +87,13 @@ keys:
       Project-PROTOCOL.md mislabels 0xFF0008 as `SYS_STATUS`; per
       Cisco-Talos that's actually `SYS_ERRNO`, and the real `SYS_STATUS`
       is at 0xFF0004.
+      Queue-3 batch (all 12 manifests: 65 router-errors + 64
+      oks, 0 violations): 0xff0004=2 on every router-error;
+      ABSENT (null) on every ok, including GETCOUNT-ok,
+      empty-list-ok, and bare-SYS-only empty-miss replies.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): statusWord on errors, absent on oks — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-{neg-20-61,error-census,nat-raw-f40,user-family}.json"
 
   0xff0005:
     canonical-name: SYS_REPLYEXP
@@ -128,7 +135,12 @@ keys:
     canonical-name: SYS_ERRSTR
     physical: { tcodes: [0x20, 0x21] }
     semantic: utf8-string
+    role: "human-readable error string riding some ERROR replies (last key, after SYS_REQID)"
     confidence: documented
+    notes: "First sighting anywhere (queue-3 census): bare GET on [13,6]/[13,7] -> FAILED + 0xff0009/0x21='no user name provided' (len 0x15=21, wire tail `0900ff21156e6f2075736572206e616d652070726f7669646564`), identical all 3 versions x both handlers (6 replies). Absent on every other census reply (all BRKPATH/NOTIMP/UNKNOWNID/timeout legs + all oks). TOOBIG/MISSING/BUSY errstr legs stay open."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): first 0xff0009 sighting on the FAILED legs — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json"
 
   0xff000a:
     canonical-name: SYS_USER

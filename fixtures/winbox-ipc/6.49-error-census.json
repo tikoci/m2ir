@@ -1,0 +1,852 @@
+{
+	"provenance": {
+		"report": "queue-3 read-only capture batch, 2026-11-01 (live CHR interrogation; machine + ROS build in note)",
+		"routeros_version": "6.49.23",
+		"route": "census: [24,17], [20,1], [13,9], [13,6], [13,7], [20,125], [999,1]",
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. ROS 6.49.23 build Oct/07/2026 16:05:16, x86_64 CHR. Source manifests retain full envelopes. Read-only error census (11 legs): BRKPATH/NOTIMP/UNKNOWNID/FAILED error codes, first 0xff0009 sighting, [999,1] socket timeout (tx-only record)."
+	},
+	"records": [
+		{
+			"id": "census-get-24-17-bare-tx",
+			"role": "census get-24-17-bare tx",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=35 tx",
+			"hex": "4d320500ff010600ff09230700ff080d00fe000100ff88020018000000110000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [24, 17],
+			"from": [0, 11],
+			"reqId": 35,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 35
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [24, 17]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "census-get-24-17-bare-rx",
+			"role": "census get-24-17-bare reply",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=35 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880100180000000800ff080200fe000300ff09020400ff09020600ff0923",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24],
+			"reqId": 35,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 35
+				}
+			]
+		},
+		{
+			"id": "census-getobj-20-1-no-rowid-tx",
+			"role": "census getobj-20-1-no-rowid tx",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=36 tx",
+			"hex": "4d320500ff010600ff09240700ff080200fe000100ff88020014000000010000000200ff880200000000000b000000",
+			"cmd": 16646146,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 36,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 36
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "census-getobj-20-1-no-rowid-rx",
+			"role": "census getobj-20-1-no-rowid reply",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=36 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000000800ff080400fe000300ff09020400ff09020600ff0924",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 36,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 36
+				}
+			]
+		},
+		{
+			"id": "census-get-13-9-bare-tx",
+			"role": "census get-13-9-bare tx",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=37 tx",
+			"hex": "4d320500ff010600ff09250700ff080d00fe000100ff8802000d000000090000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [13, 9],
+			"from": [0, 11],
+			"reqId": 37,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 37
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 9]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "census-get-13-9-bare-rx",
+			"role": "census get-13-9-bare reply",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=37 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8801000d0000000800ff080200fe000300ff09020400ff09020600ff0925",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13],
+			"reqId": 37,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 37
+				}
+			]
+		},
+		{
+			"id": "census-getall-13-9-bare-tx",
+			"role": "census getall-13-9-bare tx",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=38 tx",
+			"hex": "4d320500ff010600ff09260700ff080400fe000100ff8802000d000000090000000200ff880200000000000b000000",
+			"cmd": 16646148,
+			"to": [13, 9],
+			"from": [0, 11],
+			"reqId": 38,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 38
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 9]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "census-getall-13-9-bare-rx",
+			"role": "census getall-13-9-bare reply",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=38 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8801000d0000000800ff080200fe000300ff09020400ff09020600ff0926",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13],
+			"reqId": 38,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 38
+				}
+			]
+		},
+		{
+			"id": "census-get-13-6-bare-tx",
+			"role": "census get-13-6-bare tx",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=39 tx",
+			"hex": "4d320500ff010600ff09270700ff080d00fe000100ff8802000d000000060000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [13, 6],
+			"from": [0, 11],
+			"reqId": 39,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 39
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 6]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "census-get-13-6-bare-rx",
+			"role": "census get-13-6-bare reply",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=39 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000060000000800ff080600fe000300ff09020400ff09020600ff09270900ff21156e6f2075736572206e616d652070726f7669646564",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 6],
+			"reqId": 39,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 6]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646150
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 39
+				},
+				{
+					"key": "0xff0009",
+					"tcode": "0x21",
+					"value": "no user name provided"
+				}
+			]
+		},
+		{
+			"id": "census-get-13-7-bare-tx",
+			"role": "census get-13-7-bare tx",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=40 tx",
+			"hex": "4d320500ff010600ff09280700ff080d00fe000100ff8802000d000000070000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 40,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 40
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "census-get-13-7-bare-rx",
+			"role": "census get-13-7-bare reply",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=40 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000000800ff080600fe000300ff09020400ff09020600ff09280900ff21156e6f2075736572206e616d652070726f7669646564",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 40,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646150
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 40
+				},
+				{
+					"key": "0xff0009",
+					"tcode": "0x21",
+					"value": "no user name provided"
+				}
+			]
+		},
+		{
+			"id": "census-getall-13-6-bare-tx",
+			"role": "census getall-13-6-bare tx",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=41 tx",
+			"hex": "4d320500ff010600ff09290700ff080400fe000100ff8802000d000000060000000200ff880200000000000b000000",
+			"cmd": 16646148,
+			"to": [13, 6],
+			"from": [0, 11],
+			"reqId": 41,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 41
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 6]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "census-getall-13-6-bare-rx",
+			"role": "census getall-13-6-bare reply",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=41 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000060000000800ff080300fe000300ff09020400ff09020600ff0929",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 6],
+			"reqId": 41,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 6]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 41
+				}
+			]
+		},
+		{
+			"id": "census-getall-13-7-bare-tx",
+			"role": "census getall-13-7-bare tx",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=42 tx",
+			"hex": "4d320500ff010600ff092a0700ff080400fe000100ff8802000d000000070000000200ff880200000000000b000000",
+			"cmd": 16646148,
+			"to": [13, 7],
+			"from": [0, 11],
+			"reqId": 42,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 42
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "census-getall-13-7-bare-rx",
+			"role": "census getall-13-7-bare reply",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=42 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000070000000800ff080300fe000300ff09020400ff09020600ff092a",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 7],
+			"reqId": 42,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 7]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 42
+				}
+			]
+		},
+		{
+			"id": "census-getobj-13-6-obj1-tx",
+			"role": "census getobj-13-6-obj1 tx",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=43 tx",
+			"hex": "4d320500ff010600ff092b0700ff080200fe000100ff8802000d000000060000000200ff880200000000000b0000000100fe0901",
+			"cmd": 16646146,
+			"to": [13, 6],
+			"from": [0, 11],
+			"reqId": 43,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 43
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 6]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 1
+				}
+			]
+		},
+		{
+			"id": "census-getobj-13-6-obj1-rx",
+			"role": "census getobj-13-6-obj1 reply",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=43 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000060000000800ff080300fe000300ff09020400ff09020600ff092b",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 6],
+			"reqId": 43,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 6]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 43
+				}
+			]
+		},
+		{
+			"id": "census-get-20-125-bare-tx",
+			"role": "census get-20-125-bare tx",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=44 tx",
+			"hex": "4d320500ff010600ff092c0700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 44,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 44
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "census-get-20-125-bare-rx",
+			"role": "census get-20-125-bare reply",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=44 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880100140000000800ff080200fe000300ff09020400ff09020600ff092c",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20],
+			"reqId": 44,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 44
+				}
+			]
+		},
+		{
+			"id": "census-get-999-1-unknown-pid-tx",
+			"role": "census get-999-1-unknown-pid tx (no reply: socket timeout)",
+			"source": "ws3c6 6.49.23 cap6-error-census reqId=45 tx",
+			"hex": "4d320500ff010600ff092d0700ff080d00fe000100ff880200e7030000010000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [999, 1],
+			"from": [0, 11],
+			"reqId": 45,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 45
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [999, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		}
+	]
+}

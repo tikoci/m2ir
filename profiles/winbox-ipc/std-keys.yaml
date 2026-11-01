@@ -43,7 +43,10 @@ keys:
     semantic: object-array
     role: "GETALL response envelope: message_array of flat per-row records"
     confidence: documented
-    notes: "First-party: ConfigHandler::cmdGetAll builds 0xfe0002 = message_array[flat_row...] via per-item getMsg(iterator, flags, 0), with optional 0xfe001d first-row (flag-gated) and 0xfe0003 next-start-id when truncated past the 16KB cap."
+    notes: "First-party: ConfigHandler::cmdGetAll builds 0xfe0002 = message_array[flat_row...] via per-item getMsg(iterator, flags, 0), with optional 0xfe001d first-row (flag-gated) and 0xfe0003 next-start-id when truncated past the 16KB cap. Queue-3 empty-table encoding (NAT [20,5] + RAW [20,87], all 3 versions): 0xfe0002/0xa8=[] is PRESENT (wire `0200fea80000`), paired with 0xfe0019/0x9=0 — empty lists carry the rows key, not its absence."
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): empty GETALL carries 0xfe0002=[] + total 0 — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-nat-raw-f40.json"
 
   0xfe0003:
     canonical-name: STD_GETALLID
@@ -209,28 +212,51 @@ keys:
 
   0xfe000c:
     canonical-name: STD_FILTER
-    physical: { tcodes: [0x28, 0x29] }
-    semantic: nested-message
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
+    role: "GETALL flags word (default 5); per-handler selector word on GET paths"
     confidence: documented
     notes: |
-      Project-PROTOCOL.md identifies `FE000C` as STD_FILTER. CONFLICTING
-      first-party + live readings as a u32 GETALL flags word: ConfigHandler
-      reads flags = get<u32>(0xfe000c, default 5) for row assembly, and
-      live values 0/5/0x20000000 return byte-identical replies (ignored
-      for content on 6.49.23/7.25). The documented nested-message shape
-      and the observed u32-flags shape are both recorded; which contexts
-      use which is unresolved. As a SYS_CMD value 0xfe000c is CMD_SHUTDOWN
-      (see std-commands.yaml) — namespaces overlap numerically.
-      Per-handler SELECTOR use proven: [24,31] tests bit 28 (0x10000000)
-      of a request 0xfe000c word to unfold the nested 0xfe0024 mode
-      message (static getter + live proof).
+      First-party: ConfigHandler reads flags = get<u32>(0xfe000c,
+      default 5) for row assembly, and the [20,0] GETALL worker stores
+      the word per version (v6 obj+0x1d8, v7 obj+0x220). Live GETALL
+      legs: values 0/5/0x20000000 return byte-identical replies
+      (ignored for content on 6.49.23/7.25); USER-namespace copies are
+      ignored entirely. Per-handler SELECTOR use proven: [24,31] tests
+      bit 28 (0x10000000) of a request 0xfe000c word to unfold the
+      nested 0xfe0024 mode message (static getter + live differential:
+      bare replies carry no 0xfe0024 on either version). Static-only
+      second selector: the [24,1] getter reads get<u32>(0xfe000c) as a
+      requested-field selector — never probed live, semantics open.
+      As a SYS_CMD value 0xfe000c is CMD_SHUTDOWN (see
+      std-commands.yaml) — namespaces overlap numerically.
+      Wire (encoder-derived from physical/nv-message.yaml + the encU32
+      magnitude rule; no tx capture committed): u32_compact (0x09) for
+      values < 256 (e.g. flags 5 = `0c00fe09 05`), u32_wide (0x08)
+      above (e.g. bit-28 leg = `0c00fe08 00000010`, matching the
+      documented prober invocation `getone 24 31 --xfield
+      16646156=268435456`); small values stay u32 (same compact/wide
+      pairing as the 0xfe0001 row-id).
     evidence:
       - source: code
         ref: "RouterOS libumsg.so ConfigHandler::cmdGetAll flags read (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+      - source: code
+        ref: "RouterOS net [20,0] GETALL worker flags store, both versions (v6 obj+0x1d8, v7 obj+0x220); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+      - source: code
+        ref: "RouterOS v7 sys2 getter 0x805aaec ([24,31] bit-28 -> 0xfe0024) + [24,1] getter 0x8057f5c (get<u32> selector, static-only); see work/2026-10-chr-extraction/sys2-handler-tables.md"
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): flags values ignored for content; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
       - source: sample
-        ref: "live CHR interrogation (identity batch, 7.25): [24,31] bit-28 leg ev/7.25-getone-24-31-bit28.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+        ref: "live CHR interrogation (identity batch, 7.25): [24,31] bit-28 leg ev/7.25-getone-24-31-bit28.json vs bare ev/7.25-getone-24-31.json (no 0xfe0024 either version); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+    revision-history:
+      - date: 2026-11-01
+        belief: "0xfe000c is a nested message (STD_FILTER), with a conflicting u32-flags reading of unknown context split"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "four first-party get<u32>(0xfe000c) sites (cmdGetAll flags, [20,0] worker store, [24,1] selector, [24,31] bit-28 test); the nested label traces to a strawman type tag with no wire, code, or live citation"
+          - source: sample
+            ref: "live CHR interrogation: bit-28 differential proves an integer-word operand; no fixture/proof/transcript carries nested 0xfe000c"
 
   0xfe000d:
     canonical-name: STD_PRESET
@@ -291,10 +317,12 @@ keys:
     semantic: u32
     role: "CMD_GETCOUNT answer payload on v6 (v7 answers in 0xfe0019)"
     confidence: documented
-    notes: "First-party: net-0 slot 18 (getcount) answers with u32(0xfe0014). Live: v6 [20,1] GETCOUNT replies 0xfe0014=1 with NO 0xfe0019; 7.25+7.26beta4 reply 0xfe0019=1 with NO 0xfe0014 — the GETCOUNT answer slot is version-divided (first live GETCOUNT evidence). Distinct from 0xfe0019 GETALL total-count (present on EVERY version)."
+    notes: "First-party: net-0 slot 18 (getcount) answers with u32(0xfe0014). Live: v6 [20,1] GETCOUNT replies 0xfe0014=1 with NO 0xfe0019; 7.25+7.26beta4 reply 0xfe0019=1 with NO 0xfe0014 — the GETCOUNT answer slot is version-divided (first live GETCOUNT evidence). Distinct from 0xfe0019 GETALL total-count (present on EVERY version). Queue-3: the division holds on [20,61]/[20,5]/[20,87]/[13,1]/[13,2]/[13,3]/[13,8] (v6 answers in 0xfe0014, other slot absent each way); GETCOUNT [20,61] answers ok + 4294967295 (0xFFFFFFFF) in the version slot — wire fact, no wider reading claimed."
     evidence:
       - source: sample
         ref: "live CHR interrogation (queue-1 capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): bare GETCOUNT [20,1] rx reqId 2 per version — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getcount-20-1.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GETCOUNT division on 7 more routes + ok + 0xFFFFFFFF on [20,61] — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-{neg-20-61,nat-raw-f40,user-family}.json"
 
   0xfe0015:
     canonical-name: STD_GETALL_COOKIE
@@ -324,9 +352,9 @@ keys:
     canonical-name: STD_OBJ_COUNT
     physical: { tcodes: [0x08, 0x09] }
     semantic: u32
-    role: "TOTAL row count carried on replies (present even on error replies); doubles as the v7 GETCOUNT answer slot"
+    role: "TOTAL row count carried on replies (present even on SOME error replies — cursor-UNKNOWNID carries it, queue-3 census errors do not); doubles as the v7 GETCOUNT answer slot"
     confidence: documented
-    notes: "Live: present even on UNKNOWNID error replies; ABSENT on [20,0] (incl. the 306-row truncated replies) but present (=1) on [20,134] and on [20,1] (=1 all 3 versions) — handler-specific, not universal. Precision: 0xfe0019 is the GETALL total slot on EVERY version — only the GETCOUNT answer slot is version-divided (v6: 0xfe0014, v7: 0xfe0019; first live GETCOUNT evidence)."
+    notes: "Live: present on [20,1] cursor-UNKNOWNID errors (=1); ABSENT on [20,0] (incl. the 306-row truncated replies) but present (=1) on [20,134] and on [20,1] (=1 all 3 versions) — handler-specific, not universal. Precision: 0xfe0019 is the GETALL total slot on EVERY version — only the GETCOUNT answer slot is version-divided (v6: 0xfe0014, v7: 0xfe0019; first live GETCOUNT evidence). Queue-3 refinement: 0xfe0019 (and 0xfe0014) ride NONE of the 26 census errors (BRKPATH/NOTIMP/UNKNOWNID/FAILED) — total-on-error is per-verb/per-handler: [20,1] cursor-UNKNOWNID carries 0xfe0019=1, while selector/verb-miss errors carry no total. The v7 GETCOUNT slot holds on [20,61]/[20,5]/[20,87]/[13,1]/[13,2]/[13,3]/[13,8] incl. ok + 0xFFFFFFFF on [20,61]."
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §7/§8"
@@ -336,6 +364,15 @@ keys:
         ref: "live CHR interrogation (WS-3C prober, both versions): =1 on [20,1] replies — ev/7.25-getall-20-1.json + ev/6.49-getall-20-1.json; per-handler cursor semantics in work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
       - source: sample
         ref: "live CHR interrogation (queue-1 capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GETALL total =1 on [20,1] every version + v7 GETCOUNT answers in 0xfe0019 — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getcount-20-1.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): no total on any of the 26 census errors; v7 GETCOUNT slot on 7 more routes — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-{error-census,neg-20-61,nat-raw-f40,user-family}.json"
+    revision-history:
+      - date: 2026-11-01
+        belief: "0xfe0019 rides error replies (observed on cursor-UNKNOWNID, assumed general)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (queue-3 read-only capture batch, 3 versions): 0xfe0019/0xfe0014 absent on all 26 census errors — total-on-error is per-verb/per-handler; see the error-census fixtures above"
 
   0xfe001a:
     canonical-name: STD_CLASS
@@ -473,3 +510,11 @@ investigation-trail:
       (0xfe0014 on v6, 0xfe0019 on v7); exact-match extras
       ignored by GETALL+GETCOUNT; 0xfe0019 stays the GETALL
       total slot on every version.
+  - date: 2026-11-01
+    finding: |
+      Queue-3 step-1 resolution: 0xfe000c-as-field is u32 (tcodes
+      0x08/0x09), not nested-message — four first-party
+      get<u32>(0xfe000c) sites + live bit-28 differential; the nested
+      label traces to a strawman type tag with no wire, code, or live
+      citation. Name STD_FILTER
+      kept (Talos-documented). Revision history on the entry.

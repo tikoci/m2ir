@@ -181,10 +181,19 @@ commands:
       (version-divided answer slot; see std-keys.yaml). Exact-
       match extras ignored (f5/f1 match + non-match probes, 2
       each, all return count 1), same as GETALL on this route.
-      GETCOUNT on other routes untested.
+      Queue-3: the version division holds on [20,61]/[20,5]/
+      [20,87]/[13,1]/[13,2]/[13,3]/[13,8] (v6: 0xfe0014, 7.x:
+      0xfe0019, other slot absent each way). GETCOUNT answers
+      even where GETALL/GETOBJ do not: [20,61] replies ok +
+      4294967295 (0xFFFFFFFF) in the version slot on all
+      versions — wire fact only; whether other GET-only
+      handlers answer the same is untested. GETCOUNT beyond
+      these 8 routes untested.
     evidence:
       - source: sample
         ref: "live CHR interrogation (queue-1 capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getcount-20-1.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): division on 7 more routes + ok + 0xFFFFFFFF on [20,61] — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-{neg-20-61,nat-raw-f40,user-family}.json"
   0xfe0016: { canonical-name: CMD_RESET,        confidence: documented }
 
 # ── dispatch model (first-party) ──────────────────────────────────────────

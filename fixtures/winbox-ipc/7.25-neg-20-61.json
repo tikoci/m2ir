@@ -1,0 +1,702 @@
+{
+	"provenance": {
+		"report": "queue-3 read-only capture batch, 2026-11-01 (live CHR interrogation; machine + ROS build in note)",
+		"routeros_version": "7.25",
+		"route": [20, 61],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. ROS 7.25 build 2026-10-22 14:12:00, x86_64 CHR. Source manifests retain full envelopes. GET-family negatives on CHR-absent [20,61]: GET bare/f7/f999 miss, GETALL/GETOBJ gating, GETCOUNT ok + 0xFFFFFFFF."
+	},
+	"records": [
+		{
+			"id": "neg-20-61-get-bare-tx",
+			"role": "neg2061 get bare tx",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=2 tx",
+			"hex": "4d320500ff010600ff09020700ff080d00fe000100ff880200140000003d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-get-bare-rx",
+			"role": "neg2061 get bare reply",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=2 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa001000e006d73672d70726f78792d372e32350800ff080400fe000300ff09020400ff09020600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-get-f7-lte1-tx",
+			"role": "neg2061 get f7=lte1 tx",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=3 tx",
+			"hex": "4d320500ff010600ff09030700ff080d00fe000100ff880200140000003d0000000200ff880200000000000b00000007000021046c746531",
+			"cmd": 16646157,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x21",
+					"value": "lte1"
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-get-f7-lte1-rx",
+			"role": "neg2061 get f7=lte1 reply",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=3 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa001000e006d73672d70726f78792d372e32350800ff080400fe000300ff09020400ff09020600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-get-f7-foo-tx",
+			"role": "neg2061 get f7=foo tx",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=4 tx",
+			"hex": "4d320500ff010600ff09040700ff080d00fe000100ff880200140000003d0000000200ff880200000000000b0000000700002103666f6f",
+			"cmd": 16646157,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 4,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 4
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x21",
+					"value": "foo"
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-get-f7-foo-rx",
+			"role": "neg2061 get f7=foo reply",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=4 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa001000e006d73672d70726f78792d372e32350800ff080400fe000300ff09020400ff09020600ff0904",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 4,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 4
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-get-unknown-f999-u32-tx",
+			"role": "neg2061 get unknown f999=u32 tx",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=5 tx",
+			"hex": "4d320500ff010600ff09050700ff080d00fe000100ff880200140000003d0000000200ff880200000000000b000000e703000901",
+			"cmd": 16646157,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x0003e7",
+					"tcode": "0x9",
+					"value": 1
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-get-unknown-f999-u32-rx",
+			"role": "neg2061 get unknown f999=u32 reply",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=5 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa001000e006d73672d70726f78792d372e32350800ff080400fe000300ff09020400ff09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-getall-bare-tx",
+			"role": "neg2061 getall bare tx",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=6 tx",
+			"hex": "4d320500ff010600ff09060700ff080400fe000100ff880200140000003d0000000200ff880200000000000b000000",
+			"cmd": 16646148,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 6,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 6
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-getall-bare-rx",
+			"role": "neg2061 getall bare reply",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=6 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa001000e006d73672d70726f78792d372e32350800ff080300fe000300ff09020400ff09020600ff0906",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 6,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 6
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-getobj-obj-1-tx",
+			"role": "neg2061 getobj obj=1 tx",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=7 tx",
+			"hex": "4d320500ff010600ff09070700ff080200fe000100ff880200140000003d0000000200ff880200000000000b0000000100fe0901",
+			"cmd": 16646146,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 1
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-getobj-obj-1-rx",
+			"role": "neg2061 getobj obj=1 reply",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=7 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa001000e006d73672d70726f78792d372e32350800ff080300fe000300ff09020400ff09020600ff0907",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-getobj-obj-999-tx",
+			"role": "neg2061 getobj obj=999 tx",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=8 tx",
+			"hex": "4d320500ff010600ff09080700ff080200fe000100ff880200140000003d0000000200ff880200000000000b0000000100fe08e7030000",
+			"cmd": 16646146,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 8,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 8
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x8",
+					"value": 999
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-getobj-obj-999-rx",
+			"role": "neg2061 getobj obj=999 reply",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=8 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa001000e006d73672d70726f78792d372e32350800ff080300fe000300ff09020400ff09020600ff0908",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 8,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 8
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-getcount-bare-tx",
+			"role": "neg2061 getcount bare tx",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=9 tx",
+			"hex": "4d320500ff010600ff09090700ff081500fe000100ff880200140000003d0000000200ff880200000000000b000000",
+			"cmd": 16646165,
+			"to": [20, 61],
+			"from": [0, 11],
+			"reqId": 9,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 9
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646165
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "neg-20-61-getcount-bare-rx",
+			"role": "neg2061 getcount bare reply",
+			"source": "twin3 7.25 cap5-neg-20-61 reqId=9 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe08ffffffff0600ff0909",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 9,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 9
+				}
+			]
+		}
+	]
+}
