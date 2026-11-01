@@ -92,14 +92,16 @@ resolutions for `processes.yaml` (all version-scoped to 6.49.23):
 - 29 map entries have no on-disk binary (package NPKs not cached for
   v6: dhcp/hotspot/ppp/wireless/…; plus partd/msgfw/vm/cloudpingd).
 
-## v7.25 process map — DEFERRED (no static source found)
+## v7.25 process map — FOUND in libumsg (§38)
 
-Systematic search: no `loader.x3`/`starter.x3` anywhere (15 `.x3`
-total); v7 `loader`/`sermgr`/`sysinit` contain no binary-name tables
-and (except services) no xml imports; v7 loader spawns `/nova/bin/*`
-via fork/execl tracking Linux pids. v7 IDs are likely assigned at
-boot/install (readdir/spawn order?) — recoverable only live (WS-3C
-prober) or by deep per-binary RE. Do not assume v6 IDs hold on v7.
+Superseded: the map was never in loader/x3 config. The v7 pid
+registry is compiled into libumsg `handler_info` (PR table, 138
+entries, pids 2-172, pid = `prog(binary-name)`; HD table, 296
+menu/store bindings) — see `profiles/winbox-ipc/processes.yaml`
+`handler-info-registry`. No static alias/shim table exists:
+aliases/shims/stubs are boot-atomic dynamic router state. Do not
+assume v6 x3 IDs hold on v7 where the PR table disagrees (pid 61:
+v6 rbbios, v7 ipsec-worker).
 
 ## Next (WS-3B/3C)
 

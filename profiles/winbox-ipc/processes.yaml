@@ -108,9 +108,54 @@ version-observations:
       - source: code
         ref: "RouterOS 6.49.23 .x3 process map (process-map-6.49.23.json); see work/2026-10-chr-extraction/README.md"
   - version: "7.25"
-    source: "DEFERRED — no static source found (no loader.x3/starter.x3; loader/sermgr/sysinit carry no id tables; v7 loader spawns /nova/bin/* via fork/execl)"
+    source: "libumsg handler_info registry (PR table @0x7BB00 + HD table @0x77EE0); see handler-info-registry below"
     mappings: []
-    notes: "v7 ids are likely assigned at boot/install (readdir/spawn order?) — recoverable only live (hscan) or by deep per-binary RE. DO NOT assume v6 ids hold on v7. Live hscans confirm the interrogated paths ([24,x], [20,x], [16,x], [13,x], [65], [10,x], [2,x], [76]) answer on the same numbers on 7.25, but that is a sampled confirmation, not a full map."
+    notes: |
+      FOUND (§38): the v7 pid map is compiled into libumsg (handler_info),
+      not loader/x3 config — pid = prog(binary-name), 138 PR entries
+      covering pids 2-172 (61 = ipsec-worker, NOT rbbios; 76 = mepty).
+      The full map is the PR table itself; read it from the binary, do
+      not transcribe it here. Live hscans confirm the interrogated paths
+      ([24,x], [20,x], [16,x], [13,x], [65], [10,x], [2,x], [76]) answer
+      on the same numbers on 7.25. Do NOT assume v6 x3 numbers hold on
+      v7 where the PR table disagrees (pid 61 is the known case).
+    revision-history:
+      - date: 2026-10-31
+        belief: "DEFERRED — no static source found; v7 ids assigned at boot/install, recoverable only live"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS 7.25 libumsg handler_info PR/HD decode; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+
+handler-info-registry:
+  role: |
+    v7 process/handler identity is compiled into every binary via
+    libumsg `handler_info` — there is no config file to read. PR table:
+    138 entries @0x7BB00, stride 0x1c (name, pid@+0x8, pkg@+0xc,
+    flags@+0x10/+0x14), pids 2-172 (148 is triple-booked test entries).
+    HD table: 296 entries @0x77EE0, stride 0x34 (owner-PR-ptr@+0x0, two
+    names, id2@+0x20 = ((pid+1)<<24)|((hid+1)<<16)|flags) = menu/store
+    bindings (98 menus; `cert/settings` = [19,13] calibration exact).
+    pkg@+0xc indexes a package table (0x10 stride: ppp=0x13,
+    security=0x16). Thesis: pid identity is compiled in; compat
+    (aliases/shims/stubs) is pure boot-time router state, not a table.
+  alias-table:
+    verdict: "NO static alias/shim table exists (exhaustive negative)"
+    searched: "loader .text/.rodata (no pid literals/names), all v7 x3 (no loader dir), mproxy (hids {1,2}, no fork, no 0x400+ refs), PR (no 102x, no alias field), HD (no shim rows; client pids 12/61/75/89 have ZERO rows), family binaries (no shim-pid immediates/fork), kernel image (stripped, unproductive)"
+    conclusion: |
+      Routing = loader dynamic peer-tree (plain pid find, no rewrite
+      step) + mproxy retry (see std-commands.yaml 0xfe0014). Aliases,
+      shims and stub entries are boot-time router state, complete
+      before the first M2 reply (boot-race: 38/38 rounds identical).
+      Residual nano: insertion agent (loader-rule vs self-registration
+      — externally indistinguishable). Correlation lead (not proof):
+      shim order 89/61/75/12 matches PR flags-descending 4/4 exact.
+  confidence: observed-only
+  evidence:
+    - source: code
+      ref: "RouterOS 7.25 libumsg handler_info PR @0x7BB00 / HD @0x77EE0 full decode + alias-table negative census; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+    - source: sample
+      ref: "live CHR interrogation (registry batch, 7.25): pid sweep 0-433 + boot-race 38/38; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
 
 transient-process-observations:
   - binary: /nova/bin/login
@@ -127,12 +172,14 @@ transient-process-observations:
     source: "live CHR interrogation (census batch + shim census, 7.25)"
     notes: |
       IDENTIFIED (findings §23): process id 1025 (0x401) is the
-      pid-61 (rbbios) compat shim in the boot-persistent
-      1024-1030 block — single NOTIMP stub handler 3, shim-8
-      envelope (native + 0xff000b=-1). Every v7 [61,H] rewrites
-      to [1025,H] byte-for-byte. Spawner/mechanism (loader?
-      kernel IPC table?) still open; no /nova/bin owner exists.
-      See processes.0x401 + cross-process-proxies.
+      pid-61 compat shim in the boot-persistent 1024-1030 block —
+      single NOTIMP stub handler 3, shim-8 envelope (native +
+      0xff000b=-1). Every v7 [61,H] rewrites to [1025,H]
+      byte-for-byte. Mechanism (§38): no static table exists —
+      aliases/shims/stubs are boot-atomic dynamic router state
+      (loader peer-tree); only the insertion agent (loader-rule vs
+      self-registration) stays open as a nano. No /nova/bin owner.
+      See processes.0x401 + handler-info-registry.
 
 registered-handler-observations:
   - binary: /nova/bin/mproxy
@@ -274,7 +321,7 @@ cross-process-proxies:
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-hscan-19.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
   - from: [89, "<any>"]
     to: [1024, "<same>"]
-    role: "v7-only: bare [89] answered from=[1024] (shim-8 envelope). 1024 = pid-89 (ppp-worker) compat shim: NOTIMP stubs {14,21,31} (0-40) — duplicating (not complementing) pid-27-live, which serves a superset incl. data at [27,21]/[27,31]. ppp-worker binary unavailable on v7 (absent from 7.25 all_packages), so the former set is unverified. Boot-persistent."
+    role: "v7-only: bare [89] answered from=[1024] (shim-8 envelope). 1024 = pid-89 (ppp-worker) compat shim: NOTIMP stubs {14,21,31,51,61} (§38 hscan 0-200; 51/61 sat above the §23 ceiling) = exactly ppp's server handlers (pptp 21, l2tp 31, ovpn 51, sstp 61, + 14) — duplicating (not complementing) pid-27-live, which serves a superset incl. data at [27,21]/[27,31]. INERT to service state (pptp enable flips [27,21] to data; [1024,21] stays NOTIMP). Boot-persistent."
     confidence: observed-only
     evidence:
       - source: sample
@@ -628,7 +675,10 @@ processes:
       sys2 relay is absent (corrected from "server-dead"). v7 has NO
       rbbios binary (board strings moved to `mode`, which has no M2
       handlers) and routes pid-61 to pid-1025 (see
-      cross-process-proxies).
+      cross-process-proxies). The v7 PR registry names pid 61
+      ipsec-worker, NOT rbbios (§38) — the 1025 stub {3} is a subset
+      of the ipsec family static set, so the shim preserves the v7
+      pid-61 shape, not a v6 rbbios ghost.
     evidence:
       - source: code
         ref: "RouterOS 6.49.23 .x3 process map + rbbios analysis; see work/2026-10-chr-extraction/README.md + net-bridge2-handler-tables.md §5 + routerboard-hunt.md §7"
@@ -766,10 +816,12 @@ processes:
     confidence: observed-only
     notes: |
       v7-only: pid-89 (ppp-worker) compat shim in the
-      boot-persistent 1024-1030 block. NOTIMP stubs {14,21,31}
-      (0-40; above-40 untested); shim-8 envelope (native +
-      0xff000b=-1). No /nova/bin owner (complete v7 census).
-      Spawner/mechanism open. See cross-process-proxies.
+      boot-persistent 1024-1030 block. NOTIMP stubs
+      {14,21,31,51,61} (§38 hscan 0-200) = ppp's server
+      handlers; shim-8 envelope (native + 0xff000b=-1); INERT
+      to service state. No /nova/bin owner (complete v7 census).
+      Mechanism: boot-atomic dynamic state (§38). See
+      cross-process-proxies + handler-info-registry.
     evidence:
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-hscan-102x-wide.txt + ev/7.25-postreboot-block.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
@@ -777,14 +829,16 @@ processes:
     canonical-name: compat-shim-1025
     confidence: observed-only
     notes: |
-      v7-only: pid-61 (rbbios) compat shim in the boot-persistent
-      1024-1030 block. Sole NOTIMP stub handler 3 (0-40;
-      above-40 untested) — UNIQUE to 1025 ([24,3] gives
-      BRKPATH); shim-8 envelope; answers all v7 pid-61
-      requests byte-for-byte (see cross-process-proxies).
-      Static/shared: per-session REFUTED, factory-reset +
-      reboot stable. No /nova/bin owner (complete v7 census);
-      spawner/mechanism open.
+      v7-only: pid-61 compat shim in the boot-persistent
+      1024-1030 block (v7 PR names pid 61 ipsec-worker, not
+      rbbios — §38). Sole NOTIMP stub handler 3 (hscan 0-200)
+      — UNIQUE to 1025 ([24,3] gives BRKPATH); stub {3} is a
+      subset of the ipsec family static set; shim-8 envelope;
+      answers all v7 pid-61 requests byte-for-byte (see
+      cross-process-proxies). Static/shared: per-session
+      REFUTED, factory-reset + reboot stable. No /nova/bin
+      owner (complete v7 census). Mechanism: boot-atomic
+      dynamic state (§38); insertion agent stays a nano.
     evidence:
       - source: sample
         ref: "live CHR interrogation (census batch, 7.25): ev/7.25-hscan-1025.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
@@ -805,9 +859,10 @@ processes:
     notes: |
       v7-only: pid-75 (cerm-worker) compat shim in the
       boot-persistent 1024-1030 block. Sole NOTIMP stub handler
-      8 (0-40; above-40 untested) — the complement of
-      pid-19-live (cerm-worker static-15 minus 8); shim-8
-      envelope. No /nova/bin owner. See cross-process-proxies.
+      8 (§38 hscan 0-200) — the complement of pid-19-live
+      (cerm-worker static-15 minus 8); cerm and cerm-worker
+      binaries are byte-identical (§38); shim-8 envelope.
+      No /nova/bin owner. See cross-process-proxies.
     evidence:
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-hscan-19.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
@@ -816,43 +871,76 @@ processes:
     confidence: observed-only
     notes: |
       v7-only: pid-12 (ssld) compat shim in the boot-persistent
-      1024-1030 block. Handlerless (0-130) — exactly matching
-      ssld's zero static addHandlers; shim-8 envelope on
-      bare-GET. No /nova/bin owner. See cross-process-proxies.
+      1024-1030 block. Handlerless (§38 hscan 0-200) — exactly
+      matching ssld's zero static addHandlers; shim-8 envelope
+      on bare-GET. No /nova/bin owner. See cross-process-proxies.
     evidence:
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-hscan-102x-wide.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
   0x404:
-    canonical-name: unknown-transient-1028
+    canonical-name: spare-shim-1028
     confidence: observed-only
     notes: |
-      v7-only, boot-persistent 1024-1030 block member:
-      handlerless (0-130) + aliasless (no inbound alias in
-      0-180); bare-GET shim-8 envelope (NOTIMP + policy−1).
-      Role open (spare? conditional shim?). No /nova/bin owner.
+      v7-only spare slot in the pre-created 7-slot compat block
+      (1024-1030) — CLOSED (§38): no inbound alias in the
+      reliable 0-433 sweep (only the §23 six reproduce; legacy
+      pids and PR ids all sit below the block), no handlers
+      0-200 (all UNKNOWNID), every verb shim-NOTIMP-shaped,
+      boot-atomic with the claimed shims, inert to service
+      state. Bare-GET shim-8 envelope (NOTIMP + policy−1).
+      No /nova/bin owner.
     evidence:
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-sweep-pid-131-180.txt + ev/7.25-hscan-102x-wide.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
+      - source: sample
+        ref: "live CHR interrogation (registry batch, 7.25): ev/7.25-getone-1028.json + sweep 0-433 + hscan 0-200; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+    revision-history:
+      - date: 2026-10-31
+        belief: "unknown-transient-1028: role open (spare? conditional shim?)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (registry batch, 7.25): spare-slot closure; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
   0x405:
-    canonical-name: unknown-transient-1029
+    canonical-name: spare-shim-1029
     confidence: observed-only
     notes: |
-      v7-only, boot-persistent 1024-1030 block member:
-      handlerless (0-130) + aliasless (no inbound alias in
-      0-180); bare-GET shim-8 envelope. Role open. No owner.
+      v7-only spare slot (1024-1030 block) — CLOSED (§38):
+      same negative census as 1028 (no alias 0-433, no
+      handlers 0-200, shim-NOTIMP verbs, boot-atomic, inert).
+      Bare-GET shim-8 envelope. No /nova/bin owner.
     evidence:
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-sweep-pid-131-180.txt + ev/7.25-hscan-102x-wide.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
+      - source: sample
+        ref: "live CHR interrogation (registry batch, 7.25): ev/7.25-getone-1029.json + sweep 0-433 + hscan 0-200; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+    revision-history:
+      - date: 2026-10-31
+        belief: "unknown-transient-1029: role open"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (registry batch, 7.25): spare-slot closure; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
   0x406:
-    canonical-name: unknown-transient-1030
+    canonical-name: spare-shim-1030
     confidence: observed-only
     notes: |
-      v7-only, boot-persistent 1024-1030 block member:
-      handlerless (0-130) + aliasless (no inbound alias in
-      0-180); bare-GET shim-8 envelope. Role open. No owner.
+      v7-only spare slot (1024-1030 block) — CLOSED (§38):
+      same negative census as 1028 (no alias 0-433, no
+      handlers 0-200, shim-NOTIMP verbs, boot-atomic, inert).
+      Bare-GET shim-8 envelope. No /nova/bin owner.
     evidence:
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-sweep-pid-131-180.txt + ev/7.25-hscan-102x-wide.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
+      - source: sample
+        ref: "live CHR interrogation (registry batch, 7.25): ev/7.25-getone-1030.json + sweep 0-433 + hscan 0-200; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+    revision-history:
+      - date: 2026-10-31
+        belief: "unknown-transient-1030: role open"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (registry batch, 7.25): spare-slot closure; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
 
 investigation-trail:
   - date: 2026-07-14
@@ -902,3 +990,21 @@ investigation-trail:
       addHandler census (1 dynamic site; shims ownerless);
       SSH-spawn negative (no login helper on 7.25).
       Rewrite-table location + 1028-1030 roles stay open.
+  - date: 2026-10-31
+    finding: |
+      Registry batch (findings §38): v7 pid registry FOUND in
+      libumsg handler_info (PR 138 entries pids 2-172, pid =
+      prog(binary-name); 61 = ipsec-worker not rbbios; HD 296
+      menu/store bindings) — the §18-era "v7 static map
+      DEFERRED" belief is superseded. NO static alias/shim
+      table exists (exhaustive negative): aliases + shims +
+      stubs are boot-atomic dynamic router state, complete
+      before the first M2 reply — rewrite-table location
+      CLOSED. 1024 stubs extended to {14,21,31,51,61} (ppp
+      server handlers, inert); 1028/1029/1030 CLOSED as spare
+      shim slots (renamed spare-shim-*); retry protocol for
+      unroutable pids decoded (endless ~1.42s 0xfe0014 pair,
+      pseudo-pid 0xff0003 — see std-commands.yaml). Still
+      open: insertion agent + 0xff0003 identity (nanos),
+      routerboard full shape (needs hardware), 134 driver,
+      terminal surface, nlevel proof (needs credentials).

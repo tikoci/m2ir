@@ -296,7 +296,7 @@ handlers:
     open-questions:
       - "Where does the FULL /system/routerboard shape (model/serial/firmware) live over M2 on 6.49.23/7.25 — text-only via terminal, or a process not yet hunted?"
       - "Which version (if any) served the RB shape at [24,17]?"
-      - "What is v7 pid 1025 (answers pid-61 requests; single NOTIMP handler 3)?"
+      - "RESOLVED (§23/§38, processes.yaml 0x401): v7 pid 1025 is the pid-61 compat shim (sole NOTIMP stub 3, subset of the ipsec family set; v7 PR names pid 61 ipsec-worker)."
 
   license:
     sys-to: [65]

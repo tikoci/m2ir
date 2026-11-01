@@ -86,7 +86,24 @@ commands:
   0xfe0011: { canonical-name: CMD_CANCEL,       confidence: documented }
   0xfe0012: { canonical-name: CMD_SUBSCRIBE,    confidence: documented }
   0xfe0013: { canonical-name: CMD_UNSUBSCRIBE,  confidence: documented }
-  0xfe0014: { canonical-name: CMD_DISCONNECTED, confidence: documented }
+  0xfe0014:
+    canonical-name: CMD_DISCONNECTED
+    confidence: documented
+    notes: |
+      Observed second use (§38): mproxy's unroutable-pid retry
+      notify. One GET to a dead pid yields an endless ~1.42s
+      PAIR, never an answer — (A) TO=[] FROM=[0xff0003,slot]
+      and (B) TO=[] FROM=[2,slot] (policy -1), both carrying
+      SYS_CMD=0xfe0014 with slot=(ctr<<8)|6 from a global
+      counter. FROM[0]=0xff0003 is a router pseudo-pid (identity
+      open, nano); the slots are not addressable (GET [2,slot]
+      -> UNKNOWNID). Probes must match on SYS_REQID — unmatched
+      reads misattribute these pairs. Distinct from the
+      0xfe0014 FIELD in std-keys.yaml (GETCOUNT answer, other
+      namespace).
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (registry batch, 7.25): endless 1.42s retry pair on dead pids; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
   0xfe0015: { canonical-name: CMD_GETCOUNT,     confidence: documented }
   0xfe0016: { canonical-name: CMD_RESET,        confidence: documented }
 

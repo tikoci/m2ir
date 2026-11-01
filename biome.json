@@ -30,5 +30,13 @@
 				"organizeImports": "on"
 			}
 		}
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["work/2026-10-chr-extraction/ws3c/ev/**"],
+			"formatter": {
+				"enabled": false
+			}
+		}
+	]
 }

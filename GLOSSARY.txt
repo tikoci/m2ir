@@ -503,3 +503,48 @@ txman # transmit manager (RouterOS net/qos/txman handler 120)
 SMP # symmetric multiprocessing (RouterOS /rw/DISABLE_SMP boot flag, [24,10] field 1)
 eoipv # family-string fragment (RouterOS eoipv6- tunnel name in the v7 type string block)
 greip # family-string fragment (RouterOS greip4-/greip6- tunnel names in the v7 type string block)
+# ws3c prober / §28-38 batch vocabulary (2026-10-31 findings sweep)
+hids # handler ids (registered-handler shorthand in census notes)
+ttl # time-to-live (IP header field; firewall change-ttl)
+unroutable # pid with no live route (mproxy retry-pair trigger)
+unprobed # pid range not yet swept live
+misattributed # reply matched to the wrong request (retry-pair pollution)
+unchased # lead noted but not yet followed
+psweep # pid-sweep probe pattern (reconnect per dead pid)
+qcow # qcow2 CHR disk image shorthand
+dscp # Differentiated Services field (firewall change-dscp)
+netmap # NAT netmap action (RouterOS firewall)
+cexx # C++ exception shorthand in static RE notes
+clr # clear-operation shorthand in evidence file tags
+CPIN # modem CPIN (SIM PIN state, LTE aux handlers)
+MBIM # Mobile Broadband Interface Model (LTE modem protocol)
+QMI # Qualcomm MSM Interface (LTE modem protocol)
+NEWLINK # netlink NEWLINK message (interface creation events)
+netlink # Linux netlink socket family
++Netlink # capitalized netlink (sentence-initial in findings prose)
+STP # Spanning Tree Protocol (bridge)
+ussd # Unstructured Supplementary Service Data (LTE/modem)
+RMW # read-modify-write (store field update pattern)
+enslavable # interface that can be enslaved to a bridge/bond
+stackable # interface type that stacks (vlan/bond candidates)
+parentless # row with no parent interface
+rowids # plural of row-id (M2 object row identifiers)
+teardowns # plural of teardown (session/handler teardown events)
+tombstoning # marking a deleted store row instead of removing it
+unhide # bridge/vlan unhide operation (hidden-port reversal)
+UNHIDE # all-caps unhide flag form in static notes
+unslave # remove an interface from its bridge/bond master
+unport # remove a bridge port binding
+hyperscale # CHR hyperscale lab shape shorthand
+vrrpip # VRRP-IP evidence tag fragment (vrrp interface + ip)
+noset # no-SET evidence tag (M2-ADD persistence matrix)
+notoken # no-token evidence tag (0xff001e persistence matrix)
+Untokened # sentence-initial untokened (M2-ADD without owner token)
+untokened # M2-ADD without the 0xff001e owner token
+tokenee # interface carrying an owner token (guard subject)
+tokgate # token-gate evidence tag (0xff001e boot-skip forensics)
+tokset # token-set evidence tag (SET with owner token)
+oncli # on-CLI evidence tag (CLI-created row baseline)
+slaveset # slave-set evidence tag (master/slave SET probes)
+webprefs # WebFig preferences handler shorthand ([13,7])
+rmsent # evidence tag fragment (remove-sent probes)

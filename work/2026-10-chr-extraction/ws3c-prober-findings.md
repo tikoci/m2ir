@@ -1972,10 +1972,10 @@ Four twin3 graceful-reboot cycles
 stopped; all test vlans CLI-removed,
 2-row baseline verified; left
 STOPPED) plus static (creation path
-+ slot-7 verbs + serializer). 10
+plus slot-7 verbs + serializer). 10
 transcripts: `ev/7.25-getall-20-0-
 m2{persist,full,notoken,noset}-*.json`
-+ `m2oncli-post` + `m2persist-clean`.
+plus `m2oncli-post` + `m2persist-clean`.
 
 - **RECIPE: omit 0xff001e.** Untokened
   M2-ADD (+ parent 0x7d2) persists
@@ -2004,7 +2004,7 @@ m2{persist,full,notoken,noset}-*.json`
 - **Row-SET addressing CLOSED
   (bonus, §28 micro-thread):**
   `raw 20 0 0xfe0003` slot-7 SETOBJ
-  + 0xfe0001=rowid (NOT name, NOT
+  plus 0xfe0001=rowid (NOT name, NOT
   setone/0xfe000e). Slot-7 verbs:
   SET=0x8066b08, GETALL=0x80675bc,
   ADD=0x8066821, REMOVE=0x8066fb5.
@@ -2171,7 +2171,7 @@ destructor) plus disk forensics
 rootless; store carved with
 prober m2.ts). 4 transcripts:
 `ev/7.25-raw-20-0-tokgate-add.json`
-+ `ev/7.25-getall-20-0-tokgate-
+plus `ev/7.25-getall-20-0-tokgate-
 {live,post,clean}.json`.
 
 - **Write-skip DEAD (§26
@@ -2467,7 +2467,7 @@ trigger (nano), store-rotation
 trigger (nano). CLOSED this batch:
 bit-0 (static-proof: learned-import
 gate; live split proven impossible)
-+ f2 re-derivation + rotation.
+plus f2 re-derivation + rotation.
 
 ## 37. 134 matrix: 21 negatives, driver still unknown (2026-10-31)
 
@@ -2651,7 +2651,7 @@ STOPPED). 3 transcripts:
   (loader-rule vs
   self-registration —
   externally indistinguishable)
-  + 0xff0003 identity. LEAD
+  plus 0xff0003 identity. LEAD
   (correlation, not proof):
   shim order 89/61/75/12 ↔
   PR-f10-descending
