@@ -2958,3 +2958,130 @@ on user credentials), reaper trigger
 f137 mechanism + echo + NAT map +
 WebFig method (§39), 0xff0003
 identity (§40), shim agent (§41).
+
+## 42. Retry pairs: finite, zombie-triggered (2026-11-01)
+
+Sub-nano 1 CLOSED as a §38
+correction. Live twin3 (fresh
+boots, full re-sweeps, btest
+toggle + revert, twin STOPPED)
+plus static (mproxy/loader/
+libumsg7) + archaeology of §38
+artifacts (sweep-0-1100.txt,
+bootrace.txt, slotprobe.ts —
+all /tmp, ephemeral).
+
+- **§38 ENDLESS refuted: ONE
+  pair per zombie-pid GET.**
+  Leg A (FROM=[0xff0003,slot])
+  then leg B (FROM=[2,slot]
+  policy-1), both CMD=0xfe0014,
+  first leg ~0.87s after the
+  GET, flow over inside ~4s
+  (the NEXT sweep slot is
+  clean — [89] got its own
+  answer, no mismatch). All 17
+  §38 leg-slots log leg-B =
+  2nd-of-pair (first-read A,
+  drain B, then drain
+  timeouts). bootrace: ZERO
+  pairs in 38 rounds (skip
+  code never fired).
+  slotprobe has NO saved
+  output (comment only). No
+  endless flow exists, so the
+  §40 ping-pong hypothesis is
+  REFUTED and no 1.42s pacer
+  is needed (static: mproxy
+  timers = 100ms iface-log,
+  6s self-rearm 12s-age
+  reaper, 6s log; loader:
+  none; libumsg polls dynamic;
+  no 1420 immediate anywhere).
+- **Trigger = boot-state
+  zombie set, NOT any-dead-
+  pid.** Re-sweep 0–260 +
+  990–1040 on a clean boot =
+  ZERO legs; all 17 §38
+  leg-slots → clean TIMEOUTs;
+  alive-set IDENTICAL
+  (aliases, forwards, compat
+  block all match).
+  +2min-post-boot probe
+  silent. In §38, 6/17 legs
+  arrived on VIRGIN conns
+  (want=100, post-reconnect)
+  → request-triggered and
+  deterministic per pid ON
+  THAT BOOT. §38 zombie set
+  (0–389 swept): {88, 90,
+  102, 103, 105, 106, 113,
+  121, 122, 125, 142–145,
+  152, 206, 244}. v6 x3 map:
+  88=wireless, 103=dudes —
+  both registered but
+  binary-absent (permanent
+  zombies); 92=partd also
+  absent but SILENT (no
+  feature flags — candidate
+  discriminator). Model:
+  stale loader peer entries
+  from that boot's churn
+  (service/dirty-restore
+  history); clean boot =
+  clean tree = silence.
+  btest kill-churn repro:
+  negative (bounded).
+- **1.42s UNPROVENANCED.**
+  No timestamped artifact
+  survives; the number came
+  from the §38 session with
+  no log. Re-measurement
+  needs a zombie-bearing
+  boot. Kept: first-leg
+  latency ~0.87s (sweep
+  drain timing). slot ctr is
+  global, +1..+2 per pair
+  (A/B same-or-adjacent
+  slots — unresolved; no
+  leg-A capture was ever
+  logged).
+- **Static construction
+  sites STAND** (the per-pair
+  build path): leg-A shape =
+  sendMessage 0xff0003-branch
+  output (TO consumed, FROM
+  stamped); leg-B = mproxy
+  worker slot=(obj+8<<8)|6;
+  policy-1 = loader ZOMBIE
+  notice 0x805753e (reached
+  via this-adjusting thunk,
+  one-shot per zombification).
+  v7 dispatch note: libumsg
+  handleCmd JT bound 0x1a,
+  case 0x14 → `call *0x74`
+  (slot 29 = cmdDisconnected;
+  schema dispatch-model slot
+  24 is v6-based). Bonus
+  correction: 0x8058788 is a
+  VTABLE, not the 18s timer
+  callback.
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (40 negatives; needs
+peers or WinBox-native capture —
+bounded to fabric-only writers),
+terminal surface (lower
+priority), nlevel proof (TRACTABLE
+via quickchr trial license — blocked
+on user credentials), reaper trigger
+(nano), store-rotation trigger
+(nano), shim route-insert site
+(sub-nano), worker-absence trigger
+(sub-nano), stub-subset criterion
+(sub-nano), zombie-set membership
+rule + 1.42s re-measurement (need a
+zombie-bearing boot). CLOSED this
+batch: retry-pairing mechanics
+(§42 — finite-pair correction).

@@ -90,25 +90,34 @@ commands:
     canonical-name: CMD_DISCONNECTED
     confidence: documented
     notes: |
-      Observed second use (§38): mproxy's unroutable-pid retry
-      notify. One GET to a dead pid yields an endless ~1.42s
-      PAIR, never an answer — (A) TO=[] FROM=[0xff0003,slot]
-      and (B) TO=[] FROM=[2,slot] (policy -1), both carrying
-      SYS_CMD=0xfe0014 with slot=(ctr<<8)|6 from a global
-      counter. FROM[0]=0xff0003 is the looper-fabric pseudo-pid
+      Observed second use (§38, corrected §42): mproxy's
+      unroutable-pid retry notify. One GET to a ZOMBIE pid
+      (stale loader peer entry — NOT any dead pid) yields ONE
+      finite PAIR, never an answer — (A) TO=[]
+      FROM=[0xff0003,slot] and (B) TO=[] FROM=[2,slot]
+      (policy -1), both carrying SYS_CMD=0xfe0014 with
+      slot=(ctr<<8)|6 from a global counter (+1..+2 per
+      pair). FROM[0]=0xff0003 is the looper-fabric pseudo-pid
       (§40: leg A = sendMessage's 0xff0003-branch output);
       the slots are not addressable (GET [2,slot]
-      -> UNKNOWNID). Probes must match on SYS_REQID — unmatched
-      reads misattribute these pairs. Distinct from the
-      0xfe0014 FIELD in std-keys.yaml (GETCOUNT answer, other
-      namespace). No 1420ms timer exists (mproxy: 100/6000/18000ms;
-      loader: none) — the period is emergent (ping-pong
-      hypothesis, sub-nano open).
+      -> UNKNOWNID). First leg ~0.87s after the GET; flow
+      over inside ~4s. Probes must match on SYS_REQID —
+      unmatched reads misattribute these pairs. Distinct
+      from the 0xfe0014 FIELD in std-keys.yaml (GETCOUNT
+      answer, other namespace). No endless flow exists, so
+      the §40 ping-pong hypothesis is REFUTED and no pacer
+      is needed (mproxy timers = 100ms iface-log, 6s
+      self-rearm 12s-age reaper, 6s log; loader: none). The
+      §38 "1.42s" is UNPROVENANCED (no timestamped artifact;
+      re-measurement needs a zombie-bearing boot). Trigger
+      is boot-state-dependent: clean boots are silent.
     evidence:
       - source: sample
-        ref: "live CHR interrogation (registry batch, 7.25): endless 1.42s retry pair on dead pids; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+        ref: "live CHR interrogation (registry batch, 7.25): retry pair on zombie pids; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
       - source: code
         ref: "RouterOS 7.25 libumsg/mproxy/loader retry-path decode (pushNotifies TO=[0xff0003], sendMessage 0xff0003 branch, leg-B worker, timer census); see work/2026-10-chr-extraction/ws3c-prober-findings.md §40"
+      - source: sample
+        ref: "live CHR re-sweep + artifact archaeology (7.25): finite-pair correction, zombie trigger, ping-pong refuted, 1.42s unprovenanced; see work/2026-10-chr-extraction/ws3c-prober-findings.md §42"
   0xfe0015: { canonical-name: CMD_GETCOUNT,     confidence: documented }
   0xfe0016: { canonical-name: CMD_RESET,        confidence: documented }
 
@@ -123,7 +132,10 @@ dispatch-model:
     a missing GETOBJ-family object id answers errorMsg(0xfe0004) =
     ERROR_UNKNOWNID. Command, error, and field namespaces overlap
     numerically (context-dependent) — e.g. 0xfe000c is CMD_SHUTDOWN as
-    a command but the GETALL flags word as a field.
+    a command but the GETALL flags word as a field. v7 note (§42):
+    7.25 handleCmd bounds the table at 0x1a (not 23 entries) and
+    case 0x14 calls slot 29 (cmdDisconnected) — the slot-24
+    cmdDisconnected mapping above is v6-based.
   slot-map:
     9: cmdGet
     10: cmdSet

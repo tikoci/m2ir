@@ -1021,8 +1021,10 @@ investigation-trail:
       CLOSED. 1024 stubs extended to {14,21,31,51,61} (ppp
       server handlers, inert); 1028/1029/1030 CLOSED as spare
       shim slots (renamed spare-shim-*); retry protocol for
-      unroutable pids decoded (endless ~1.42s 0xfe0014 pair,
-      pseudo-pid 0xff0003 — see std-commands.yaml). Still
-      open: insertion agent + 0xff0003 identity (nanos),
-      routerboard full shape (needs hardware), 134 driver,
-      terminal surface, nlevel proof (needs credentials).
+      unroutable pids decoded (0xfe0014 pair, pseudo-pid
+      0xff0003 — see std-commands.yaml; §42 corrects §38's
+      "endless 1.42s" to one finite pair per zombie-pid
+      GET). Still open: insertion agent + 0xff0003 identity
+      (nanos), routerboard full shape (needs hardware), 134
+      driver, terminal surface, nlevel proof (needs
+      credentials).

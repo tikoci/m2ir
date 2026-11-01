@@ -557,3 +557,8 @@ roteros # WebFig roteros.*.jg.gz descriptor bundle basename
 rsrc # PE resource section shorthand (WinBox client .rsrc)
 socksify # RouterOS SOCKS5-redirect subsystem (pid 164, /ip/socksify)
 wfig # WebFig descriptor bundle shorthand (/tmp/wfig.js, §39 batch)
+bootrace # /tmp boot-race prober (M2 rounds over a reboot, §38 batch)
+slotprobe # /tmp proxy-slot probe (dead-pid pair capture, §38 batch)
+iface # interface shorthand (mproxy 100ms iface-log timer)
+unprovenanced # finding with no surviving timestamped artifact (§42)
+zombification # peer-object transition to ZOMBIE state (loader notice trigger)
