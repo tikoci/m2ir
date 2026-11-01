@@ -60,8 +60,9 @@ keys:
       error); [20,0] does NOT validate — start is lower_bound(row-id)
       in the by-id index, inclusive (nonexistent ids continue from the
       next-higher id, beyond-max returns empty); the iteration ORDER
-      model itself is OPEN ("creation order" fit 2–3 rows but is
-      refuted at 102 — lo iterates last; no tested key fits).
+      is MECHANISM-SOLVED (§21): a (u32 class entry+0x20, name)
+      tree with unconditional rename re-sort, both versions (the
+      §19 R1–R4 dual-mode fixup is superseded as mechanism).
       Next-token = row-id of the next
       un-emitted entry, so pagination stays sound (306-row live
       proof: 194 + token → 112, no gaps/dups). There is NO slot-14
@@ -76,6 +77,10 @@ keys:
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): count/next-token chaining + per-handler start matrix; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
       - source: sample
         ref: "live CHR interrogation (post-WS-4 batch): lower_bound confirmed on demand both versions (v7 s=1->[lo]); see work/2026-10-chr-extraction/ws3c-prober-findings.md §15"
+      - source: code
+        ref: "RouterOS net [20,0] (class, name) iteration tree + rename re-sort, both versions; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+      - source: sample
+        ref: "live CHR interrogation re-fit (mechanism batch): all 56 changing pairs (class, name)-sorted post-state, 0 fails; see work/2026-10-chr-extraction/ws3c-prober-findings.md §21"
     revision-history:
       - date: 2026-10-31
         belief: "[20,0] start is an opaque cursor with no closed form (s=0..8 matrix fits nothing tried)"
@@ -83,6 +88,14 @@ keys:
         evidence:
           - source: code
             ref: "RouterOS net [20,0] iterator lower_bound decode (6.49.23) fits the matrix given bridge id 5; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+      - date: 2026-10-31
+        belief: "[20,0] iteration ORDER model is open (creation order refuted at 102 rows, no tested key fits)"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS net static decode: (u32 class entry+0x20, name) tree + unconditional rename re-sort, both versions; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+          - source: sample
+            ref: "live CHR interrogation re-fit: 56/56 pairs fit, 0 fails; see work/2026-10-chr-extraction/ws3c-prober-findings.md §21"
 
   0xfe0004:
     canonical-name: STD_GETALLNO
@@ -350,14 +363,23 @@ keys:
     canonical-name: STD_FIRST_ROW
     physical: { tcodes: [0x28, 0x29] }
     semantic: nested-message
-    role: "first row of a GETALL reply, flag-gated (project-named; no documented label)"
+    role: "nested-message carrier: GETALL first row (flag-gated) or singleton defaults (bit-29 legs) — project-named; no documented label"
     confidence: observed-only
-    notes: "First-party: ConfigHandler::cmdGetAll emits 0xfe001d = first row when a flag selects it. NEVER observed live — no truncation shape needed it (all truncated tests carried only 0xfe0003)."
+    notes: "First-party: ConfigHandler::cmdGetAll emits 0xfe001d = first row when a flag selects it — that GETALL use is still never observed live (no truncation shape needed it; all truncated tests carried only 0xfe0003). SECOND use observed (§25): bit-29 request legs unfold nested 0xfe001d DEFAULTS ([24,33] {501:'',502:T,503:F}, [24,10] {1:F,2:F}, proven live)."
     evidence:
       - source: code
         ref: "RouterOS libumsg.so ConfigHandler::cmdGetAll (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
       - source: sample
-        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25) — negative result; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
+        ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25) — GETALL first-row use negative; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
+      - source: sample
+        ref: "live CHR interrogation (singleton batch, 7.25): ev/7.25-getone-24-33-bit29.json + ev/7.25-getone-24-10-bit29.json (nested 0xfe001d defaults); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+    revision-history:
+      - date: 2026-10-31
+        belief: "0xfe001d never observed live in any context"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (singleton batch, 7.25): bit-29 legs unfold nested 0xfe001d defaults; see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
 
   0xfe0029:
     canonical-name: STD_OBSERVED_29

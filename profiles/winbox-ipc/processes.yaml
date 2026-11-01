@@ -208,6 +208,13 @@ handler-info-registry:
       call sites sited, one message-driven;
       server-enable and active-tunnel negatives
       live; the enabling message is unlocated.
+      MASTER sets (§44/§45): [27] ⊇ stubs with
+      data (ppp servants; pppoe sub-modes; 26/27
+      static registered, only hid 100
+      conditional); [85] lacks 3 and [19] lacks
+      8 (complements; cerm EXACT both versions).
+      ipsec −2 = framework wildcard override
+      (§45: late getLooper + addHandler).
       Residual: vector append site, ssld motive +
       liveness (VGA-gated), hid-100 enabling
       message.
@@ -252,8 +259,9 @@ transient-process-observations:
       aliases/shims/stubs are boot-atomic dynamic router state
       (loader peer-tree); insertion agent CLOSED as loader-rule
       (§41 PR-order, mechanism §43: AddEvent allocator
-      0x8054286; self-registration refuted). No /nova/bin
-      owner.
+      0x8054286; self-registration refuted). UNIFICATION
+      (§44): 1025 IS ipsec-worker running under the compat
+      pid — workers never die, they run as the shim loopers.
       See processes.0x401 + handler-info-registry.
 
 registered-handler-observations:
@@ -276,7 +284,7 @@ registered-handler-observations:
     handler-ids: [0, 1, 2, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 23, 24, 25, 31]
     confidence: observed-only
     source-detail: "static addHandler census (17 sites) + live hscan 17/17 match"
-    notes: "NOT registered: 17. v7: 19 handlers — drops {5,6,9}, gains {33,34,35,36,38} (33 data {501,502,503}, 34 UNKNOWNID selector-gated, 35 empty-data, 36 NOTIMP, 38 FCC text); v6 hscan 32-40 all BRKPATH."
+    notes: "NOT registered: 17. v7: 19 handlers — drops {5,6,9}, gains {33,34,35,36,38} (33=/system/note, 34=security-advisory GETOBJ-only, 35=sys2-dbrd holder, 36 NOTIMP, 38 FCC text); v6 hscan 32-40 all BRKPATH."
     evidence:
       - source: code
         ref: "RouterOS sys2 addHandler sites (6.49.23); see work/2026-10-chr-extraction/sys2-handler-tables.md"
@@ -306,10 +314,14 @@ registered-handler-observations:
     version: "6.49.23/7.25"
     handler-ids: "identical both: {1,2,3,4 NOTIMP (4=auth: legacy CMD only), 5=data, 6/7=FAILED, 8=NOTIMP}"
     confidence: observed-only
-    notes: "No user LIST via GET/GET_ALL on 0-8 (GET_ALL->NOTIMP); user-list path unexplored. [13,6]/[13,7] are selector-gated (GETOBJ support needed)."
+    notes: "[13,1/2/3] = users/groups/policies lists, [13,4] dual-role (GET adopts source-id + GETALL lists sessions), [13,6]/[13,7] = username-selected UserPrefs (6=WinBox, 7=WebFig — §29), [13,8] = default singleton-list (see ./gui-handlers.yaml)."
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober hscan, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+      - source: sample
+        ref: "live CHR interrogation (dual-mode batch, 7.25): user lists + prefs + sessions; see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+      - source: code
+        ref: "RouterOS v7 user [13,6/7] split (6=WinBox, 7=WebFig); see work/2026-10-chr-extraction/ws3c-prober-findings.md §29"
   - binary: /nova/bin/keyman
     version: "6.49.23/7.25"
     handler-ids: "none — no numbered handlers 0-8 either version; bare [65] served from the looper default"
@@ -371,7 +383,7 @@ cross-process-proxies:
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
   - from: [61, "<any>"]
     to: [1025, "<same>"]
-    role: "v7-only: every [61,H] answered from=[1025,H] byte-for-byte (incl. bare), shim-8 envelope (native + 0xff000b=-1). 1025 = pid-61 (rbbios) compat shim: sole NOTIMP stub handler 3 (0-40; above-40 untested), UNIQUE to 1025 ([24,3] gives BRKPATH). Boot-persistent block member (reboot-identical; per-session refuted). One of exactly 4 pid-aliases in the 0-180 census (12/75/89 below); v6-only pids 46/50/55/122 time out instead."
+    role: "v7-only: every [61,H] answered from=[1025,H] byte-for-byte (incl. bare), shim-8 envelope (native + 0xff000b=-1). 1025 = pid-61 (ipsec-worker per the v7 PR — NOT v6 rbbios; §38) compat shim: sole NOTIMP stub handler 3 (hscan 0-200), UNIQUE to 1025 ([24,3] gives BRKPATH). UNIFICATION (§44): 1025 IS ipsec-worker running under the compat pid. Boot-persistent block member (reboot-identical; per-session refuted). One of exactly 4 pid-aliases in the 0-180 census (12/75/89 below); v6-only pids 46/50/55/122 time out instead."
     confidence: observed-only
     evidence:
       - source: sample
@@ -580,7 +592,7 @@ processes:
         evidence:
           - source: code
             ref: "RouterOS 6.49.23 .x3 process map; see work/2026-10-chr-extraction/README.md"
-        notes: "user = 13 stable since 6.43.45. Live: [13,1-8] map identical on 6.49.23 and 7.25 (4=auth legacy-CMD-only, 5=data, 6/7=FAILED). Batch §19: 6/7 = UserPrefs (username-selected; bare-GET FAILED is missing-selector, not dead); [13,1/2/3/4,8] = users/groups/policies/sessions/default; [13,4] dual-role (GET adopts source-id + GETALL lists sessions)."
+        notes: "user = 13 stable since 6.43.45. Live: [13,1-8] map identical on 6.49.23 and 7.25 (4=auth legacy-CMD-only, 5=data, 6/7=FAILED). Batch §19: 6/7 = UserPrefs (username-selected; bare-GET FAILED is missing-selector, not dead); [13,1/2/3/4,8] = users/groups/policies/sessions/default; [13,4] dual-role (GET adopts source-id + GETALL lists sessions). Batch §29: 6=WinBox (UserPrefs/prefs), 7=WebFig (WebUserPrefs/webprefs)."
     revision-history:
       - date: 2026-05-03
         belief: "0x0D = user-service-or-similar (project observation [13,4]; loose attribution to MarginResearch)"
@@ -605,17 +617,15 @@ processes:
           - source: code
             ref: "tenable/routeros msg_re/parse_x3 — /nova/bin/user -> 13"
             url: "https://github.com/tenable/routeros/blob/master/msg_re/parse_x3/README.md"
+      - date: 2026-10-31
+        belief: "Whether the [13,4] auth handler doubles as the source-id exchange is an open question"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (dual-mode batch, 7.25): same [13,4] serves GET (adopts) + GETALL (lists sessions) — dual-role closed; see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
     open-questions:
       - "Which RouterOS build produced Cisco-Talos's HOTPLUG = 0x0D label?"
       - "When did `/nova/bin/user` occupy process id 13, and what process id did hotplug move to in those builds?"
-      - |
-        A private third-party WinBox client implementation also sends a
-        GET (cmdGet=7) to [13,4] once per connection, immediately after
-        auth completes, purely to read back a server-assigned source id
-        from the reply's SYS_FROM — see ./gui-handlers.yaml
-        source-id-adoption. Is this the same `user` handler MarginResearch
-        traces for authentication doing double duty as a capability
-        exchange, or a distinct handler that happens to share the path?
   0x0e: { canonical-name: bridge,   confidence: documented }
   0x0f: { canonical-name: diskd,    confidence: documented }
   0x10:
@@ -838,14 +848,30 @@ processes:
     notes: |
       Not in Cisco-Talos typeIDCode. The 6.49.23 loader map assigns
       0x59 (89) to /nova/bin/ppp-worker. On v7, bare [89] rewrites
-      to the 1024 compat shim (stubs {14,21,31}); no ppp-worker
-      binary ships on v7 (absent from 7.25 all_packages —
-      base-only). See cross-process-proxies + findings §23.
+      to the 1024 compat shim (stubs {14,21,31,51,61} = ppp's
+      server handlers — §38 hscan 0-200); the worker binary EXISTS
+      (bndl/<pkg>/nova/bin — the §23 "no binary" was a search
+      miss) and RUNS AS the 1024 shim looper (§44 strstr
+      mode-selection + worker-branch registrations). Master-live
+      [27] serves a superset incl. data (pppoe sub-modes; 26/27
+      static registered, hid 100 conditional — §45/§46). See
+      cross-process-proxies + handler-info-registry.
     evidence:
       - source: code
         ref: "RouterOS 6.49.23 .x3 process map; see work/2026-10-chr-extraction/README.md"
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
+      - source: code
+        ref: "RouterOS 7.25 servant census (ppp-worker exists under bndl/<pkg>/nova/bin; worker branch registers exactly the stub set); see work/2026-10-chr-extraction/ws3c-prober-findings.md §41 + §44"
+    revision-history:
+      - date: 2026-11-01
+        belief: "1024 stubs are {14,21,31} and no ppp-worker binary ships on v7"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (registry batch, 7.25): stubs {14,21,31,51,61}; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+          - source: code
+            ref: "RouterOS 7.25 servant census: workers exist and run as the shims; see work/2026-10-chr-extraction/ws3c-prober-findings.md §41 + §44"
   0x67:
     canonical-name: dude
     confidence: observed-only
@@ -894,12 +920,18 @@ processes:
       boot-persistent 1024-1030 block. NOTIMP stubs
       {14,21,31,51,61} (§38 hscan 0-200) = ppp's server
       handlers; shim-8 envelope (native + 0xff000b=-1); INERT
-      to service state. No /nova/bin owner (complete v7 census).
-      Mechanism: boot-atomic dynamic state (§38). See
-      cross-process-proxies + handler-info-registry.
+      to service state (worker's objects ≠ master's).
+      UNIFICATION (§44): 1024 IS ppp-worker running under
+      the compat pid (strstr argv0 mode-selection; worker
+      branch registers exactly the stub set, then
+      Looper::run). Mechanism: boot-atomic dynamic state
+      (§38). See cross-process-proxies +
+      handler-info-registry.
     evidence:
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-hscan-102x-wide.txt + ev/7.25-postreboot-block.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
+      - source: code
+        ref: "worker-shim unification (strstr mode selection, worker-branch stub registrations); see work/2026-10-chr-extraction/ws3c-prober-findings.md §44"
   0x401:
     canonical-name: compat-shim-1025
     confidence: observed-only
@@ -911,9 +943,12 @@ processes:
       subset of the ipsec family static set; shim-8 envelope;
       answers all v7 pid-61 requests byte-for-byte (see
       cross-process-proxies). Static/shared: per-session
-      REFUTED, factory-reset + reboot stable. No /nova/bin
-      owner (complete v7 census). Mechanism: boot-atomic
-      dynamic state (§38); insertion agent stays a nano.
+      REFUTED, factory-reset + reboot stable.
+      UNIFICATION (§44): 1025 IS ipsec-worker running under
+      the compat pid (worker branch registers {3}, then
+      Looper::run). Mechanism: boot-atomic dynamic state
+      (§38); insertion agent CLOSED as loader-rule (§41 PR
+      encounter order; allocator §43; trigger §44).
     evidence:
       - source: sample
         ref: "live CHR interrogation (census batch, 7.25): ev/7.25-hscan-1025.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
@@ -921,6 +956,8 @@ processes:
         ref: "live CHR interrogation (identity batch, 7.25): concurrency/reset/reboot stability + handler-3 uniqueness; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): byte-exact envelopes, wide hscan, reboot + alias census; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
+      - source: code
+        ref: "worker-shim unification (ipsec strstr branch 0x8059ee6 registers {3}); see work/2026-10-chr-extraction/ws3c-prober-findings.md §44"
     revision-history:
       - date: 2026-10-31
         belief: "0x401 is an unidentified transient (compat shim? session helper? renamed board process?)"
@@ -928,6 +965,14 @@ processes:
         evidence:
           - source: sample
             ref: "live CHR interrogation (shim census, 7.25): 1025 = pid-61 rbbios compat shim; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
+      - date: 2026-11-01
+        belief: "1025 is the pid-61 rbbios compat shim with no owner and an open insertion agent"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS 7.25 v7 PR names pid 61 ipsec-worker, not rbbios; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+          - source: code
+            ref: "worker-shim unification: 1025 IS ipsec-worker running; insertion agent = loader-rule + spawn posts; see work/2026-10-chr-extraction/ws3c-prober-findings.md §41 + §44"
   0x402:
     canonical-name: compat-shim-1026
     confidence: observed-only
@@ -935,12 +980,17 @@ processes:
       v7-only: pid-75 (cerm-worker) compat shim in the
       boot-persistent 1024-1030 block. Sole NOTIMP stub handler
       8 (§38 hscan 0-200) — the complement of pid-19-live
-      (cerm-worker static-15 minus 8); cerm and cerm-worker
-      binaries are byte-identical (§38); shim-8 envelope.
-      No /nova/bin owner. See cross-process-proxies.
+      (cerm-worker static-15 minus 8; cerm EXACT both
+      versions: v6 12=11+{8}, v7 15=14+{8}); shim-8 envelope.
+      UNIFICATION (§44): 1026 IS cerm-worker running under
+      the compat pid (worker branch registers {8}, then
+      Looper::run). See cross-process-proxies +
+      handler-info-registry.
     evidence:
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-hscan-19.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
+      - source: code
+        ref: "worker-shim unification (cerm strstr branch 0x805f3ae registers {8}); see work/2026-10-chr-extraction/ws3c-prober-findings.md §44"
   0x403:
     canonical-name: compat-shim-1027
     confidence: observed-only
@@ -948,10 +998,17 @@ processes:
       v7-only: pid-12 (ssld) compat shim in the boot-persistent
       1024-1030 block. Handlerless (§38 hscan 0-200) — exactly
       matching ssld's zero static addHandlers; shim-8 envelope
-      on bare-GET. No /nova/bin owner. See cross-process-proxies.
+      on bare-GET. ssld is the exception to unification: no
+      worker sibling, no strstr — it connects (4th novasock
+      accept) then disconnects (notice + REMOVE), and its
+      accept-node is removed (§45); the alias preset remains.
+      Residue: ssld-side motive + process liveness (VGA-gated).
+      See cross-process-proxies + handler-info-registry.
     evidence:
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-hscan-102x-wide.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
+      - source: code
+        ref: "ssld exception (no worker sibling; connect-then-disconnect; accept removed); see work/2026-10-chr-extraction/ws3c-prober-findings.md §45"
   0x404:
     canonical-name: spare-shim-1028
     confidence: observed-only
@@ -963,12 +1020,17 @@ processes:
       0-200 (all UNKNOWNID), every verb shim-NOTIMP-shaped,
       boot-atomic with the claimed shims, inert to service
       state. Bare-GET shim-8 envelope (NOTIMP + policy−1).
-      No /nova/bin owner.
+      Identity CLOSED (§45): unix-accept connection peers on
+      /ram/novasock — 0x404-406 are the 3 surviving worker
+      connects (ppp, ipsec, cerm); ssld's 4th accept is
+      removed. Not processes; no servants behind them.
     evidence:
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-sweep-pid-131-180.txt + ev/7.25-hscan-102x-wide.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
       - source: sample
         ref: "live CHR interrogation (registry batch, 7.25): ev/7.25-getone-1028.json + sweep 0-433 + hscan 0-200; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+      - source: code
+        ref: "spare identity (novasock unix-accept peers; 4th accept removed); see work/2026-10-chr-extraction/ws3c-prober-findings.md §45"
     revision-history:
       - date: 2026-10-31
         belief: "unknown-transient-1028: role open (spare? conditional shim?)"
@@ -983,12 +1045,16 @@ processes:
       v7-only spare slot (1024-1030 block) — CLOSED (§38):
       same negative census as 1028 (no alias 0-433, no
       handlers 0-200, shim-NOTIMP verbs, boot-atomic, inert).
-      Bare-GET shim-8 envelope. No /nova/bin owner.
+      Bare-GET shim-8 envelope. Identity (§45): unix-accept
+      peer on /ram/novasock (one of the 3 surviving worker
+      connects). See 0x404.
     evidence:
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-sweep-pid-131-180.txt + ev/7.25-hscan-102x-wide.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
       - source: sample
         ref: "live CHR interrogation (registry batch, 7.25): ev/7.25-getone-1029.json + sweep 0-433 + hscan 0-200; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+      - source: code
+        ref: "spare identity (novasock unix-accept peers); see work/2026-10-chr-extraction/ws3c-prober-findings.md §45"
     revision-history:
       - date: 2026-10-31
         belief: "unknown-transient-1029: role open"
@@ -1003,12 +1069,16 @@ processes:
       v7-only spare slot (1024-1030 block) — CLOSED (§38):
       same negative census as 1028 (no alias 0-433, no
       handlers 0-200, shim-NOTIMP verbs, boot-atomic, inert).
-      Bare-GET shim-8 envelope. No /nova/bin owner.
+      Bare-GET shim-8 envelope. Identity (§45): unix-accept
+      peer on /ram/novasock (one of the 3 surviving worker
+      connects). See 0x404.
     evidence:
       - source: sample
         ref: "live CHR interrogation (shim census, 7.25): ev/7.25-sweep-pid-0-130.txt + ev/7.25-sweep-pid-131-180.txt + ev/7.25-hscan-102x-wide.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §23"
       - source: sample
         ref: "live CHR interrogation (registry batch, 7.25): ev/7.25-getone-1030.json + sweep 0-433 + hscan 0-200; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
+      - source: code
+        ref: "spare identity (novasock unix-accept peers); see work/2026-10-chr-extraction/ws3c-prober-findings.md §45"
     revision-history:
       - date: 2026-10-31
         belief: "unknown-transient-1030: role open"

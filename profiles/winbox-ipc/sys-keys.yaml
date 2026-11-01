@@ -261,6 +261,12 @@ keys:
             ref: "live CHR interrogation (persistence batch, 7.25): untokened M2 rows persist; see work/2026-10-chr-extraction/ws3c-prober-findings.md §31"
           - source: sample
             ref: "live CHR interrogation + store forensics (token-gate batch, 7.25): tokened rows are in the store; boot skips them; see work/2026-10-chr-extraction/ws3c-prober-findings.md §34"
+      - date: 2026-11-01
+        belief: "tokened rows are skipped memory-only with no tombstone; freed rowids return to the pool (§34)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation + store forensics (forensics batch, 7.25): sstore boot-load appends tombstones for tokened rows; tombstoned ids reserved from auto-assign; §34 reuse reconciled as explicit-reclaim; see work/2026-10-chr-extraction/ws3c-prober-findings.md §47"
 
 investigation-trail:
   - date: 2026-10-31

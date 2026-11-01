@@ -92,7 +92,7 @@ request-shape:
       loop: bare (or count) -> follow 0xfe0003 tokens.
     fields:
       - { field: 0xfe0004, name: STD_GETALLNO, tcode: u32, role: "count = head-limit; reply carries 0xfe0003 next-token when truncated (+ 0xfe0004 emitted-count echo on v6 [20,0])" }
-      - { field: 0xfe0003, name: STD_GETALLID, tcode: u32, role: "start cursor — PER-HANDLER; only server-issued tokens are meaningful ([20,1] validates an inclusive row-id cursor, [20,0] takes lower_bound(row-id) with no validation, iterating in stored rename-fixup order)" }
+      - { field: 0xfe0003, name: STD_GETALLID, tcode: u32, role: "start cursor — PER-HANDLER; only server-issued tokens are meaningful ([20,1] validates an inclusive row-id cursor, [20,0] takes lower_bound(row-id) with no validation, iterating in (class, name) tree order)" }
       - { field: 0xfe000c, name: STD_FILTER, tcode: u32, role: "flags word (default 5); values 0/5/0x20000000 return byte-identical replies — ignored for content here" }
     ignored: "USER-namespace (0x00) versions of count/flags are ignored entirely; rows arrive identically with or without them."
     confidence: observed-only
@@ -118,16 +118,15 @@ request-shape:
       designable from bare rows. Byte-cap truncation proven
       live on a 306-row table (194 + token 203 → 112, sound,
       306/306, no 0xfe0004/0xfe0019). The [20,0] iteration
-      ORDER is behavior-SOLVED: stored order maintained by a
-      dual-mode crossing-gated rename fixup (R1 universal
-      crossing-gate; R2 1NIC-mode with frozen pos0;
-      R3 2NIC+-mode single-swap-exactly-when-run-1; R4 mode ⟺
-      day-0 NIC count) — ~43 rename transitions, all fit.
-      Creation inserts sorted (incl. pos0); reboot persists
-      order and mode. Static mechanism (fixup branch) +
-      v6 iteration stay open. See
-      net-bridge2-handler-tables.md §8 and
-      ws3c-prober-findings.md §19 (§18 head+tree DEAD).
+      ORDER is MECHANISM-SOLVED, both versions: a tree ordered
+      by (u32 class key at entry+0x20, name) with unconditional
+      rename re-sort (creation inserts sorted; reboot persists
+      trivially) — see the interface entry below. The §19 R1–R4
+      dual-mode fixup is SUPERSEDED as mechanism (emergent
+      shadow: R4 day-0-NIC = ether count, no mode state).
+      See net-bridge2-handler-tables.md §8 and
+      ws3c-prober-findings.md §21 (§19 R1–R4 as mechanism
+      DEAD; §20 transfers it to v6).
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): bare GETALL + count/next-token chaining + flags sweep; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
@@ -282,7 +281,8 @@ handlers:
       /nova/store/chfont (console font), not an off-by-one RB.
       NARROWED: v6 rbbios ANSWERS direct queries ([61,1]={1:F},
       [61,2]={} — the handlers are live, only the sys2 relay is
-      absent); v7 routes pid-61 to pid-1025 (quirk, open). But no
+      absent); v7 routes pid-61 to the 1025 compat shim (see
+      processes.yaml 0x401). But no
       reachable M2 path serves the full RB field ids (model/serial/
       firmware). The sys-to is version-drifted or wrong — kept as
       a suspect-shape record, NOT a working path.
@@ -341,8 +341,8 @@ handlers:
       row-id: { namespace: session, field: 1 }
       namespace-1:
         1: { name: type-code, tcode: u32, role: "interface type code (ether 1, loopback 76); doubles as the 0x10001 exact-match GETALL filter leg (entry+0x60)" }
-        2: { name: flags-a, tcode: u32, role: "entry+0x14 word (ether1 270947, lo 0 — stable across boots); doubles as the 0x10002/mask-0x10011 GETALL filter leg; bit 0x80 gates 0xfe0007 dynamic" }
-        3: { name: flags-b, tcode: u32, role: "entry+0x1c word (ether1 542529, lo 525633 — stable across boots); doubles as the 0x10003/mask-0x10012 GETALL filter leg; bit 2 set = hidden/deleted (skipped by the bare default); bits 0x500 both set = running" }
+        2: { name: flags-a, tcode: u32, role: "entry+0x14 word (ether1 270947, lo 0 — stable across boots); doubles as the 0x10002/mask-0x10011 GETALL filter leg. Low byte CLOSED (§28/§36): bit0 learned-ARP acceptance, bit1 macvlan-parent, bits 2-4 RESERVED (creation-masked, never set), bit5 ARP support, bit6 enslavable/L2-stackable, bit7 dynamic (gates 0xfe0007). f2 is static per type and re-derived every bring-up — store values decorative, M2 strips 0x10002 pre-apply, no CLI knob." }
+        3: { name: flags-b, tcode: u32, role: "entry+0x1c word (ether1 542529, lo 525633 — stable across boots); doubles as the 0x10003/mask-0x10012 GETALL filter leg; bit 2 set = hidden/deleted (skipped by the bare default); bits 0x500 both set = running. Server recomputes every apply (§32): msg bits stick EXCEPT {0,3,6*,8,9,10,12,17,18,19,23} (*6 only when unbound); CLI admin rides {2,11} (arp); bit3 = has-master (structural) vs 12+17 = master-running; f3=0 iff client-sent ~0 AND unbound; msg bit1/7 refused (server-owned). Echo emits +0x1c RAW." }
         4: { name: kernel-ifindex, tcode: u32, role: "kernel interface index (entry+0x18 -> +0x28): lo=1, sequential per creation batch, gap at deleted interfaces, ABSENT on VRRP (no kernel device)" }
         5: { name: default-name, tcode: string }
         6: { name: name, tcode: string, role: "display name; the iteration-tree SECONDARY sort key (primary = u32 class at entry+0x20: type 1 ether -> 0, types 35/62 -> 1, else -> 2): every rename unconditionally unlinks + reinserts (full re-sort); creation sorted-inserts; R1-R4 dual-mode SUPERSEDED as mechanism (emergent shadow)" }
@@ -362,7 +362,7 @@ handlers:
       - source: code
         ref: "RouterOS net interface row-core 0x80f6738 (810 instructions, 75 ops, 6.49.23): all seven mapped fields converge here; entry+0x14/0x1c/0x60 feed row 0x10002/0x10003/0x10001, running = (w & 0x500) == 0x500, dynamic gated on entry+0x14 bit 0x80; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4/§8"
       - source: code
-        ref: "RouterOS net v7 row-core 0x8064f1a: same ix<> sequence (running/dynamic identical); 0x10066-string gone from base (type builders write u32), NEW 0xff001e (entry+0x40, unseen live — 6-exotic-row hunt negative, batch §19, ev/7.25-getall-20-0-ffhunt.json), shifted +0x180/+0x1c8/+0x1a8; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+        ref: "RouterOS net v7 row-core 0x8064f1a: same ix<> sequence (running/dynamic identical); 0x10066-string gone from base (type builders write u32), NEW 0xff001e (entry+0x40, sighted live §26 — owner token, first sighting 12345; full lifecycle in sys-keys.yaml), shifted +0x180/+0x1c8/+0x1a8; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
       - source: code
         ref: "RouterOS net [20,0] slot-7 handleCmd dispatch 0x80d1af8 + GETALL worker/iterator (6.49.23), v7 same shape; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
       - source: sample
@@ -385,6 +385,18 @@ handlers:
         ref: "RouterOS interface-type registry (NPK carve + x3parse, no CHR): class 1 = types 35/62 (wlan/wlan60-) via the wireless NPK net-remote overlay (CHR-absent); full wireless + ppp overlay maps, v7 local registry (+macvtap/xfrm/vxlan/wg/veth/lo/vrf vs v6), v6 ether alias key 63, v7 key-init 0x8062d26 (identical mapping), strncmp tie-break both; see work/2026-10-chr-extraction/ws3c-prober-findings.md §22"
       - source: code
         ref: "RouterOS interface-type provider audit (objdump, no CHR): v7-ether (1) has no builder in net (all 14 base-ctor sites + eoip/tunnel custom ctors mapped; no x3 entry) — runtime/driver-provided, effective name 'ether'; v6-lo (76) likewise runtime-provided, effective name 'lo'; v7 family string block 0x81954de+ recorded; see work/2026-10-chr-extraction/ws3c-prober-findings.md §27"
+      - source: sample
+        ref: "live CHR interrogation (token batch, 7.25): first 0xff001e sighting (12345) + guard truth table + M2-remove-with-token; ev/7.25-raw-20-0-addobj.json + ev/7.25-getall-20-0-ff001e.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §26"
+      - source: sample
+        ref: "live CHR interrogation (flag batch, 7.25): 0x10002 low byte 6/8 closed (bit1/5/6 proven, 2-4 reserved, 7 dynamic; bit0 probable) + f2 static per type + f3 bonuses; ev/7.25-getall-20-0-f2*.json + ev/7.25-setone-20-0-*.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §28"
+      - source: sample
+        ref: "live CHR interrogation (persistence batch, 7.25): M2-ADD recipe (omit token) + row-SET addressing (slot-7 SETOBJ + 0xfe0001=rowid) + vlan ADD keys; ev/7.25-getall-20-0-m2*.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §31"
+      - source: sample
+        ref: "live CHR interrogation (recompute batch, 7.25): f3 triple split (live both directions) + msg-vs-server ownership + f3=0 condition; ev/7.25-getall-20-0-f3*.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §32"
+      - source: code
+        ref: "RouterOS v7 net apply-set merge (0x8065de9) + vlan vtables (type 0x81b3384, driver 0x81b3344) + REMOVE force-0x82 block (0x806665a) + destroy-tail (0x806349e): ADD-unhide = merge-replace via driver f3, REMOVE mechanism, raw +0x1c echo; see work/2026-10-chr-extraction/ws3c-prober-findings.md §35"
+      - source: sample
+        ref: "live CHR interrogation + store offline-patch (7.25): bit0/bit5 live split proven impossible (18 co-varying types), M2 filters f2, store f2 decorative (patch 0x4226e → live 0x42263); ev/7.25-getall-20-0-bit0*.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §36"
       - source: code
         ref: "RouterOS v7 sstore record grammar (u32 table + rowid + len + M2 payload, table-0 directory, len-0 tombstones) + GCCHECK rotation gates (junk > 4096, free ≥ 8×junk, 0x804da8e) + boot-load token reaper (0x804d4d0); see work/2026-10-chr-extraction/ws3c-prober-findings.md §47"
       - source: sample
@@ -428,6 +440,22 @@ handlers:
       overrides handleCmd at slot 7 and serves GETALL from a custom
       async worker; its slots 9–17 are the NOTIMP base and are never
       reached for GETALL.
+      Rows may carry 0xff001e (owner token) — ADD stores it,
+      SET/REMOVE are gated by exact match, and tokened rows are
+      boot-reaped by sstore (full lifecycle in sys-keys.yaml).
+      M2 mutation contract (7.25): row-SET = slot-7 SETOBJ
+      (0xfe0003) addressed by 0xfe0001=rowid — [20,0] CMD_SET
+      is base-NOTIMP, and setone/0xfe000e is the singleton-attr
+      path, not table-row SET. M2-ADD persists iff untokened
+      (omit 0xff001e; untokened rows are first-class and
+      CLI-removable). Vlan ADD keys: 0x10001=30 (type) +
+      0x10006 (name) + 0x7d1 (vlan-id, required) + 0x7d2
+      (parent ROW-ID — without it a parentless husk: f3=0,
+      no ifindex, zero MACs).
+      ADD-unhide is the apply-set merge itself (+0x1c :=
+      old&0x500000 | msg.f3, a REPLACE for fresh rows) fed by
+      the driver-reply f3 — no AND-clearer exists. REMOVE =
+      force-0x82 block + apply + destroy-tail 0x806349e.
       Row-id lifecycle (7.25): the store record is u32 table +
       u32 rowid + u32 len + ("M2" + message); table 0 is the
       table→path directory (0x430 = net/devices); deletion is a
@@ -468,6 +496,12 @@ handlers:
             ref: "RouterOS net static decode: rename is an unconditional unlink + write + insert_equal into a (u32 class entry+0x20, name) tree — full re-sort, no gate/mode/pos0-guard, both versions; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
           - source: sample
             ref: "live CHR interrogation re-fit: all 56 changing pairs fully (class, name)-sorted post-state, 0 fails; R1–R4 retained as emergent behavior only; see work/2026-10-chr-extraction/ws3c-prober-findings.md §21"
+      - date: 2026-10-31
+        belief: "0xff001e unseen live (6-exotic-row hunt negative)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (token batch, 7.25): M2-ADDed vlan carries 0xff001e = 12345; ev/7.25-getall-20-0-ff001e.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §26"
 
   ip-address:
     sys-to: [20, 1]
@@ -793,13 +827,24 @@ handlers:
           - source: code
             ref: "RouterOS v7 net QoS composite decode; see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
 
-  v7-net-singleton-125:
+  sms-20-125:
     sys-to: [20, 125]
-    status: role-open
+    status: identified
     process-id: 0x14
     cmd: GET_ONE
-    role: "v7-only thin data singleton (role open; 0x11 = [], 0x15 = 1, 0x0e = 0xFFFFFFFF, 0x10 = T). NARROWED (§25): custom object (not AHolder), embedded defaults {9:'',13:'',0x11:[],0x15:1,0x17:F,0x18:F}, slot-9 0x8166d84 with bit-29 -> 0xfe001d leg (static only), many readers (looper+0x71c); identity unknown."
+    role: "v7-only /tool/sms singleton (store /nova/store/sms-config; registration 0x805e126; readers in modem/LTE code). Field map PROVEN 7/12 live (perturbation): 0x09=secret, 0x0d=sim-pin, 0x11=allowed-number (string ARRAY), 0x07=receive-enabled, 0x0c=channel, 0x17=polling, 0x18=remove-sent-sms-after-send. Port-state triple: port=none iff {0x10=T, 0x04 absent, 0x0e=max}; port=serial0 iff {0x10=F, 0x04=1, 0x0e absent} — the port NAME appears nowhere. Open (CHR-untestable): 0x65, 0x64, 0x15 (sms-storage enum), 0x04/0x0e precise semantics."
     confidence: observed-only
+    fields:
+      namespace-user:
+        7: { name: receive-enabled, tcode: bool }
+        9: { name: secret, tcode: string }
+        12: { name: channel, tcode: u32 }
+        13: { name: sim-pin, tcode: string }
+        16: { name: port-absent, tcode: bool, role: "0x10: T iff port=none" }
+        17: { name: allowed-number, tcode: string_array, role: "0x11; quirk: cleared by a later unrelated SET (cause unattributed)" }
+        21: { name: sms-storage, tcode: u32, role: "0x15: CHR-untestable (only 'sim' accepted)" }
+        23: { name: polling, tcode: bool, role: "0x17" }
+        24: { name: remove-sent-sms-after-send, tcode: bool, role: "0x18" }
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
@@ -809,6 +854,19 @@ handlers:
         ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
       - source: code
         ref: "RouterOS v7 net handler-125 construction (vtable 0x81af600, slot-9 0x8166d84, row builder 0x8166bcc, embedded defaults); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+      - source: code
+        ref: "RouterOS v7 net handler-125 registration 0x805e126 (store /nova/store/sms-config, object at looper+0x71c, ctor defaults 0x04=max + 0x0e=max) + modem/LTE reader cluster; see work/2026-10-chr-extraction/ws3c-prober-findings.md §30"
+      - source: sample
+        ref: "live CHR interrogation (sms batch, 7.25): ev/7.25-getone-20-125-sms{base,set,set2,set3,set4,unport,revert}.json (7/12 field proof + port-state triple); see work/2026-10-chr-extraction/ws3c-prober-findings.md §30"
+    revision-history:
+      - date: 2026-10-31
+        belief: "v7-net-singleton-125: thin data singleton, role open"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 net store + reader decode: /tool/sms; see work/2026-10-chr-extraction/ws3c-prober-findings.md §30"
+          - source: sample
+            ref: "live CHR interrogation (sms batch, 7.25): 7/12 field perturbation proof; see work/2026-10-chr-extraction/ws3c-prober-findings.md §30"
 
   qos-pfc-20-126:
     sys-to: [20, 126]
@@ -1020,7 +1078,7 @@ handlers:
 
   unknown-20-134:
     sys-to: [20, 134]
-    status: role-open
+    status: identified
     process-id: 0x14
     cmd: GET_ALL
     role: "v7-only THIRD mark-registry instance — same factory class as [20,13]/[20,14] (max 0xfff/0xffff/0x7ffe, name 'no-mark', adjacent registration; v6 has 13/14 only). MECHANISM PROVEN (§39): M2 SETOBJ f137 on a [20,5] row inserts into 134 (gated non-empty); f30→13/f33→14/f137→134 share one apply idiom (0x80de6ac/0x80de725/0x80df846); f137 ECHOES in rows (0x89). Driver BOUNDED after 40 negatives: no REST/CLI/WebFig writer exists (NAT surface complete, RAW shares numbering, WebFig has no *89 firewall field and no [20,134] item) — driver in {WinBox-native-only field, internal process sync}. Registries GC on rule removal."
@@ -1198,18 +1256,27 @@ handlers:
     process-id: 0x0d
     process-ref: "./processes.yaml 0x0d (user)"
     cmd: GET_ONE
-    role: "UserPrefs record (username-selected AAAA-map lookup; miss = EMPTY success, not unknown-id). admin has NO record here. WinBox-vs-WebFig split vs [13,7] open."
+    role: "UserPrefs record — the WinBox side (store /nova/store/user/prefs/; vtable 0x8059eb8; SET logs 'UserPrefs::cmdSet'). Username-selected AAAA-map lookup; miss = EMPTY success, not unknown-id. admin has NO record here."
     confidence: observed-only
     evidence:
       - source: sample
         ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getone-13-6-admin.json (empty); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+      - source: code
+        ref: "RouterOS v7 user binary: hid 6 registered with vtable 0x8059eb8 (SET slot 0x805372c logs 'UserPrefs::cmdSet'), store /nova/store/user/prefs/; hid 7 is WebUserPrefs — 6=WinBox/7=WebFig, static-only (no discriminating live test exists); see work/2026-10-chr-extraction/ws3c-prober-findings.md §29"
+    revision-history:
+      - date: 2026-10-31
+        belief: "WinBox-vs-WebFig split between [13,6] and [13,7] is open"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 user vtable + store decode: 6=WinBox, 7=WebFig; see work/2026-10-chr-extraction/ws3c-prober-findings.md §29"
 
   user-prefs-13-7:
     sys-to: [13, 7]
     process-id: 0x0d
     process-ref: "./processes.yaml 0x0d (user)"
     cmd: GET_ONE
-    role: "UserPrefs record (username-selected AAAA-map lookup; SET-overwrites-whole-record; GET-after-SET round-trips). Record SURVIVES user-delete + reboot (orphan-by-design). WinBox-vs-WebFig split vs [13,6] open."
+    role: "WebUserPrefs record — the WebFig side (store /nova/store/user/webprefs/; vtable 0x8059e08; SET logs 'WebUserPrefs::cmdSet'). Username-selected AAAA-map lookup; SET-overwrites-whole-record; GET-after-SET round-trips. Record SURVIVES user-delete + reboot (orphan-by-design)."
     confidence: observed-only
     fields:
       namespace-user:
@@ -1219,6 +1286,15 @@ handlers:
     evidence:
       - source: sample
         ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getone-13-7-u.json + ev/7.25-setone-13-7-u.json (round-trip + orphan post-state); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+      - source: code
+        ref: "RouterOS v7 user binary: hid 7 registered with vtable 0x8059e08 (SET slot 0x80537c0 logs 'WebUserPrefs::cmdSet'), store /nova/store/user/webprefs/; hid 6 is UserPrefs — 6=WinBox/7=WebFig, static-only; see work/2026-10-chr-extraction/ws3c-prober-findings.md §29"
+    revision-history:
+      - date: 2026-10-31
+        belief: "WinBox-vs-WebFig split between [13,7] and [13,6] is open"
+        outcome: superseded
+        evidence:
+          - source: code
+            ref: "RouterOS v7 user vtable + store decode: 6=WinBox, 7=WebFig; see work/2026-10-chr-extraction/ws3c-prober-findings.md §29"
 
   unknown-13-8:
     sys-to: [13, 8]

@@ -508,7 +508,9 @@ gone from base — v7 type builders write 0x10066 as U32
 (`0x80659ae`, value from a walked sub-object; producer
 moved base→type, type string→u32); (2) NEW 0xff001e
 insert from entry+0x40 when ≠ 0xffffffff (`0x806515c`;
-unseen live — absent from all captured rows); (3) shifted
+SIGHTED live §26 — owner token, first sighting 12345;
+full lifecycle: findings §§26/31/34/47, schema
+sys-keys.yaml 0xff001e); (3) shifted
 offsets: 0x1000c/0x1003a from +0x180 (v6 +0x168),
 0x1003c array from +0x1c8/+0x1a8 (v6 +0x1a4/+0x184);
 (4) MAC tail differs (0x3e9 handling + type switch on
