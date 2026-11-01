@@ -47,6 +47,15 @@ source-id-adoption:
     sys-reqid: 0
   response:
     sys-to: "[0, <echoed source id>] — element 1 is the client's guess verbatim; use it in SYS_FROM for the rest of the session"
+    v7-reply-keys: [0xff0001, 0xff0002, 0xff001c, 0x000026, 0x00001c, 0x000013, 0x00000f, 0x000010, 0xff0003, 0x00000b, 0xff0006, 0x000028, 0x000018, 0x000016, 0x000017, 0x000015, 0x000011]
+    v6-reply-keys: [0xff0001, 0xff0002, 0x000026, 0x00001c, 0x000013, 0x00000f, 0x000010, 0xff0003, 0x00000b, 0xff0006, 0x000016, 0x000017, 0x000015, 0x000011]
+    nested-0x28: { entries: 32, role: "OPEN — v7-only nested message (0x6d u32-array + 0x0b-0x1f bool bank + 0x64/0x65/0x69/0x6a/0x6b/0x6c/0x6e scalars + 0x68 u64 + repeated 0x66); every nested field meaning UNKNOWN" }
+  reply-values:
+    role: "observed scalar values on the adoption reply — wire identity + version scope only, no meanings claimed"
+    confidence: observed-only
+    v7: "0x26=T, 0x1c=F, 0x13=F, 0x0f=32, 0x10=6, 0x0b=u32 (655358 on 7.25 AND 7.26beta4), 0x18='default', 0x16='4.3', 0x17='x86', 0x15='CHR', 0x11='i386'"
+    v6: "same keys/values as v7 except NO banner, NO nested 0x28, NO 0x18; 0x0b=393214; 0x16='3.30'"
+    open: "0x0b u32 meaning UNKNOWN; nested-0x28 field meanings UNKNOWN; 0x66 u64 meaning UNKNOWN (volatile: 62 on 7.25 vs 3 on 7.26beta4); 0x6d array volatile except element[1] (537927680 both); 0x16 meaning OPEN (values '4.3' vs '3.30' observed, no reading claimed)"
   confidence: observed-only
   notes: |
     Adoption is a pure ECHO on 6.49.23 and 7.25: guesses 8/11/42/77 were
@@ -60,12 +69,22 @@ source-id-adoption:
     handler serving a dual role (auth AND capability/source-id exchange)
     or a coincidental reuse of the path is an open question.
     DUAL-ROLE CLOSED (batch §19): the same [13,4] also serves
-    GETALL = active-sessions list (3 admin rows: f1/f3 u32
-    stamps, f4 transport 13/9/1, f6=2/f8=3 const;
-    ev/7.25-getall-13-4.json) — GET adopts, GETALL lists.
+    GETALL = active-sessions list (admin rows: f1 login time,
+    f2 username, f3 peer IPv4, f4 transport 1/9/13, f5/f6/f8
+    OPEN const; ev/7.25-getall-13-4.json + queue-1 multihold
+    fixtures) — GET adopts, GETALL lists. See
+    active-sessions-13-4 for the decoded list leg.
+    Full reply shape (queue-1, all 3 versions): v7 = proxy banner
+    + 0x26/0x1c/0x13/0x0f/0x10 scalars + 0x0b u32 + nested 0x28
+    (32 entries, v7-only) + 0x18/0x16/0x17/0x15/0x11 strings;
+    v6 = slimmer (no banner, no nested 0x28, no 0x18). See
+    response/reply-values above for keys, tcodes, version scope,
+    and the explicitly OPEN meanings.
   evidence:
     - source: sample
       ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): echo verified across guesses + overlapping session; see work/2026-10-chr-extraction/ws3c-prober-findings.md §3"
+    - source: sample
+      ref: "live CHR interrogation (queue-1 capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): first full adoption-reply dumps (tx byte-identical to adoption-13-4-tx.json guess-11 on all 3) — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-adopt-13-4-rx.json"
   revision-history:
     - date: 2026-10-31
       belief: "server corrects the client guess into an assigned source id"
@@ -253,8 +272,9 @@ handlers:
       /system/identity/set/name + /system/identity/reset/name) — a CLI
       name only, not wire identity; the numeric association stays
       observed-only per DESIGN.md §4 (no public source names it).
-      7.26 scoping open: the SET proof ran on 7.25 only; inspect
-      presence covers 7.26beta4, not a stable 7.26 build.
+      7.26 scoping: the SET proof ran on 7.25 only; 7.26beta4 is the
+      pinned lab target (2026-11-01 decision), matching the inspect
+      presence coverage — not a stable 7.26 build.
     evidence:
       - source: code
         ref: "RouterOS sys2 identity getter/setter (6.49.23); see work/2026-10-chr-extraction/sys2-handler-tables.md"
@@ -544,7 +564,9 @@ handlers:
         3: { name: netmask, tcode: be32, role: "expressed on the wire as a bitmask (/24 -> 0x00FFFFFF); CLI shows /popcount" }
         4: { name: broadcast, tcode: be32, role: "broadcast address, big-endian" }
         5: { name: actual-interface, tcode: u32, role: "references the ACTUAL interface row id (discriminated: bridge-port enslavement splits it from field 10)" }
+        6: { name: unknown-6, tcode: u32, role: "OPEN — v7-only (GETALL+GETOBJ), 0 on the observed row (single zero-valued sample; semantic width follows the 0x09 u32_compact wire family per the f1/field-5 precedent); meaning UNKNOWN, no CLI-guess recorded" }
         10: { name: interface, tcode: u32, role: "references the CONFIGURED interface row id; equals field 5 whenever interface==actual (disabled/VRRP do NOT split them)" }
+        11: { name: unknown-11, tcode: bool, role: "OPEN — v7-only (GETALL+GETOBJ), false on the observed row; meaning UNKNOWN, no CLI-guess recorded" }
       namespace-session:
         7: { name: dynamic, tcode: bool, role: "true on the DHCP-created row" }
         8: { name: invalid, tcode: bool, role: "true when the address's bridge is disabled" }
@@ -557,7 +579,33 @@ handlers:
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): be32 proven on 10.0.2.15/24 + 192.0.2.1/10.0.2.0/10.0.2.255 rows; see work/2026-10-chr-extraction/ws3c-prober-findings.md §7"
       - source: sample
         ref: "live CHR interrogation (census batch, 7.25): f5/f10 discriminated via bridge-port enslavement (ev/7.25-getall-20-1-f10.json); see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
-    notes: "GETALL start on this handler is a VALIDATED row-id cursor (inclusive): s=0 or nonexistent -> UNKNOWNID error + total count; s=1 -> the id-1 row."
+      - source: sample
+        ref: "live CHR interrogation (queue-1 capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GETCOUNT + exact-match-extras-ignored negative — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getcount-20-1.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-1 capture batch, 3 versions): GETOBJ obj=1/999 + count=1 chain — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getobj-20-1.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-1 capture batch, 3 versions): validated-cursor transcripts s=0/999/1 — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getall-20-1-cursor.json"
+    notes: |
+      GETALL start on this handler is a VALIDATED row-id cursor
+      (inclusive): s=0 or nonexistent -> UNKNOWNID error + total
+      count; s=1 -> the id-1 row. Transcript-proven on all 3
+      versions (s=0/999 -> 0xfe0004 + 0xfe0019=1; s=1 -> 1 row +
+      0xfe0019=1; see the cursor fixtures above).
+      GETOBJ: obj=1 returns a FLAT row (no 0xfe0002 wrapper) with
+      the same field set as the GETALL row, per version; obj=999
+      -> UNKNOWNID (0xfe0004) WITHOUT the 0xfe0019 total (differs
+      from cursor errors, which carry it). All versions.
+      GETCOUNT answers on [20,1] on all versions (count = 1 on the
+      single-row lab tables): v6 replies 0xfe0014, 7.25+7.26beta4
+      reply 0xfe0019 — first live GETCOUNT evidence (see
+      std-keys.yaml 0xfe0014/0xfe0019 + std-commands.yaml
+      CMD_GETCOUNT). Exact-match extras are IGNORED by both
+      GETALL and GETCOUNT here (u32 f5/f1 match + non-match
+      probes, 2 each per verb per version, all return the full
+      row / count 1); whether any filter encoding works is
+      UNKNOWN (STD_QUERY 0xfe0016 nested form untested).
+      Extras 0x06/u8-0 + 0x0b/bool-F ride GETALL+GETOBJ rows on
+      v7 only (both 7.x), absent on v6; meanings UNKNOWN.
     revision-history:
       - date: 2026-10-31
         belief: "IPv4 fields are u32 little-endian on the wire; only fields {1,3,5} exist"
@@ -862,15 +910,51 @@ handlers:
     confidence: observed-only
     fields:
       namespace-user:
-        7: { name: receive-enabled, tcode: bool }
+        7: { name: receive-enabled, tcode: bool, access: read-write, role: "native CMD_SET 0xfe000e {7: bool} takes effect both ways (7.25 + 7.26beta4 proof)" }
         9: { name: secret, tcode: string }
-        12: { name: channel, tcode: u32 }
+        12: { name: channel, tcode: u32, access: read-write, role: "native CMD_SET {12: u32} accepted (99 proven, restored to 0); valid range UNKNOWN" }
         13: { name: sim-pin, tcode: string }
         16: { name: port-absent, tcode: bool, role: "0x10: T iff port=none" }
-        17: { name: allowed-number, tcode: string_array, role: "0x11; quirk: cleared by a later unrelated SET (cause unattributed)" }
+        17: { name: allowed-number, tcode: string_array, role: "0x11; quirk: cleared by a later unrelated SET (cause unattributed); queue-2: stayed [] across native f07 SETs (quirk NOT re-triggered)" }
         21: { name: sms-storage, tcode: u32, role: "0x15: CHR-untestable (only 'sim' accepted)" }
         23: { name: polling, tcode: bool, role: "0x17" }
         24: { name: remove-sent-sms-after-send, tcode: bool, role: "0x18" }
+    set:
+      cmd: { value: 0xfe000e, name: CMD_SET, ref: "./std-commands.yaml 0xfe000e" }
+      scope: "singleton-attr path on [20,125]; request carries the USER field(s) to write (here: f07 bool, f12 u32); no selector"
+      ack: "bare SYS-only success (0xff0001/0xff0002/0xff001c/0xff0003=2/0xff0006=reqid), no USER fields, no statusWord — same shape whether the write took effect or was silently ignored"
+      versions: ["7.25", "7.26beta4"]
+    notes: |
+      Native write path proven both ways on 7.25 + 7.26beta4
+      (queue-2, disposable CHR): SET 0xfe000e f07=false->true->false
+      moves exactly f07 each way (native GET read-back) and REST
+      /tool/sms receive-enabled tracks every step; restore verified
+      both ways with no fallback. SET f12=99 accepted (REST channel
+      tracks 0->99->0, restored both ways); f12 valid range UNKNOWN
+      (range experiment not done). Each SET reply is a bare SYS-only
+      ack that does not echo state — status-ok-proves-nothing, consumers
+      must read back after SET. SETOBJ-form 0xfe0003 is N/A by design
+      on this singleton (table-row path needs 0xfe0001=rowid; no
+      distinct write was or should be attempted).
+      Type-strict + silent-ignore: u32-typed f07, unknown field 999,
+      and empty SET all answer ok with ZERO state change (corroborated
+      by — not proven from — the [24,33] §25 strict-bool precedent).
+      Allowed-number 0x11 stayed [] throughout (the §30 clear-quirk
+      NOT re-triggered by native f07 SET). No notification traffic
+      observed on any [20,125] SET (asyncTotal empty on every 7.x run;
+      none observed, not proven absent). Baselines + all leg outcomes
+      identical 7.25 vs 7.26beta4 modulo the 0xff001c msg-proxy version
+      string (no drift).
+      Absent on 6.49.23: GET + probe SET answer ERROR_BRKPATH 0xfe0002
+      (0xff0008=16646146) from=[20], errstr null. v6 /tool/sms exists
+      via the control interface with a different field set (has
+      auto-erase; lacks polling/remove-sent-sms-after-send/sms-storage)
+      — independent-read delta only, no v6 wire details claimed.
+      OPEN: ERROR_FAILED (0xfe0006) not producible here with the tried
+      clean values (wrong-tcode f07, unknown f999, channel=99, empty
+      SET); no errno identity captured. Unattempted next candidates
+      (open experiments, no approval implied): string-field confusion
+      on f09/f13, oversized string, other out-of-range enums.
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
@@ -884,6 +968,12 @@ handlers:
         ref: "RouterOS v7 net handler-125 registration 0x805e126 (store /nova/store/sms-config, object at looper+0x71c, ctor defaults 0x04=max + 0x0e=max) + modem/LTE reader cluster; see work/2026-10-chr-extraction/ws3c-prober-findings.md §30"
       - source: sample
         ref: "live CHR interrogation (sms batch, 7.25): ev/7.25-getone-20-125-sms{base,set,set2,set3,set4,unport,revert}.json (7/12 field proof + port-state triple); see work/2026-10-chr-extraction/ws3c-prober-findings.md §30"
+      - source: sample
+        ref: "live CHR interrogation (queue-2 mutation capture batch, 7.25 + 7.26beta4, 2026-11-01): native SET f07 toggle + restore with read-backs — fixtures/winbox-ipc/{7.25,7.26beta4}-set-20-125-sms.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-2 mutation capture batch, 7.x, 2026-11-01): silent-ignore negatives + f12 accept/restore, ERROR_FAILED not provoked — fixtures/winbox-ipc/{7.25,7.26beta4}-set-20-125-sms-negative.json"
+      - source: sample
+        ref: "live CHR interrogation (queue-2 mutation capture batch, 6.49.23, 2026-11-01): [20,125] absent (GET + probe SET -> ERROR_BRKPATH) — fixtures/winbox-ipc/6.49-set-20-125-sms-absent.json"
     revision-history:
       - date: 2026-10-31
         belief: "v7-net-singleton-125: thin data singleton, role open"
@@ -1276,6 +1366,56 @@ handlers:
     evidence:
       - source: sample
         ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getall-13-3.json (17 rows); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+
+  active-sessions-13-4:
+    sys-to: [13, 4]
+    process-id: 0x0d
+    process-ref: "./processes.yaml 0x0d (user)"
+    cmd: GET_ALL
+    role: "active-sessions list — admin rows with f1 login unix time, f2 username, f3 peer IPv4, f4 transport (1=winbox/9=api/13=rest-api); f5/f6/f8 OPEN const. DUAL-ROLE with source-id adoption: GET adopts + GETALL lists on the SAME handler."
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-user:
+        1: { name: login-time, tcode: u32, role: "login unix time — exact-second match vs REST /user/active when on every joined row, all versions" }
+        2: { name: username, tcode: string }
+        3: { name: peer-ipv4, tcode: u32, role: "peer IPv4 as u32 whose LE/wire bytes are the octets (0x0202000A -> 10.0.2.2); present iff the session has a peer address" }
+        4: { name: transport, tcode: u32, role: "1=winbox, 9=api, 13=rest-api (13 seen on 7.x only); complements the prior f4=6<->ssh reading" }
+        5: { name: unknown-5, tcode: bool, role: "OPEN — false on every observed row (27 rows, 3 versions); no variance to discriminate" }
+        6: { name: unknown-6, tcode: u32, role: "OPEN — 2 on every observed row; no variance to discriminate" }
+        8: { name: unknown-8, tcode: u32, role: "OPEN — 3 on every observed row; no variance to discriminate" }
+    notes: |
+      GETALL-only shape: this entry covers the list leg. The GET leg is
+      the source-id adoption exchange (see source-id-adoption above):
+      same [13,4], cmdGet adopts the source id, CMD_GETALL lists
+      sessions. Per-version: 7.25 = 3 rows (row ids 1/2/41 via
+      0xfe0001; envelope carries 0xfe0019=3) in the dual-mode batch;
+      the queue-1 multi-transport hold adds A1/A2/A3 legs on 7.25,
+      7.26beta4, AND 6.49.23 (6.49 GETALL now probed: A1 2 rows,
+      A2 3 rows, A3 2 rows). A2 adds exactly the held session-B
+      row (row-id +1, then gone in A3) on every version.
+      Row-id <-> REST .id numeric correspondence (v6 ids are hex:
+      row-id 11 <-> *B). f1/f2/f3/f4 decoded by row-id join vs
+      REST /user/active (name/when/address/via); f5/f6/f8 stay
+      OPEN/constant — recorded as such, not decoded.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getall-13-4.json (3 rows); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+      - source: sample
+        ref: "live CHR interrogation (queue-1 capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): multi-transport hold A1/A2/A3 — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getall-13-4-multihold.json"
+    revision-history:
+      - date: 2026-11-01
+        belief: "f1 is an opaque u32 stamp, NOT decoded — do not treat as a timestamp"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (queue-1 capture batch, 3 versions): f1 <-> REST when exact-second on every joined row (e.g. 1793543351 = 2026-11-01 14:29:11 UTC); see the cap2 multihold fixtures above"
+      - date: 2026-11-01
+        belief: "f3 is an opaque u32 stamp, NOT decoded"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (queue-1 capture batch, 3 versions): f3 33685514 = 0x0202000A, LE/wire bytes are the 10.0.2.2 octets, present iff REST shows an address (9 distinct addressed rows present + 2 distinct address-less rows absent, 0 counterexamples); see the cap2 multihold fixtures above"
 
   user-prefs-13-6:
     sys-to: [13, 6]

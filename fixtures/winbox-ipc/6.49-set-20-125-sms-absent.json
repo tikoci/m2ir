@@ -1,0 +1,252 @@
+{
+	"provenance": {
+		"report": "queue-2 mutation capture batch, 2026-11-01 (live CHR interrogation; machine + ROS build in note)",
+		"routeros_version": "6.49.23",
+		"route": [20, 125],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. ROS 6.49.23 build Oct/07/2026 16:05:16, x86_64 CHR. Source manifests retain full envelopes. [20,125] absent on 6.49.23: GET + probe SET both answer ERROR_BRKPATH (0xfe0002); v6 /tool/sms exists via the control interface with a different field set (see report)."
+	},
+	"records": [
+		{
+			"id": "baseline-get1-tx",
+			"role": "baseline GET [20,125] #1 tx",
+			"source": "ws3c6 6.49.23 cap3a-set-toggle reqId=2 tx",
+			"hex": "4d320500ff010600ff09020700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "baseline-get1-rx",
+			"role": "GET [20,125] #1 reply: ERROR_BRKPATH (0xff0008=16646146) from=[20], errstr null",
+			"source": "ws3c6 6.49.23 cap3a-set-toggle reqId=2 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880100140000000800ff080200fe000300ff09020400ff09020600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "baseline-get2-tx",
+			"role": "baseline GET [20,125] #2 tx",
+			"source": "ws3c6 6.49.23 cap3a-set-toggle reqId=3 tx",
+			"hex": "4d320500ff010600ff09030700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "baseline-get2-rx",
+			"role": "GET [20,125] #2 reply: ERROR_BRKPATH (0xff0008=16646146) from=[20], errstr null",
+			"source": "ws3c6 6.49.23 cap3a-set-toggle reqId=3 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880100140000000800ff080200fe000300ff09020400ff09020600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "absence-probe-set-tx",
+			"role": "absence-probe SET f07=true tx (router-error-answered; zero state risk)",
+			"source": "ws3c6 6.49.23 cap3a-set-toggle reqId=4 tx",
+			"hex": "4d320500ff010600ff09040700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b00000007000001",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 4,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 4
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x1",
+					"value": true
+				}
+			]
+		},
+		{
+			"id": "absence-probe-set-rx",
+			"role": "absence-probe SET reply: ERROR_BRKPATH (0xff0008=16646146) from=[20], errstr null",
+			"source": "ws3c6 6.49.23 cap3a-set-toggle reqId=4 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880100140000000800ff080200fe000300ff09020400ff09020600ff0904",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20],
+			"reqId": 4,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 4
+				}
+			]
+		}
+	]
+}

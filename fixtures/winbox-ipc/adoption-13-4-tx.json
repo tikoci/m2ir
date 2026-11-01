@@ -1,0 +1,158 @@
+{
+	"provenance": {
+		"report": "work/2026-10-chr-extraction/ws3c-prober-findings.md §3",
+		"routeros_version": "6.49.23 + 7.25 (request bytes are version-independent; echo verified on both)",
+		"route": [13, 4],
+		"note": "Sanitized M2 hex plus decoded entries only: no timestamps, hosts, ports, or credentials. Source captures retain full envelopes. Tx legs only; full reply bytes are promoted separately in {6.49,7.25,7.26beta4}-adopt-13-4-rx.json (queue-1 capture batch)."
+	},
+	"records": [
+		{
+			"id": "adopt-tx-guess-8",
+			"role": "source-id adoption GET [13,4] tx, SYS_FROM=[0,8] (client-constructed; server echo verified live as scalar sourceId only, no reply transcript)",
+			"source": "work/2026-10-chr-extraction/ws3c/probe.ts buildRequest + MR_FIRST_MSG_HEX (guess 11)",
+			"hex": "4d320500ff010600ff09010700ff09070100ff8802000d000000040000000200ff8802000000000008000000",
+			"cmd": 7,
+			"to": [13, 4],
+			"from": [0, 8],
+			"reqId": 1,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 4]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 8]
+				}
+			]
+		},
+		{
+			"id": "adopt-tx-guess-11",
+			"role": "source-id adoption GET [13,4] tx, SYS_FROM=[0,11] (client-constructed; server echo verified live as scalar sourceId only, no reply transcript)",
+			"source": "work/2026-10-chr-extraction/ws3c/probe.ts buildRequest + MR_FIRST_MSG_HEX (guess 11)",
+			"hex": "4d320500ff010600ff09010700ff09070100ff8802000d000000040000000200ff880200000000000b000000",
+			"cmd": 7,
+			"to": [13, 4],
+			"from": [0, 11],
+			"reqId": 1,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 4]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "adopt-tx-guess-42",
+			"role": "source-id adoption GET [13,4] tx, SYS_FROM=[0,42] (client-constructed; server echo verified live as scalar sourceId only, no reply transcript)",
+			"source": "work/2026-10-chr-extraction/ws3c/probe.ts buildRequest + MR_FIRST_MSG_HEX (guess 11)",
+			"hex": "4d320500ff010600ff09010700ff09070100ff8802000d000000040000000200ff880200000000002a000000",
+			"cmd": 7,
+			"to": [13, 4],
+			"from": [0, 42],
+			"reqId": 1,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 4]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 42]
+				}
+			]
+		},
+		{
+			"id": "adopt-tx-guess-77",
+			"role": "source-id adoption GET [13,4] tx, SYS_FROM=[0,77] (client-constructed; server echo verified live as scalar sourceId only, no reply transcript)",
+			"source": "work/2026-10-chr-extraction/ws3c/probe.ts buildRequest + MR_FIRST_MSG_HEX (guess 11)",
+			"hex": "4d320500ff010600ff09010700ff09070100ff8802000d000000040000000200ff880200000000004d000000",
+			"cmd": 7,
+			"to": [13, 4],
+			"from": [0, 77],
+			"reqId": 1,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 4]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 77]
+				}
+			]
+		}
+	]
+}

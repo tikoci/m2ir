@@ -1,0 +1,52 @@
+{
+	"provenance": {
+		"report": "work/2026-10-chr-extraction/ws3c-prober-findings.md §5",
+		"routeros_version": "6.49.23",
+		"route": "multiple (error-shape legs)",
+		"note": "Sanitized M2 hex plus decoded entries only: no timestamps, hosts, ports, or credentials. Source captures retain full envelopes. v6 error legs in ev/ are BRKPATH-only (NOTIMP/UNKNOWNID shapes verified live on v7 here)."
+	},
+	"records": [
+		{
+			"id": "get-24-17-brkpath",
+			"role": "GET [24,17] unregistered handler -> BRKPATH from looper default",
+			"source": "work/2026-10-chr-extraction/ws3c/ev/6.49-getone-24-17.json",
+			"hex": "4d320100ff880200000000000b0000000200ff880100180000000800ff080200fe000300ff09020400ff09020600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		}
+	]
+}

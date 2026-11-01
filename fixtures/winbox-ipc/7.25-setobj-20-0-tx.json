@@ -1,0 +1,57 @@
+{
+	"provenance": {
+		"report": "work/2026-10-chr-extraction/ws3c-prober-findings.md §31",
+		"routeros_version": "7.25",
+		"route": [20, 0],
+		"note": "Sanitized M2 hex plus decoded entries only: no timestamps, hosts, ports, or credentials. Source captures retain full envelopes. Tx-only: row-SET rides slot-7 SETOBJ (0xfe0003) addressed by 0xfe0001=rowid (NOT name, NOT 0xfe000e). No SETOBJ ack transcript exists; status-ok-proves-nothing, no live CHR here."
+	},
+	"records": [
+		{
+			"id": "setobj-tx-rowid-3",
+			"role": "slot-7 SETOBJ [20,0] addressing row id 3 via 0xfe0001 + comment payload (client-constructed shape; ack bytes never dumped; post-state ev/7.25-getall-20-0-m2oncli-post.json shows row 3 comment=m2oncli but effect is NOT replayed here)",
+			"source": "work/2026-10-chr-extraction/ws3c-prober-findings.md §31 + probe.ts raw/buildRequest",
+			"hex": "4d320500ff010600ff09020700ff080300fe000100ff88020014000000000000000200ff880200000000000b0000000100fe09030900fe21076d326f6e636c69",
+			"cmd": 16646147,
+			"to": [20, 0],
+			"from": [0, 11],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 0]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0xfe0009",
+					"tcode": "0x21",
+					"value": "m2oncli"
+				}
+			]
+		}
+	]
+}

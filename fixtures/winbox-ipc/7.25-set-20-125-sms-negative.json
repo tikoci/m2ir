@@ -1,0 +1,1472 @@
+{
+	"provenance": {
+		"report": "queue-2 mutation capture batch, 2026-11-01 (live CHR interrogation; machine + ROS build in note)",
+		"routeros_version": "7.25",
+		"route": [20, 125],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. ROS 7.25 build 2026-10-22 14:12:00, x86_64 CHR. Source manifests retain full envelopes. ERROR_FAILED negative legs on [20,125]: wrong-tcode f07, unknown field 999, and empty SET all answer ok with zero state change; f12 (channel) u32=99 accepted then restored to 0. ERROR_FAILED (0xfe0006) never provoked; no errno identity captured."
+	},
+	"records": [
+		{
+			"id": "anchor-get-tx",
+			"role": "anchor GET [20,125] tx before (3c) probes",
+			"source": "twin3 7.25 cap3c-error-failed reqId=8 tx",
+			"hex": "4d320500ff010600ff09080700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 8,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 8
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "anchor-get-rx",
+			"role": "anchor GET reply (f07=false, f12=0)",
+			"source": "twin3 7.25 cap3c-error-failed reqId=8 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e3235110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff09080e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 8,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 8
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "probe-a-tx",
+			"role": "probe a tx: SET f07 as u32=1 (wrong tcode for a bool field)",
+			"source": "twin3 7.25 cap3c-error-failed reqId=9 tx",
+			"hex": "4d320500ff010600ff09090700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000700000901",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 9,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 9
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x9",
+					"value": 1
+				}
+			]
+		},
+		{
+			"id": "probe-a-ack",
+			"role": "probe a ack: ok-shaped, silently ignored",
+			"source": "twin3 7.25 cap3c-error-failed reqId=9 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0909",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 9,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 9
+				}
+			]
+		},
+		{
+			"id": "probe-a-read-back-tx",
+			"role": "GET after probe a tx",
+			"source": "twin3 7.25 cap3c-error-failed reqId=10 tx",
+			"hex": "4d320500ff010600ff090a0700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 10,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 10
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "probe-a-read-back-rx",
+			"role": "GET after probe a reply: zero state change vs anchor",
+			"source": "twin3 7.25 cap3c-error-failed reqId=10 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e3235110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff090a0e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 10,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 10
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "probe-b-tx",
+			"role": "probe b tx: SET unknown field 999 as u32=1",
+			"source": "twin3 7.25 cap3c-error-failed reqId=11 tx",
+			"hex": "4d320500ff010600ff090b0700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b000000e703000901",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 11,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 11
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x0003e7",
+					"tcode": "0x9",
+					"value": 1
+				}
+			]
+		},
+		{
+			"id": "probe-b-ack",
+			"role": "probe b ack: ok-shaped, silently ignored",
+			"source": "twin3 7.25 cap3c-error-failed reqId=11 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff090b",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 11,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 11
+				}
+			]
+		},
+		{
+			"id": "probe-b-read-back-tx",
+			"role": "GET after probe b tx",
+			"source": "twin3 7.25 cap3c-error-failed reqId=12 tx",
+			"hex": "4d320500ff010600ff090c0700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 12,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 12
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "probe-b-read-back-rx",
+			"role": "GET after probe b reply: zero state change vs anchor",
+			"source": "twin3 7.25 cap3c-error-failed reqId=12 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e3235110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff090c0e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 12,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 12
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "pre-channel-get-tx",
+			"role": "GET before channel probe tx",
+			"source": "twin3 7.25 cap3c-error-failed reqId=13 tx",
+			"hex": "4d320500ff010600ff090d0700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 13,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 13
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "pre-channel-get-rx",
+			"role": "GET before channel probe reply (f12=0)",
+			"source": "twin3 7.25 cap3c-error-failed reqId=13 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e3235110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff090d0e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 13,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 13
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "probe-c-tx",
+			"role": "probe c tx: SET f12 (channel) as u32=99",
+			"source": "twin3 7.25 cap3c-error-failed reqId=14 tx",
+			"hex": "4d320500ff010600ff090e0700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000c00000963",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 14,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 14
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 99
+				}
+			]
+		},
+		{
+			"id": "probe-c-ack",
+			"role": "probe c ack: ok-shaped; the write took effect (see read-back)",
+			"source": "twin3 7.25 cap3c-error-failed reqId=14 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff090e",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 14,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 14
+				}
+			]
+		},
+		{
+			"id": "probe-c-read-back-tx",
+			"role": "GET after probe c tx",
+			"source": "twin3 7.25 cap3c-error-failed reqId=15 tx",
+			"hex": "4d320500ff010600ff090f0700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 15,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 15
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "probe-c-read-back-rx",
+			"role": "GET after probe c reply: f12=99 (only f12 moved)",
+			"source": "twin3 7.25 cap3c-error-failed reqId=15 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e3235110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009630600ff090f0e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 15,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 99
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 15
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "f12-restore-tx",
+			"role": "SET f12=0 (channel restore) tx",
+			"source": "twin3 7.25 cap3c-error-failed reqId=16 tx",
+			"hex": "4d320500ff010600ff09100700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b0000000c00000900",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 16,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 16
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				}
+			]
+		},
+		{
+			"id": "f12-restore-ack",
+			"role": "SET f12=0 bare SYS-only ack",
+			"source": "twin3 7.25 cap3c-error-failed reqId=16 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0910",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 16,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 16
+				}
+			]
+		},
+		{
+			"id": "f12-restore-read-back-tx",
+			"role": "GET after f12 restore tx",
+			"source": "twin3 7.25 cap3c-error-failed reqId=17 tx",
+			"hex": "4d320500ff010600ff09110700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 17,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 17
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "f12-restore-read-back-rx",
+			"role": "GET after f12 restore reply (f12=0; anchor-equal)",
+			"source": "twin3 7.25 cap3c-error-failed reqId=17 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e3235110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff09110e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 17,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 17
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "probe-d-tx",
+			"role": "probe d tx: empty SET (no USER fields)",
+			"source": "twin3 7.25 cap3c-error-failed reqId=18 tx",
+			"hex": "4d320500ff010600ff09120700ff080e00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646158,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 18,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 18
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646158
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "probe-d-ack",
+			"role": "probe d ack: ok-shaped no-op",
+			"source": "twin3 7.25 cap3c-error-failed reqId=18 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0912",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 18,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 18
+				}
+			]
+		},
+		{
+			"id": "probe-d-read-back-tx",
+			"role": "GET after probe d tx",
+			"source": "twin3 7.25 cap3c-error-failed reqId=19 tx",
+			"hex": "4d320500ff010600ff09130700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 19,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 19
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "probe-d-read-back-rx",
+			"role": "GET after probe d reply: zero state change vs anchor",
+			"source": "twin3 7.25 cap3c-error-failed reqId=19 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e3235110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff09130e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 19,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 19
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "final-get-tx",
+			"role": "final GET [20,125] tx",
+			"source": "twin3 7.25 cap3c-error-failed reqId=20 tx",
+			"hex": "4d320500ff010600ff09140700ff080d00fe000100ff880200140000007d0000000200ff880200000000000b000000",
+			"cmd": 16646157,
+			"to": [20, 125],
+			"from": [0, 11],
+			"reqId": 20,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 20
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646157
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "final-get-rx",
+			"role": "final GET reply: anchor-equal (f07=false, f12=0)",
+			"source": "twin3 7.25 cap3c-error-failed reqId=20 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007d0000001c00ffa001000e006d73672d70726f78792d372e3235110000a00000170000001800000064000000100000010700000015000009010300ff09020c000009000600ff09140e000008ffffffff65000021000d000021000900002100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 125],
+			"reqId": 20,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 125]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 20
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		}
+	]
+}

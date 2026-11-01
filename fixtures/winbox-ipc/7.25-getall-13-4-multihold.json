@@ -1,0 +1,559 @@
+{
+	"provenance": {
+		"report": "queue-1 read-only capture batch, 2026-11-01 (live CHR interrogation; machine + ROS build in note)",
+		"routeros_version": "7.25",
+		"route": [13, 4],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. ROS 7.25 build 2026-10-22 14:12:00, x86_64 CHR. Source manifests retain full envelopes. Multi-transport hold: session B appears in A2 and disappears in A3. Row f1 values are verbatim protocol login-time epochs."
+	},
+	"records": [
+		{
+			"id": "sessions-a1-baseline-rx",
+			"role": "[13,4] A1 baseline GETALL reply; 3 rows",
+			"source": "twin3 7.25 cap2-sessions-13-4 reqId=18 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000040000001c00ffa001000e006d73672d70726f78792d372e32350200fea8030034004d3205000000040000090d060000090208000009030100fe090301000008b74ce76a030000080a000202020000210561646d696e2c004d32050000000400000909060000090208000009030100fe090401000008b74ce76a020000210561646d696e34004d32050000000400000901060000090208000009030100fe090501000008bd4ce76a030000080a000202020000210561646d696e0300ff09021900fe09030600ff0912",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 4],
+			"reqId": 18,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 4]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x000005",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 13
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000008",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 1793543351
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 33685514
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x21",
+								"value": "admin"
+							}
+						],
+						[
+							{
+								"key": "0x000005",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 9
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000008",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 1793543351
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x21",
+								"value": "admin"
+							}
+						],
+						[
+							{
+								"key": "0x000005",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000008",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 5
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 1793543357
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 33685514
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x21",
+								"value": "admin"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 18
+				}
+			]
+		},
+		{
+			"id": "sessions-a2-hold-rx",
+			"role": "[13,4] A2 hold A+B: 4 rows (B row-id 6 added) GETALL reply",
+			"source": "twin3 7.25 cap2-sessions-13-4 reqId=19 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000040000001c00ffa001000e006d73672d70726f78792d372e32350200fea8040034004d3205000000040000090d060000090208000009030100fe090301000008b74ce76a030000080a000202020000210561646d696e2c004d32050000000400000909060000090208000009030100fe090401000008b74ce76a020000210561646d696e34004d32050000000400000901060000090208000009030100fe090501000008bd4ce76a030000080a000202020000210561646d696e34004d32050000000400000901060000090208000009030100fe090601000008bf4ce76a030000080a000202020000210561646d696e0300ff09021900fe09040600ff0913",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 4],
+			"reqId": 19,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 4]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x000005",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 13
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000008",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 1793543351
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 33685514
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x21",
+								"value": "admin"
+							}
+						],
+						[
+							{
+								"key": "0x000005",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 9
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000008",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 1793543351
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x21",
+								"value": "admin"
+							}
+						],
+						[
+							{
+								"key": "0x000005",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000008",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 5
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 1793543357
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 33685514
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x21",
+								"value": "admin"
+							}
+						],
+						[
+							{
+								"key": "0x000005",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000008",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 6
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 1793543359
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 33685514
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x21",
+								"value": "admin"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 4
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 19
+				}
+			]
+		},
+		{
+			"id": "sessions-a3-after-b-close-rx",
+			"role": "[13,4] A3 after B close GETALL reply; 3 rows (B row gone)",
+			"source": "twin3 7.25 cap2-sessions-13-4 reqId=20 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000040000001c00ffa001000e006d73672d70726f78792d372e32350200fea8030034004d3205000000040000090d060000090208000009030100fe090301000008b74ce76a030000080a000202020000210561646d696e2c004d32050000000400000909060000090208000009030100fe090401000008b74ce76a020000210561646d696e34004d32050000000400000901060000090208000009030100fe090501000008bd4ce76a030000080a000202020000210561646d696e0300ff09021900fe09030600ff0914",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 4],
+			"reqId": 20,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 4]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x000005",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 13
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000008",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 1793543351
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 33685514
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x21",
+								"value": "admin"
+							}
+						],
+						[
+							{
+								"key": "0x000005",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 9
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000008",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 1793543351
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x21",
+								"value": "admin"
+							}
+						],
+						[
+							{
+								"key": "0x000005",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000008",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 5
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 1793543357
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 33685514
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x21",
+								"value": "admin"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 20
+				}
+			]
+		}
+	]
+}

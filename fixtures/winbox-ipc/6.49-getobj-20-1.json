@@ -1,0 +1,365 @@
+{
+	"provenance": {
+		"report": "queue-1 read-only capture batch, 2026-11-01 (live CHR interrogation; machine + ROS build in note)",
+		"routeros_version": "6.49.23",
+		"route": [20, 1],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. ROS 6.49.23 build Oct/07/2026 16:05:16, x86_64 CHR. Source manifests retain full envelopes. GETOBJ obj=1 flat row + obj=999 UNKNOWNID + GETALL count=1 first page (complete, 1 page, no token)."
+	},
+	"records": [
+		{
+			"id": "getobj-20-1-obj=1-tx",
+			"role": "getobj [20,1] obj=1 tx",
+			"source": "ws3c6 6.49.23 cap4-getobj-20-1 reqId=12 tx",
+			"hex": "4d320500ff010600ff090c0700ff080200fe000100ff88020014000000010000000200ff880200000000000b0000000100fe0901",
+			"cmd": 16646146,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 12,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 12
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 1
+				}
+			]
+		},
+		{
+			"id": "getobj-20-1-obj=1-reply",
+			"role": "getobj [20,1] obj=1 reply",
+			"source": "ws3c6 6.49.23 cap4-getobj-20-1 reqId=12 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000000700fe010800fe000a00fe00040000080a0002ff050000090103000008ffffff000a000009010100fe09010300ff0902010000080a00020f0600ff090c020000080a0002000900fe2100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 12,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xfe0007",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xfe0008",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe000a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000004",
+					"tcode": "0x8",
+					"value": 4278321162
+				},
+				{
+					"key": "0x000005",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x8",
+					"value": 16777215
+				},
+				{
+					"key": "0x00000a",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x8",
+					"value": 251789322
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 12
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x8",
+					"value": 131082
+				},
+				{
+					"key": "0xfe0009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "getobj-20-1-obj=999-tx",
+			"role": "getobj [20,1] obj=999 tx",
+			"source": "ws3c6 6.49.23 cap4-getobj-20-1 reqId=13 tx",
+			"hex": "4d320500ff010600ff090d0700ff080200fe000100ff88020014000000010000000200ff880200000000000b0000000100fe08e7030000",
+			"cmd": 16646146,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 13,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 13
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x8",
+					"value": 999
+				}
+			]
+		},
+		{
+			"id": "getobj-20-1-obj=999-reply",
+			"role": "getobj [20,1] obj=999 reply",
+			"source": "ws3c6 6.49.23 cap4-getobj-20-1 reqId=13 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000000800ff080400fe000300ff09020400ff09020600ff090d",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 13,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 13
+				}
+			]
+		},
+		{
+			"id": "getall-count=1-first-page-tx",
+			"role": "getall count=1 first page tx",
+			"source": "ws3c6 6.49.23 cap4-getobj-20-1 reqId=14 tx",
+			"hex": "4d320500ff010600ff090e0700ff080400fe000100ff88020014000000010000000200ff880200000000000b0000000400fe0901",
+			"cmd": 16646148,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 14,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 14
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0004",
+					"tcode": "0x9",
+					"value": 1
+				}
+			]
+		},
+		{
+			"id": "getall-count=1-first-page-reply",
+			"role": "getall count=1 first page reply",
+			"source": "ws3c6 6.49.23 cap4-getobj-20-1 reqId=14 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000000200fea8010042004d320700fe010800fe000a00fe00040000080a0002ff05000009010a000009010100fe0901010000080a00020f020000080a00020003000008ffffff000900fe21000300ff09021900fe09010600ff090e",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 14,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe0007",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4278321162
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 251789322
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 131082
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 14
+				}
+			]
+		}
+	]
+}

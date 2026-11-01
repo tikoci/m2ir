@@ -1,0 +1,129 @@
+{
+	"provenance": {
+		"report": "queue-1 read-only capture batch, 2026-11-01 (live CHR interrogation; machine + ROS build in note)",
+		"routeros_version": "6.49.23",
+		"route": [13, 4],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. ROS 6.49.23 build Oct/07/2026 16:05:16, x86_64 CHR. Source manifests retain full envelopes. Full adoption-reply bytes (completes the tx-only fixture)."
+	},
+	"records": [
+		{
+			"id": "adopt-tx-guess-11",
+			"role": "source-id adoption GET [13,4] tx, SYS_FROM=[0,11]",
+			"source": "ws3c6 6.49.23 r-a-adopt-13-4 reqId=1 tx",
+			"hex": "4d320500ff010600ff09010700ff09070100ff8802000d000000040000000200ff880200000000000b000000",
+			"cmd": 7,
+			"to": [13, 4],
+			"from": [0, 11],
+			"reqId": 1,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 4]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "adopt-rx-full",
+			"role": "source-id adoption GET [13,4] full reply",
+			"source": "ws3c6 6.49.23 r-a-adopt-13-4 reqId=1 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d00000004000000260000011c000000130000000f0000092010000009060300ff09020b000008feff05000600ff09011600002104332e333017000021037838361500002103434852110000210469333836",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 4],
+			"reqId": 1,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 4]
+				},
+				{
+					"key": "0x000026",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x00001c",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000013",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00000f",
+					"tcode": "0x9",
+					"value": 32
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x9",
+					"value": 6
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000b",
+					"tcode": "0x8",
+					"value": 393214
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000016",
+					"tcode": "0x21",
+					"value": "3.30"
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x21",
+					"value": "x86"
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x21",
+					"value": "CHR"
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0x21",
+					"value": "i386"
+				}
+			]
+		}
+	]
+}

@@ -1,11 +1,27 @@
 # WinBox configuration attributes and verbs — execution plan
 
-<!-- cspell:ignore llms cliref unsettable syscap -->
+<!-- cspell:ignore llms cliref unsettable syscap rodenasl -->
 
 Status: proposed execution sequence, grounded in repository and local-source
 inspection on 2026-11-01, starting at commit `31b3f85`. This is research
 planning, not a new protocol specification or a claim of completed mapping.
 Canonical results belong in `profiles/winbox-ipc/*.yaml`.
+
+## Pinned version decisions (2026-11-01)
+
+- Third lab version is **7.26beta4** (not a stable 7.26): MikroTik kept
+  changing the WinBox protocol after 7.25 broke WinBox 3.x support, and
+  7.26.x follows those changes, possibly related to the 7.26beta CMR
+  controller/device-manager feature (supported by centrs).
+- Lab scope is 7.x divergence: 7.x below 7.25 versus 7.25-and-above
+  (protocol behavior, not auth). No pre-6.43 legacy-MD5 proof target.
+- `manual.mikrotik.com` page versions read as the latest patch in that
+  series, or the beta/rc build where the source is 7.26beta4.
+- WinBox 3.43 (Win32/64) refuses 7.25+ while Qt-based 4.x works both
+  sides; community patch projects motivate the compatibility framing:
+  mark99i/WinboxPatch, rodenasl/winbox3-ros7-patch, and the top-post
+  binary in
+  [Winbox 3 for Ros 7.25](https://forum.mikrotik.com/t/winbox-3-for-ros-7-25/274093/71).
 
 ## Outcome and boundaries
 
@@ -267,9 +283,9 @@ Acceptance before bulk probes:
 ### C. Prove the method on a small configuration slice
 
 Start on **7.25** to reuse the grounded evidence. After the pilot passes,
-repeat on the exact 7.26 build selected to match source metadata; record
-build/channel explicitly. Use 6.49.23 for targeted regression, not as a
-mandatory blocker for every new v7 feature.
+repeat on **7.26beta4** (pinned 2026-11-01) to match source metadata;
+record build/channel explicitly. Use 6.49.23 for targeted regression,
+not as a mandatory blocker for every new v7 feature.
 
 Pilot order:
 

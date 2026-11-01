@@ -1,0 +1,282 @@
+{
+	"provenance": {
+		"report": "work/2026-10-chr-extraction/ws3c-prober-findings.md §1/§18/§24/§26",
+		"routeros_version": "7.25",
+		"route": "multiple (error-shape legs)",
+		"note": "Sanitized M2 hex plus decoded entries only: no timestamps, hosts, ports, or credentials. Source captures retain full envelopes. No ERROR_FAILED leg exists in ev/ (token-guard FAILED has no transcript)."
+	},
+	"records": [
+		{
+			"id": "set-20-0-notimp",
+			"role": "SET [20,0] (0xfe000e singleton path) -> base NOTIMP; table rows ride SETOBJ",
+			"source": "work/2026-10-chr-extraction/ws3c/ev/7.25-setone-20-0-cmt.json",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000000000001c00ffa001000e006d73672d70726f78792d372e32350800ff080300fe000300ff09020400ff09020600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 0],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 0]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "get-24-12-notimp",
+			"role": "GET [24,12] unimplemented handler -> NOTIMP",
+			"source": "work/2026-10-chr-extraction/ws3c/ev/7.25-getone-24-12.json",
+			"hex": "4d320100ff880200000000000b0000000200ff880200180000000c0000001c00ffa001000e006d73672d70726f78792d372e32350800ff080300fe000300ff09020400ff09020600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24, 12],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24, 12]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "getobj-24-2-2-unknownid",
+			"role": "GETOBJ [24,2] obj=2 (no such sampler slot) -> UNKNOWNID",
+			"source": "work/2026-10-chr-extraction/ws3c/ev/7.25-getobj-24-2-2.json",
+			"hex": "4d320100ff880200000000000b0000000200ff88020018000000020000001c00ffa001000e006d73672d70726f78792d372e32350800ff080400fe000300ff09020400ff09020600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24, 2],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24, 2]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "get-20-61-f7-unknownid",
+			"role": "GET [20,61] field-7 selector miss -> UNKNOWNID",
+			"source": "work/2026-10-chr-extraction/ws3c/ev/7.25-getone-20-61-f7.json",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000003d0000001c00ffa001000e006d73672d70726f78792d372e32350800ff080400fe000300ff09020400ff09020600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 61],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 61]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "get-24-17-brkpath",
+			"role": "GET [24,17] unregistered handler -> BRKPATH from looper default",
+			"source": "work/2026-10-chr-extraction/ws3c/ev/7.25-getone-24-17.json",
+			"hex": "4d320100ff880200000000000b0000000200ff880100180000001c00ffa001000e006d73672d70726f78792d372e32350800ff080200fe000300ff09020400ff09020600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "get-2-99-brkpath-short",
+			"role": "GET [2,99] unknown mproxy handler -> BRKPATH, short envelope (no TYPE/REQID)",
+			"source": "work/2026-10-chr-extraction/ws3c/ev/7.25-getone-2-99.json",
+			"hex": "4d320100ff880200000000000b0000000200ff88020002000000630000001c00ffa001000e006d73672d70726f78792d372e32350800ff080200fe000400ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [2, 99],
+			"reqId": null,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [2, 99]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		}
+	]
+}

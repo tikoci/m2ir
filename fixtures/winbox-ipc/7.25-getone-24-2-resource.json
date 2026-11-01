@@ -1,0 +1,202 @@
+{
+	"provenance": {
+		"report": "work/2026-10-chr-extraction/ws3c-prober-findings.md §4",
+		"routeros_version": "7.25",
+		"route": [24, 2],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. Source captures retain full envelopes. Protocol counter fields (uptime/jiffies/server-time) are verbatim transcript values."
+	},
+	"records": [
+		{
+			"id": "bare-get-reply",
+			"role": "GET [24,2] bare reply; f22 version, f45 minimum-version",
+			"source": "work/2026-10-chr-extraction/ws3c/ev/7.25-getone-24-2.json",
+			"hex": "4d320100ff880200000000000b0000000200ff88020018000000020000001c00ffa001000e006d73672d70726f78792d372e3235220000880100000000000200000800000800050000086009000003000008a09c040009000009000a000008ec6401000b000008a41101000c000008ae61e56a18000009011c000008485300001d0000094c230000080002000024000008870b0000250000095926000008ac0200000300ff090201000008ad0200002e000008d40b01000600ff09022b00001000904604000000002a00001000b09305000000000400002108496e74656c2852292900001000807212000000002800001000000020000000002700002113323032362d31302d32322031343a31323a30301600002104372e32351300001030090000000000001400001030090000000000002d00002103372e311b000021084d696b726f54696b1a000021067838365f36342c0000212a4348522051454d55205374616e646172642050432028693434304658202b20504949582c2031393936291900002103434852",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24, 2],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24, 2]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0x000022",
+					"tcode": "0x88",
+					"value": [0]
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x8",
+					"value": 524288
+				},
+				{
+					"key": "0x000005",
+					"tcode": "0x8",
+					"value": 2400
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x8",
+					"value": 302240
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00000a",
+					"tcode": "0x8",
+					"value": 91372
+				},
+				{
+					"key": "0x00000b",
+					"tcode": "0x8",
+					"value": 70052
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x8",
+					"value": 1793417646
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x00001c",
+					"tcode": "0x8",
+					"value": 21320
+				},
+				{
+					"key": "0x00001d",
+					"tcode": "0x9",
+					"value": 76
+				},
+				{
+					"key": "0x000023",
+					"tcode": "0x8",
+					"value": 512
+				},
+				{
+					"key": "0x000024",
+					"tcode": "0x8",
+					"value": 2951
+				},
+				{
+					"key": "0x000025",
+					"tcode": "0x9",
+					"value": 89
+				},
+				{
+					"key": "0x000026",
+					"tcode": "0x8",
+					"value": 684
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x8",
+					"value": 685
+				},
+				{
+					"key": "0x00002e",
+					"tcode": "0x8",
+					"value": 68564
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00002b",
+					"tcode": "0x10",
+					"value": 71733248
+				},
+				{
+					"key": "0x00002a",
+					"tcode": "0x10",
+					"value": 93564928
+				},
+				{
+					"key": "0x000004",
+					"tcode": "0x21",
+					"value": "Intel(R)"
+				},
+				{
+					"key": "0x000029",
+					"tcode": "0x10",
+					"value": 309493760
+				},
+				{
+					"key": "0x000028",
+					"tcode": "0x10",
+					"value": 536870912
+				},
+				{
+					"key": "0x000027",
+					"tcode": "0x21",
+					"value": "2026-10-22 14:12:00"
+				},
+				{
+					"key": "0x000016",
+					"tcode": "0x21",
+					"value": "7.25"
+				},
+				{
+					"key": "0x000013",
+					"tcode": "0x10",
+					"value": 2352
+				},
+				{
+					"key": "0x000014",
+					"tcode": "0x10",
+					"value": 2352
+				},
+				{
+					"key": "0x00002d",
+					"tcode": "0x21",
+					"value": "7.1"
+				},
+				{
+					"key": "0x00001b",
+					"tcode": "0x21",
+					"value": "MikroTik"
+				},
+				{
+					"key": "0x00001a",
+					"tcode": "0x21",
+					"value": "x86_64"
+				},
+				{
+					"key": "0x00002c",
+					"tcode": "0x21",
+					"value": "CHR QEMU Standard PC (i440FX + PIIX, 1996)"
+				},
+				{
+					"key": "0x000019",
+					"tcode": "0x21",
+					"value": "CHR"
+				}
+			]
+		}
+	]
+}

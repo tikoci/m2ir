@@ -1,0 +1,355 @@
+{
+	"provenance": {
+		"report": "queue-1 read-only capture batch, 2026-11-01 (live CHR interrogation; machine + ROS build in note)",
+		"routeros_version": "7.26beta4",
+		"route": [20, 1],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. ROS 7.26beta4 build 2026-10-27 09:25:44, x86_64 CHR. Source manifests retain full envelopes. Validated-cursor transcripts: s=0/s=999 UNKNOWNID + total, s=1 one row + total."
+	},
+	"records": [
+		{
+			"id": "cursor-leg-s0-tx",
+			"role": "GETALL cursor leg s=0 tx (0xfe0003 start only)",
+			"source": "winbox-beta4 7.26beta4 r-b-cursor-20-1 reqId=15 tx",
+			"hex": "4d320500ff010600ff090f0700ff080400fe000100ff88020014000000010000000200ff880200000000000b0000000300fe0900",
+			"cmd": 16646148,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 15,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 15
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0003",
+					"tcode": "0x9",
+					"value": 0
+				}
+			]
+		},
+		{
+			"id": "cursor-leg-s0-rx",
+			"role": "GETALL cursor leg s=0 reply",
+			"source": "winbox-beta4 7.26beta4 r-b-cursor-20-1 reqId=15 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa0010013006d73672d70726f78792d372e323662657461340800ff080400fe000300ff09020400ff09021900fe09010600ff090f",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 15,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 15
+				}
+			]
+		},
+		{
+			"id": "cursor-leg-s999-tx",
+			"role": "GETALL cursor leg s=999 tx (0xfe0003 start only)",
+			"source": "winbox-beta4 7.26beta4 r-b-cursor-20-1 reqId=16 tx",
+			"hex": "4d320500ff010600ff09100700ff080400fe000100ff88020014000000010000000200ff880200000000000b0000000300fe08e7030000",
+			"cmd": 16646148,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 16,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 16
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0003",
+					"tcode": "0x8",
+					"value": 999
+				}
+			]
+		},
+		{
+			"id": "cursor-leg-s999-rx",
+			"role": "GETALL cursor leg s=999 reply",
+			"source": "winbox-beta4 7.26beta4 r-b-cursor-20-1 reqId=16 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa0010013006d73672d70726f78792d372e323662657461340800ff080400fe000300ff09020400ff09021900fe09010600ff0910",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 16,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 16
+				}
+			]
+		},
+		{
+			"id": "cursor-leg-s1-tx",
+			"role": "GETALL cursor leg s=1 tx (0xfe0003 start only)",
+			"source": "winbox-beta4 7.26beta4 r-b-cursor-20-1 reqId=17 tx",
+			"hex": "4d320500ff010600ff09110700ff080400fe000100ff88020014000000010000000200ff880200000000000b0000000300fe0901",
+			"cmd": 16646148,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 17,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 17
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0003",
+					"tcode": "0x9",
+					"value": 1
+				}
+			]
+		},
+		{
+			"id": "cursor-leg-s1-rx",
+			"role": "GETALL cursor leg s=1 reply",
+			"source": "winbox-beta4 7.26beta4 r-b-cursor-20-1 reqId=17 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa0010013006d73672d70726f78792d372e323662657461340200fea801004b004d320b0000000700fe010800fe000a00fe00040000080a0002ff050000090206000009000a000009020100fe0901010000080a00020f020000080a00020003000008ffffff000900fe21000300ff09021900fe09010600ff0911",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 17,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4278321162
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 251789322
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 131082
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 17
+				}
+			]
+		}
+	]
+}

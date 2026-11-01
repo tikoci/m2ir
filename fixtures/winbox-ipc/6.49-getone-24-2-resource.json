@@ -1,0 +1,192 @@
+{
+	"provenance": {
+		"report": "work/2026-10-chr-extraction/ws3c-prober-findings.md §4",
+		"routeros_version": "6.49.23",
+		"route": [24, 2],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. Source captures retain full envelopes. Protocol counter fields (uptime/jiffies/server-time) are verbatim transcript values."
+	},
+	"records": [
+		{
+			"id": "bare-get-reply",
+			"role": "GET [24,2] bare reply; f22 version, f45 absent on v6",
+			"source": "work/2026-10-chr-extraction/ws3c/ev/6.49-getone-24-2.json",
+			"hex": "4d320100ff880200000000000b0000000200ff8802001800000002000000220000880100000000000200000800800700050000086009000003000008cc19070009000009000a00000804fe00000b000008208000000c0000088e65e56a18000009011c000008e47d00001d0000093223000008e001000024000008c0110000250000093f26000008400100000300ff0902010000099d2e000008ad3d00000600ff09022b00001000800002000000002a0000100010f803000000000400002108496e74656c285229290000100030671c00000000280000100000001e0000000027000021144f63742f30372f323032362031363a30353a31361600002110362e34392e32332028737461626c652913000010c10100000000000014000010c0010000000000001b000021084d696b726f54696b1a000021067838365f36342c000021034348521900002103434852",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24, 2],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24, 2]
+				},
+				{
+					"key": "0x000022",
+					"tcode": "0x88",
+					"value": [0]
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x8",
+					"value": 491520
+				},
+				{
+					"key": "0x000005",
+					"tcode": "0x8",
+					"value": 2400
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x8",
+					"value": 465356
+				},
+				{
+					"key": "0x000009",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00000a",
+					"tcode": "0x8",
+					"value": 65028
+				},
+				{
+					"key": "0x00000b",
+					"tcode": "0x8",
+					"value": 32800
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x8",
+					"value": 1793418638
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x00001c",
+					"tcode": "0x8",
+					"value": 32228
+				},
+				{
+					"key": "0x00001d",
+					"tcode": "0x9",
+					"value": 50
+				},
+				{
+					"key": "0x000023",
+					"tcode": "0x8",
+					"value": 480
+				},
+				{
+					"key": "0x000024",
+					"tcode": "0x8",
+					"value": 4544
+				},
+				{
+					"key": "0x000025",
+					"tcode": "0x9",
+					"value": 63
+				},
+				{
+					"key": "0x000026",
+					"tcode": "0x8",
+					"value": 320
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x9",
+					"value": 157
+				},
+				{
+					"key": "0x00002e",
+					"tcode": "0x8",
+					"value": 15789
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00002b",
+					"tcode": "0x10",
+					"value": 33587200
+				},
+				{
+					"key": "0x00002a",
+					"tcode": "0x10",
+					"value": 66588672
+				},
+				{
+					"key": "0x000004",
+					"tcode": "0x21",
+					"value": "Intel(R)"
+				},
+				{
+					"key": "0x000029",
+					"tcode": "0x10",
+					"value": 476524544
+				},
+				{
+					"key": "0x000028",
+					"tcode": "0x10",
+					"value": 503316480
+				},
+				{
+					"key": "0x000027",
+					"tcode": "0x21",
+					"value": "Oct/07/2026 16:05:16"
+				},
+				{
+					"key": "0x000016",
+					"tcode": "0x21",
+					"value": "6.49.23 (stable)"
+				},
+				{
+					"key": "0x000013",
+					"tcode": "0x10",
+					"value": 449
+				},
+				{
+					"key": "0x000014",
+					"tcode": "0x10",
+					"value": 448
+				},
+				{
+					"key": "0x00001b",
+					"tcode": "0x21",
+					"value": "MikroTik"
+				},
+				{
+					"key": "0x00001a",
+					"tcode": "0x21",
+					"value": "x86_64"
+				},
+				{
+					"key": "0x00002c",
+					"tcode": "0x21",
+					"value": "CHR"
+				},
+				{
+					"key": "0x000019",
+					"tcode": "0x21",
+					"value": "CHR"
+				}
+			]
+		}
+	]
+}

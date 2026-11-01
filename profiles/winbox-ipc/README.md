@@ -160,9 +160,9 @@ count of nova TLVs, because field numbering is local to each handler.
 | Envelope keys named (SYS 20 + STD 31) | 51 |
 | STD commands / errors named | 23 / 13 |
 | Process entries catalogued | 41 |
-| GUI handlers catalogued | 43 |
-| Handlers with at least one field mapped | 26 of 43 |
-| Handler field entries mapped | 173 (154 named, 19 `unknown-*`) |
+| GUI handlers catalogued | 44 |
+| Handlers with at least one field mapped | 27 of 44 |
+| Handler field entries mapped | 182 (158 named, 24 `unknown-*`) |
 | Distinct TLV keys seen in live transcripts | 278 |
 | Menu bindings in the v7 registry (HD table) | 296 (98 menus) |
 | Distinct CLI command-tree nodes in restraml | 43,189 |
@@ -174,20 +174,20 @@ How to read this:
 - The **envelope is essentially complete**: the 51 SYS/STD keys, 23
   commands, and 13 errors cover the shared machinery every handler
   uses, drained from the Cisco-Talos enum and then corrected live.
-- **Per-handler config fields are the long tail.** 173 mapped field
+- **Per-handler config fields are the long tail.** 182 mapped field
   entries is under 1% of restraml's 37,240 CLI args. That ratio is
   only a proxy — CLI args and nova fields are not 1:1 (args share
   fields, some fields have no CLI arg) — but it gives the right
   order of magnitude: deep on the catalogued handlers, thin overall.
-- **Breadth is partial too:** 43 handlers catalogued against 296
+- **Breadth is partial too:** 44 handlers catalogued against 296
   menu bindings in the v7 registry, and 466 handler addresses probed
-  in the v7 scans. The catalogued 43 are the ones WinBox exercises
+  in the v7 scans. The catalogued 44 are the ones WinBox exercises
   most, not a random sample.
 - Every schema key we reconstructed for the catalogued handlers
   (80 of 80) actually appears in the live transcripts. The gap is
   handlers and fields never probed, not keys invented on paper.
-- Quality counts: 282 confidence-tagged entries (150 documented,
-  129 observed-only, 3 inferred), 427 evidence references, and 61
+- Quality counts: 284 confidence-tagged entries (150 documented,
+  131 observed-only, 3 inferred), 442 evidence references, and 63
   kept revision-history entries recording beliefs live work corrected.
 
 The CLI-reference total includes repeated records across three manual

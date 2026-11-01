@@ -1,0 +1,305 @@
+{
+	"provenance": {
+		"report": "queue-1 read-only capture batch, 2026-11-01 (live CHR interrogation; machine + ROS build in note)",
+		"routeros_version": "7.26beta4",
+		"route": [13, 4],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. ROS 7.26beta4 build 2026-10-27 09:25:44, x86_64 CHR. Source manifests retain full envelopes. Full adoption-reply bytes (completes the tx-only fixture)."
+	},
+	"records": [
+		{
+			"id": "adopt-tx-guess-11",
+			"role": "source-id adoption GET [13,4] tx, SYS_FROM=[0,11]",
+			"source": "winbox-beta4 7.26beta4 r-a-adopt-13-4 reqId=1 tx",
+			"hex": "4d320500ff010600ff09010700ff09070100ff8802000d000000040000000200ff880200000000000b000000",
+			"cmd": 7,
+			"to": [13, 4],
+			"from": [0, 11],
+			"reqId": 1,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [13, 4]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "adopt-rx-full",
+			"role": "source-id adoption GET [13,4] full reply",
+			"source": "winbox-beta4 7.26beta4 r-a-adopt-13-4 reqId=1 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000040000001c00ffa0010013006d73672d70726f78792d372e32366265746134260000011c000000130000000f0000092010000009060300ff09020b000008feff09000600ff090128000029aa4d326d00008804008f1f6b3d00201020028cbf7f008001000b0000000c0000010d0000010e0000010f000001100000011100000112000001130000001400000115000001160000011700000118000001190000011a0000011b0000011c0000001d0000001e0000001f000000650000016600000064000009ff69000009206a000009066b000009006c000009006e00000900680000100000000000000000660000100300000000000000180000210764656661756c741600002103342e3317000021037838361500002103434852110000210469333836",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 4],
+			"reqId": 1,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 4]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000026",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x00001c",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000013",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00000f",
+					"tcode": "0x9",
+					"value": 32
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x9",
+					"value": 6
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000b",
+					"tcode": "0x8",
+					"value": 655358
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000028",
+					"tcode": "0x29",
+					"value": [
+						{
+							"key": "0x00006d",
+							"tcode": "0x88",
+							"value": [1030430607, 537927680, 2143259650, 98304]
+						},
+						{
+							"key": "0x00000b",
+							"tcode": "0x0",
+							"value": false
+						},
+						{
+							"key": "0x00000c",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x00000d",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x00000e",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x00000f",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x000010",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x000011",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x000012",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x000013",
+							"tcode": "0x0",
+							"value": false
+						},
+						{
+							"key": "0x000014",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x000015",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x000016",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x000017",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x000018",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x000019",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x00001a",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x00001b",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x00001c",
+							"tcode": "0x0",
+							"value": false
+						},
+						{
+							"key": "0x00001d",
+							"tcode": "0x0",
+							"value": false
+						},
+						{
+							"key": "0x00001e",
+							"tcode": "0x0",
+							"value": false
+						},
+						{
+							"key": "0x00001f",
+							"tcode": "0x0",
+							"value": false
+						},
+						{
+							"key": "0x000065",
+							"tcode": "0x1",
+							"value": true
+						},
+						{
+							"key": "0x000066",
+							"tcode": "0x0",
+							"value": false
+						},
+						{
+							"key": "0x000064",
+							"tcode": "0x9",
+							"value": 255
+						},
+						{
+							"key": "0x000069",
+							"tcode": "0x9",
+							"value": 32
+						},
+						{
+							"key": "0x00006a",
+							"tcode": "0x9",
+							"value": 6
+						},
+						{
+							"key": "0x00006b",
+							"tcode": "0x9",
+							"value": 0
+						},
+						{
+							"key": "0x00006c",
+							"tcode": "0x9",
+							"value": 0
+						},
+						{
+							"key": "0x00006e",
+							"tcode": "0x9",
+							"value": 0
+						},
+						{
+							"key": "0x000068",
+							"tcode": "0x10",
+							"value": 0
+						},
+						{
+							"key": "0x000066",
+							"tcode": "0x10",
+							"value": 3
+						}
+					]
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x21",
+					"value": "default"
+				},
+				{
+					"key": "0x000016",
+					"tcode": "0x21",
+					"value": "4.3"
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x21",
+					"value": "x86"
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x21",
+					"value": "CHR"
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0x21",
+					"value": "i386"
+				}
+			]
+		}
+	]
+}

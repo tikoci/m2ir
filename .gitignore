@@ -28,3 +28,6 @@ work/**/*.json
 !work/**/proof/**/*.json
 work/**/*.snapshot
 work/**/*.stderr.log
+
+# repo-local scratch — local-only artifacts, never committed
+.scratch/

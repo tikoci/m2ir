@@ -117,9 +117,18 @@ commands:
       silently ignored (field 13 read-only probe). Status alone proves
       nothing; consumers must read back after SET. See
       gui-handlers.yaml system-identity `set:`.
+      Second leg (queue-2, [20,125] /tool/sms, 7.25 + 7.26beta4):
+      native SET of f07 bool takes effect both ways; the ack is again
+      bare SYS-only (0xff0001/0xff0002/0xff001c/0xff0003=2/0xff0006=
+      reqid), no USER fields, no statusWord, errno null — same shape
+      for effective writes and silent-ignore no-ops (wrong-tcode f07,
+      unknown f999, empty SET). See gui-handlers.yaml sms-20-125
+      `set:`.
     evidence:
       - source: sample
         ref: "controlled-change proof (harness/prove-identity.ts, 7.25): work/2026-11-winbox-attributes/proof/7.25-identity/{report.yaml,step-05-ro-probe.jsonl,step-06-native-set.jsonl}"
+      - source: sample
+        ref: "live CHR interrogation (queue-2 mutation capture batch, 7.25 + 7.26beta4, 2026-11-01): f07 toggle + silent-ignore legs — fixtures/winbox-ipc/{7.25,7.26beta4}-set-20-125-sms.json and {7.25,7.26beta4}-set-20-125-sms-negative.json"
   0xfe000f: { canonical-name: CMD_START,        confidence: documented }
   0xfe0010: { canonical-name: CMD_POLL,         confidence: documented }
   0xfe0011: { canonical-name: CMD_CANCEL,       confidence: documented }
@@ -162,7 +171,20 @@ commands:
         ref: "live CHR re-sweep + artifact archaeology (7.25): finite-pair correction, zombie trigger, ping-pong refuted, 1.42s unprovenanced; see work/2026-10-chr-extraction/ws3c-prober-findings.md §42"
       - source: sample
         ref: "live CHR reboot lottery (7.25): 12 plain-reboot cycles, 204 leg-slots, all silent — reboot-only excluded as zombie trigger; see work/2026-10-chr-extraction/ws3c-prober-findings.md §46"
-  0xfe0015: { canonical-name: CMD_GETCOUNT,     confidence: documented }
+  0xfe0015:
+    canonical-name: CMD_GETCOUNT
+    confidence: documented
+    notes: |
+      First live evidence (queue-1, [20,1], all 3 versions):
+      bare GETCOUNT answers count = 1 on the single-row lab
+      tables — v6 in 0xfe0014, 7.25+7.26beta4 in 0xfe0019
+      (version-divided answer slot; see std-keys.yaml). Exact-
+      match extras ignored (f5/f1 match + non-match probes, 2
+      each, all return count 1), same as GETALL on this route.
+      GETCOUNT on other routes untested.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (queue-1 capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getcount-20-1.json"
   0xfe0016: { canonical-name: CMD_RESET,        confidence: documented }
 
 # ── dispatch model (first-party) ──────────────────────────────────────────
