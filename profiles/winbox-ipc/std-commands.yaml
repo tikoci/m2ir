@@ -110,7 +110,10 @@ commands:
       self-rearm 12s-age reaper, 6s log; loader: none). The
       §38 "1.42s" is UNPROVENANCED (no timestamped artifact;
       re-measurement needs a zombie-bearing boot). Trigger
-      is boot-state-dependent: clean boots are silent.
+      is boot-state-dependent: clean boots are silent, and
+      a 12-cycle reboot-only lottery drew 0 zombie boots
+      (§46) — the trigger needs churn history (service
+      toggles / dirty restore), not mere reboots.
     evidence:
       - source: sample
         ref: "live CHR interrogation (registry batch, 7.25): retry pair on zombie pids; see work/2026-10-chr-extraction/ws3c-prober-findings.md §38"
@@ -118,6 +121,8 @@ commands:
         ref: "RouterOS 7.25 libumsg/mproxy/loader retry-path decode (pushNotifies TO=[0xff0003], sendMessage 0xff0003 branch, leg-B worker, timer census); see work/2026-10-chr-extraction/ws3c-prober-findings.md §40"
       - source: sample
         ref: "live CHR re-sweep + artifact archaeology (7.25): finite-pair correction, zombie trigger, ping-pong refuted, 1.42s unprovenanced; see work/2026-10-chr-extraction/ws3c-prober-findings.md §42"
+      - source: sample
+        ref: "live CHR reboot lottery (7.25): 12 plain-reboot cycles, 204 leg-slots, all silent — reboot-only excluded as zombie trigger; see work/2026-10-chr-extraction/ws3c-prober-findings.md §46"
   0xfe0015: { canonical-name: CMD_GETCOUNT,     confidence: documented }
   0xfe0016: { canonical-name: CMD_RESET,        confidence: documented }
 

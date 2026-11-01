@@ -199,9 +199,18 @@ handler-info-registry:
       0x805affc). REMOVE always announces (both
       REMOVE posters build policy-1 + 0xfe0014
       first). Serial carries login prompt only.
-      Residual: alias-vector fill timing, ssld
-      motive + liveness (VGA-gated), hid-100
-      condition (single hid).
+      Vector-fill TIMING bounded (§46): post-insert
+      via the worker-connect message path (insert
+      tails excluded, AddEvent core excluded),
+      elements are the accept-nodes; the exact
+      append site is unlocated (libumsg depth).
+      hid-100 is CONDITIONAL (§46): guards + 4
+      call sites sited, one message-driven;
+      server-enable and active-tunnel negatives
+      live; the enabling message is unlocated.
+      Residual: vector append site, ssld motive +
+      liveness (VGA-gated), hid-100 enabling
+      message.
   confidence: observed-only
   evidence:
     - source: code

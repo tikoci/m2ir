@@ -3488,3 +3488,107 @@ batch: spare identity + count +
 alias mechanism + REMOVE shape +
 ppp high hids + ipsec wildcard
 (§45 — residue close-out).
+
+## 46. Smalls: hid-100 + vector-fill + lottery (2026-11-01)
+
+Static servant/loader decode plus
+live ws20 (7.25; server toggles +
+pptp loopback; all reverted and
+verified; STOPPED) plus live ws3c6
+(6.49.23; one probe; STOPPED) plus
+the twin3 reboot lottery (below).
+Lab note: /tmp is quota-blocked in
+this environment (writes fail with
+EDQUOT despite free space) — throwaway
+scripts/logs went to scratch/
+(gitignored) instead this batch.
+
+- **hid-100 CONDITIONAL, trigger
+  unlocated — narrowed.** Single
+  registration site (0x8067429,
+  lone 8067xxx outlier) inside
+  per-object function 0x8067000
+  (4 callers: 3 calls plus 1 tail
+  jump).
+  Guards: +0xd18 clear at entry,
+  +0xd08 set, *(+0xd10) set. One
+  caller is message-driven (via a
+  cmdUnknown-delegating handler
+  method). Live negatives (ws20):
+  pptp/l2tp/sstp server enables
+  plus an active pptp loopback
+  tunnel (running true) all leave
+  [27,100] at 0xfe0002; v6
+  identical (config-gated, not
+  version-gated). Residue: the
+  enabling message (ovpn attr
+  puzzle + pppoe-server untested;
+  per-connection vs per-config
+  unknown).
+- **Vector-fill TIMING bounded,
+  append site unlocated —
+  narrowed.** Alias vector starts
+  empty (zeroed at build); insert
+  tail is ret (alias) and open
+  plus stub (unix-node); AddEvent
+  core only assigns plus links —
+  so the fill is post-insert via
+  the worker-connect message path
+  (the only remaining channel),
+  before the first M2 reply
+  (boot-atomic alias equivalence);
+  elements are the accept-nodes
+  (fd holders); N=1 per alias
+  (order unobservable). Loader
+  holds no worker names (§41),
+  so the hello carries a numeric
+  pid. Exact append site
+  unlocated (libumsg
+  socket-dispatch depth).
+- **Lottery: 12/12 clean (no
+  zombie boot).** Twin3 rebooted
+  12 times (scratch/lottery.sh,
+  plain power-cycle reboots, no
+  config changes); each boot
+  drained the 17 §38 pids at
+  5.2s (204 leg-slots total, all
+  TIMEOUT, 0 errors). With the
+  §44/§45 boots: 16 consecutive
+  clean reboot-only boots.
+  Reboot-only does NOT reproduce
+  zombie-bearing boots, so the
+  trigger needs churn history
+  (service toggles / dirty
+  restore, per the §42 model).
+  1.42s re-measurement plus
+  membership rule stay blocked;
+  next step is a churn-lottery
+  (toggles between boots) as a
+  future phase. Twin3 left
+  STOPPED by the script.
+
+Still open (updated): routerboard full
+shape (+ [24,35]-on-hardware lead),
+134 driver (40 negatives; needs
+peers or WinBox-native capture —
+bounded to fabric-only writers),
+terminal surface (lower
+priority), nlevel proof (TRACTABLE
+via quickchr trial license — blocked
+on user credentials), reaper trigger
+(nano), store-rotation trigger
+(nano), alias-vector append site
+(residue), ssld motive + liveness
+(residue; VGA-gated), hid-100
+enabling message (residue),
+zombie-set membership rule + 1.42s
+re-measurement (need a
+zombie-bearing boot; reboot-only
+lottery 0/12 — churn history
+required). CLOSED this batch:
+nothing fully; narrowed hid-100
+(guards + callers, 5 negatives),
+vector-fill (timing bound, site
+excluded to libumsg depth), lottery
+(reboot-only excluded as trigger)
+(§46 — smalls).
