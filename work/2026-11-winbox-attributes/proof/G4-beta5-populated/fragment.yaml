@@ -1,0 +1,20 @@
+# G4 promotion fragment (coordinator integrates).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> bridge-port notes
+    op: add-notes
+    notes: "G4 write leg (g4beta5 7.26beta5 build 2026-10-30, 2026-11-02, 10w+0r) CONFIRMS the 40-key populated-row shape on the beta line with zero drift: key+tcode set identical to 7.25 (40/40); live values f3=2 (ether1) f4=4 (e1br) f1=10 f2=128 fe0005=0xFFFFFFFF rowid 0. (Version note: F1's empty-shape baseline is beta4; this populated shape is beta5.)"
+    evidence_add: 1
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> bridge-vlan notes
+    op: add-notes
+    notes: "G4 write leg (g4beta5 7.26beta5, 2026-11-02, 10w+0r) CONFIRMS the 12-key configured-cell shape on the beta line with zero drift: key+tcode set identical to the 7.25 cell-A (12/12); live values f1=[10,10] f2=4 f3=[4] f4=[2] f5=f6=f7=[] (filtering=no cell-A analog, version-local rowids)."
+    evidence_add: 1
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> ip-address f6
+    op: evolve-role
+    role: "VRF identity of the address row: 0 on main (dynamic DHCP, static, comment-unset, disabled states), 1 on a custom-VRF row (7.25 m2ir-vrf + beta5 g4vrf: TWO non-main-VRF samples); VRF creation without an address row moves no existing row (VRF-membership is per-row, not per-table). Numeric identity beyond row-VRF tracking (e.g. registry rowid) still open — both custom VRFs carried .id *1, so rowid-vs-flag is unresolved."
+    evidence_add: 1
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> ip-address notes
+    op: add-notes
+    notes: "G4 write leg (g4beta5 7.26beta5, 2026-11-02, 10w+0r): f6=1 on the g4vrf address row (13-key shape shared with f6=0 rows) vs f6=0 on the main row — the beta-line f6-nonzero repeat (F1's beta4 f6=0 stands as the main-VRF sample). f5=actual / f10=configured cross-confirmed (enslavement splits 4/2 on the DHCP row; 3/3 where actual==configured). f11=slave mechanism reproduced (true on the enslaved-interface row, false on the free row)."
+    evidence_add: 0
+no_promotion_for:
+  - "f6 rowid-vs-flag (still open: both custom VRFs .id *1)"

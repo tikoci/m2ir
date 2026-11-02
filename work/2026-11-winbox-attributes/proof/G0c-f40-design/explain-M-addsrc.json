@@ -1,0 +1,315 @@
+{
+  "ok": true,
+  "data": {
+    "input": {
+      "bytes": 112,
+      "normalized": false,
+      "truncated": false,
+      "positionMap": [
+        {
+          "analyzed": {
+            "start": 0,
+            "end": 112
+          },
+          "originalUtf16": {
+            "start": 0,
+            "end": 112
+          }
+        }
+      ]
+    },
+    "verdict": "pass",
+    "canonical": {
+      "mode": "structured",
+      "path": "/ip/firewall/filter",
+      "verb": "add",
+      "args": {
+        "chain": "forward",
+        "action": "add-src-to-address-list",
+        "address-list": "g0c-probe",
+        "comment": "g0c-m-addsrc"
+      },
+      "queries": [],
+      "writeShaped": true
+    },
+    "structure": {
+      "statementCount": 1,
+      "statements": [
+        {
+          "id": "s0",
+          "span": {
+            "start": 0,
+            "end": 112
+          },
+          "resolution": "resolved",
+          "kind": "command",
+          "command": {
+            "path": "/ip/firewall/filter",
+            "verb": "add",
+            "args": {
+              "chain": "forward",
+              "action": "add-src-to-address-list",
+              "address-list": "g0c-probe",
+              "comment": "g0c-m-addsrc"
+            }
+          },
+          "arguments": {
+            "read": true,
+            "tokens": [
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 24,
+                  "end": 37
+                },
+                "name": "chain",
+                "value": "forward",
+                "valueSpan": {
+                  "start": 30,
+                  "end": 37
+                },
+                "text": "chain=forward"
+              },
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 38,
+                  "end": 68
+                },
+                "name": "action",
+                "value": "add-src-to-address-list",
+                "valueSpan": {
+                  "start": 45,
+                  "end": 68
+                },
+                "text": "action=add-src-to-address-list"
+              },
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 69,
+                  "end": 91
+                },
+                "name": "address-list",
+                "value": "g0c-probe",
+                "valueSpan": {
+                  "start": 82,
+                  "end": 91
+                },
+                "text": "address-list=g0c-probe"
+              },
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 92,
+                  "end": 112
+                },
+                "name": "comment",
+                "value": "g0c-m-addsrc",
+                "valueSpan": {
+                  "start": 100,
+                  "end": 112
+                },
+                "text": "comment=g0c-m-addsrc"
+              }
+            ],
+            "queries": [],
+            "positional": []
+          },
+          "contextCertain": true,
+          "ev": "e4",
+          "transport": {
+            "classification": "api-candidate",
+            "basis": "Q8 tested add as PUT on CHR 7.23.2 and 7.24rc2",
+            "rest": {
+              "method": "PUT",
+              "path": "/rest/ip/firewall/filter",
+              "body": {
+                "chain": "forward",
+                "action": "add-src-to-address-list",
+                "address-list": "g0c-probe",
+                "comment": "g0c-m-addsrc"
+              }
+            },
+            "centrs": "centrs api '<router>' '/ip/firewall/filter' -X PUT -f 'chain=forward' -f 'action=add-src-to-address-list' -f 'address-list=g0c-probe' -f 'comment=g0c-m-addsrc'",
+            "ev": "e8"
+          }
+        }
+      ],
+      "blocks": [],
+      "containsWrite": true,
+      "subcommands": [],
+      "ev": "e6"
+    },
+    "symbols": {
+      "occurrences": []
+    },
+    "values": {
+      "occurrences": [
+        {
+          "id": "v0",
+          "span": {
+            "start": 30,
+            "end": 37
+          },
+          "tokenSpan": {
+            "start": 24,
+            "end": 37
+          },
+          "kind": "attribute",
+          "name": "chain",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        },
+        {
+          "id": "v1",
+          "span": {
+            "start": 45,
+            "end": 68
+          },
+          "tokenSpan": {
+            "start": 38,
+            "end": 68
+          },
+          "kind": "attribute",
+          "name": "action",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        },
+        {
+          "id": "v2",
+          "span": {
+            "start": 82,
+            "end": 91
+          },
+          "tokenSpan": {
+            "start": 69,
+            "end": 91
+          },
+          "kind": "attribute",
+          "name": "address-list",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        },
+        {
+          "id": "v3",
+          "span": {
+            "start": 100,
+            "end": 112
+          },
+          "tokenSpan": {
+            "start": 92,
+            "end": 112
+          },
+          "kind": "attribute",
+          "name": "comment",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        }
+      ]
+    },
+    "spans": [],
+    "diagnostics": [],
+    "evidence": [
+      {
+        "id": "e0",
+        "source": "canonicalizer",
+        "probe": "canonicalizeExecuteCommand",
+        "basis": "direct",
+        "outcome": "ok"
+      },
+      {
+        "id": "e1",
+        "source": "canonicalizer",
+        "probe": "analyzeCoordinates",
+        "basis": "direct",
+        "outcome": "ok"
+      },
+      {
+        "id": "e4",
+        "source": "canonicalizer",
+        "probe": "resolveVerbs",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e6",
+        "source": "canonicalizer",
+        "probe": "containsWrite",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e8",
+        "source": "canonicalizer",
+        "probe": "classifyExplainTransport",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e9",
+        "source": "canonicalizer",
+        "probe": "valueShapeHints",
+        "basis": "heuristic",
+        "outcome": "ok"
+      }
+    ],
+    "runtimeAcceptance": "not-proven"
+  },
+  "warnings": [],
+  "tips": [
+    {
+      "code": "tip/explain-offline-only",
+      "message": "No router was given, so this is the canonicalizer's reading alone.",
+      "fix": "Add a router (`centrs explain <router> '<input>'`) for read-only parse, highlight and argument-name evidence; `--schema` and `--complete` then describe paths and complete at the cursor.",
+      "detailsUrl": "https://tikoci.github.io/centrs/tips/tip/explain-offline-only"
+    }
+  ],
+  "meta": {
+    "target": {},
+    "via": null,
+    "settings": {
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      }
+    },
+    "validation": {
+      "enabled": false
+    },
+    "operation": {
+      "command": "explain",
+      "mode": "offline",
+      "statementCount": 1,
+      "verdict": "pass"
+    }
+  }
+}

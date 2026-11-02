@@ -1,0 +1,117 @@
+# cspell:ignore rowid getcount getall getobj subtable reqid mangle calea covariation
+# G3 execution report (coordinator). ws21 ONLY. No commit, no push.
+proof: "G3 [20,32] matrix on ws21 7.25: AMBIGUITY STOP at M1 (2w+0r of 8w+0r); M1=1 (not 8) FIRES the stop condition; confirm re-reads show 1->0->0 decay with the rule present — TIME-VARYING, not rule-set-only; restore verified clean"
+date: 2026-11-02
+worker: coordinator
+leg: G3-2032-matrix
+sheet: "coordinator sheet 2026-11-02 (G0a stimulus: M0 + M1-M5 + M6-optional + M7; F-jump counting rule; stop: M1 != 8 -> STOP + keep VM + report)"
+approval_quoted: "g3 yes (8w core +1 opt ws21) — explicit per-leg yes, this session"
+vm:
+  name: ws21
+  routeros: "7.25"
+  arch: x86
+  network: user, socket::ws21-a, socket::ws21-b
+  ports: "resolved live from `quickchr list` at execution (http:9190 block, winbox:9195); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute --quickchr ws21 (writes via native-api)"
+  native_via: "proof/F-jump/leg-jump.ts read (GETCOUNTx2 + GET + paged GETALL; reused unmodified)"
+counting_rule: "F-jump rule per sheet: control adds/sets + native verbs + 1 per restore branch; removes bundled 0w"
+baseline_snapshot:
+  verdict: PASS
+  control:
+    - { route: /ip/firewall/filter, objectCount: 0 }
+    - { route: /ip/firewall/nat, objectCount: 0 }
+    - { route: /ip/firewall/raw, objectCount: 0 }
+    - { route: /ip/firewall/mangle, objectCount: 0 }
+    - { route: /ip/firewall/calea, objectCount: 0 }
+  native: "[20,3]=0 [20,32]=0, GETALL [20,3] 0 rows complete"
+  dummy_check: "the 5 G1 builtin fasttrack dummies did NOT survive the power-cut restart (all menus 0) — U-g1-dummy-lifetime CLOSED as bycatch: dummies are boot-local"
+  files: [control-base-firewall-filter.json, control-base-firewall-nat.json, control-base-firewall-raw.json, control-base-firewall-mangle.json, control-base-firewall-calea.json, step-M0.jsonl]
+steps:
+  - tag: M1-accept-replicate
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=g3-m1"
+    outcome: "ok, ret *1; MANDATORY read-back: exactly 1 row forward/accept 0/0 (all guards hold: [20,3]=1, packets/bytes 0)"
+    native: "[20,32]=1 — NOT 8. Third distinct value for the same rule-set across sessions (E3-W e3find->8, G1-C1 g1-c-accept->2, G3-M1 g3-m1->1)"
+    stop_fired: "M1 != 8 per sheet -> STOP declared; M2-M6 NOT executed by design (stop condition, not omission)"
+    evidence: [control-M1-add.json, control-M1-read.json, step-M1.jsonl, explain-M1.json]
+    writes: 1
+    cumulative: 1
+  - tag: M1-confirm
+    stimulus: "NONE (0w inspection read ~1 min after M1, VM kept per the stop condition)"
+    outcome: "[20,32]=0 with the rule STILL PRESENT ([20,3]=1, 1 row, f15/f206 2->1) — value moved 1->0 with zero stimulus change"
+    evidence: [step-M1-confirm.jsonl]
+    writes: 0
+    cumulative: 1
+  - tag: M1-confirm2
+    stimulus: "NONE (0w inspection read +20s)"
+    outcome: "[20,32]=0 STILL (stable zero, not flapping); f15/f206=1 stable — decay-to-zero, not noise"
+    evidence: [step-M1-confirm2.jsonl]
+    writes: 0
+    cumulative: 1
+  - tag: M1rm
+    outcome: "remove *1 ok (bundled 0w)"
+    evidence: [control-M1-rm.json, explain-M1rm.json]
+    writes: 0
+    cumulative: 1
+  - tag: M7-restore-verify
+    steps: "5-menu control verify (0 rows each) + native read ([20,3]=0 [20,32]=0, GETALL 0 rows complete)"
+    outcome: "restored=true"
+    evidence: [control-restored-filter.json, control-restored-nat.json, control-restored-raw.json, control-restored-mangle.json, control-restored-calea.json, step-M7.jsonl]
+    writes: 1
+    cumulative: 2
+spend:
+  counted_writes: 2
+  reboots: 0
+  cap: "8w+0r core (+1 optional, unneeded)"
+  itemized: "M1 add (1) + M7 restore-verify branch (1); M1 remove bundled; 6w UNSPENT (returned: stop condition fired)"
+  within_cap: true
+proven:
+  - id: P-g3-history-dependence
+    claim: "[20,32] is NOT a function of the current rule-set alone: the same {forward/accept, 0/0} rule-set reads 8 (E3-W), 2 (G1-C1), 1 (G3-M1) across three sessions — all rule-set-only models dead (extends G0a AMBIGUOUS; G1-C1 vs G3-M1 differ only in comment string + boot-prior history at identical rowid/traffic/freshness)"
+    evidence: [step-M1.jsonl, control-M1-read.json]
+  - id: P-g3-time-varying
+    claim: "[20,32] is TIME-VARYING within a session: 1 immediately after the add, 0 ~1 min later with the rule still present and zero stimulus change, stable at 0 (+20s re-read) — decay-to-zero, not noise. All prior [20,32] dataset values (5-point + G1 bycatch) are TIME-SAMPLES, not static mappings."
+    evidence: [step-M1.jsonl, step-M1-confirm.jsonl, step-M1-confirm2.jsonl]
+  - id: P-g3-f15f206-break
+    claim: "f15/f206 read 2 while [20,32]=1 (M1) then 1 while [20,32]=0 (confirms): 2nd independent break of f15/f206-vs-[20,32] covariation (volatile stands)"
+    evidence: [step-M1.jsonl, step-M1-confirm.jsonl]
+  - id: P-g3-dummy-boot-local
+    claim: "the 5 G1 builtin fasttrack dummies do NOT survive a power-cut restart (M0 baseline all-zero) — closes U-g1-dummy-lifetime"
+    evidence: [control-base-firewall-filter.json, control-base-firewall-raw.json, control-base-firewall-mangle.json, step-M0.jsonl]
+disproven:
+  - id: D-g3-ruleset-only
+    claim: "every rule-set-only model class is dead (M1 != 8 fires the sheet's stop; the G0a survivors list was already empty and no revival is possible)"
+    evidence: [step-M1.jsonl]
+unknown:
+  - id: U-g3-32-mechanism
+    claim: "[20,32] mechanism unclaimed: decay-to-zero after a rule add is consistent with a draining gauge (pending-work/announcement backlog?) but no mechanism is proven; M2-M6 singleton/pair/order cells were NOT executed (stop condition)"
+    next: "unbudgeted follow-up: re-add spike test (does a 2nd add re-spike? same session, N=1 again) + decay-timing ladder (reads at fixed delays) + announce-channel correlation — needs a NEW sheet, not a G3 continuation"
+unexecuted_by_design: [M2-drop-singleton, M3-log-singleton, M4-jump-pair, M5-order-swap, M6-input-chain-optional]
+restore_verification:
+  verdict: PASS
+  control:
+    - { route: /ip/firewall/filter, objectCount: 0 }
+    - { route: /ip/firewall/nat, objectCount: 0 }
+    - { route: /ip/firewall/raw, objectCount: 0 }
+    - { route: /ip/firewall/mangle, objectCount: 0 }
+    - { route: /ip/firewall/calea, objectCount: 0 }
+  native:
+    - { op: "GETCOUNT [20,3]", value: 0 }
+    - { op: "GETCOUNT [20,32]", value: 0 }
+    - { op: "GETALL [20,3]", rows: 0, pages: 1 }
+  files: [control-restored-filter.json, control-restored-nat.json, control-restored-raw.json, control-restored-mangle.json, control-restored-calea.json, step-M7.jsonl]
+cleanup_state:
+  tables: "all five firewall menus empty on both surfaces"
+  vm: "ws21 STOPPED via `quickchr stop ws21` (not removed)"
+  writes_on_other_machines: 0
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/report.yaml
+  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/sanitize.ts
+gates_observed:
+  - "ws21 ONLY: no other VM touched"
+  - "every control string validated with `centrs explain` before sending (2/2 pass: M1 add + M1 remove; M7 is reads-only)"
+  - "stop condition honored exactly as sheeted: M1 != 8 -> STOP, VM kept for inspection (2 confirm reads, 0w), then restore; no out-of-sheet experiments despite budget headroom"
+  - "no edits to canonical files during execution (coordinator integrates separately)"
+  - "no commit, no push"

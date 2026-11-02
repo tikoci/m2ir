@@ -1,0 +1,129 @@
+# cspell:ignore libumsg dynsym dynstr dyn syms relocs vtable novabin objdump readelf gotcha idstr looper getall getcount getobj uclibc cplusplusfilt reloc setobj jump-target looper Detached findall getpc keyid amm binutils fini xfd edi encnum isdigit toupper vaddr errdescr regs
+proof: "G0b static 0xfd002a search in pinned libumsg.so 7.25 x86 (NEGATIVE + fd-namespace context)"
+worker: G0b
+date: 2026-11-02
+head: "da5f8bb (read-only worker; no commits)"
+complete: true
+verdict: "NEGATIVE: zero 0xfd002a references in libumsg.so 7.25 x86 at full stated coverage; fd namespace present only as namespace-granularity handling (in-library name 'local', agreeing with processes.yaml 0xfd=local) plus excluded non-tag lookalikes"
+scope: "ONE static slice: 0xfd002a references in the F0b-pinned libumsg.so only; filter family as observational context; 0 private verbs; 0 experiments; nova/bin/net and any other binary NOT searched (out of slice)"
+lab_contact: "NONE - static only. No VM booted, no router/CHR contact, no quickchr, no centrs, no probes. All evidence from local disassembly/relocation/byte reads (objdump/readelf/strings/python3) of the pinned 7.25 extraction, which executes no RouterOS code. No re-extraction performed."
+sibling_note: "G0a-2032-model and G0c-f40-design proof dirs appeared during this slice; treated as out of scope and never read."
+binary-identity:
+  path: "~/.local/share/m2ir/extractions/root-7.25/lib/libumsg.so"
+  resolved: "/home/amm0bot/.local/share/m2ir/extractions/root-7.25/lib/libumsg.so"
+  file: "lib/libumsg.so (RouterOS 7.25 x86)"
+  sha256: 1d471df0c39e81b9ef946f636615e352470bd0da3fbeaf98fb017869b1c46c80
+  sha256_verified: true
+  sha256_how: "sha256sum before any search; exact match to F0b report value"
+  elf: "32-bit i386 shared object, stripped, dynsym intact; 516584 bytes (0x7e1e8)"
+  sections: ".text 0x25470-0x6c081 (R+E), .rodata 0x6d000-0x753c4 (R), .data.rel.ro 0x76f40-0x7dc5c (RW), .rel.dyn/.rel.plt, .dynsym/.dynstr intact"
+method:
+  tools:
+    - "GNU objdump 2.47 (disassembly: objdump -d --no-show-raw-insn; data: objdump -s; symbols: objdump -T | c++filt)"
+    - "GNU readelf 2.47 (sections: readelf -S -W; relocs: readelf -r -W; symbols: readelf --dyn-syms -W)"
+    - "GNU strings (binutils 2.47)"
+    - "python3 3.14.8 (whole-file byte scans, LE/BE word decode, address math)"
+  coverage:
+    - "whole-file raw scan (all 516584 bytes, every offset): LE u32 0x00fd002a = 0 hits; BE u32 = 0 hits; 3-byte LE 2a 00 fd = 0 hits"
+    - "full .text disassembly text scan (112492 lines): case-insensitive 'fd002a' = 0 hits (control: 302 '0xfe000*' envelope-tag immediates, so the idiom is detectable)"
+    - "full .text immediate scan: every '$0xfd*' operand enumerated (10 sites, all classified below); every '0xfd' disassembly line triaged (GOT-relative lea/mov offsets and +0xfd branch displacements excluded as addressing artifacts)"
+    - "relocations: readelf -r -W full output scanned, 'fd002a' = 0 hits"
+    - "strings: full output scanned, 'fd002a' = 0 hits"
+    - "dynsym: no st_value in [0xfd0000, 0xfe0000)"
+    - "aligned-4 scan of .rodata/.eh_frame/.data.rel.ro/.data/.got/.got.plt/.dynamic/.init_array/.fini_array for 0x00fdXXXX words: NONE in any section"
+    - "every raw-word hit outside the above (10 distinct 0x00fdXXXX LE words at 15 offsets) classified by section + alignment + enclosing instruction; unaligned windows spanning entry/instruction fields recorded as noise with mechanism"
+    - "idiom note: envelope tags appear as full-u32 immediates in this library (302 control hits) and namespace checks use (tag & 0xff0000) vs 0xXX0000; a split (0x2a + separate 0xfd) construction would be unidiomatic and was not enumerated beyond the two namespace-switch functions, whose full compare chains are listed here"
+  reproduce:
+    - "sha256sum ~/.local/share/m2ir/extractions/root-7.25/lib/libumsg.so  # expect 1d471df0...b1c46c80"
+    - "objdump -d --no-show-raw-insn libumsg.so | grep -ci 'fd002a'  # expect 0"
+    - "objdump -d --no-show-raw-insn libumsg.so | grep -c '0xfe000'  # expect 302 (method control)"
+    - "python3 whole-file findall for struct.pack('<I',0x00fd002a), ('>I',...), bytes([0x2a,0x00,0xfd])  # expect 0/0/0"
+    - "readelf -r -W libumsg.so | grep -ci 'fd002a'; strings libumsg.so | grep -ci 'fd002a'  # expect 0/0"
+hits:
+  - id: H1-idstr-fd-arm
+    address: "0x28415 (cmp $0xfd0000,%eax; je 0x2853e)"
+    function: "nv::operator<<(ostream&, nv::message::idstr) @0x27ed8 (dynsym, size 0x721)"
+    role-assessment: "namespace pretty-print arm: input masked by 'and $0xff0000' @0x283fa, then a 21-compare chain covering ONLY 0xXX0000 namespace bases (0xff/0xfe/0xfd/0x2c/0x1f/0x12/0x11/0x10/0x0f-0x02 minus 0x00/0x01/0x05; full list in sites-disassembly.txt). fd arm loads prefix string 'local::' @0x6d2f8. Namespace granularity ONLY - no fd-subordinate (0xfd00XX/0xfdXXXX) compare exists in this function."
+    grounding-vs-F-jump: "SILENT on 0xfd002a semantics (no field-level referent); CONSISTENT that 0xfd is a valid known tag namespace, in-library name 'local' - independently agrees with canonical processes.yaml 0xfd canonical-name 'local'"
+  - id: H2-getErrorDescr-fd-arm
+    address: "0x32550 (cmp $0xfd0000,%edi; je 0x32578)"
+    function: "nv::getErrorDescr(unsigned int, string const&) @0x32513 (dynsym, size 0x11a)"
+    role-assessment: "error-description namespace label: input masked by 'and $0xff0000' @0x32536, arms for 0xff/0xfe/0x00/0xfd + default. fd arm loads effective string 'local' @0x70245 (suffix-merged literal inside 'builtin local'; zero-tag arm loads 'global' the same way). Namespace granularity ONLY."
+    grounding-vs-F-jump: "SILENT on 0xfd002a semantics; CONSISTENT (second independent in-library witness that 0xfd = 'local' namespace)"
+  - id: H3-looper-arena-ctor
+    address: "0x37a39 (push $0xfd17ff) + 0x37a3e (push $0xfd1000)"
+    function: "nv::Looper::Looper(looper_detached_t) @0x379b4 (dynsym)"
+    role-assessment: "EXCLUDED lookalike: bounds of the Looper handler-ID allocator arena passed to nv::Allocator::Allocator(j,j) @0x37a44 (0x800 IDs). Different domain (looper handler IDs, not nv message tags); 0xfd002a < 0xfd1000 lies OUTSIDE this arena."
+    grounding-vs-F-jump: "SILENT (unrelated ID space; recorded to prevent future confusion)"
+  - id: H4-looper-arena-check
+    address: "0x3b552 (sub $0xfd1000,%eax; cmp $0x7ff,%eax @0x3b557)"
+    function: "nv::Looper::removeHandler(unsigned int) @0x3b4f4 (dynsym)"
+    role-assessment: "EXCLUDED lookalike: arena-membership check for a looper handler ID (subtract base, bounds-check 0x7ff, then Allocator::isAllocated/free). Same non-tag domain as H3."
+    grounding-vs-F-jump: "SILENT (unrelated ID space)"
+  - id: H5-m3-prefix-byte
+    address: "0x61f80 (mov $0xfd,%al)"
+    function: "m3::encnum32(span<unsigned char>*, unsigned int) @0x61ec2 (dynsym)"
+    role-assessment: "EXCLUDED lookalike: M3 (not M2/nv) compact-int width-prefix ladder - len16->0xfa, len8->0xfb, len4->0xfc, len2->0xfd, len1->0xfe. Single-byte width prefix in a different wire grammar; not a namespace byte."
+    grounding-vs-F-jump: "SILENT (different protocol family)"
+  - id: H6-size-cap
+    address: "0x64162 (cmp $0xfde8,%eax; ja)"
+    function: "static message-flatten/size helper, code region 0x64120-0x64190 (stripped; nearest dynsym below: map_node_move_constr<string_view,map<uint,nv::message>> @0x63ac1)"
+    role-assessment: "EXCLUDED lookalike: 16-bit bound check (0xfde8 = 65000) against a flattened-message size computed in %eax @0x64151-57 (after message::has<message_array_id>(0xfe0002)). Size cap, not tag-shaped (16-bit value 65000)."
+    grounding-vs-F-jump: "SILENT (size arithmetic, no tag referent)"
+  - id: H7-plt-indices
+    address: "0x23fc6 (push $0xfd0) + 0x23fd6 (push $0xfd8)"
+    function: "__assert_fail@plt (.plt slot @0x23fc0) + string::string(uint,char)@plt (.plt slot @0x23fd0)"
+    role-assessment: "EXCLUDED lookalike: linker-generated PLT relocation indices (12-bit), not value constants."
+    grounding-vs-F-jump: "SILENT (linker metadata)"
+  - id: H8-char-mask
+    address: "0x684c8 (and $0xfd,%dl, after sub $0x2b,%edx)"
+    function: "static char/number-parsing code, region 0x68440-0x684f0 (stripped; nearest dynsym below: nv::ROSMode::names() @0x67b9e; surrounded by isdigit/toupper('E') idiom)"
+    role-assessment: "EXCLUDED lookalike: 8-bit char-class bitmask in a digit-parsing loop. Single-byte mask, not tag-shaped."
+    grounding-vs-F-jump: "SILENT (char parsing)"
+  - id: H9-encoding-artifacts
+    address: "multiple, no instruction-level tag referent (see role-assessment)"
+    function: "various (each attributed)"
+    role-assessment: "EXCLUDED byte-pattern coincidences: (a) SIB-byte 0xfd in 'lea 0x0(,%edi,8)' @0x259bf (static array-growth helper, prologue @0x25942) and @0x61b74 (m3::message::fold @0x61b62); (b) jz rel-byte window @0x28479 inside the H1 namespace chain; (c) call-rel32 family (0xfd00XXe8 words; spot-verified 'call 0x38aba' @0x68a82 in jsonStr); (d) unaligned (len,ptr) field-span window @vaddr 0x77b9e in the .data.rel.ro (R_386_RELATIVE ptr,u32 len) string table (entries (0x706fe,'match pattern',13) and (0x700fd,'match',5), lengths verified); (e) .dynsym field-spans at %16==6 and .rel.plt field-span at %8==3; (f) GOT-relative lea/mov offsets (-0xfdf9 family) and +0xfd branch displacements in disassembly text"
+    grounding-vs-F-jump: "SILENT (no referent; mechanisms documented so a re-search does not re-triage them)"
+proven:
+  - id: P-G0b-1
+    claim: "0xfd002a has ZERO references in libumsg.so 7.25 x86 (sha256 1d471df0...b1c46c80): no LE/BE u32, no 3-byte tag, no disassembly immediate, no reloc, no string, no dynsym value, no aligned data word"
+    evidence: [sites-disassembly.txt]
+  - id: P-G0b-2
+    claim: "fd namespace IS known to libumsg generic code, at namespace granularity only, under the in-library name 'local' (idstr 'local::' prefix arm @0x28415; getErrorDescr 'local' arm @0x32550)"
+    evidence: [sites-disassembly.txt]
+  - id: P-G0b-3
+    claim: "0xfd1000/0xfd17ff immediates are the Looper handler-ID allocator arena (ctor @0x37a39-3e, check @0x3b552), not nv tag references; 0xfd002a lies outside the arena"
+    evidence: [sites-disassembly.txt]
+  - id: P-G0b-4
+    claim: "binary identity verified before any search: sha256 exact match to the F0b-pinned value"
+    evidence: []
+disproven:
+  - id: D-G0b-1
+    claim: "0xfd002a is referenced anywhere (immediate, table, reloc, string, symbol) in libumsg.so 7.25 x86 - DISPROVEN at full stated coverage"
+    evidence: [sites-disassembly.txt]
+  - id: D-G0b-2
+    claim: "'$0xfd..' lookalikes in libumsg.so are fd-namespace tag references - DISPROVEN per hit (H3-H9 each resolved to a non-tag role with function-level mechanism)"
+    evidence: [sites-disassembly.txt]
+unresolved:
+  - id: U-G0b-fd002a-identity
+    claim: "0xfd002a field identity/semantics: this static slice is SILENT (absence of evidence, not evidence of absence outside libumsg.so)"
+    next: "handler-owner binary slice (per-field payload tables live outside libumsg.so; coordinator to identify the [20,3] owner binary - nova/bin/net is the F0b-pinned adjacent candidate, NOT verified here) or a live leg that varies/clears 0xfd002a (F-jump U-jump-0xfd002a next step)"
+  - id: U-G0b-errdescr-mechanics
+    claim: "getErrorDescr branch-string assembly exact call signature (per-branch pushed regs suggest ptr+len, callee @0x323b4 not reversed)"
+    next: "none needed for this verdict; only if error-string work ever needs it"
+  - id: U-G0b-stripped-starts
+    claim: "exact function starts for stripped locals containing H6/H8 (instruction-level roles unambiguous from data flow/idiom; attribution is to code region + nearest dynsym)"
+    next: "none needed for this verdict"
+blocked: []
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/G0b-fd002a-static/report.yaml
+  - work/2026-11-winbox-attributes/proof/G0b-fd002a-static/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/G0b-fd002a-static/sites-disassembly.txt
+context_for_coordinator:
+  - "canonical profile.yaml namespaces catalog (0x00 user, 0x01 ns-1, 0xfe standard, 0xff system) does NOT list 0xfd - the 'local' in-library name from H1/H2 is new static evidence for the namespace, corroborating processes.yaml 0xfd=local, but it is NAMESPACE-level, not 0xfd002a-entry-level, so fragment.yaml stays empty per the brief's entry-only condition"
+  - "F-jump fragment already carries 'no_promotion_for: 0xfd002a' - this slice does not disturb that; the negative trail (libumsg.so searched, zero refs) is available in report.yaml if an entry is ever created"
+  - "full 112492-line disassembly kept at /tmp/g0b-libumsg-dis.txt (session-local, NOT committed - no bulk dumps in repo); reproduce via the method/reproduce commands"
+owned_path: work/2026-11-winbox-attributes/proof/G0b-fd002a-static/
+forbidden_paths_edited: none
+git_commands_run: 0

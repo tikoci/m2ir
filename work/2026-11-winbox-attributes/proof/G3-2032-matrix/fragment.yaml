@@ -1,0 +1,13 @@
+# G3 promotion fragment (coordinator integrates).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> unknown-20-32 role
+    op: evolve-role
+    role: "unknown holder: GETCOUNT under filter rules is TIME-VARYING within a session (G3-M1: 1 immediately after the add, 0 a minute later with the rule still present, stable) — not a function of the rule-set alone ({A} reads 8/2/1 across three sessions); all prior [20,32] dataset values are time-samples, not static mappings. Magnitude-incompatible with row counting. GET is selector-gated/FAILED, not table-shaped."
+    evidence_add: 1
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> unknown-20-32 notes
+    op: add-notes
+    notes: "G3 ambiguity stop (ws21 7.25, 2026-11-02, 2w+0r of 8): M1 accept-replicate reads 1, NOT 8 — the sheet's stop condition fires (third distinct {A} value: 8/2/1), all rule-set-only models dead. Confirm re-reads with zero stimulus change show 1->0->0 (stable): decay-to-zero, not noise; mechanism unclaimed (draining gauge consistent, unproven). M2-M6 unexecuted by design. All 5-point/G1 dataset values are time-samples. Bycatch: the 5 G1 builtin fasttrack dummies do not survive a power-cut restart (boot-local)."
+    evidence_add: 0
+no_promotion_for:
+  - "[20,32] mechanism (unclaimed; draining-gauge reading is consistency, not proof)"
+  - "M2-M6 cells (unexecuted by design)"

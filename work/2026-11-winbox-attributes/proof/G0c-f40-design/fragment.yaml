@@ -1,0 +1,15 @@
+# cspell:ignore getall tarpit fasttrack passthrough unmapped
+# G0c promotion fragment (coordinator integrates; design-only worker — notes only, no values).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> filter-20-3 f40
+    op: add-notes
+    coordinator_optional: true
+    notes: "CLI Reference for /ip/firewall/filter documents 11 action names: accept, jump (both wire-mapped: 0, 1) plus 9 unmapped CLI-name candidates — drop, reject, passthrough, return, log, add-src-to-address-list, add-dst-to-address-list, tarpit, fasttrack-connection. Names only; no wire value is claimed for any of the 9 (CLI ref ordinals exist but are withheld here by scope discipline: CLI ordering is not wire proof). Survey: work/2026-11-winbox-attributes/proof/G0c-f40-design/report.yaml."
+    evidence_add: 0
+    rationale: "sharpens the existing 'values beyond 0/1 unmapped' role text into an enumerable CLI-sourced candidate list; coordinator may decline as backlog-not-schema with zero loss (the survey lives in report.yaml regardless)"
+no_promotion_for:
+  - "filter f40 values for any of the 9 candidates (unmapped; design only, 0 executed)"
+  - "the 25w+0r matrix/lifecycle/retention design itself (execution plan, not schema content)"
+  - "CLI ref enum ordinals for any action (withheld by design: never numeric proof)"
+  - "0xfd002a semantics (U-jump-0xfd002a still open; L1/L2 designed, not executed)"
+  - "f41 lifecycle model (U-jump-f41-lifecycle still open; R1/R2 designed, not executed)"

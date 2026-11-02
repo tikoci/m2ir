@@ -699,7 +699,7 @@ handlers:
         3: { name: netmask, tcode: be32, cli-alias: "/ip/address address", role: "expressed on the wire as a bitmask (/24 -> 0x00FFFFFF); CLI shows /popcount; composite with field 1 under CLI `address` (same proof)" }
         4: { name: broadcast, tcode: be32, role: "broadcast address, big-endian" }
         5: { name: actual-interface, tcode: u32, role: "references the ACTUAL interface row id (discriminated: bridge-port enslavement splits it from field 10)" }
-        6: { name: vrf, tcode: u32, cli-alias: "/ip/address vrf", role: "VRF identity of the address row: 0 on main (dynamic DHCP, static, comment-unset, disabled states), 1 on the m2ir-vrf row; VRF creation without an address row moves no existing row (VRF-membership is per-row, not per-table). Single non-main-VRF sample; numeric identity beyond row-VRF tracking (e.g. registry rowid) is corroboration-level, not proven." }
+        6: { name: vrf, tcode: u32, cli-alias: "/ip/address vrf", role: "VRF identity of the address row: 0 on main (dynamic DHCP, static, comment-unset, disabled states), 1 on a custom-VRF row (7.25 m2ir-vrf + beta5 g4vrf: TWO non-main-VRF samples); VRF creation without an address row moves no existing row (VRF-membership is per-row, not per-table). Numeric identity beyond row-VRF tracking (e.g. registry rowid) still open — both custom VRFs carried .id *1, so rowid-vs-flag is unresolved." }
         10: { name: interface, tcode: u32, role: "references the CONFIGURED interface row id; equals field 5 whenever interface==actual (disabled/VRRP do NOT split them)" }
         11: { name: slave, tcode: bool, cli-alias: "/ip/address slave", role: "PROVEN bridge-enslaved flag: false->true->false across enslave/deenslave, exactly with control slave (DHCP control row unmoved, byte-identical). Disabled ruled out (E2-W), vrf ruled out (f6=0 throughout), dynamic/invalid false on the flipped row. Confound: enslavement also splits f5/f10 on the test row (4/3 vs 3/3); no split-without-slave state observed." }
       namespace-session:
@@ -753,6 +753,8 @@ handlers:
         ref: "live CHR interrogation (F-f11 write leg, ws20 7.25, 2026-11-02, 6w+0r): bridge-enslave/deenslave symmetry (f11 false->true->false with slave) — work/2026-11-winbox-attributes/proof/F-f11/{report.yaml,step-baseline.jsonl,step-enslaved.jsonl,step-deenslaved.jsonl,control-enslaved-read.json,control-deenslaved-read.json}"
       - source: sample
         ref: "live CHR interrogation (F-f11 write leg, ws20 7.25, 2026-11-02): enslaved/deenslaved GETALL rows — fixtures/winbox-ipc/7.25-f11-slave-20-1.json"
+      - source: sample
+        ref: "live CHR interrogation (G4 write leg, g4beta5 7.26beta5, 2026-11-02, 10w+0r): f6=1 on the g4vrf row + f5/f10 split + f11 slave reproduction — work/2026-11-winbox-attributes/proof/G4-beta5-populated/{report.yaml,step-B0.jsonl,step-B5.jsonl,control-B5-read.json}; rows fixtures/winbox-ipc/7.26beta5-populated-shapes.json"
     notes: |
       Controlled-change + inverse-write proof (7.25, disposable
       CHR): prefix-only control (198.51.100.10/24 -> /25) moves
@@ -813,6 +815,14 @@ handlers:
       (independent VM/build from the queue-1 batch). The f6=1
       custom-VRF-row repeat is BLOCKED (VM carries only builtin
       main; needs a write leg) — no beta4 claim on nonzero f6.
+      G4 write leg (g4beta5 7.26beta5, 2026-11-02, 10w+0r):
+      f6=1 on the g4vrf address row (13-key shape shared with
+      f6=0 rows) vs f6=0 on the main row — the beta-line
+      f6-nonzero repeat (F1's beta4 f6=0 stands as the main-VRF
+      sample). f5=actual / f10=configured cross-confirmed
+      (enslavement splits 4/2 on the DHCP row; 3/3 where
+      actual==configured). f11=slave mechanism reproduced (true
+      on the enslaved-interface row, false on the free row).
     revision-history:
       - date: 2026-10-31
         belief: "IPv4 fields are u32 little-endian on the wire; only fields {1,3,5} exist"
@@ -947,6 +957,8 @@ handlers:
         ref: "live CHR interrogation (F1 beta4 repeat, winbox-beta4 7.26beta4, 2026-11-02): empty GETALL envelope + GETOBJ-999 UNKNOWNID — fixtures/winbox-ipc/7.26beta4-bridge-port-16-2.json"
       - source: sample
         ref: "live CHR interrogation (F1 beta4 repeat, winbox-beta4 7.26beta4, 2026-11-02): per-fixture PASS/drift report — work/2026-11-winbox-attributes/proof/F1-beta4-repeat/report.yaml"
+      - source: sample
+        ref: "live CHR interrogation (G4 write leg, g4beta5 7.26beta5, 2026-11-02, 10w+0r): 40-key port row, zero drift vs 7.25 — work/2026-11-winbox-attributes/proof/G4-beta5-populated/{report.yaml,step-B3.jsonl,control-B3-bridge-port.json}; rows fixtures/winbox-ipc/7.26beta5-populated-shapes.json"
     notes: |
       See processes.yaml 0x10 for the version-scoping (resolved for v6:
       bridge2; the Cisco-Talos `dude` label is another version).
@@ -996,6 +1008,13 @@ handlers:
       pattern match, not a version comparison). The 40-key
       populated-row shape is NOT confirmed on beta4 (no rows
       exist read-only; needs a write leg).
+      G4 write leg (g4beta5 7.26beta5 build 2026-10-30,
+      2026-11-02, 10w+0r) CONFIRMS the 40-key populated-row
+      shape on the beta line with zero drift: key+tcode set
+      identical to 7.25 (40/40); live values f3=2 (ether1) f4=4
+      (e1br) f1=10 f2=128 fe0005=0xFFFFFFFF rowid 0. (Version
+      note: F1's empty-shape baseline is beta4; this populated
+      shape is beta5.)
 
   bridge-host:
     sys-to: [16, 3]
@@ -1058,7 +1077,7 @@ handlers:
         4: { name: configured-untagged, tcode: u32_array, role: "PROVEN configured-untagged [20,0] rowids: [2]=ether1 rowid while REST current-tagged/current-untagged are both verifiably empty (a current-side array would be empty); wire `04000088010002000000` (7.25)" }
         5: { name: current-tagged, tcode: u32_array, role: "PROVEN current-tagged [20,0] rowids: [3,2] in cell C row 1 (ct=e1br,ether1), [3] in cell D row 1 (ct=e1br), [] wherever ct empty (cells A/B, cell C row 2)" }
         6: { name: current-untagged, tcode: u32_array, role: "PROVEN current-untagged [20,0] rowids: [2] in cell D row 1 (cu=ether1), [3,2] in the dynamic PVID row (cu=e1br,ether1), [] wherever cu empty (cells A/B, cell C row 1)" }
-        7: { name: unknown-7, tcode: u32_array, role: "OPEN — 7th user TLV, empty u32-array (`070000880000`) with mvrp-forbidden='' configured (7.25); consistent with an mvrp-forbidden rowid array, needs a leg that SETS mvrp-forbidden" }
+        7: { name: mvrp-forbidden, tcode: u32_array, cli-alias: "/interface/bridge/vlan mvrp-forbidden", role: "PROVEN mvrp-forbidden [20,0] rowids: [] with mvrp-forbidden='' (cell A), [2]=ether1 rowid with mvrp-forbidden=ether1 (cell B), [] after the quoted-empty clear (cell C); the ONLY row delta in both transitions" }
       namespace-session:
         7: { name: dynamic, tcode: bool }
         9: { name: comment, tcode: string }
@@ -1082,6 +1101,12 @@ handlers:
         ref: "live CHR interrogation (F-vlan write leg, twin3 7.25, 2026-11-02, 9w+0r): full 2x2 (filtering x move) + quoted move + dynamic PVID row — work/2026-11-winbox-attributes/proof/F-vlan/{report.yaml,step-cell-A.jsonl,step-cell-B.jsonl,step-cell-C.jsonl,step-cell-D.jsonl,cell-A-vlan.json,cell-B-vlan.json,cell-C-vlan.json,cell-D-vlan.json}"
       - source: sample
         ref: "live CHR interrogation (F-vlan write leg, twin3 7.25, 2026-11-02): cell GETALL rows — fixtures/winbox-ipc/7.25-bridge-vlan-cells.json"
+      - source: sample
+        ref: "live CHR interrogation (G2 write leg, twin3 7.25, 2026-11-02, 8w+0r): mvrp-forbidden set + quoted-empty reversal, f7 []->[2]->[] — work/2026-11-winbox-attributes/proof/G2-vlan-f7/{report.yaml,step-cell-A.jsonl,step-cell-B.jsonl,step-cell-C.jsonl,cell-A-vlan.json,cell-B-vlan.json,cell-C-vlan.json}"
+      - source: sample
+        ref: "live CHR interrogation (G2 write leg, twin3 7.25, 2026-11-02): cell GETALL rows — fixtures/winbox-ipc/7.25-bridge-vlan-f7.json"
+      - source: sample
+        ref: "live CHR interrogation (G4 write leg, g4beta5 7.26beta5, 2026-11-02, 10w+0r): 12-key vlan cell, zero drift vs 7.25 cell-A — work/2026-11-winbox-attributes/proof/G4-beta5-populated/{report.yaml,step-B3.jsonl,control-B3-bridge-vlan.json}; rows fixtures/winbox-ipc/7.26beta5-populated-shapes.json"
     revision-history:
       - date: 2026-11-02
         belief: "vlan f4 is tagged-extra / current-side (configured-vs-current tagged/untagged guess)"
@@ -1124,6 +1149,12 @@ handlers:
       7.25 [16,13]-route baseline exists). The configured-cell
       12-key row shape is NOT confirmed on beta4 (no rows exist
       read-only; needs a write leg).
+      G4 write leg (g4beta5 7.26beta5, 2026-11-02, 10w+0r)
+      CONFIRMS the 12-key configured-cell shape on the beta line
+      with zero drift: key+tcode set identical to the 7.25 cell-A
+      (12/12); live values f1=[10,10] f2=4 f3=[4] f4=[2]
+      f5=f6=f7=[] (filtering=no cell-A analog, version-local
+      rowids).
       F-vlan write leg (twin3 7.25, 2026-11-02, 9w+0r) recovers
       the full 2x2 (filtering x move) the E1 leg lost at 1/4 and
       CLOSES u-vlan-f5-f6: f5=current-tagged, f6=current-untagged
@@ -1138,6 +1169,13 @@ handlers:
       vlan-filtering=yes on the lab-path bridge did NOT strand
       the session (post-set retrieve ok; the recovery path stays
       untested). f7 stays [] (mvrp-forbidden never set).
+      G2 write leg (twin3 7.25, 2026-11-02, 8w+0r) SETS
+      mvrp-forbidden and CLOSES U-vlan-f7: f7 tracks []->[2]->[]
+      across the set and the quoted-empty clear (f4/f5/f6
+      untouched in both transitions). Quoted mvrp-forbidden=""
+      is ACCEPTED as a clear (2nd quoted-empty acceptance on this
+      table). Cell A reproduced a 4th time (filtering=no,
+      f5=f6=[]); filtering stayed NO for the whole leg.
 
   system-clock:
     sys-to: [24, 0]
@@ -1761,9 +1799,10 @@ handlers:
           semantic: enum-u32
           access: read-write
           cli-alias: "/ip/firewall/filter action"
-          values: { 0: accept, 1: jump }
-          role: "2-value action enum, single samples each (observed-only — no public source names the numeric association). Inverse native SETOBJ f40 1->0 takes effect (control *1 flips jump->accept and drops jump-target). Values beyond 0/1 unmapped; numbering consistent with NAT f39/f40/f41 but the filter enum is separately proven."
-        41: { name: jump-target, tcode: string, cli-alias: "/ip/firewall/filter jump-target", access: read-write, role: "target chain name: the ONLY J1->J2 row delta ('e3jump'->'e3jump2') while f40 stays 1; absent on the accept row; nonexistent chains accepted at add AND set (no chain seeding needed). Native row RETAINS f41 after SETOBJ leaves jump while control drops it (single-sample adjunct-retention divergence)." }
+          values: { 0: accept, 1: jump, 2: return, 3: log, 4: passthrough, 5: add-src-to-address-list, 6: add-dst-to-address-list, 10: drop, 11: reject, 12: tarpit, 40: fasttrack-connection }
+          role: "11-value action enum, single add-samples each + symmetric reversals (observed-only — no public source names the numeric association). Inverse native SETOBJ f40 1->0 takes effect (control *1 flips jump->accept and drops jump-target). NAT-shared values CONFIRMED on filter (2/3/4/5/6 match NAT f40); filter-only values (10/11/12/40) have no NAT counterpart (terminal pair drop/reject clusters 10/11). Cross-checks: drop=10 via R1 control exit, passthrough=4 via a device-created dummy row. Bare tarpit add is device-rejected ('tarpit valid only for tcp'); bare fasttrack add accepted."
+        41: { name: jump-target, tcode: string, cli-alias: "/ip/firewall/filter jump-target", access: read-write, role: "target chain name: the ONLY J1->J2 row delta ('e3jump'->'e3jump2') while f40 stays 1; absent on the accept row; nonexistent chains accepted at add AND set (no chain seeding needed). Native row RETAINS f41 after action leaves jump while control drops it (general action-exit behavior: native SETOBJ in F-jump, control set in G1-R1)." }
+        91: { name: address-list, tcode: string, role: "address-list name (t=0x21): 'g1-probe' on both the add-src and add-dst rows (single samples each, SHARED wire field); cleared on control action-exit (2/2 reversals)" }
       namespace-session:
         7: { name: unknown-7, tcode: bool, role: "OPEN — false on all observed rows (t=0x00); meaning UNKNOWN" }
         8: { name: unknown-8, tcode: bool, role: "OPEN — false on all observed rows (t=0x00); meaning UNKNOWN" }
@@ -1785,6 +1824,8 @@ handlers:
         ref: "live CHR interrogation (F-jump write leg, ws21 7.25, 2026-11-02, 5w+0r): jump add + target vary + accept control + inverse SETOBJ 1->0 — work/2026-11-winbox-attributes/proof/F-jump/{report.yaml,step-j1.jsonl,step-j2.jsonl,step-j2b.jsonl,step-j3.jsonl,step-j3read.jsonl,control-j1-read.json,control-j3-read.json}"
       - source: sample
         ref: "live CHR interrogation (F-jump write leg, ws21 7.25, 2026-11-02): GETALL rows + SETOBJ tx/ack — fixtures/winbox-ipc/7.25-filter-jump-20-3.json"
+      - source: sample
+        ref: "live CHR interrogation (G1 write leg, ws21 7.25, 2026-11-02, 25w+0r): 9-value f40 matrix + symmetric reversals + 0xfd002a lifecycle (L1/L2) + f41 retention (R1/R2); restore PARTIAL (5 builtin fasttrack dummies) — work/2026-11-winbox-attributes/proof/G1-f40-matrix/report.yaml; cell rows fixtures/winbox-ipc/7.25-filter-f40-matrix.json"
     notes: |
       F0a offline discrimination (E3-W captures, ws21 7.25, 2026-11-02,
       zero new router contact): exhaustive record-level diff over all
@@ -1812,13 +1853,42 @@ handlers:
       semantics unknown, never varied, no field entry claimed.
       J2/J2b lack independent control read-backs (procedural gap;
       the ok replies + native deltas are the evidence).
+      G0c survey (2026-11-02, blind-corroborated): the Rosetta CLI
+      reference for /ip/firewall/filter documents 11 action names —
+      accept, jump (both wire-mapped: 0, 1) plus 9 unmapped CLI-name
+      candidates (drop, reject, passthrough, return, log,
+      add-src-to-address-list, add-dst-to-address-list, tarpit,
+      fasttrack-connection). Names only; no wire value is claimed
+      for any of the 9 — filter action=drop EXISTS per CLI (unlike
+      NAT, where the control plane rejects it) and is the prime
+      next mapping target. Survey:
+      work/2026-11-winbox-attributes/proof/G0c-f40-design/report.yaml.
+      G1 write leg (ws21 7.25, 2026-11-02, 25w+0r) maps all 9
+      (2/3/4/5/6 NAT-shared CONFIRMED; 10/11/12/40 filter-only)
+      with symmetric reversals. Lifecycle: control-plane SET is
+      the 0xfd002a trigger class (appears after 9/9 action-sets +
+      the L1 jump-target set; always empty = presence flag);
+      0xfd002a is STICKY-once-set (survives the L2 reversal);
+      f41 + 0xfd002a retention on action-exit is GENERAL behavior
+      (R1 control exit jump->drop retains both while control drops
+      jump-target — J3 was not a SETOBJ artifact); jump re-entry
+      is a clean overwrite (R2, no compound, no third state).
+      Adjunct classes differ: f41/fd002a sticky vs f91/0x1c6
+      cleared-on-exit vs protocol matchers (0x16/0x194/0x0b)
+      persistent. Fasttrack side effect: the add spawns 5 builtin
+      'special dummy rule to show fasttrack counters' rows
+      (filter + raw/prerouting + mangle x3), all dynamic +
+      'cannot remove builtin', surviving parent reversal and
+      removal — restore PARTIAL by device design; dummies are
+      invisible to [20,32] (=0) and the f34/f46 presence bools
+      (empty pattern) while [20,3] counts them (=1).
 
   unknown-20-32:
     sys-to: [20, 32]
     status: role-open
     process-id: 0x14
     cmd: GET_ONE
-    role: "unknown holder: GETCOUNT 0->8->0 under a single filter rule; magnitude-incompatible with row counting (control-known N=1), so NOT a filter row-count slot. Rule-co-extensive with unresolved exact semantics (bitmask, another table's count, and derived-selector readings are all ungrounded from the single-stimulus data). GET is selector-gated/FAILED, not table-shaped."
+    role: "unknown holder: GETCOUNT under filter rules is TIME-VARYING within a session (G3-M1: 1 immediately after the add, 0 a minute later with the rule still present, stable) — not a function of the rule-set alone ({A} reads 8/2/1 across three sessions); all prior [20,32] dataset values are time-samples, not static mappings. Magnitude-incompatible with row counting, so NOT a filter row-count slot. GET is selector-gated/FAILED, not table-shaped."
     confidence: observed-only
     evidence:
       - source: sample
@@ -1829,12 +1899,47 @@ handlers:
         ref: "offline discrimination (F0a, ws21 7.25 captures, 2026-11-02): GETCOUNT sequences — fixtures/winbox-ipc/7.25-getcount-20-3-32.json"
       - source: sample
         ref: "live CHR interrogation (F-jump write leg, ws21 7.25, 2026-11-02, 5w+0r): 5-point rule-set dataset — work/2026-11-winbox-attributes/proof/F-jump/{report.yaml,step-baseline.jsonl,step-j1.jsonl,step-j2b.jsonl,step-j3read.jsonl,step-restored.jsonl}"
+      - source: sample
+        ref: "offline model fit (G0a, ws21 7.25 captures, 2026-11-02, zero new router contact; blind-corroborated by G-reviewer R1): 5-point transcription verified 5/5, 17/17 bounded models fail, exhaustive affine-modular search 0/2264031, AMBIGUOUS stop — work/2026-11-winbox-attributes/proof/G0a-2032-model/{report.yaml,scores.yaml,score-models.ts} + work/2026-11-winbox-attributes/proof/G-reviewer/{report.yaml,reconstruction-r1.yaml}; pinned rows fixtures/winbox-ipc/7.25-getcount-20-32-matrix.json"
+      - source: sample
+        ref: "live CHR interrogation (G1 write leg, ws21 7.25, 2026-11-02, 25w+0r): [20,32] bycatch table across the matrix cells (values only, no model; {A}->2 non-replication, {J,A} mirror 3-vs-1) — work/2026-11-winbox-attributes/proof/G1-f40-matrix/{report.yaml,step-C1.jsonl,step-C2.jsonl,step-M1.jsonl,step-M1rev.jsonl,step-M2.jsonl,step-M2rev.jsonl,step-M3.jsonl,step-M3rev.jsonl,step-M4.jsonl,step-M4rev.jsonl,step-M5.jsonl,step-M5rev.jsonl,step-M6.jsonl,step-M6rev.jsonl,step-M7.jsonl,step-M7rev.jsonl,step-M8.jsonl,step-M8rev.jsonl,step-M9.jsonl,step-M9rev.jsonl,step-L1.jsonl,step-L2.jsonl,step-R1.jsonl,step-R2.jsonl,step-restored.jsonl}"
+      - source: sample
+        ref: "live CHR interrogation (G3 write leg, ws21 7.25, 2026-11-02, 2w+0r of 8, ambiguity stop at M1): M1=1 (not 8) + 1->0->0 decay with the rule present — work/2026-11-winbox-attributes/proof/G3-2032-matrix/{report.yaml,step-M0.jsonl,step-M1.jsonl,step-M1-confirm.jsonl,step-M1-confirm2.jsonl,step-M7.jsonl,control-M1-read.json}; decay rows fixtures/winbox-ipc/7.25-getcount-20-32-decay.json"
     notes: |
       5-point dataset (values only, NO model): {}->0, {accept}->8
       (E3-W), {jump}->2, {jump,accept}->1, {accept,accept}->1 —
       anti-monotonic in every direction (adding the accept rule
       DECREASED 2->1). Symmetric restore (back to 0). No model
       fits; the role stays open.
+      G0a offline fit (2026-11-02, blind-corroborated): the
+      transcription verifies 5/5 against raw rx, but no bounded
+      rule-set-only model fits — counting/presence/per-action
+      counts/distinct-count, singleton-forced linear sum (+9/+15
+      on the 2-rule points), OR/XOR/AND accumulation, min/max/gcd/
+      difference/product, first/last-added-wins, and an exhaustive
+      affine-modular search (0/2264031) all fail; AMBIGUOUS stop.
+      Bonus: the J1->J2 jump-target vary leaves the value at 2,
+      so full-row-content-hash models are structurally dead and
+      the value is insensitive to the jump-target string.
+      G1 bycatch table (values only, NO model; ws21 7.25,
+      2026-11-02): {A}->2 (C1, does NOT replicate E3-W {A}->8 —
+      uncontrolled comparison, G3-M1 decides); {J}->2 (C2,
+      replicates); {J,A-edited}->3 (M1-M5 reversals, 5x) vs
+      F-jump {J-edited,A-fresh}->1; {J,A-after-addsrc/dst}->4
+      (M6rev/M7rev); {J,drop/reject/passthrough/log/addsrc/
+      adddst}->4, {J,return/tarpit}->5; {J,fasttrack,dummy}->3;
+      {dummy}->0. f15/f206 covary at some cells and break at
+      others (volatile stands).
+      G3 ambiguity stop (ws21 7.25, 2026-11-02, 2w+0r of 8):
+      M1 accept-replicate reads 1, NOT 8 — the sheet's stop
+      condition fires (third distinct {A} value: 8/2/1), all
+      rule-set-only models dead. Confirm re-reads with zero
+      stimulus change show 1->0->0 (stable): decay-to-zero, not
+      noise; mechanism unclaimed (draining gauge consistent,
+      unproven). M2-M6 unexecuted by design. All 5-point/G1
+      dataset values are time-samples. Bycatch: the 5 G1 builtin
+      fasttrack dummies do not survive a power-cut restart
+      (boot-local).
 
   nat-20-5:
     sys-to: [20, 5]

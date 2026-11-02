@@ -1,0 +1,47 @@
+# cspell:ignore amm grev idstr edi movzwl vaddr
+# Phase G blind reviewer — R2 independent reconstruction (G0b 0xfd002a static search)
+# Written BEFORE reading proof/G0b-fd002a-static/report.yaml or any G0b fragment.
+# written_at: 2026-11-02T14:06:04Z
+# Method: F0b-pinned binary only (path + hash from F0b report = prior-phase
+# evidence, allowed); fresh scans run by this reviewer. No G0b file opened.
+slice: G0b
+reconstruction_id: R2
+binary:
+  path: /home/amm0bot/.local/share/m2ir/extractions/root-7.25/lib/libumsg.so
+  path_source: "proof/F0b-slot19/report.yaml line 17 (binary path ONLY)"
+  size_bytes: 516584
+  sha256_claimed: 1d471df0c39e81b9ef946f636615e352470bd0da3fbeaf98fb017869b1c46c80
+  sha256_claim_source: "proof/F0b-slot19/report.yaml line 18"
+  sha256_observed: 1d471df0c39e81b9ef946f636615e352470bd0da3fbeaf98fb017869b1c46c80
+  sha256_match: true
+byte_scans_whole_file:
+  tool: "python bytes.find loop over full 516584 bytes (/tmp/grev-r2-scan.py, scratch)"
+  results:
+    - { encoding: "LE u32", bytes: "2a 00 fd 00", count: 0, offsets: [] }
+    - { encoding: "BE u32", bytes: "00 fd 00 2a", count: 0, offsets: [] }
+    - { encoding: "3-byte wire-order tag", bytes: "2a 00 fd", count: 0, offsets: [] }
+    - { encoding: "3-byte reverse (reviewer extra)", bytes: "fd 00 2a", count: 0, offsets: [] }
+disassembly_grep:
+  tool: "objdump -d (112615 lines, /tmp/grev-libumsg-dis.txt scratch) + grep"
+  fd002a_hits: 0
+  fe000_control_hits: 302
+  control_note: "'0xfe000' matches 302 disassembly lines, proving the grep pipeline sees namespace immediates; 'fd002a' matches zero."
+namespace_compare_functions:
+  # 'fd0000' occurs EXACTLY 2x in the full disassembly; both are cmp-namespace
+  # immediates inside namespace-switch chains. No other form.
+  - address: "0x27ed8"
+    symbol: "nv::operator<<(ostream&, nv::message::idstr)"
+    symbol_source: "objdump -T | c++filt (dynsym: 0x27ed8, size 0x721)"
+    masking_idiom: "mov %edi,%eax @0x283f5; movzwl %di,%edi @0x283f7 (tag split); and $0xff0000,%eax @0x283fa (namespace split); cmp-chain on masked namespace"
+    fd0000_site: "cmp $0xfd0000,%eax @0x28415; je 0x2853e (chain order ff/fe/fd/2c/1f/12/11/10/0f/0e/0d/0c/0b/0a/09/08/07/06/...)"
+    arm_string: "local::"
+    arm_string_provenance: "arm @0x2853e lea -0x10cfc(%ebx), ebx=GOT=0x7dff4 -> vaddr 0x6d2f8 (.rodata, file-offset == vaddr) -> b'local::'; neighbor arms ff->'sys::' @0x6d306, fe->'std::' @0x6d300"
+  - address: "0x32513"
+    symbol: "nv::getErrorDescr(unsigned int, string const&)"
+    symbol_source: "objdump -T | c++filt (dynsym: 0x32513, size 0x11a)"
+    masking_idiom: "mov 0xc(%ebp),%edi @0x32530 (u32 id arg); and $0xff0000,%edi @0x32536; 4-arm switch + default"
+    fd0000_site: "cmp $0xfd0000,%edi @0x32550; je 0x32578 (order: ff @0x3253c, fe @0x32544, 00 via test %edi,%edi @0x3254c, fd @0x32550, default @0x32582)"
+    arm_string: "local"
+    arm_string_provenance: "arm @0x32578 lea -0xddaf(%ebx), ebx=GOT=0x7dff4 -> vaddr 0x70245 (.rodata) -> b'local'; neighbor arms 00->'global', fe->'std', ff->'sys', default->'undefined'"
+independent_verdict: NEGATIVE
+verdict_rationale: "0xfd002a is absent from libumsg.so in every encoding scanned (LE u32 / BE u32 / 3-byte tag, 0 hits whole-file; 0 disassembly hits vs 302-hit control). The only fd-namespace references are the two masked namespace-base compares (cmp $0xfd0000 after and $0xff0000) naming the ARM 'local', never the full tag 0xfd002a."

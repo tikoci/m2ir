@@ -1,0 +1,128 @@
+# cspell:ignore rowid getall vlan untagged ether1 vlanids mvrp pvid e1br
+# G2 execution report (coordinator). twin3 ONLY. No commit, no push.
+proof: "G2 vlan f7 SET on twin3 7.25: COMPLETE 8w+0r of 8w+0r; f7=mvrp-forbidden PROVEN with []->[2]->[] symmetry; restore verified clean"
+date: 2026-11-02
+worker: coordinator
+leg: G2-vlan-f7-set
+sheet: "coordinator sheet 2026-11-02 (V1/V2/V3 + V4 mvrp-forbidden set + V5 reversal + R1-R3; F-vlan counting rule; filtering stays NO)"
+approval_quoted: "g2 yes (8w+0r twin3) — explicit per-leg yes, this session"
+vm:
+  name: twin3
+  routeros: "7.25"
+  arch: x86
+  network: user
+  ports: "resolved live from `quickchr list` at execution (http:9120 block, winbox:9125); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute/retrieve --quickchr twin3 (writes via native-api)"
+  native_via: "proof/E1-W2r/getall-w2r.ts (paged GETALL, read-only; reused unmodified)"
+counting_rule: "F-vlan rule per sheet: EVERY control add/set/remove counts 1w; reads 0w"
+baseline_snapshot:
+  verdict: PASS
+  control:
+    - { route: /interface/bridge, objectCount: 0 }
+    - { route: /interface/bridge/vlan, objectCount: 0 }
+    - { route: /interface/bridge/port, objectCount: 0 }
+    - { route: /interface/bridge/host, objectCount: 0 }
+  native: "GETALL [16,13] 0 rows complete"
+  files: [baseline_interface_bridge.json, baseline_interface_bridge-vlan.json, baseline_interface_bridge-port.json, baseline_interface_bridge_host.json, step-baseline.jsonl]
+steps:
+  - tag: V1
+    command: "/interface/bridge/add name=e1br"
+    outcome: "ok, ret *3"
+    evidence: [control-V1-add.json, explain-V1.json]
+    writes: 1
+    cumulative: 1
+  - tag: V2
+    command: "/interface/bridge/vlan/add bridge=e1br vlan-ids=10 tagged=e1br untagged=ether1"
+    outcome: "ok, ret *1"
+    evidence: [control-V2-add.json, explain-V2.json]
+    writes: 1
+    cumulative: 2
+  - tag: V3
+    command: "/interface/bridge/port/add bridge=e1br interface=ether1"
+    outcome: "ok, ret *0"
+    evidence: [control-V3-add.json, explain-V3.json]
+    writes: 1
+    cumulative: 3
+  - tag: cell-A
+    verdict: "REPRODUCED (4th time: E1, W2r, F-vlan, now)"
+    control: "tagged=e1br untagged=ether1 current-tagged='' current-untagged='' mvrp-forbidden=''"
+    native: "GETALL [16,13] 1 row, vlan rowid 1: f1=[10,10] f2=3 f3=[3] f4=[2] f5=[] f6=[] f7=[]"
+    rowids_live: "ether1=2 e1br=3 lo=1 (native [20,0] read this session, step-rowids.jsonl)"
+    evidence: [cell-A-vlan.json, step-cell-A.jsonl, step-rowids.jsonl]
+    writes: 0
+    cumulative: 3
+  - tag: V4
+    command: "/interface/bridge/vlan/set *1 mvrp-forbidden=ether1"
+    outcome: "ok; control mvrp-forbidden='ether1'"
+    native: "rowid 1: f7=[2] (ether1 rowid); every other field bit-identical to cell A (f3=[3] f4=[2] f5=f6=[]) — the ONLY row delta is f7 []->[2]"
+    proves: "f7 = mvrp-forbidden [20,0] rowids (set direction)"
+    evidence: [control-V4-set.json, cell-B-vlan.json, step-cell-B.jsonl, explain-V4.json]
+    writes: 1
+    cumulative: 4
+  - tag: V5
+    command: "/interface/bridge/vlan/set *1 mvrp-forbidden=\"\""
+    outcome: "ok (quoted-empty clear accepted); control mvrp-forbidden=''"
+    native: "rowid 1: f7=[] again, all other fields unchanged — full []->[2]->[] symmetry"
+    proves: "f7 tracks mvrp-forbidden both directions (reversal)"
+    evidence: [control-V5-set.json, cell-C-vlan.json, step-cell-C.jsonl, explain-V5.json]
+    writes: 1
+    cumulative: 5
+  - tag: R1
+    command: "/interface/bridge/vlan/remove *1"
+    outcome: ok
+    evidence: [control-R1.json, explain-R1.json]
+    writes: 1
+    cumulative: 6
+  - tag: R2
+    command: "/interface/bridge/port/remove *0"
+    outcome: ok
+    evidence: [control-R2.json, explain-R2.json]
+    writes: 1
+    cumulative: 7
+  - tag: R3
+    command: "/interface/bridge/remove e1br"
+    outcome: ok
+    evidence: [control-R3.json, explain-R3.json]
+    writes: 1
+    cumulative: 8
+spend:
+  counted_writes: 8
+  reboots: 0
+  cap: "8w+0r"
+  itemized: "V1 + V2 + V3 + V4 + V5 + R1 + R2 + R3 = 8; all reads 0; 0 rejections"
+  within_cap: true
+proven:
+  - id: P-g2-f7
+    claim: "f7 = mvrp-forbidden [20,0] rowids: [] with mvrp-forbidden='' (cell A), [2]=ether1 rowid with mvrp-forbidden=ether1 (cell B), [] after the quoted-empty clear (cell C); the ONLY row delta in both transitions"
+    evidence: [step-cell-A.jsonl, step-cell-B.jsonl, step-cell-C.jsonl, cell-A-vlan.json, cell-B-vlan.json, cell-C-vlan.json]
+  - id: P-g2-quoted-clear
+    claim: "quoted mvrp-forbidden=\"\" is ACCEPTED as a clear (2nd quoted-empty-string acceptance on this table after F-vlan untagged=\"\")"
+    evidence: [control-V5-set.json, cell-C-vlan.json]
+unknown: []
+restore_verification:
+  verdict: PASS
+  control:
+    - { route: /interface/bridge, objectCount: 0 }
+    - { route: /interface/bridge/vlan, objectCount: 0 }
+    - { route: /interface/bridge/port, objectCount: 0 }
+    - { route: /interface/bridge/host, objectCount: 0 }
+  native:
+    - { op: "GETALL [16,13]", rows: 0, pages: 1 }
+  files: [restored_interface_bridge.json, restored_interface_bridge-vlan.json, restored_interface_bridge-port.json, restored_interface_bridge_host.json, step-restored.jsonl]
+cleanup_state:
+  tables: "bridge/vlan/port/host all empty on both surfaces (control + native)"
+  vm: "twin3 STOPPED via `quickchr stop twin3` (not removed)"
+  writes_on_other_machines: 0
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/G2-vlan-f7/report.yaml
+  - work/2026-11-winbox-attributes/proof/G2-vlan-f7/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/G2-vlan-f7/sanitize.ts
+gates_observed:
+  - "twin3 ONLY: no other VM touched"
+  - "every control string validated with `centrs explain` before sending (8/8 pass, 0 rejections)"
+  - "cumulative verified before every write (max reached 8 of 8)"
+  - "filtering stayed NO for the whole leg (no access hazard by construction)"
+  - "no edits to canonical files during execution (coordinator integrates separately)"
+  - "no commit, no push"

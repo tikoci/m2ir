@@ -1,0 +1,283 @@
+cspell:disable
+G0b verbatim static evidence (libumsg.so 7.25 x86)
+generated: 2026-11-02T14:01:14Z
+1d471df0c39e81b9ef946f636615e352470bd0da3fbeaf98fb017869b1c46c80  libumsg.so
+GNU objdump (GNU Binutils) 2.47
+
+=== coverage counts ===
+fd002a disassembly hits: 0
+0xfe000 control hits: 302
+reloc fd002a hits: 0
+strings fd002a hits: 0
+
+=== H1 idstr namespace chain (full compare list) 0x283f5-0x28500 ===
+   283fa:	and    $0xff0000,%eax
+   283ff:	cmp    $0xff0000,%eax
+   28404:	je     28528 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x650>
+   2840a:	cmp    $0xfe0000,%eax
+   2840f:	je     28533 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x65b>
+   28415:	cmp    $0xfd0000,%eax
+   2841a:	je     2853e <_ZN2nvlsER7ostreamNS_7message5idstrE+0x666>
+   28420:	cmp    $0x2c0000,%eax
+   28425:	je     28549 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x671>
+   2842b:	ja     28510 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x638>
+   28431:	cmp    $0x1f0000,%eax
+   28436:	je     28554 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x67c>
+   2843c:	ja     28510 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x638>
+   28442:	cmp    $0x120000,%eax
+   28447:	je     2855c <_ZN2nvlsER7ostreamNS_7message5idstrE+0x684>
+   2844d:	ja     28510 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x638>
+   28453:	cmp    $0x110000,%eax
+   28458:	je     28564 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x68c>
+   2845e:	cmp    $0x100000,%eax
+   28463:	je     2856c <_ZN2nvlsER7ostreamNS_7message5idstrE+0x694>
+   28469:	cmp    $0xf0000,%eax
+   2846e:	je     28574 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x69c>
+   28474:	cmp    $0xe0000,%eax
+   28479:	je     2857c <_ZN2nvlsER7ostreamNS_7message5idstrE+0x6a4>
+   2847f:	cmp    $0xd0000,%eax
+   28484:	je     28584 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x6ac>
+   2848a:	cmp    $0xc0000,%eax
+   2848f:	je     2858c <_ZN2nvlsER7ostreamNS_7message5idstrE+0x6b4>
+   28495:	cmp    $0xb0000,%eax
+   2849a:	je     28594 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x6bc>
+   284a0:	cmp    $0xa0000,%eax
+   284a5:	je     2859c <_ZN2nvlsER7ostreamNS_7message5idstrE+0x6c4>
+   284ab:	cmp    $0x90000,%eax
+   284b0:	je     285a4 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x6cc>
+   284b6:	cmp    $0x80000,%eax
+   284bb:	je     285ac <_ZN2nvlsER7ostreamNS_7message5idstrE+0x6d4>
+   284c1:	cmp    $0x70000,%eax
+   284c6:	je     285b4 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x6dc>
+   284cc:	cmp    $0x60000,%eax
+   284d1:	je     285bc <_ZN2nvlsER7ostreamNS_7message5idstrE+0x6e4>
+   284d7:	cmp    $0x40000,%eax
+   284dc:	je     285c4 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x6ec>
+   284e2:	ja     28510 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x638>
+   284e4:	cmp    $0x30000,%eax
+   284e9:	je     285cc <_ZN2nvlsER7ostreamNS_7message5idstrE+0x6f4>
+   284ef:	cmp    $0x20000,%eax
+   284f4:	je     285d4 <_ZN2nvlsER7ostreamNS_7message5idstrE+0x6fc>
+
+=== H1 fd-arm string targets (ebx=GOT=0x7dff4) ===
+ff->0x6d306 fe->0x6d300 fd->0x6d2f8
+
+libumsg.so:     file format elf32-i386
+
+Contents of section .rodata:
+ 6d2f0 3a006e65 743a3a00 6c6f6361 6c3a3a00  :.net::.local::.
+ 6d300 7374643a 3a007379 733a3a00 5359535f  std::.sys::.SYS_
+ 6d310 544f                                 TO              
+
+=== H2 getErrorDescr 0x32536-0x3258c ===
+
+libumsg.so:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+00032536 <_ZN2nv13getErrorDescrEjRK6string+0x23>:
+   32536:	and    $0xff0000,%edi
+   3253c:	cmp    $0xff0000,%edi
+   32542:	je     3256e <_ZN2nv13getErrorDescrEjRK6string+0x5b>
+   32544:	cmp    $0xfe0000,%edi
+   3254a:	je     32564 <_ZN2nv13getErrorDescrEjRK6string+0x51>
+   3254c:	test   %edi,%edi
+   3254e:	je     3255a <_ZN2nv13getErrorDescrEjRK6string+0x47>
+   32550:	cmp    $0xfd0000,%edi
+   32556:	je     32578 <_ZN2nv13getErrorDescrEjRK6string+0x65>
+   32558:	jmp    32582 <_ZN2nv13getErrorDescrEjRK6string+0x6f>
+   3255a:	lea    -0xdda1(%ebx),%eax
+   32560:	push   %ecx
+   32561:	push   %ecx
+   32562:	jmp    3258a <_ZN2nv13getErrorDescrEjRK6string+0x77>
+   32564:	lea    -0x106b6(%ebx),%eax
+   3256a:	push   %edx
+   3256b:	push   %edx
+   3256c:	jmp    3258a <_ZN2nv13getErrorDescrEjRK6string+0x77>
+   3256e:	push   %eax
+   3256f:	push   %eax
+   32570:	lea    -0x106b2(%ebx),%eax
+   32576:	jmp    3258a <_ZN2nv13getErrorDescrEjRK6string+0x77>
+   32578:	push   %eax
+   32579:	push   %eax
+   3257a:	lea    -0xddaf(%ebx),%eax
+   32580:	jmp    3258a <_ZN2nv13getErrorDescrEjRK6string+0x77>
+   32582:	push   %eax
+   32583:	push   %eax
+   32584:	lea    -0x106ae(%ebx),%eax
+   3258a:	push   %eax
+   3258b:	push   %esi
+   3258c:	.byte 0xe8
+
+=== H2 fd/zero strings (fd->0x70245 zero->0x70253) ===
+
+libumsg.so:     file format elf32-i386
+
+Contents of section .rodata:
+ 70230 75696c74 696e2070 61727365 00627569  uiltin parse.bui
+ 70240 6c74696e 206c6f63 616c0062 75696c74  ltin local.built
+ 70250 696e2067 6c6f6261 6c006275 696c7469  in global.builti
+ 70260 6e20                                 n               
+
+=== H3 Looper ctor Allocator bounds 0x37a30-0x37a49 ===
+
+libumsg.so:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+00037a30 <_ZN2nv6LooperC1ENS0_17looper_detached_tE+0x7c>:
+   37a30:	add    $0xc,%esp
+   37a33:	lea    0x148(%esi),%eax
+   37a39:	push   $0xfd17ff
+   37a3e:	push   $0xfd1000
+   37a43:	push   %eax
+   37a44:	call   24150 <_ZN2nv9AllocatorC1Ejj@plt>
+
+=== H4 removeHandler arena check 0x3b54f-0x3b55d ===
+
+libumsg.so:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+0003b54f <_ZN2nv6Looper13removeHandlerEj+0x5b>:
+   3b54f:	mov    0xc(%ebp),%eax
+   3b552:	sub    $0xfd1000,%eax
+   3b557:	cmp    $0x7ff,%eax
+   3b55c:	.byte 0x77
+
+=== H5 m3 encnum32 dispatch+arms 0x61f44-0x61f82 ===
+
+libumsg.so:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+00061f44 <_ZN2m38encnum32EP4spanIhEj+0x82>:
+   61f44:	cmp    $0x10,%edx
+   61f47:	je     61f70 <_ZN2m38encnum32EP4spanIhEj+0xae>
+   61f49:	ja     61f63 <_ZN2m38encnum32EP4spanIhEj+0xa1>
+   61f4b:	cmp    $0x8,%edx
+   61f4e:	je     61f74 <_ZN2m38encnum32EP4spanIhEj+0xb2>
+   61f50:	ja     61f63 <_ZN2m38encnum32EP4spanIhEj+0xa1>
+   61f52:	cmp    $0x4,%edx
+   61f55:	je     61f78 <_ZN2m38encnum32EP4spanIhEj+0xb6>
+   61f57:	ja     61f63 <_ZN2m38encnum32EP4spanIhEj+0xa1>
+   61f59:	cmp    $0x1,%edx
+   61f5c:	je     61f7c <_ZN2m38encnum32EP4spanIhEj+0xba>
+   61f5e:	cmp    $0x2,%edx
+   61f61:	je     61f80 <_ZN2m38encnum32EP4spanIhEj+0xbe>
+   61f63:	xor    %edx,%edx
+   61f65:	movl   $0xffffffff,(%ebx)
+   61f6b:	mov    %edx,0x4(%ebx)
+   61f6e:	jmp    61fab <_ZN2m38encnum32EP4spanIhEj+0xe9>
+   61f70:	mov    $0xfa,%al
+   61f72:	jmp    61f82 <_ZN2m38encnum32EP4spanIhEj+0xc0>
+   61f74:	mov    $0xfb,%al
+   61f76:	jmp    61f82 <_ZN2m38encnum32EP4spanIhEj+0xc0>
+   61f78:	mov    $0xfc,%al
+   61f7a:	jmp    61f82 <_ZN2m38encnum32EP4spanIhEj+0xc0>
+   61f7c:	mov    $0xfe,%al
+   61f7e:	jmp    61f82 <_ZN2m38encnum32EP4spanIhEj+0xc0>
+   61f80:	mov    $0xfd,%al
+   61f82:	.byte 0x88
+
+=== H6 size cap 0x64149-0x64169 ===
+
+libumsg.so:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+00064149 <_Z20map_node_move_constrI11string_view3mapIjN2nv7messageEEEP14tree_node_basePv+0x688>:
+   64149:	mov    0xc(%esi),%edx
+   6414c:	add    $0x10,%esp
+   6414f:	mov    %eax,%ecx
+   64151:	mov    -0x1c(%ebp),%eax
+   64154:	sub    -0x20(%ebp),%eax
+   64157:	add    (%edx),%eax
+   64159:	test   %cl,%cl
+   6415b:	je     64169 <_Z20map_node_move_constrI11string_view3mapIjN2nv7messageEEEP14tree_node_basePv+0x6a8>
+   6415d:	mov    $0x1,%ecx
+   64162:	cmp    $0xfde8,%eax
+   64167:	ja     6419b <_Z20map_node_move_constrI11string_view3mapIjN2nv7messageEEEP14tree_node_basePv+0x6da>
+   64169:	.byte 0x89
+
+=== H7 PLT indices 0x23fc0-0x23fe0 ===
+
+libumsg.so:     file format elf32-i386
+
+
+Disassembly of section .plt:
+
+00023fc0 <__assert_fail@plt>:
+   23fc0:	jmp    *0x7f4(%ebx)
+   23fc6:	push   $0xfd0
+   23fcb:	jmp    22010 <_init+0x10>
+
+00023fd0 <_ZN6stringC1Ejc@plt>:
+   23fd0:	jmp    *0x7f8(%ebx)
+   23fd6:	push   $0xfd8
+   23fdb:	jmp    22010 <_init+0x10>
+
+=== H8 char mask 0x684be-0x684cc ===
+
+libumsg.so:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+000684be <_ZN2nv7ROSMode5namesEv+0x920>:
+   684be:	mov    -0x5c(%ebp),%edx
+   684c1:	mov    0x4(%ecx,%edx,1),%dl
+   684c5:	sub    $0x2b,%edx
+   684c8:	and    $0xfd,%dl
+   684cb:	.byte 0x74
+
+=== H9a SIB-0xfd lea windows ===
+
+libumsg.so:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+000259b9 <_ZNK2nv7message4sizeINS_7bool_idEEEjT_-0xde3>:
+   259b9:	mov    -0x18(%ebp),%edi
+   259bc:	mov    0x8(%ebx),%esi
+   259bf:	.byte 0x8d
+
+libumsg.so:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+00061b71 <_ZN2m37message4foldENS_7MidTypeEjj+0xf>:
+   61b71:	and    $0x3,%eax
+   61b74:	lea    0x0(,%edi,8),%esi
+   61b7b:	.byte 0x85
+
+=== H9b (ptr,len) string table 0x77b90-0x77bb0 + entry relocs ===
+
+libumsg.so:     file format elf32-i386
+
+Contents of section .data.rel.ro:
+ 77b90 fbe10600 00000000 fe060700 0d000000  ................
+ 77ba0 fd000700 05000000 0c070700 04000000  ................
+00077b90  00000008 R_386_RELATIVE        
+00077b98  00000008 R_386_RELATIVE        
+00077ba0  00000008 R_386_RELATIVE        
+00077ba8  00000008 R_386_RELATIVE        
+entry strings: 0x706fe (len 13) / 0x700fd (len 5) / 0x7070c (len 4)
+
+libumsg.so:     file format elf32-i386
+
+Contents of section .rodata:
+ 706fa 696e 73006d61 74636820 70617474 6572 ins.match patter
+ 7070a 6e00 77697468                        n.with          
+
+libumsg.so:     file format elf32-i386
+
+Contents of section .rodata:
+ 700fa 726e 206d6174 6368006f 706e          rn match.opn    

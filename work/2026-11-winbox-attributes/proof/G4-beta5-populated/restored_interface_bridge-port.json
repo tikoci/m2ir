@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "data": [],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 0,
+      "path": "/interface/bridge/port"
+    }
+  }
+}

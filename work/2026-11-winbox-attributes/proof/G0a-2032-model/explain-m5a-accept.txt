@@ -1,0 +1,16 @@
+verdict: pass — 1 statement(s), 0 diagnostic(s)
+gate: structured /ip/firewall/filter add · 3 arg(s) · write-shaped
+write: true
+statements:
+  [0,67)       resolved  command  path=/ip/firewall/filter verb=add  via=api-candidate
+    centrs: centrs api '<router>' '/ip/firewall/filter' -X PUT -f 'chain=forward' -f 'action=accept' -f 'comment=m2g0a5a'
+values:
+  [30,37)      attribute  name=chain shapes=str
+  [45,51)      attribute  name=action shapes=str
+  [60,67)      attribute  name=comment shapes=str
+evidence: e0 canonicalizeExecuteCommand (direct), e1 analyzeCoordinates (direct), e4 resolveVerbs (heuristic), e6 containsWrite (heuristic), e8 classifyExplainTransport (heuristic), e9 valueShapeHints (heuristic)
+runtimeAcceptance: not-proven
+
+Tips:
+  - [tip/explain-offline-only] No router was given, so this is the canonicalizer's reading alone.
+    fix: Add a router (`centrs explain <router> '<input>'`) for read-only parse, highlight and argument-name evidence; `--schema` and `--complete` then describe paths and complete at the cursor.

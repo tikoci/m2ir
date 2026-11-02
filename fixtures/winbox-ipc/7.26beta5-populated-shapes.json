@@ -1,0 +1,552 @@
+{
+	"provenance": {
+		"report": "G4 write leg, 2026-11-02 (g4beta5 7.26beta5 x86 build 2026-10-30, 10w+0r)",
+		"routeros_version": "7.26beta5",
+		"route": "beta-line populated shapes: [16,2] port row + [16,13] vlan cell + [20,1] address rows (main + custom VRF)",
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. Source: proof/G4-beta5-populated/step-B3.jsonl ([16,2]/[16,13] rx) + step-B5.jsonl ([20,1] rx). Control ground truth: proof/G4-beta5-populated/control-B3-bridge-{port,vlan}.json + control-B5-read.json. Interface rowids this session: ether1=2 ether2=3 e1br=4 g4vrf=5 lo=1."
+	},
+	"records": [
+		{
+			"id": "getall-16-2-rx",
+			"role": "GETALL [16,2] rx: 40-key port row (e1br/ether1), zero drift vs 7.25",
+			"source": "g4beta5 7.26beta5 step-B3 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020010000000020000001c00ffa0010013006d73672d70726f78792d372e323662657461350200fea80100b6004d320e0000000f0000011000000011000000150000011700000118000001190000011a0000000700fe001b0000001c0000000a00fe001d0000001f00000020000000210000000800fe0025000000260000002700000028000000d700000004000009040a000009000b000009000c000009000d00000900120000090a130000090114000009000100fe09000500fe08ffffffff1e0000090122000009002300000900010000090a020000098003000009020900fe21000300ff09021900fe09010600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [16, 2],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16, 2]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta5"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x00000e",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00000f",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000010",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000011",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000015",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000017",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000018",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000019",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x00001a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00001b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00001c",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00001d",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00001f",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000020",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000021",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000025",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000026",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x0000d7",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000b",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000c",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000d",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x000012",
+								"tcode": "0x9",
+								"value": 10
+							},
+							{
+								"key": "0x000013",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000014",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0005",
+								"tcode": "0x8",
+								"value": 4294967295
+							},
+							{
+								"key": "0x00001e",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000022",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x000023",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x9",
+								"value": 10
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x9",
+								"value": 128
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "getall-16-13-rx",
+			"role": "GETALL [16,13] rx: 12-key vlan cell (vlan-ids 10), zero drift vs 7.25 cell-A",
+			"source": "g4beta5 7.26beta5 step-B3 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200100000000d0000001c00ffa0010013006d73672d70726f78792d372e323662657461350200fea801006f004d321c00fea001001a00766c616e2d66696c746572696e672069732064697361626c656407000088000006000088000005000088000004000088010002000000030000880100040000000100008802000a0000000a0000000700fe000a00fe000100fe090102000009040900fe21000300ff09021900fe09010600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [16, 13],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16, 13]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta5"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": ["vlan-filtering is disabled"]
+							},
+							{
+								"key": "0x000007",
+								"tcode": "0x88",
+								"value": []
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x88",
+								"value": []
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x88",
+								"value": []
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x88",
+								"value": [2]
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x88",
+								"value": [4]
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x88",
+								"value": [10, 10]
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getall-20-1-rx",
+			"role": "GETALL [20,1] rx: DHCP row (f6=0, f5/f10 split 4/2, f11=true) + g4vrf row (f6=1)",
+			"source": "g4beta5 7.26beta5 step-B5 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa0010013006d73672d70726f78792d372e323662657461350200fea802004b004d320b0000010700fe010800fe000a00fe00040000080a0002ff050000090406000009000a000009020100fe0901010000080a00020f020000080a00020003000008ffffff000900fe21004f004d320b0000000700fe000800fe000a00fe0004000008c63364ff050000090306000009010a000009030100fe090201000008c633641402000008c633640003000008ffffff000900fe2104673462350300ff09021900fe09020600ff0904",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 4,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta5"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4278321162
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 251789322
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 131082
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						],
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4284756934
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 342111174
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 6566854
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g4b5"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 4
+				}
+			]
+		}
+	]
+}

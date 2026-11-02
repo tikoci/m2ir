@@ -1,0 +1,13 @@
+# cspell:ignore libumsg getobj setobj
+# G0b promotion fragment (coordinator integrates).
+# EMPTY BY RESULT, not by omission: the static slice is NEGATIVE on 0xfd002a
+# itself (zero references in libumsg.so 7.25 x86), and a pure absence grounds
+# no name/role/tcode/content for the 0xfd002a entry. The fd-namespace
+# 'local'-name corroboration (report.yaml H1/H2) is NAMESPACE-level evidence,
+# out of the entry-only fragment condition, and 0xfd=local is already
+# canonical in processes.yaml.
+fragment: []
+empty_reason: "NEGATIVE static result: zero 0xfd002a references at full coverage, so no promotable entry content; namespace-level 'local' corroboration is not entry-level and 0xfd=local is already canonical"
+no_promotion_for:
+  - "0xfd002a name/role/semantics (static slice silent; observational U-jump-0xfd002a still open)"
+note_for_coordinator: "If an 0xfd002a entry is ever created from live variation, attach this slice as investigation-trail: 'libumsg.so 7.25 x86 (sha256 1d471df0...b1c46c80) searched 2026-11-02, zero refs; see proof/G0b-fd002a-static/report.yaml'. Do not create an entry solely to hold the trail."

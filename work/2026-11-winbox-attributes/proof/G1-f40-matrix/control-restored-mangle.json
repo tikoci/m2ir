@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*3",
+      "action": "passthrough",
+      "bytes": "0",
+      "chain": "prerouting",
+      "comment": "special dummy rule to show fasttrack counters",
+      "dynamic": "true",
+      "packets": "0"
+    },
+    {
+      ".id": "*2",
+      "action": "passthrough",
+      "bytes": "0",
+      "chain": "forward",
+      "comment": "special dummy rule to show fasttrack counters",
+      "dynamic": "true",
+      "packets": "0"
+    },
+    {
+      ".id": "*1",
+      "action": "passthrough",
+      "bytes": "0",
+      "chain": "postrouting",
+      "comment": "special dummy rule to show fasttrack counters",
+      "dynamic": "true",
+      "packets": "0"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 3,
+      "path": "/ip/firewall/mangle"
+    }
+  }
+}

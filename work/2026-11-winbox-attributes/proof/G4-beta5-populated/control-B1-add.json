@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "data": {
+    "ret": "*4",
+    ".id": "*4"
+  },
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "native-api",
+    "operation": {
+      "kind": "execute",
+      "objectCount": 1,
+      "path": null
+    }
+  }
+}

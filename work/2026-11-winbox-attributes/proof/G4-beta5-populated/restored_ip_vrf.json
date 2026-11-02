@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*0",
+      "builtin": "true",
+      "disabled": "false",
+      "interfaces": "all",
+      "name": "main"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 1,
+      "path": "/ip/vrf"
+    }
+  }
+}

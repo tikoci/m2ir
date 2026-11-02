@@ -1,0 +1,38 @@
+# cspell:ignore capsman
+# Phase G blind reviewer — R3 independent reconstruction (G0c action enum)
+# Written BEFORE reading proof/G0c-f40-design/report.yaml or any G0c fragment.
+# written_at: 2026-11-02T14:06:27Z
+# Method: single read-only Rosetta lookup, no G0c file opened.
+slice: G0c
+reconstruction_id: R3
+lookup:
+  tool: "mcp routeros_lookup_property"
+  args: { name: "action", command_path: "/ip/firewall/filter" }
+  contact: "read-only Rosetta lookup; zero router contact"
+  chosen_row:
+    source: cli-reference
+    confidence: high
+    page_title: "CLI Reference: /ip/firewall/filter"
+    page_url: "https://manual.mikrotik.com/docs/cli-reference/ip/firewall/filter"
+    section: Argument
+  excluded_rows: "9 further rows (bridge firewall/nat/packet-filter, capsman x3, hotspot x2, wifi x2) all confidence low/medium and other menus — correctly excluded by the command_path filter"
+action_enum:
+  member_count: 11
+  members:
+    - { name: accept, value: 0 }
+    - { name: jump, value: 1 }
+    - { name: return, value: 2 }
+    - { name: log, value: 3 }
+    - { name: passthrough, value: 4 }
+    - { name: add-src-to-address-list, value: 5 }
+    - { name: add-dst-to-address-list, value: 6 }
+    - { name: drop, value: 10 }
+    - { name: reject, value: 11 }
+    - { name: tarpit, value: 12 }
+    - { name: fasttrack-connection, value: 40 }
+  value_gaps_noted: "7,8,9 unassigned between add-dst-to-address-list=6 and drop=10; 13..39 unassigned between tarpit=12 and fasttrack-connection=40"
+  consistency_note: "accept=0/jump=1 agrees with the Phase F jump-leg closure (handoff.yaml); used as given, not re-proved"
+claims_reconstructed:
+  enum_11_member: true
+  filter_drop_exists: true
+  drop_evidence: "drop is enum member #8 with value 10 in the exact-menu CLI Reference row"

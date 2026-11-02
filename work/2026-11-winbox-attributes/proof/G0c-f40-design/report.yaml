@@ -1,0 +1,301 @@
+# cspell:ignore getall getcount getobj bycatch coextensive tarpit fasttrack passthrough unmapped subtable rowid preexisting addrlist oneline llms addsrc adddst cjt addshape vms
+proof: "G0c: filter f40 action-matrix + 0xfd002a lifecycle + f41 retention DESIGN (0 executed, 0w+0r spent)"
+worker: G0c
+date: 2026-11-02
+head: "da5f8bb (verified via git log --oneline -1 before starting)"
+scope:
+  handler_family: "filter [20,3] only"
+  candidate_properties: 9
+  candidate_cap: 10
+  private_verbs: 0
+  discriminating_experiments_per_unresolved: "<=2 (design only)"
+  executed_experiments: 0
+inputs_read:
+  - AGENTS.md, README.md, DESIGN.md, llms.txt (orientation + confidence vocabulary)
+  - .github/instructions/routeros-grounding.instructions.md
+  - work/2026-11-winbox-attributes/attribute-discovery-plan.md (Phase E status, experiment-sequence C, scope discipline)
+  - work/2026-11-winbox-attributes/handoff.yaml (Phase F record; F-jump/F-vlan/F-f11 taken as proven, not re-proven)
+  - work/2026-11-winbox-attributes/proof/F-jump/report.yaml (filter action ground truth: P-jump-1..7, U-jump-0xfd002a, U-jump-enum-rest, U-jump-f41-lifecycle)
+  - profiles/winbox-ipc/gui-handlers.yaml filter-20-3 + nat-20-5 entries (READ-ONLY)
+  - work/2026-11-winbox-attributes/proof/7.25-nat-action/report.yaml (NAT f40 analog: 0/2/3/4/5/6/20/21/22/25 + drop-negative)
+  - work/2026-11-winbox-attributes/proof/7.25-nat-followup/report.yaml (NAT inverse SETOBJ + redirect=23)
+  - work/2026-11-winbox-attributes/harness/prove-nat-action.ts (NAT matrix add-arg precedent: address-list=m2ir-probe)
+ground_rules_followed:
+  - "ZERO ROUTER CONTACT: no quickchr, no VMs, no centrs execute/retrieve; centrs explain OFFLINE ONLY (23/23)"
+  - "CLI names are CANDIDATES only, never numeric proof (plan scope discipline)"
+  - "NAT f40-drop is a proven NEGATIVE for NAT only; filter drop EXISTS per CLI + manual (prime candidate, still unmapped)"
+  - "Sibling G0* proof dirs treated as out of scope (not read)"
+  - "No canonical file edited; no repo dependency changed"
+complete: true
+verdict: "DESIGN COMPLETE: 9-candidate ranked survey (cap 10) + 25w+0r counted matrix/lifecycle/retention design; all 23 proposed commands pass offline explain; 0 executed"
+candidate_survey:
+  method: "Rosetta CLI Reference enum for /ip/firewall/filter action (high-confidence row) + NAT-analog values + manual Filter page examples; CLI ordinals treated as candidacy hints ONLY and withheld from the fragment by design"
+  cli_enum_source: "CLI Reference: /ip/firewall/filter (rosetta routeros_lookup_property action @ /ip/firewall/filter, confidence high)"
+  cli_members_total: 11
+  already_proven: ["accept=0 (F-jump P-jump-1)", "jump=1 (F-jump P-jump-1)"]
+  rank_basis: "operational importance first (drop/reject), then NAT-analog transfer (passthrough/return/log/add-src/add-dst), then filter-only actions (tarpit/fasttrack)"
+  candidates:
+    - rank: 1
+      value: drop
+      source: "CLI ref enum member (/ip/firewall/filter action); manual Filter page IPv4-firewall section shows bare `add action=drop chain=input`"
+      candidacy: "PRIME: unlike NAT (proven control-plane negative), filter drop EXISTS per CLI + manual examples; most operationally important unmapped action; no NAT analog to transfer"
+      designed_stimulus: "/ip/firewall/filter/add chain=forward action=drop comment=g0c-m-drop"
+    - rank: 2
+      value: reject
+      source: "CLI ref enum member; CLI description 'reject the packet and send an ICMP response'"
+      candidacy: "drop's ICMP sibling; bare add needs no extra args (reject-with is optional); no NAT analog"
+      designed_stimulus: "/ip/firewall/filter/add chain=forward action=reject comment=g0c-m-reject"
+    - rank: 3
+      value: passthrough
+      source: "CLI ref enum member; NAT-analog f40=4 proven on [20,5] (7.25-nat-action) + NAT inverse-SET target (followup)"
+      candidacy: "strongest analog transfer: NAT value + proven native-writable on NAT; harmless statistics action, safest stimulus after accept"
+      designed_stimulus: "/ip/firewall/filter/add chain=forward action=passthrough comment=g0c-m-passthrough"
+    - rank: 4
+      value: return
+      source: "CLI ref enum member; NAT-analog f40=2 proven on [20,5]"
+      candidacy: "direct NAT-analog transfer; bare add, no chain preconditions for the add itself (return outside a jump is a runtime no-op, proven add-safe by analogy to jump-target-nonexistent acceptance)"
+      designed_stimulus: "/ip/firewall/filter/add chain=forward action=return comment=g0c-m-return"
+    - rank: 5
+      value: log
+      source: "CLI ref enum member; NAT-analog f40=3 proven on [20,5]"
+      candidacy: "direct NAT-analog transfer; bare log rule writes no packets without traffic, lab-safe"
+      designed_stimulus: "/ip/firewall/filter/add chain=forward action=log comment=g0c-m-log"
+    - rank: 6
+      value: add-src-to-address-list
+      source: "CLI ref enum member; NAT-analog f40=5 proven on [20,5]; CLI ref address-list property: 'Applicable if the action is add-dst-to-address-list or add-src-to-address-list'"
+      candidacy: "direct NAT-analog transfer; stimulus mirrors the NAT matrix precedent (address-list=<name> supplied at add)"
+      designed_stimulus: "/ip/firewall/filter/add chain=forward action=add-src-to-address-list address-list=g0c-probe comment=g0c-m-addsrc"
+      contingency: "if the add is rejected for a missing list, pre-seed via /ip/firewall/address-list/add (UNBUDGETED, coordinator decision; rejection itself is 0w data)"
+    - rank: 7
+      value: add-dst-to-address-list
+      source: "CLI ref enum member; NAT-analog f40=6 proven on [20,5]; CLI ref address-list property as above"
+      candidacy: "direct NAT-analog transfer; same address-list stimulus shape as rank 6"
+      designed_stimulus: "/ip/firewall/filter/add chain=forward action=add-dst-to-address-list address-list=g0c-probe comment=g0c-m-adddst"
+      contingency: "same list-seeding contingency as rank 6"
+    - rank: 8
+      value: tarpit
+      source: "CLI ref enum member (filter-only, no NAT analog); CLI description 'capture and hold the connection open'"
+      candidacy: "filter-only action with no analog; TCP-only semantics suspected from domain knowledge, so the cell carries protocol=tcp as the primary stimulus with a bare-add probe first (rejection = 0w data)"
+      designed_stimulus_primary: "/ip/firewall/filter/add chain=forward action=tarpit protocol=tcp comment=g0c-m-tarpit"
+      designed_stimulus_probe: "/ip/firewall/filter/add chain=forward action=tarpit comment=g0c-m-tarpit-bare (attempt first; if rejected, 0w, fall through to primary)"
+      confound_note: "protocol=tcp adds matcher fields to the row (cf. NAT redirect row f11=6 + f1002/f1003); the f40 read stays clean, matcher fields are enumerated as dependent fields, never attributed to the action"
+    - rank: 9
+      value: fasttrack-connection
+      source: "CLI ref enum member (filter-only, no NAT analog); manual Filter page shows `add action=fasttrack-connection chain=forward ... connection-state=established,related`"
+      candidacy: "filter-only action with no analog; designed stimulus is the bare add (manual examples carry matchers, but the add-time requirement is unproven — rejection = 0w data, then retry with connection-state=established,related as the documented-shape fallback)"
+      designed_stimulus: "/ip/firewall/filter/add chain=forward action=fasttrack-connection comment=g0c-m-fasttrack"
+      contingency: "if bare add is rejected, retry with connection-state=established,related (manual-documented shape; extra 1w, coordinator decision)"
+matrix_design:
+  follows: "plan experiment-sequence C: two unchanged reads, distinctive values, reversal, dependent-field enumeration; F-jump read shape (GETCOUNTx2 + GET + paged GETALL) and counting rule"
+  counting_rule: "counted writes = control adds/sets + native verbs + 1 per restore branch; rejected adds count 0; per-cell removes bundled (0w); reads (native + control retrieve/print) cost 0"
+  chain_choice: "chain=forward for every cell (proven-accepted stimulus from F-jump J1/J2b; forward-chain rules touch forwarded traffic only, never the management path; custom chains would CREATE chains per CLI ref and are unproven stimuli — not designed)"
+  row_identity: "stable native rowid 0xfe0001 + distinctive comment per cell (g0c-* tags); never a row index (per C.1)"
+  baseline_snapshot:
+    control: "retrieve/print all five firewall menus (filter/nat/raw/mangle/calea); expect 0 rows each"
+    native: "GETCOUNT [20,3] + [20,32], GET [20,17], paged GETALL [20,3]; then repeat GETALL for two unchanged reads (volatility control per C.1)"
+    cost: "0w+0r"
+  controls:
+    - id: C1-accept
+      stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=g0c-c-accept"
+      native_read: "paged GETALL [20,3] x2 + GETCOUNT pair + [20,17] GET"
+      proves_if: "f40=0 with NO f41 and NO 0xfd002a -> re-verifies P-jump-1 accept sample + J2b accept-row shape on a fresh row"
+      proves_if_not: "any deviation (f40!=0, adjuncts present) -> accept-row shape is NOT fixed; contradicts J2b single-sample shape and must be reconciled before matrix reads"
+      after: "remove immediately (bundled 0w); row must disappear from GETALL"
+      cost: "1w"
+    - id: C2-jump-host
+      stimulus: "/ip/firewall/filter/add chain=forward action=jump jump-target=g0cjt comment=g0c-c-jump"
+      native_read: "paged GETALL [20,3] x2 + GETCOUNT pair + [20,17] GET"
+      proves_if: "f40=1 + f41='g0cjt' + 0xfd002a ABSENT -> re-verifies P-jump-1/P-jump-2 AND replicates the J1 fresh-add absence side of U-jump-0xfd002a"
+      proves_if_not: "0xfd002a present on a fresh add -> J1 absence was NOT load-bearing; the lifecycle L1/L2 pair still discriminates (vary vs clear) but the creation-origin hypothesis is dead on arrival"
+      after: "KEEP this row as the lifecycle (L1/L2) + retention (R1/R2) host; removed only at restore"
+      cost: "1w"
+  cells:
+    shape_each: "add (1w) -> control read-back (independent check, closes the F-jump J2/J2b procedural gap) -> native GETALL x2 + GETCOUNT pair + [20,17] GET (dependent-field enumeration incl. bycatch) -> reversal: control set action=accept (1w) -> control read-back -> native read (f40 back to 0?) -> remove (bundled 0w) -> native read (row gone?)"
+    per_cell_cost: "2w (add + reversal set); removes bundled 0w"
+    list:
+    - id: M1-drop
+      stimulus: "/ip/firewall/filter/add chain=forward action=drop comment=g0c-m-drop"
+      f40_new_value: "maps drop; closes the highest-value gap in U-jump-enum-rest"
+      f40_known_value: "aliasing data (two CLI names, one wire value) — record, do not force-distinguish"
+      add_rejected: "control-plane negative (0w), NAT-drop-analogous but for filter; rank-1 candidacy converts to a disproven-add finding"
+      reversal_read: "f40 back to 0 + control action=accept -> symmetric write pair; adjuncts (if any appeared) cleared-or-noted"
+    - id: M2-reject
+      stimulus: "/ip/firewall/filter/add chain=forward action=reject comment=g0c-m-reject"
+      f40_new_value: "maps reject; drop-vs-reject adjacency resolves whether terminal actions cluster numerically"
+      f40_equals_drop: "aliasing data: reject shares drop's wire value (control distinguishes, native does not)"
+      add_rejected: "control-plane negative (0w)"
+      reversal_read: "as M1"
+    - id: M3-passthrough
+      stimulus: "/ip/firewall/filter/add chain=forward action=passthrough comment=g0c-m-passthrough"
+      f40_new_value: "maps passthrough; tests the NAT-analog transfer hypothesis (NAT f40=4)"
+      f40_equals_nat_analog: "analog CONFIRMED for this value (still observed-only: one sample, one version)"
+      f40_differs: "analog REFUTED for this value; filter enum is independently numbered"
+      reversal_read: "as M1"
+    - id: M4-return
+      stimulus: "/ip/firewall/filter/add chain=forward action=return comment=g0c-m-return"
+      f40_new_value: "maps return; NAT-analog transfer test (NAT f40=2)"
+      reversal_read: "as M1"
+    - id: M5-log
+      stimulus: "/ip/firewall/filter/add chain=forward action=log comment=g0c-m-log"
+      f40_new_value: "maps log; NAT-analog transfer test (NAT f40=3)"
+      reversal_read: "as M1"
+    - id: M6-addsrc
+      stimulus: "/ip/firewall/filter/add chain=forward action=add-src-to-address-list address-list=g0c-probe comment=g0c-m-addsrc"
+      f40_new_value: "maps add-src-to-address-list; NAT-analog transfer test (NAT f40=5)"
+      adjunct_watch: "address-list target MUST ride somewhere natively (cf. NAT f91); enumerate the full row — the list-name field is bycatch with its own identity question, out of scope to name here"
+      add_rejected: "0w data; list-seeding contingency is UNBUDGETED (coordinator decision)"
+      reversal_read: "f40 back to 0; address-list adjunct cleared-or-retained is retention-analogous data (cf. R1)"
+    - id: M7-adddst
+      stimulus: "/ip/firewall/filter/add chain=forward action=add-dst-to-address-list address-list=g0c-probe comment=g0c-m-adddst"
+      f40_new_value: "maps add-dst-to-address-list; NAT-analog transfer test (NAT f40=6)"
+      adjunct_watch: "as M6 (src/dst list-name fields may or may not share one wire field — enumerate, do not assume)"
+      add_rejected: "0w data; same unbudgeted contingency as M6"
+      reversal_read: "as M6"
+    - id: M8-tarpit
+      stimulus_probe: "/ip/firewall/filter/add chain=forward action=tarpit comment=g0c-m-tarpit-bare (attempt FIRST)"
+      stimulus_primary: "/ip/firewall/filter/add chain=forward action=tarpit protocol=tcp comment=g0c-m-tarpit"
+      probe_accepted: "bare tarpit is add-safe; run the cell on the bare row (cleanest shape); primary unneeded"
+      probe_rejected: "0w data (TCP-only enforcement at add time); run the cell on the primary stimulus; enumerate matcher fields as dependent, never action-attributed"
+      f40_new_value: "maps tarpit (filter-only, no analog)"
+      reversal_read: "as M1; protocol matcher (if present) cleared-or-retained is adjunct data"
+    - id: M9-fasttrack
+      stimulus: "/ip/firewall/filter/add chain=forward action=fasttrack-connection comment=g0c-m-fasttrack"
+      f40_new_value: "maps fasttrack-connection (filter-only, no analog)"
+      add_rejected: "0w data; retry with connection-state=established,related per the manual-documented shape (extra 1w, coordinator decision)"
+      reversal_read: "as M1"
+  restore_step:
+    method: "control remove of every surviving created row (host + any un-removed cell rows) + 5-menu control verify (0 rows) + native re-read ([20,3]=0 [20,32]=0, GETALL 0 rows complete)"
+    restored_criterion: "control 0 rows on all five menus AND native [20,3]/[20,32] back to baseline AND GETALL 0 rows, mirroring F-jump restore-verify"
+    cost: "1w (restore branch)"
+  stop_conditions:
+    - "native read incomplete/timeout/partial page -> STOP the leg, record, restore; incomplete transport output ends the run (plan B)"
+    - "any cleanup/remove fails -> STOP per plan B; do not proceed to further cells on a dirty table"
+    - "budget cap reached -> STOP, restore, report partial (partial report.yaml is acceptable output)"
+    - "control-add rejection is DATA (0w), never a stop by itself; two consecutive rejections with the same shape -> pause and re-check the stimulus against the CLI ref before continuing"
+    - "C1/C2 control deviation (f40!=0/1) -> STOP matrix cells, reconcile against F-jump first; do not map new values on a contradicting base"
+  budget_proposed:
+    controls: "2w (C1 + C2)"
+    matrix_cells: "18w (9 cells x 2w add+reversal)"
+    lifecycle: "2w (L1 + L2, on the C2 host row)"
+    retention: "2w (R1 + R2, on the C2 host row)"
+    restore: "1w (restore-verify branch)"
+    total: "25w+0r"
+    raw_operation_count: "11 control adds + 13 control sets + ~12 removes + ~10 prints + ~40 native reads (transparency; only counted writes bind the cap)"
+    split_option: "Leg A = baseline + C1 + C2 + M1..M9 + restore (2+18+1 = 21w+0r, C2 row removed at its restore); Leg B = fresh baseline + new jump host (1w) + L1 + L2 + R1 + R2 + restore (6w+0r). Combined 25w+0r preferred (one baseline, host-row reuse); split offered if 25w exceeds a single-leg cap"
+    suggested_order: "baseline -> C1 -> C2 -> M1..M9 (any order; drop-first recommended) -> L1 -> L2 -> R1 -> R2 -> restore"
+lifecycle_design:
+  target: "U-jump-0xfd002a: 0xfd002a/0x21 empty-string adjunct — absent on the J1 fresh jump row, present-from-J2 (only stimulus: the jump-target set), retained post-SETOBJ, absent on accept rows; semantics unknown, never varied"
+  host: "C2 jump-host row (jump-target=g0cjt); runs AFTER matrix cells, BEFORE retention (host must still be a jump row)"
+  experiments:
+    - id: L1-vary
+      stimulus: "/ip/firewall/filter/set <host-id> jump-target=g0cjt2"
+      operational_meaning: "VARY the suspected trigger: replicates the exact J1->J2 stimulus (a jump-target set) with a distinctive value B on a fresh host row"
+      native_read: "control read-back + GETALL [20,3] x2 (unchanged-read pair)"
+      outcome_appears: "0xfd002a appears (or changes) -> edit-stimulus CONFIRMED as the trigger class; J1->J2 transition replicated on demand"
+      outcome_absent: "0xfd002a stays absent -> J2 appearance was confounded (not caused by the set); creation-vs-edit origin question reopens"
+      outcome_value_nonempty: "0xfd002a carries a non-empty value -> it is a VALUE channel, not a presence flag; enumerate the value against the stimulus"
+      cost: "1w"
+    - id: L2-clear-attempt
+      stimulus: "/ip/firewall/filter/set <host-id> jump-target=g0cjt (REVERSAL to value A per C.3)"
+      operational_meaning: "CLEAR attempt via reversal: tests whether 0xfd002a is transient (tracks current edit state) or sticky (latched by the first set)"
+      native_read: "control read-back + GETALL [20,3] x2"
+      outcome_clears: "0xfd002a disappears (or reverts) -> TRANSIENT edit-marker reading supported"
+      outcome_persists: "0xfd002a retained -> STICKY-once-set reading supported (adjunct survives the reversal that created it)"
+      end_state: "host row back to jump-target=g0cjt regardless; ready as the R1/R2 host"
+      cost: "1w"
+retention_design:
+  target: "U-jump-f41-lifecycle: J3 single-sample observation — after native SETOBJ f40 1->0, control *1 reads action=accept with jump-target GONE while the native row RETAINS f41='e3jump2' + 0xfd002a='' (adjunct-retention divergence, NOT full split-brain: action agreed both sides)"
+  host: "C2 jump-host row after L2 (jump-target=g0cjt); runs AFTER lifecycle"
+  experiments:
+    - id: R1-control-exit
+      stimulus: "/ip/firewall/filter/set <host-id> action=drop"
+      operational_meaning: "exit jump via the CONTROL plane (not a native SET): tests whether J3 retention is general action-exit behavior or SETOBJ-specific. drop (not accept) is chosen so the exit target is itself a matrix-mapped value, cross-checking M1 from a second direction"
+      native_read: "control read-back (expect action=drop, jump-target gone) + GETALL [20,3] x2"
+      outcome_retained: "native f41 + 0xfd002a retained while control drops jump-target -> retention is GENERAL action-exit behavior; J3 was not a SETOBJ artifact"
+      outcome_cleared: "native f41/0xfd002a cleared with the control drop -> retention was J3/SETOBJ-specific (native write bypasses the control-plane cleanup that a control set performs)"
+      outcome_f40: "f40 must read the M1-mapped drop value natively; any other value reopens M1"
+      cost: "1w"
+    - id: R2-reentry
+      stimulus: "/ip/firewall/filter/set <host-id> action=jump jump-target=g0cjt3"
+      operational_meaning: "RE-ENTER jump with a third distinctive target: tests adjunct lifecycle across a full exit+re-entry cycle and whether re-entry overwrites or compounds retained adjuncts"
+      native_read: "control read-back + GETALL [20,3] x2"
+      outcome_clean: "f41='g0cjt3', 0xfd002a present-or-absent per the L1/L2 model -> re-entry is a clean overwrite; lifecycle model closes"
+      outcome_compound: "stale f41 value lingers alongside, or 0xfd002a shows a THIRD state -> exit+re-entry compounds; lifecycle model needs a third state"
+      end_state: "host row is a jump row again; removed only at restore"
+      cost: "1w"
+explain_verdicts:
+  tool: "centrs explain OFFLINE ONLY (no router positional, no --quickchr, no credentials; mode=offline in every envelope)"
+  summary: "23/23 pass, 0 diagnostics, 0 warnings; every envelope carries only tip/explain-offline-only; runtimeAcceptance=not-proven throughout (expected offline — runtime acceptance needs a router, which is forbidden for this worker)"
+  note: "no rejection occurred, so no redesign was triggered; the tarpit-bare vs tarpit+tcp and fasttrack-bare vs +connection-state pairs are pre-designed stimulus ladders, not rejection recoveries"
+  verdicts:
+    - { id: C1, command: "/ip/firewall/filter/add chain=forward action=accept comment=g0c-c-accept", verdict: pass, diag: 0, warn: 0, evidence: explain-C1.json }
+    - { id: C2, command: "/ip/firewall/filter/add chain=forward action=jump jump-target=g0cjt comment=g0c-c-jump", verdict: pass, diag: 0, warn: 0, evidence: explain-C2.json }
+    - { id: M-drop, command: "/ip/firewall/filter/add chain=forward action=drop comment=g0c-m-drop", verdict: pass, diag: 0, warn: 0, evidence: explain-M-drop.json }
+    - { id: M-reject, command: "/ip/firewall/filter/add chain=forward action=reject comment=g0c-m-reject", verdict: pass, diag: 0, warn: 0, evidence: explain-M-reject.json }
+    - { id: M-passthrough, command: "/ip/firewall/filter/add chain=forward action=passthrough comment=g0c-m-passthrough", verdict: pass, diag: 0, warn: 0, evidence: explain-M-passthrough.json }
+    - { id: M-return, command: "/ip/firewall/filter/add chain=forward action=return comment=g0c-m-return", verdict: pass, diag: 0, warn: 0, evidence: explain-M-return.json }
+    - { id: M-log, command: "/ip/firewall/filter/add chain=forward action=log comment=g0c-m-log", verdict: pass, diag: 0, warn: 0, evidence: explain-M-log.json }
+    - { id: M-addsrc, command: "/ip/firewall/filter/add chain=forward action=add-src-to-address-list address-list=g0c-probe comment=g0c-m-addsrc", verdict: pass, diag: 0, warn: 0, evidence: explain-M-addsrc.json }
+    - { id: M-adddst, command: "/ip/firewall/filter/add chain=forward action=add-dst-to-address-list address-list=g0c-probe comment=g0c-m-adddst", verdict: pass, diag: 0, warn: 0, evidence: explain-M-adddst.json }
+    - { id: M-tarpit-bare, command: "/ip/firewall/filter/add chain=forward action=tarpit comment=g0c-m-tarpit-bare", verdict: pass, diag: 0, warn: 0, evidence: explain-M-tarpit-bare.json }
+    - { id: M-tarpit, command: "/ip/firewall/filter/add chain=forward action=tarpit protocol=tcp comment=g0c-m-tarpit", verdict: pass, diag: 0, warn: 0, evidence: explain-M-tarpit.json }
+    - { id: M-fasttrack, command: "/ip/firewall/filter/add chain=forward action=fasttrack-connection comment=g0c-m-fasttrack", verdict: pass, diag: 0, warn: 0, evidence: explain-M-fasttrack.json }
+    - { id: REV, command: "/ip/firewall/filter/set *1 action=accept (*1 = runtime-resolved row id placeholder)", verdict: pass, diag: 0, warn: 0, evidence: explain-REV.json }
+    - { id: L1, command: "/ip/firewall/filter/set *1 jump-target=g0cjt2", verdict: pass, diag: 0, warn: 0, evidence: explain-L1.json }
+    - { id: L2, command: "/ip/firewall/filter/set *1 jump-target=g0cjt", verdict: pass, diag: 0, warn: 0, evidence: explain-L2.json }
+    - { id: R1, command: "/ip/firewall/filter/set *1 action=drop", verdict: pass, diag: 0, warn: 0, evidence: explain-R1.json }
+    - { id: R2, command: "/ip/firewall/filter/set *1 action=jump jump-target=g0cjt3", verdict: pass, diag: 0, warn: 0, evidence: explain-R2.json }
+    - { id: RM, command: "/ip/firewall/filter/remove *1,*2 (placeholder list; executor removes every created id)", verdict: pass, diag: 0, warn: 0, evidence: explain-RM.json }
+    - { id: P-filter, command: "/ip/firewall/filter/print", verdict: pass, diag: 0, warn: 0, evidence: explain-P-filter.json }
+    - { id: P-nat, command: "/ip/firewall/nat/print", verdict: pass, diag: 0, warn: 0, evidence: explain-P-nat.json }
+    - { id: P-raw, command: "/ip/firewall/raw/print", verdict: pass, diag: 0, warn: 0, evidence: explain-P-raw.json }
+    - { id: P-mangle, command: "/ip/firewall/mangle/print", verdict: pass, diag: 0, warn: 0, evidence: explain-P-mangle.json }
+    - { id: P-calea, command: "/ip/firewall/calea/print", verdict: pass, diag: 0, warn: 0, evidence: explain-P-calea.json }
+proven:
+  - "SURVEY FACT: CLI Reference for /ip/firewall/filter documents an 11-member action enum (names): accept, jump, return, log, passthrough, add-src-to-address-list, add-dst-to-address-list, drop, reject, tarpit, fasttrack-connection (rosetta high-confidence row; names only, ordinals withheld as non-proof)"
+  - "SURVEY FACT: filter action=drop EXISTS per CLI ref + manual Filter page bare-add examples — the NAT f40-drop negative does NOT transfer (it is NAT-only per the F record)"
+  - "SURVEY FACT: NAT-analog values proven on [20,5] f40 and available for transfer tests: accept=0, return=2, log=3, passthrough=4, add-src-to-address-list=5, add-dst-to-address-list=6 (7.25-nat-action); redirect=23 + inverse SETOBJ effective (followup)"
+  - "SURVEY FACT: NAT matrix precedent supplies address-list=<name> at add time for add-src/dst-to-address-list (prove-nat-action.ts extra args); mirrored in M6/M7"
+  - "SURVEY FACT: CLI ref chain property — 'If the input does not match the name of an already defined chain, a new chain will be created' — grounds the chain=forward-only design (custom chains = unproven side-effecting stimuli, excluded)"
+  - "DESIGN FACT: all 23 proposed RouterOS commands pass `centrs explain` offline (0 diagnostics, 0 warnings; runtimeAcceptance not-proven as expected without a router)"
+unresolved:
+  - "U-g0c-f40-rest: f40 wire values for drop/reject/passthrough/return/log/add-src/add-dst/tarpit/fasttrack (9) — DESIGNED (M1..M9), not executed"
+  - "U-g0c-0xfd002a: adjunct trigger + transient-vs-sticky semantics — DESIGNED (L1/L2), not executed"
+  - "U-g0c-f41-lifecycle: retention generality (action-exit vs SETOBJ-specific) + re-entry behavior — DESIGNED (R1/R2), not executed"
+  - "U-g0c-tarpit-addshape: whether bare tarpit add is accepted (domain knowledge suspects TCP-only; rosetta surfaced no add-time constraint) — stimulus ladder DESIGNED (probe-then-primary), not executed"
+  - "U-g0c-fasttrack-addshape: whether bare fasttrack add is accepted (manual shows it with connection-state matcher) — fallback DESIGNED, not executed"
+  - "U-g0c-addrlist-autocreate: whether referencing a nonexistent address-list at filter-add time is accepted (NAT precedent says yes for NAT) — contingency noted UNBUDGETED, not executed"
+blocked: []
+evidence:
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/report.yaml
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-C1.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-C2.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-M-drop.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-M-reject.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-M-passthrough.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-M-return.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-M-log.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-M-addsrc.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-M-adddst.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-M-tarpit-bare.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-M-tarpit.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-M-fasttrack.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-REV.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-L1.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-L2.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-R1.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-R2.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-RM.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-P-filter.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-P-nat.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-P-raw.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-P-mangle.json
+  - work/2026-11-winbox-attributes/proof/G0c-f40-design/explain-P-calea.json
+tracking_note: "evidence JSONs are git-tracked via the .gitignore exception !work/**/proof/**/*.json (verified: git status shows ?? + dry-run add lists them)"
+cleanup:
+  vms_touched: []
+  router_contact: "ZERO (offline explain only)"
+  owned_path: work/2026-11-winbox-attributes/proof/G0c-f40-design/
+  forbidden_paths_edited: none
+  git_commands_run: 0

@@ -1,0 +1,84 @@
+# cspell:ignore idstr edi undercount
+# Phase G blind reviewer — final report (G0a / G0b / G0c)
+# written_at: 2026-11-02T14:07:57Z
+proof: "G-reviewer: blind review of Phase G worker slices G0a/G0b/G0c"
+reviewer: G-reviewer
+date: 2026-11-02
+complete: true
+verdict: "AGREE x3 (R1 dataset+residuals+verdict; R2 scans+functions+verdict; R3 enum+drop) + COUNTING-RULE FINDING for coordinator normalization (F-jump bundling confirmed as cited; F-vlan counter-precedent counts removes 1w each)"
+blindness_audit:
+  git_head_verified: "da5f8bb"
+  reconstruction_order:
+    - "reconstruction-r1.yaml written 2026-11-02T14:04:24Z"
+    - "reconstruction-r2.yaml written 2026-11-02T14:06:04Z"
+    - "reconstruction-r3.yaml written 2026-11-02T14:06:27Z"
+    - "first G0* access (directory listing only) 2026-11-02T14:06:36Z; first G0* content read (G0a report) after that"
+  forbidden_reads_before_reconstruction: 0
+  statement: "No G0a/G0b/G0c report or fragment file was opened before all three reconstructions were written. F0b/F-jump/F-vlan/E3-W reads are prior-phase evidence (allowed) and were the reconstruction sources."
+  never_edited: "profiles/winbox-ipc/*.yaml, profiles/winbox-ipc/README.md, README.md, GLOSSARY.txt, canonical files — untouched"
+  router_contact: "ZERO (offline/static + read-only Rosetta lookup only)"
+R1:
+  slice: G0a-2032-model
+  reconstruction: work/2026-11-winbox-attributes/proof/G-reviewer/reconstruction-r1.yaml
+  compared_against:
+    - "proof/G0a-2032-model/report.yaml (dataset lines 12-49, models lines 51-73, verdict line 9, transcription line 10)"
+    - "proof/G0a-2032-model/scores.yaml (dataset lines 3-34, M-linear lines 64-70, M-or lines 78-84)"
+  dataset_transcription: "AGREE 5/5 — rulesets, values ({}->0, {A}->8, {J}->2, {J,A}->1, {A,A}->1), and rx-line provenance all identical (baseline/j1/j2b/j3read line 4 each; sweep line 90; control reads match incl. the J2b no-read-back gap, which both reconstructions note independently)"
+  residuals: "AGREE — linear: predicted [0,8,2,10,16], |residual| [0,0,0,9,15]; OR: predicted [0,8,2,10,8], |residual| [0,0,0,9,7]. NOTE (not a discrepancy): sign convention differs — G0a residuals are predicted-minus-observed (report line 52), reviewer residuals are observed-minus-predicted; magnitudes identical."
+  verdict: "AGREE — AMBIGUOUS (both classes fit the 3 forced points by construction, both fail both 2-rule points; no class survives)"
+  discrepancies: []
+R2:
+  slice: G0b-fd002a-static
+  reconstruction: work/2026-11-winbox-attributes/proof/G-reviewer/reconstruction-r2.yaml
+  compared_against:
+    - "proof/G0b-fd002a-static/report.yaml (binary lines 11-19, method lines 20-41, hits H1/H2 lines 42-52, verdict line 7)"
+  binary_identity: "AGREE — same path, sha256 1d471df0...b1c46c80 verified match both sides, 516584 bytes"
+  byte_scans: "AGREE — LE u32 0, BE u32 0, 3-byte 2a 00 fd 0, whole-file (reviewer extra: reverse fd 00 2a also 0)"
+  disassembly_grep: "AGREE — 'fd002a' 0 hits with '0xfe000' control 302 hits both sides (reviewer disassembly 112615 lines vs G0b 112492 — flag difference only, --no-show-raw-insn; grep counts identical)"
+  function_1: "AGREE — nv::operator<<(ostream&, nv::message::idstr) @0x27ed8 (size 0x721); and $0xff0000 @0x283fa; cmp $0xfd0000,%eax @0x28415, je 0x2853e; arm string 'local::' @0x6d2f8"
+  function_2: "AGREE — nv::getErrorDescr(unsigned int, string const&) @0x32513 (size 0x11a); and $0xff0000 @0x32536; cmp $0xfd0000,%edi @0x32550, je 0x32578; arm string 'local' @0x70245 (reviewer independently confirmed G0b's suffix-merge detail: bytes 'builtin local\\0' at 0x7023d+)"
+  verdict: "AGREE — NEGATIVE (0xfd002a absent in all encodings; only masked namespace-base compares exist)"
+  discrepancies: []
+R3:
+  slice: G0c-f40-design
+  reconstruction: work/2026-11-winbox-attributes/proof/G-reviewer/reconstruction-r3.yaml
+  compared_against:
+    - "proof/G0c-f40-design/report.yaml (survey lines 31-36, proven lines 254-256, drop lines 26/41, counting line 90)"
+  lookup_method: "AGREE — same tool and confidence: routeros_lookup_property action @ /ip/firewall/filter, high-confidence CLI Reference row"
+  claim_a_11_member_enum: "AGREE — 11 members, identical names in identical order (accept, jump, return, log, passthrough, add-src-to-address-list, add-dst-to-address-list, drop, reject, tarpit, fasttrack-connection). Reviewer additionally recorded ordinals (0,1,2,3,4,5,6,10,11,12,40) from the same row; G0c withholds ordinals by design (candidates-only rule) — not a discrepancy."
+  claim_b_filter_drop_exists: "AGREE — drop is an enum member (reviewer: member #8, value 10); G0c's EXISTS-per-CLI claim stands"
+  discrepancies: []
+counting_rule_finding:
+  question: "Does F-jump really bundle removes at 0w, or count them (cf. F-vlan R1-R3)?"
+  f_jump_actual:
+    itemized: "F-jump report.yaml line 12: 'J1 add (1) + J2 set (1) + J2b add (1) + J3 SETOBJ (1) + restore-verify branch (1); ...; per-variant removes bundled'"
+    rule: "F-jump report.yaml line 13: 'sheet rule: counted writes = control adds/sets + native verbs + 1 per restore branch; rejected adds count 0 (none occurred)'"
+    restore_step: "F-jump report.yaml lines 64-69: restore-verify = 'remove *1 + *2 + 5-menu control verify + native read', counted 1"
+    conclusion: "CONFIRMED AS CITED — F-jump bundles removes at 0w marginal: its 2 actual removes rode inside the 1w restore-verify branch. G0a line 130 and G0c line 90 quote this rule faithfully."
+    scope_caveat: "F-jump executed NO mid-leg remove; its only removes were end-of-leg restore removes. Extending 'bundled (0w)' to per-cell mid-leg removes (G0c line 90 'per-cell removes bundled'; G0a line 175 'remove every added rule (bundled, 0w)') is an EXTRAPOLATION of the F-jump data point, not a directly observed F-jump application."
+  f_vlan_counter_precedent:
+    steps: "F-vlan report.yaml lines 117-134: R1 '/interface/bridge/vlan/remove *1' writes 1; R2 '/interface/bridge/port/remove *0' writes 1; R3 '/interface/bridge/remove e1br' writes 1"
+    spend: "F-vlan report.yaml line 139: 'V1 + V2 + V3 + V4-quoted + V5 + V6 + R1 + R2 + R3 = 9'"
+    conclusion: "F-vlan counts EVERY remove at 1w each — directly contradicts a universal 'removes bundled 0w' reading. Phase F holds TWO precedents: F-jump bundles (restore-branch removes, 0w marginal), F-vlan counts (1w per remove)."
+  coordinator_impact:
+    - "G0a budget 8w (+1 M6) = 9w assumes F-jump bundling; sheet contains ~8 mid-leg removes (M1/M2/M3 x1, M4/M5 x2, M6 x1) + restore removes"
+    - "G0c budget 25w assumes F-jump bundling; sheet states ~12 removes raw (report line 183: 9 per-cell + restore)"
+    - "Under F-vlan-style counting both budgets undercount by ~1w per remove; normalization decision is the coordinator's"
+unresolved: []
+evidence:
+  - work/2026-11-winbox-attributes/proof/G-reviewer/reconstruction-r1.yaml
+  - work/2026-11-winbox-attributes/proof/G-reviewer/reconstruction-r2.yaml
+  - work/2026-11-winbox-attributes/proof/G-reviewer/reconstruction-r3.yaml
+  - work/2026-11-winbox-attributes/proof/G-reviewer/report.yaml
+  - work/2026-11-winbox-attributes/proof/F-jump/step-baseline.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-j1.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-j2b.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-j3read.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/step-filter-sweep.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/control-base-firewall-filter.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-j1-read.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-j3-read.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-find-read.json
+  - work/2026-11-winbox-attributes/proof/F0b-slot19/report.yaml
+  - work/2026-11-winbox-attributes/proof/F-jump/report.yaml
+  - work/2026-11-winbox-attributes/proof/F-vlan/report.yaml

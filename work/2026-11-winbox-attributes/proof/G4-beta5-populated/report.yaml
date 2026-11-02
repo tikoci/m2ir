@@ -1,0 +1,178 @@
+# cspell:ignore rowid getall vlan untagged ether1 ether2 vlanids mvrp pvid e1br vrf enslavement
+# G4 execution report (coordinator). g4beta5 ONLY (+ g4beta stopped unused). No commit, no push.
+proof: "G4 beta5 populated shapes on g4beta5 7.26beta5: COMPLETE 10w+0r of 10w+0r; port-row 40-key + vlan-cell 12-key + f6=1 all confirmed, zero drift; f5/f10 split + slave mechanism cross-version-confirmed; restore verified exact"
+date: 2026-11-02
+worker: coordinator
+leg: G4-beta5-populated
+sheet: "coordinator sheet 2026-11-02 (B0 + B1-B5 + R1-R5; F-vlan counting rule; version-swapped beta4->beta5 with explicit in-session approval)"
+approval_quoted: "G4 yes on beta4 sheet + switch-to-beta5 approval (identical sheet, version+VM swapped) — explicit per-leg yes, this session"
+vm:
+  name: g4beta5
+  routeros: "7.26beta5"
+  build: "2026-10-30 11:13:55"
+  arch: x86
+  network: user, socket::g4b5-link
+  ports: "resolved live from `quickchr list` at execution (http:9240 block, winbox:9245); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+  unused_vm: "g4beta (7.26beta4) booted then stopped unused after the version swap (0w); kept, not removed"
+tooling:
+  control_via: "centrs execute/retrieve --quickchr g4beta5 (writes via native-api)"
+  native_via: "proof/G4-beta5-populated/leg-g4.ts (paged GETALL [16,2]/[16,13]/[20,1]/[20,0], read-only; proof-local, --allowed-version 7.26beta5; getall-w2r.ts hardcodes 7.25 and F1's probe.ts path emits no hex)"
+counting_rule: "F-vlan rule per sheet: EVERY control add/set/remove counts 1w; reads 0w"
+baseline_snapshot:
+  verdict: PASS
+  control_recorded_as_is:
+    - { route: /interface/bridge, objectCount: 0 }
+    - { route: /interface/bridge/vlan, objectCount: 0 }
+    - { route: /interface/bridge/port, objectCount: 0 }
+    - { route: /interface/bridge/host, objectCount: 0 }
+    - { route: /ip/address, objectCount: 1, rows: ["*1:10.0.2.15/24 (DHCP)"] }
+    - { route: /ip/vrf, objectCount: 1, rows: ["*0:main"] }
+  native: "[16,2]=0 rows [16,13]=0 rows [20,1]=1 row (13 keys, f6=0) [20,0]=3 rows (ether1=2 ether2=3 lo=1)"
+  files: [baseline_system_resource.json, baseline_interface_bridge.json, baseline_interface_bridge-vlan.json, baseline_interface_bridge-port.json, baseline_interface_bridge_host.json, baseline_ip_address.json, baseline_ip_vrf.json, step-B0.jsonl]
+steps:
+  - tag: B1
+    command: "/interface/bridge/add name=e1br"
+    outcome: "ok, ret *4"
+    evidence: [control-B1-add.json, explain-B1.json]
+    writes: 1
+    cumulative: 1
+  - tag: B2
+    command: "/interface/bridge/port/add bridge=e1br interface=ether1"
+    outcome: "ok, ret *0"
+    evidence: [control-B2-add.json, explain-B2.json]
+    writes: 1
+    cumulative: 2
+  - tag: B3
+    command: "/interface/bridge/vlan/add bridge=e1br vlan-ids=10 tagged=e1br untagged=ether1"
+    outcome: "ok, ret *1"
+    evidence: [control-B3-add.json, explain-B3.json]
+    writes: 1
+    cumulative: 3
+  - tag: port-row-shape
+    verdict: "CONFIRMED zero-drift"
+    control: "bridge/port 1 row (read-back)"
+    native: "[16,2] 1 row, 40 keys; key+tcode set IDENTICAL to the 7.25 w1-row-getall (40/40, no additions/removals/tcode changes); f3=2 (ether1) f4=4 (e1br) f1=10 f2=128 fe0005=0xFFFFFFFF rowid 0"
+    evidence: [control-B3-bridge-port.json, step-B3.jsonl]
+    writes: 0
+    cumulative: 3
+  - tag: vlan-cell-shape
+    verdict: "CONFIRMED zero-drift"
+    control: "bridge/vlan 1 row (read-back)"
+    native: "[16,13] 1 row rowid 1, 12 keys; key+tcode set IDENTICAL to the 7.25 cell-A (12/12); f1=[10,10] f2=4 f3=[4] f4=[2] f5=f6=f7=[] (filtering=no, mvrp empty — the cell-A analog with version-local rowids)"
+    evidence: [control-B3-bridge-vlan.json, step-B3.jsonl]
+    writes: 0
+    cumulative: 3
+  - tag: B4
+    command: "/ip/vrf/add name=g4vrf interfaces=ether2"
+    outcome: "ok, ret *1 (no beta5 path drift; the vrf_branch did not trigger)"
+    evidence: [control-B4-add.json, explain-B4.json]
+    writes: 1
+    cumulative: 4
+  - tag: B5
+    command: "/ip/address/add address=198.51.100.20/24 interface=ether2 comment=g4b5"
+    outcome: "ok, ret *2"
+    stimulus_gate: "PASS — control read shows *2 vrf=g4vrf (E2-W mirror)"
+    evidence: [control-B5-add.json, control-B5-read.json, explain-B5.json]
+    writes: 1
+    cumulative: 5
+  - tag: f6-nonzero
+    verdict: "CONFIRMED (2nd non-main-VRF sample)"
+    control: "*2 198.51.100.20/24 ether2 vrf=g4vrf"
+    native: "[20,1] rowid 2 (13 keys): f6=1 with vrf=g4vrf vs f6=0 on the main-vrf DHCP row; rowid-vs-flag reading still open (g4vrf .id *1, same ambiguity as E2-W)"
+    evidence: [control-B5-read.json, step-B5.jsonl]
+    writes: 0
+    cumulative: 5
+  - tag: f5-f10-bycatch
+    verdict: "cross-version CONFIRMATION of canonical semantics"
+    control: "*1 iface=ether1 actual=e1br (bridge-port enslavement splits actual from configured); *2 iface=ether2 actual=ether2"
+    native: "DHCP rowid 1: f5=4 (actual=e1br rowid) f10=2 (configured=ether1); VRF rowid 2: f5=3 f10=3 (actual==configured); B0 pre-bridge: f5=2 (actual==ether1)"
+    evidence: [control-B5-read.json, step-B0.jsonl, step-B5.jsonl]
+    writes: 0
+    cumulative: 5
+  - tag: slave-bycatch
+    verdict: "F-f11 mechanism reproduced on beta5"
+    native: "DHCP rowid 1 (interface enslaved): f11=true; static rowid 2 (ether2 free): f11=false — within-leg control pair; 13-key shape identical across beta4/beta5 (bool-value diffs only: f11 by enslavement, fe0007 by row type)"
+    evidence: [step-B5.jsonl]
+    writes: 0
+    cumulative: 5
+  - tag: R1
+    command: "/ip/address/remove *2"
+    outcome: ok
+    evidence: [control-R1.json, explain-R1.json]
+    writes: 1
+    cumulative: 6
+  - tag: R2
+    command: "/ip/vrf/remove *1 (.id selector per the E2-W lesson)"
+    outcome: ok
+    evidence: [control-R2.json, explain-R2.json]
+    writes: 1
+    cumulative: 7
+  - tag: R3
+    command: "/interface/bridge/vlan/remove *1"
+    outcome: ok
+    evidence: [control-R3.json, explain-R3.json]
+    writes: 1
+    cumulative: 8
+  - tag: R4
+    command: "/interface/bridge/port/remove *0"
+    outcome: ok
+    evidence: [control-R4.json, explain-R4.json]
+    writes: 1
+    cumulative: 9
+  - tag: R5
+    command: "/interface/bridge/remove *4"
+    outcome: ok
+    evidence: [control-R5.json, explain-R5.json]
+    writes: 1
+    cumulative: 10
+spend:
+  counted_writes: 10
+  reboots: 0
+  cap: "10w+0r"
+  itemized: "B1 + B2 + B3 + B4 + B5 + R1 + R2 + R3 + R4 + R5 = 10; all reads 0; 0 rejections"
+  within_cap: true
+proven:
+  - id: P-g4-port-row
+    claim: "beta5 [16,2] port row is 40 keys with a key+tcode set IDENTICAL to 7.25 (40/40, zero drift); live values f3=2 f4=4 f1=10 f2=128 fe0005=0xFFFFFFFF rowid 0"
+    evidence: [step-B3.jsonl, control-B3-bridge-port.json]
+  - id: P-g4-vlan-cell
+    claim: "beta5 [16,13] vlan cell is 12 keys with a key+tcode set IDENTICAL to the 7.25 cell-A (12/12, zero drift); live values f1=[10,10] f2=4 f3=[4] f4=[2] f5=f6=f7=[] (version-local rowids)"
+    evidence: [step-B3.jsonl, control-B3-bridge-vlan.json]
+  - id: P-g4-f6-nonzero
+    claim: "beta5 [20,1] f6=1 on the g4vrf address row (13-key shape, same as f6=0 rows) vs f6=0 on the main row — 2nd non-main-VRF sample across versions; rowid-vs-flag still open"
+    evidence: [step-B5.jsonl, control-B5-read.json]
+  - id: P-g4-f5-f10-split
+    claim: "f5=actual-interface + f10=configured-interface cross-version-confirmed on beta5: enslavement splits them (4/2) on the DHCP row while the free row reads (3/3); pre-bridge B0 reads (2/2)"
+    evidence: [step-B0.jsonl, step-B5.jsonl, control-B5-read.json]
+  - id: P-g4-slave-beta5
+    claim: "f11=slave mechanism reproduced on beta5: true on the enslaved-interface row, false on the free-interface row (within-leg control pair)"
+    evidence: [step-B5.jsonl]
+unknown: []
+restore_verification:
+  verdict: PASS (exact equality with B0)
+  control:
+    - { route: /interface/bridge, objectCount: 0 }
+    - { route: /interface/bridge/vlan, objectCount: 0 }
+    - { route: /interface/bridge/port, objectCount: 0 }
+    - { route: /interface/bridge/host, objectCount: 0 }
+    - { route: /ip/address, objectCount: 1, rows: ["*1:10.0.2.15/24 (DHCP, same .id)"] }
+    - { route: /ip/vrf, objectCount: 1, rows: ["*0:main (same .id)"] }
+  native: "[16,2]=0 [16,13]=0 [20,1]=1 [20,0]=3 rows, all complete"
+  files: [restored_interface_bridge.json, restored_interface_bridge-vlan.json, restored_interface_bridge-port.json, restored_interface_bridge_host.json, restored_ip_address.json, restored_ip_vrf.json, step-restored.jsonl]
+cleanup_state:
+  tables: "bridge tables empty; address/vrf back to the exact B0 rows on both surfaces"
+  vm: "g4beta5 STOPPED via `quickchr stop g4beta5` (not removed)"
+  writes_on_other_machines: 0
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/G4-beta5-populated/report.yaml
+  - work/2026-11-winbox-attributes/proof/G4-beta5-populated/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/G4-beta5-populated/sanitize.ts
+  - work/2026-11-winbox-attributes/proof/G4-beta5-populated/leg-g4.ts
+gates_observed:
+  - "g4beta5 ONLY for writes (g4beta booted then stopped unused, 0w, after the user-approved version swap)"
+  - "every control string validated with `centrs explain` before sending (10/10 pass, 0 rejections)"
+  - "cumulative verified before every write (max reached 10 of 10)"
+  - "filtering stayed NO for the whole leg"
+  - "no edits to canonical files during execution (coordinator integrates separately)"
+  - "no commit, no push"

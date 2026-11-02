@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "data": {
+    "architecture-name": "x86_64",
+    "board-name": "CHR QEMU Standard PC (i440FX + PIIX, 1996)",
+    "build-time": "2026-10-30 11:13:55",
+    "cpu": "Intel(R)",
+    "cpu-count": "1",
+    "cpu-frequency": "2400",
+    "cpu-load": "0",
+    "free-hdd-space": "71655424",
+    "free-memory": "314642432",
+    "minimum-version": "7.1",
+    "platform": "MikroTik",
+    "total-hdd-space": "93564928",
+    "total-memory": "536870912",
+    "uptime": "23s",
+    "version": "7.26beta5",
+    "write-sect-since-reboot": "1016",
+    "write-sect-total": "1016"
+  },
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 1,
+      "path": "/system/resource"
+    }
+  }
+}

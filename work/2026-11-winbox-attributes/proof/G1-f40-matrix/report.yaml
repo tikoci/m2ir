@@ -1,0 +1,262 @@
+# cspell:ignore rowid getcount getall getobj subtable reqid tarpit fasttrack passthrough unmapped addrlist addsrc adddst cjt bycatch coextensive preexisting mangle calea revread postrm dummyrm
+# G1 execution report (coordinator). ws21 ONLY. No commit, no push.
+proof: "G1 f40 matrix + lifecycle + retention on ws21 7.25: COMPLETE 25w+0r of 25w+0r; 11-value f40 enum mapped (9 new), fd002a edit-trigger + sticky, f41 general retention, f91 bycatch; restore PARTIAL (5 builtin fasttrack dummies irremovable)"
+date: 2026-11-02
+worker: coordinator
+leg: G1-f40-matrix-lifecycle-retention
+sheet: "coordinator sheet 2026-11-02 (G0c design: C1 + C2 + M1-M9 + L1/L2 + R1/R2 + restore; F-jump counting rule adopted explicitly)"
+approval_quoted: "g1 yes (25w+0r ws21) — explicit per-leg yes, this session"
+vm:
+  name: ws21
+  routeros: "7.25"
+  arch: x86
+  network: user, socket::ws21-a, socket::ws21-b
+  ports: "resolved live from `quickchr list` at execution (http:9190 block, winbox:9195); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute/retrieve --quickchr ws21 (writes via native-api)"
+  native_via: "proof/F-jump/leg-jump.ts read (GETCOUNTx2 + GET + paged GETALL; reused unmodified)"
+  summarize_via: "/tmp/g1row.ts (throwaway cell summarizer, outside repo)"
+  stderr_note: "centrs routes ok:false envelopes to STDERR (stdout empty); rejection evidence captured via 2>raw + sanitize.ts, raw deleted (first M8bare attempt crashed the stdout pipe before the cause was found; 0w lost)"
+counting_rule: "F-jump rule per sheet: control adds/sets + native verbs + 1 per restore branch; per-cell removes bundled 0w; rejected adds/removes 0w"
+baseline_snapshot:
+  verdict: PASS
+  control:
+    - { route: /ip/firewall/filter, objectCount: 0 }
+    - { route: /ip/firewall/nat, objectCount: 0 }
+    - { route: /ip/firewall/raw, objectCount: 0 }
+    - { route: /ip/firewall/mangle, objectCount: 0 }
+    - { route: /ip/firewall/calea, objectCount: 0 }
+  native: "[20,3]=0 [20,32]=0, GETALL [20,3] 0 rows complete, two unchanged reads (step-baseline.jsonl + step-baseline2.jsonl)"
+  files: [control-base-firewall-filter.json, control-base-firewall-nat.json, control-base-firewall-raw.json, control-base-firewall-mangle.json, control-base-firewall-calea.json, step-baseline.jsonl, step-baseline2.jsonl]
+steps:
+  - tag: C1
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=g1-c-accept"
+    outcome: "ok, ret *1; read-back 1 row accept 0/0"
+    native: "[20,3]=1 [20,32]=2 (!); 1 row rowid 1: f40=0, NO f41, NO 0xfd002a (7 keys)"
+    proves: "re-verifies P-jump-1 accept sample on a fresh row; BYCATCH: {A}->2 does NOT replicate E3-W {A}->8 (uncontrolled comparison: different boot/comment — G3-M1 decides formally)"
+    evidence: [control-C1-add.json, control-C1-read.json, step-C1.jsonl, explain-C1.json]
+    writes: 1
+    cumulative: 1
+  - tag: C1rm
+    outcome: "remove *1 ok (bundled 0w)"
+    evidence: [control-C1-rm.json, explain-C1rm.json]
+    writes: 0
+    cumulative: 1
+  - tag: C2
+    stimulus: "/ip/firewall/filter/add chain=forward action=jump jump-target=g1jt comment=g1-c-jump"
+    outcome: "ok, ret *2; read-back 1 row jump/g1jt 0/0 (control invalid=true: nonexistent target)"
+    native: "[20,3]=1 [20,32]=2; 1 row rowid 2: f40=1 f41='g1jt', 0xfd002a ABSENT (8 keys)"
+    proves: "re-verifies P-jump-1/P-jump-2 AND replicates the J1 fresh-add absence side of U-jump-0xfd002a; {J}->2 replicates F-jump"
+    after: "KEPT as the L1/L2 + R1/R2 host row"
+    evidence: [control-C2-add.json, control-C2-read.json, step-C2.jsonl, explain-C2.json]
+    writes: 1
+    cumulative: 2
+  - tag: M1-drop
+    stimulus: "/ip/firewall/filter/add chain=forward action=drop comment=g1-m-drop"
+    outcome: "ok, ret *3 (drop EXISTS on filter: no NAT-analog rejection)"
+    native: "rowid 3: f40=10 (NEW VALUE), clean 7-key row; [20,32]=4"
+    reversal: "set *3 action=accept ok; f40 back to 0 symmetric; 0xfd002a='' APPEARED (edit->adjunct, 1st of 9); [20,32]=3"
+    evidence: [control-M1-add.json, control-M1-read.json, step-M1.jsonl, control-M1-rev.json, control-M1-revread.json, step-M1rev.jsonl, explain-M1.json, explain-M1rev.json]
+    writes: 2
+    cumulative: 4
+  - tag: M2-reject
+    stimulus: "/ip/firewall/filter/add chain=forward action=reject comment=g1-m-reject"
+    outcome: "ok, ret *4"
+    native: "rowid 4: f40=11 (NEW VALUE, adjacent to drop=10: terminal actions cluster); [20,32]=4"
+    reversal: "set *4 action=accept ok; f40=0 symmetric; 0xfd002a appeared (2nd); [20,32]=3"
+    evidence: [control-M2-add.json, control-M2-read.json, step-M2.jsonl, control-M2-rev.json, control-M2-revread.json, step-M2rev.jsonl, explain-M2.json, explain-M2rev.json]
+    writes: 2
+    cumulative: 6
+  - tag: M3-passthrough
+    stimulus: "/ip/firewall/filter/add chain=forward action=passthrough comment=g1-m-passthrough"
+    outcome: "ok, ret *5"
+    native: "rowid 5: f40=4 (NAT-ANALOG CONFIRMED); [20,32]=4"
+    reversal: "set *5 action=accept ok; f40=0 symmetric; 0xfd002a appeared (3rd); [20,32]=3"
+    evidence: [control-M3-add.json, control-M3-read.json, step-M3.jsonl, control-M3-rev.json, control-M3-revread.json, step-M3rev.jsonl, explain-M3.json, explain-M3rev.json]
+    writes: 2
+    cumulative: 8
+  - tag: M4-return
+    stimulus: "/ip/firewall/filter/add chain=forward action=return comment=g1-m-return"
+    outcome: "ok, ret *6"
+    native: "rowid 6: f40=2 (NAT-ANALOG CONFIRMED); [20,32]=5"
+    reversal: "set *6 action=accept ok; f40=0 symmetric; 0xfd002a appeared (4th); [20,32]=3"
+    evidence: [control-M4-add.json, control-M4-read.json, step-M4.jsonl, control-M4-rev.json, control-M4-revread.json, step-M4rev.jsonl, explain-M4.json, explain-M4rev.json]
+    writes: 2
+    cumulative: 10
+  - tag: M5-log
+    stimulus: "/ip/firewall/filter/add chain=forward action=log comment=g1-m-log"
+    outcome: "ok, ret *7"
+    native: "rowid 7: f40=3 (NAT-ANALOG CONFIRMED); [20,32]=4"
+    reversal: "set *7 action=accept ok; f40=0 symmetric; 0xfd002a appeared (5th); [20,32]=3"
+    evidence: [control-M5-add.json, control-M5-read.json, step-M5.jsonl, control-M5-rev.json, control-M5-revread.json, step-M5rev.jsonl, explain-M5.json, explain-M5rev.json]
+    writes: 2
+    cumulative: 12
+  - tag: M6-addsrc
+    stimulus: "/ip/firewall/filter/add chain=forward action=add-src-to-address-list address-list=g1-probe comment=g1-m-addsrc"
+    outcome: "ok, ret *8 (nonexistent list accepted WITHOUT seeding; no list created: addr-list table reads 0 rows at restore)"
+    native: "rowid 8: f40=5 (NAT-ANALOG CONFIRMED) + f91/0x21='g1-probe' (BYCATCH: address-list rides f91, cf. NAT f91); [20,32]=4"
+    reversal: "set *8 action=accept ok; f40=0 symmetric; 0xfd002a appeared (6th); f91 CLEARED on control action-exit (retention-analogous: control exit clears f91); [20,32]=4 (NOT 3: first reversal to read 4)"
+    evidence: [control-M6-add.json, control-M6-read.json, step-M6.jsonl, control-M6-rev.json, control-M6-revread.json, step-M6rev.jsonl, explain-M6.json, explain-M6rev.json]
+    writes: 2
+    cumulative: 14
+  - tag: M7-adddst
+    stimulus: "/ip/firewall/filter/add chain=forward action=add-dst-to-address-list address-list=g1-probe comment=g1-m-adddst"
+    outcome: "ok, ret *9"
+    native: "rowid 9: f40=6 (NAT-ANALOG CONFIRMED) + f91/0x21='g1-probe' (src/dst SHARE one wire field); [20,32]=4"
+    reversal: "set *9 action=accept ok; f40=0 symmetric; 0xfd002a appeared (7th); f91 cleared again (2nd replication); [20,32]=4"
+    evidence: [control-M7-add.json, control-M7-read.json, step-M7.jsonl, control-M7-rev.json, control-M7-revread.json, step-M7rev.jsonl, explain-M7.json, explain-M7rev.json]
+    writes: 2
+    cumulative: 16
+  - tag: M8bare-probe
+    stimulus: "/ip/firewall/filter/add chain=forward action=tarpit comment=g1-m-tarpit-bare"
+    outcome: "DEVICE-REJECTED 3/3 attempts (0w): 'failure: tarpit valid only for tcp' — TCP-only enforcement at add time, domain knowledge confirmed"
+    evidence: [control-M8bare-add.json, explain-M8bare.json]
+    writes: 0
+    cumulative: 16
+  - tag: M8-tarpit
+    stimulus: "/ip/firewall/filter/add chain=forward action=tarpit protocol=tcp comment=g1-m-tarpit"
+    outcome: "ok, ret *E (rowid 14: rowids *A-*D SKIPPED — 4-gap around 3 rejected adds, mechanism unresolved, see U-g1-rowid-gap)"
+    native: "rowid 14: f40=12 (NEW VALUE, filter-only) + protocol matcher fields 0x16/0x194/0x0b (dependent, enumerated); [20,32]=5"
+    reversal: "set *E action=accept ok; f40=0 symmetric; 0xfd002a appeared (8th); matchers RETAINED after exit (unlike f91); [20,32]=4"
+    evidence: [control-M8-add.json, control-M8-read.json, step-M8.jsonl, control-M8-rev.json, control-M8-revread.json, step-M8rev.jsonl, explain-M8.json, explain-M8rev.json]
+    writes: 2
+    cumulative: 18
+  - tag: M9-fasttrack
+    stimulus: "/ip/firewall/filter/add chain=forward action=fasttrack-connection comment=g1-m-fasttrack"
+    outcome: "ok, ret *F (bare add ACCEPTED: no matcher needed); SIDE EFFECT: device spawns dynamic dummy '*10 passthrough' (comment 'special dummy rule to show fasttrack counters') — N=3, not 2"
+    native: "rowid 15: f40=40 (NEW VALUE, filter-only) + 0x1c6/0x1=true (fasttrack adjunct flag, enumerate-only); rowid 16: dummy f40=4 (device-created passthrough 2nd sample); [20,32]=3"
+    reversal: "set *F action=accept ok; f40=0 symmetric; 0xfd002a appeared (9th); 0x1c6 CLEARED on exit (like f91); dummy *10 SURVIVES reversal AND the *F removal; explicit 'remove *10' REJECTED: 'failure: cannot remove builtin' (0w)"
+    evidence: [control-M9-add.json, control-M9-read.json, step-M9.jsonl, control-M9-rev.json, control-M9-revread.json, step-M9rev.jsonl, control-M9-rm.json, control-M9-postrm.json, control-dummy-rm.json, control-dummy-postrm.json, explain-M9.json, explain-M9rev.json, explain-dummyrm.json]
+    writes: 2
+    cumulative: 20
+  - tag: L1-vary
+    stimulus: "/ip/firewall/filter/set *2 jump-target=g1jt2"
+    outcome: "ok; control *2 jump-target='g1jt2'"
+    native: "host rowid 2: f41='g1jt2', 0xfd002a='' APPEARED (edit-stimulus CONFIRMED as the trigger class; J1->J2 replicated on demand, 10th edit->adjunct observation); value empty (presence flag, not value channel)"
+    evidence: [control-L1-set.json, control-L1-read.json, step-L1.jsonl, explain-L1.json]
+    writes: 1
+    cumulative: 21
+  - tag: L2-clear-attempt
+    stimulus: "/ip/firewall/filter/set *2 jump-target=g1jt (reversal to value A)"
+    outcome: "ok; control *2 jump-target='g1jt'"
+    native: "host rowid 2: f41='g1jt', 0xfd002a PERSISTS (STICKY-once-set SUPPORTED); row key ORDER shifted across the edits (wire order not stable)"
+    evidence: [control-L2-set.json, control-L2-read.json, step-L2.jsonl, explain-L2.json]
+    writes: 1
+    cumulative: 22
+  - tag: R1-control-exit
+    stimulus: "/ip/firewall/filter/set *2 action=drop"
+    outcome: "ok; control *2 action=drop, jump-target GONE"
+    native: "host rowid 2: f40=10 (M1 CROSS-CHECK from a 2nd direction), f41='g1jt' RETAINED + 0xfd002a RETAINED while control drops jump-target — retention is GENERAL action-exit behavior; J3 was NOT a SETOBJ artifact"
+    evidence: [control-R1-set.json, control-R1-read.json, step-R1.jsonl, explain-R1.json]
+    writes: 1
+    cumulative: 23
+  - tag: R2-reentry
+    stimulus: "/ip/firewall/filter/set *2 action=jump jump-target=g1jt3"
+    outcome: "ok; control *2 jump/g1jt3"
+    native: "host rowid 2: f40=1 f41='g1jt3' (clean overwrite, no stale compound), 0xfd002a present per the sticky model (no third state) — re-entry is a clean overwrite; lifecycle model closes"
+    evidence: [control-R2-set.json, control-R2-read.json, step-R2.jsonl, explain-R2.json]
+    writes: 1
+    cumulative: 24
+  - tag: restore-branch
+    steps: "remove *2 (host, ok) + 5-menu control verify + native read"
+    outcome: "PARTIAL: all coordinator-created rows gone (verified); residue = 5 device-created BUILTIN fasttrack-counter dummies (filter *10, raw *1, mangle *1/*2/*3), all 'cannot remove builtin' (3 removal attempts, 0w)"
+    native: "[20,3]=1 (dummy rowid 16) [20,32]=0; f34/f46 show the EMPTY pattern (T/F) with 1 dummy row — dummies invisible to [20,32] AND the presence bools"
+    evidence: [control-RM-host.json, control-restored-filter.json, control-restored-nat.json, control-restored-raw.json, control-restored-mangle.json, control-restored-calea.json, control-restored-addrlist.json, control-RM-raw.json, control-RM-mangle.json, step-restored.jsonl, explain-RM.json, explain-RMraw.json, explain-RMmangle.json]
+    writes: 1
+    cumulative: 25
+spend:
+  counted_writes: 25
+  reboots: 0
+  cap: "25w+0r"
+  itemized: "C1 + C2 + M1-M9 (9x2) + L1 + L2 + R1 + R2 + restore-branch = 2 + 18 + 4 + 1 = 25; per-cell removes bundled (0w x12); rejections 0w (3x M8bare + 1x dummy + 1x raw + 1x mangle)"
+  within_cap: true
+proven:
+  - id: P-g1-f40-enum
+    claim: "filter f40 is an 11-value enum: 0 accept, 1 jump (prior) + 2 return, 3 log, 4 passthrough, 5 add-src-to-address-list, 6 add-dst-to-address-list (NAT-analog CONFIRMED x5), 10 drop, 11 reject (terminal pair clusters), 12 tarpit, 40 fasttrack-connection (filter-only x4). Each new value: single add-sample + symmetric reversal (f40 back to 0)."
+    evidence: [step-M1.jsonl, step-M2.jsonl, step-M3.jsonl, step-M4.jsonl, step-M5.jsonl, step-M6.jsonl, step-M7.jsonl, step-M8.jsonl, step-M9.jsonl]
+  - id: P-g1-fd002a-edit-trigger
+    claim: "control-plane SET is the 0xfd002a trigger class: appears after action sets (9/9 reversals M1-M9) AND after the jump-target set (L1 on-demand replication of J1->J2); value always empty (presence flag)"
+    evidence: [step-M1rev.jsonl, step-M2rev.jsonl, step-M3rev.jsonl, step-M4rev.jsonl, step-M5rev.jsonl, step-M6rev.jsonl, step-M7rev.jsonl, step-M8rev.jsonl, step-M9rev.jsonl, step-L1.jsonl]
+  - id: P-g1-fd002a-sticky
+    claim: "0xfd002a is sticky-once-set: survives the L2 reversal that restores the pre-trigger value (J2->J1 value direction)"
+    evidence: [step-L2.jsonl]
+  - id: P-g1-f41-general-retention
+    claim: "f41 + 0xfd002a retention on action-exit is GENERAL behavior, not SETOBJ-specific: R1 control exit (jump->drop) retains both while control drops jump-target (J3 replicated via the control plane)"
+    evidence: [step-R1.jsonl, control-R1-read.json]
+  - id: P-g1-reentry-clean
+    claim: "jump re-entry after exit is a clean overwrite (R2: f41='g1jt3', no stale compound, fd002a present per the sticky model, no third state)"
+    evidence: [step-R2.jsonl]
+  - id: P-g1-f91-addrlist
+    claim: "address-list name rides f91 (0x5b) string SHARED by add-src and add-dst (2 samples: 'g1-probe' both); cleared on control action-exit (2/2 reversals)"
+    evidence: [step-M6.jsonl, step-M7.jsonl, step-M6rev.jsonl, step-M7rev.jsonl]
+  - id: P-g1-adjunct-classes
+    claim: "three adjunct behaviors: STICKY (f41, fd002a survive control exit) vs CLEARED-ON-EXIT (f91, 0x1c6) vs PERSISTENT matchers (protocol 0x16/0x194/0x0b retained after exit)"
+    evidence: [step-R1.jsonl, step-M6rev.jsonl, step-M7rev.jsonl, step-M9rev.jsonl, step-M8rev.jsonl]
+  - id: P-g1-tarpit-tcp-only
+    claim: "bare tarpit add is device-rejected ('failure: tarpit valid only for tcp', 3/3, 0w); protocol=tcp add accepted"
+    evidence: [control-M8bare-add.json, control-M8-add.json]
+  - id: P-g1-fasttrack-dummy
+    claim: "adding a fasttrack rule spawns 5 builtin 'special dummy rule to show fasttrack counters' rows (filter + raw/prerouting + mangle/prerouting/forward/postrouting); all dynamic + 'cannot remove builtin' (3 removal attempts refused); survive parent reversal AND removal"
+    evidence: [control-M9-read.json, control-M9-postrm.json, control-dummy-rm.json, control-restored-raw.json, control-restored-mangle.json, control-RM-raw.json, control-RM-mangle.json]
+  - id: P-g1-dummy-invisible
+    claim: "builtin dummy rows are invisible to [20,32] (reads 0 with 1 dummy row) AND to the f34/f46 presence bools (empty pattern T/F with 1 dummy row); [20,3] counts the dummy (reads 1)"
+    evidence: [step-restored.jsonl]
+  - id: P-g1-drop-crosscheck
+    claim: "drop f40=10 confirmed from a 2nd direction (R1 control exit to drop)"
+    evidence: [step-R1.jsonl]
+  - id: P-g1-passthrough-crosscheck
+    claim: "passthrough f40=4 confirmed by a device-created sample (dummy rowid 16)"
+    evidence: [step-M9.jsonl, step-restored.jsonl]
+  - id: P-g1-32-bycatch
+    claim: "[20,32] bycatch table (values only, NO model; feeds G3): {A}->2 (C1, does NOT replicate E3-W 8); {J}->2 (C2, replicates); {J,A-edited}->3 (M1-M5rev 5x) vs F-jump {J-edited,A-fresh}->1; {J,A-after-addsrc/dst}->4 (M6rev/M7rev); {J,D/R/P/L/addsrc/adddst}->4, {J,return/tarpit}->5; {J,FT,dummy}->3; {dummy}->0. f15/f206 covary at some cells, break at others (M1rev 4-vs-3, M2 5-vs-4): volatile stands."
+    evidence: [step-C1.jsonl, step-C2.jsonl, step-M1.jsonl, step-M1rev.jsonl, step-M2.jsonl, step-M2rev.jsonl, step-M3.jsonl, step-M3rev.jsonl, step-M4.jsonl, step-M4rev.jsonl, step-M5.jsonl, step-M5rev.jsonl, step-M6.jsonl, step-M6rev.jsonl, step-M7.jsonl, step-M7rev.jsonl, step-M8.jsonl, step-M8rev.jsonl, step-M9.jsonl, step-M9rev.jsonl, step-L1.jsonl, step-L2.jsonl, step-R1.jsonl, step-R2.jsonl, step-restored.jsonl]
+disproven:
+  - id: D-g1-retention-setobj-specific
+    claim: "J3 retention is NOT a native-SETOBJ artifact: the control plane reproduces it (R1)"
+    evidence: [step-R1.jsonl]
+  - id: D-g1-fd002a-transient
+    claim: "0xfd002a does NOT clear on value reversal (L2 persists)"
+    evidence: [step-L2.jsonl]
+  - id: D-g1-filter-enum-independent
+    claim: "the filter f40 enum is NOT independently numbered for the 5 NAT-shared actions (2/3/4/5/6 all match NAT)"
+    evidence: [step-M3.jsonl, step-M4.jsonl, step-M5.jsonl, step-M6.jsonl, step-M7.jsonl]
+  - id: D-g1-tarpit-bare-add
+    claim: "bare tarpit add is NOT accepted (device enforces TCP-only at add time)"
+    evidence: [control-M8bare-add.json]
+unknown:
+  - id: U-g1-rowid-gap
+    claim: "rowids *A-*D (10-13) skipped between M7 (*9) and M8 (*E): 4-gap around 3 rejected bare-tarpit adds (off by one from a 1-reject-1-rowid reading); mechanism unresolved"
+    next: "none budgeted; a future leg could count rowids around a known-rejected add"
+  - id: U-g1-dummy-lifetime
+    claim: "whether the 5 builtin dummies survive a reboot (0r budget: untested)"
+    next: "G3 baseline on ws21 observes post-restart state for free (power-cut restart between legs)"
+  - id: U-g1-32-model
+    claim: "[20,32] role still unclaimed; bycatch table recorded values-only"
+    next: "G3 action-varied matrix (approved, runs after G2)"
+restore_verification:
+  verdict: PARTIAL (device-designed residue)
+  mine_removed: "all 11 coordinator-created rows removed (C1, C2/host, M1-M9 cells), each removal ok; verified by 5-menu + native reads"
+  residue:
+    - { menu: filter, rows: 1, id: "*10", note: "builtin fasttrack dummy, cannot remove" }
+    - { menu: raw, rows: 1, id: "*1", note: "builtin fasttrack dummy, cannot remove" }
+    - { menu: mangle, rows: 3, ids: "*1,*2,*3", note: "builtin fasttrack dummies, cannot remove" }
+    - { menu: nat, rows: 0 }
+    - { menu: calea, rows: 0 }
+    - { menu: address-list, rows: 0, note: "referencing g1-probe created no list" }
+  native: "[20,3]=1 (dummy) [20,32]=0, GETALL 1 row (dummy) complete"
+  files: [control-RM-host.json, control-restored-filter.json, control-restored-nat.json, control-restored-raw.json, control-restored-mangle.json, control-restored-calea.json, control-restored-addrlist.json, step-restored.jsonl]
+cleanup_state:
+  tables: "filter/raw/mangle carry 5 irremovable builtin dummies; all mine gone"
+  vm: "ws21 STOPPED via `quickchr stop ws21` (not removed)"
+  writes_on_other_machines: 0
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/G1-f40-matrix/report.yaml
+  - work/2026-11-winbox-attributes/proof/G1-f40-matrix/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/G1-f40-matrix/sanitize.ts
+gates_observed:
+  - "ws21 ONLY: no other VM touched"
+  - "every control string validated with `centrs explain` before sending (all pass, 0 offline rejections); device rejections (tarpit-bare x3, dummy/raw/mangle removes) treated as 0w data, never routed around"
+  - "cumulative verified before every write (max reached 25 of 25)"
+  - "no edits to canonical files during execution (coordinator integrates separately)"
+  - "no commit, no push"

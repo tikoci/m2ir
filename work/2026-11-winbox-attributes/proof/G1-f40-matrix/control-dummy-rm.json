@@ -1,0 +1,25 @@
+{
+  "ok": false,
+  "data": null,
+  "warnings": [],
+  "tips": [],
+  "error": {
+    "code": "routeros/command-failed",
+    "summary": "RouterOS command failed: cannot remove builtin (/ip/firewall/filter/remove; line 1)",
+    "message": "RouterOS command failed: cannot remove builtin (/ip/firewall/filter/remove; line 1)",
+    "remediation": "Inspect the RouterOS failure message, then adjust the path, attributes, or request shape accordingly.",
+    "cause": "failure: cannot remove builtin (/ip/firewall/filter/remove; line 1)",
+    "context": {
+      "command": null,
+      "message": null
+    }
+  },
+  "meta": {
+    "via": "native-api",
+    "operation": {
+      "kind": "execute",
+      "objectCount": 0,
+      "path": null
+    }
+  }
+}

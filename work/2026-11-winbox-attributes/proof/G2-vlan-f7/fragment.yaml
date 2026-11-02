@@ -1,0 +1,12 @@
+# cspell:ignore mvrp untagged
+# G2 promotion fragment (coordinator integrates).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> bridge-vlan f7
+    op: rename-and-prove
+    field: "7: { name: mvrp-forbidden, tcode: u32_array, cli-alias: \"/interface/bridge/vlan mvrp-forbidden\", role: \"PROVEN mvrp-forbidden [20,0] rowids: [] with mvrp-forbidden='' (cell A), [2]=ether1 rowid with mvrp-forbidden=ether1 (cell B), [] after the quoted-empty clear (cell C); the ONLY row delta in both transitions\" }"
+    evidence_add: 2
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> bridge-vlan notes
+    op: add-notes
+    notes: "G2 write leg (twin3 7.25, 2026-11-02, 8w+0r) SETS mvrp-forbidden and CLOSES U-vlan-f7: f7 tracks []->[2]->[] across the set and the quoted-empty clear (f4/f5/f6 untouched in both transitions). Quoted mvrp-forbidden=\"\" is ACCEPTED as a clear (2nd quoted-empty acceptance on this table). Cell A reproduced a 4th time (filtering=no, f5=f6=[]); filtering stayed NO for the whole leg."
+    evidence_add: 0
+no_promotion_for: []

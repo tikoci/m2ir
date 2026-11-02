@@ -1,0 +1,136 @@
+{
+	"provenance": {
+		"report": "G3 write leg, 2026-11-02 (ws21 7.25 x86, 2w+0r of 8, ambiguity stop at M1)",
+		"routeros_version": "7.25",
+		"route": "[20,32] GETCOUNT decay sequence with one accept rule present throughout: 1->0->0",
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. Source: proof/G3-2032-matrix/step-M1{-confirm,-confirm2}.jsonl rx (from [20,32]). Delays are wall-clock between leg steps (~1 min, +20s), not capture timestamps. Control ground truth: proof/G3-2032-matrix/control-M1-read.json (exactly 1 forward/accept row, 0/0, present for all three reads)."
+	},
+	"records": [
+		{
+			"id": "getcount-20-32-M1-rx",
+			"role": "GETCOUNT [20,32] rx immediately after the accept add -> 1",
+			"source": "ws21 7.25 M1 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-confirm-rx",
+			"role": "GETCOUNT [20,32] rx ~1 min later, rule still present -> 0",
+			"source": "ws21 7.25 confirm rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09000600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-confirm2-rx",
+			"role": "GETCOUNT [20,32] rx +20s, rule still present -> 0 (stable)",
+			"source": "ws21 7.25 confirm2 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09000600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		}
+	]
+}

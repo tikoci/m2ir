@@ -1,0 +1,40 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*1",
+      "actual-interface": "e1br",
+      "address": "10.0.2.15/24",
+      "disabled": "false",
+      "dynamic": "true",
+      "interface": "ether1",
+      "invalid": "false",
+      "network": "10.0.2.0",
+      "slave": "true",
+      "vrf": "main"
+    },
+    {
+      ".id": "*2",
+      "actual-interface": "ether2",
+      "address": "198.51.100.20/24",
+      "comment": "g4b5",
+      "disabled": "false",
+      "dynamic": "false",
+      "interface": "ether2",
+      "invalid": "false",
+      "network": "198.51.100.0",
+      "slave": "false",
+      "vrf": "g4vrf"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 2,
+      "path": "/ip/address"
+    }
+  }
+}

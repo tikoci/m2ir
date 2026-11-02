@@ -1,0 +1,11 @@
+# cspell:ignore getcount rowid e3jump gcd
+# G0a promotion fragment (coordinator integrates). Non-empty: offline
+# modeling yields promotable static content (ruled-out model classes).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> unknown-20-32
+    op: add-notes
+    notes: "G0a offline fit (2026-11-02): 5-point transcription verified 5/5 against raw rx; no bounded rule-set-only model fits — counting/presence/per-action-counts/distinct-count, singleton-forced linear sum (+9/+15 on 2-rule points), OR/XOR/AND accumulation, min/max/gcd/difference/product, first/last-added-wins, and exhaustive affine-modular search (0/2264031) all fail; AMBIGUOUS stop. Bonus: J1->J2 jump-target vary leaves the value at 2, so full-row-content-hash models are structurally dead and the value is insensitive to the jump-target string."
+    evidence_add: 1
+no_promotion_for:
+  - "[20,32] role (still open; ambiguity stop, no model claimed)"
+  - "stimulus sheet cells (unexecuted design, lives in the proof dir)"

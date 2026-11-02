@@ -1,0 +1,60 @@
+# Phase G blind reviewer — R1 independent reconstruction (G0a [20,32] model fit)
+# Written BEFORE reading proof/G0a-2032-model/report.yaml or any G0a fragment.
+# written_at: 2026-11-02T14:04:24Z
+# Method: raw rx-line re-derivation only. Rule-action labels use the Phase F
+# closure f40: 1=jump/0=accept (handoff.yaml jump_integration_record; NOT re-proved)
+# plus contemporaneous control reads. No G0a file was opened before this write.
+slice: G0a
+reconstruction_id: R1
+dataset:
+  # cmd 16646165 = 0xFE0015 GETCOUNT; value key 0xfe0019 in every rx below.
+  - ruleset: "{}"
+    getcount_20_32: 0
+    getcount_20_3: 0
+    rx_provenance: "proof/F-jump/step-baseline.jsonl line 4 (seq 3, reqId 3, rx from [20,32], 0xfe0019=0)"
+    composition_provenance: "step-baseline.jsonl line 8 (GETALL 0xfe0002=[]); control-base-firewall-filter.json (data [], objectCount 0)"
+  - ruleset: "{A}"
+    getcount_20_32: 8
+    getcount_20_3: 1
+    rx_provenance: "proof/E3-W/step-filter-sweep.jsonl line 90 (seq 89, reqId 46, rx from [20,32], 0xfe0019=8; tx line 89 cmd 16646165)"
+    composition_provenance: "control-filter-find-read.json lines 3-13 (1 rule: action=accept, chain=forward, comment=e3find); [20,3] N=1 at sweep line 32 (seq 31, reqId 17, 0xfe0019=1; tx line 31 cmd 16646165)"
+  - ruleset: "{J}"
+    getcount_20_32: 2
+    getcount_20_3: 1
+    rx_provenance: "proof/F-jump/step-j1.jsonl line 4 (seq 3, reqId 3, rx from [20,32], 0xfe0019=2)"
+    composition_provenance: "step-j1.jsonl line 8 (GETALL 1 row, f40/0x28=1=jump); control-j1-read.json lines 3-14 (1 rule: action=jump, jump-target=e3jump); [20,3] N=1 at step-j1.jsonl line 2"
+  - ruleset: "{J,A}"
+    getcount_20_32: 1
+    getcount_20_3: 2
+    rx_provenance: "proof/F-jump/step-j2b.jsonl line 4 (seq 3, reqId 3, rx from [20,32], 0xfe0019=1)"
+    composition_provenance: "step-j2b.jsonl line 8 (GETALL 2 rows: row1 f40/0x28=1=jump comment e3jump2/fe0009 e3jump1, row2 f40/0x28=0=accept comment e3jumpA; no j2b control read exists); [20,3] N=2 at step-j2b.jsonl line 2"
+  - ruleset: "{A,A}"
+    getcount_20_32: 1
+    getcount_20_3: 2
+    rx_provenance: "proof/F-jump/step-j3read.jsonl line 4 (seq 3, reqId 3, rx from [20,32], 0xfe0019=1)"
+    composition_provenance: "step-j3read.jsonl line 8 (GETALL 2 rows, both f40/0x28=0=accept); control-j3-read.json lines 3-23 (2 rules, both action=accept); [20,3] N=2 at step-j3read.jsonl line 2"
+model_scores:
+  linear_sum_singleton_forced:
+    definition: "V(S) = wA*nA + wJ*nJ with wA forced by {A}=8, wJ forced by {J}=2"
+    weights: { wA: 8, wJ: 2 }
+    residuals:
+      - { ruleset: "{}", predicted: 0, observed: 0, signed_residual: 0 }
+      - { ruleset: "{A}", predicted: 8, observed: 8, signed_residual: 0 }
+      - { ruleset: "{J}", predicted: 2, observed: 2, signed_residual: 0 }
+      - { ruleset: "{J,A}", predicted: 10, observed: 1, signed_residual: -9 }
+      - { ruleset: "{A,A}", predicted: 16, observed: 1, signed_residual: -15 }
+    total_abs_residual: 24
+    fits_2rule_points: false
+  bitmask_or_accumulation:
+    definition: "V(S) = OR of per-action bit patterns, A=8 (0b1000) and J=2 (0b0010) forced by singletons"
+    bits: { A: 8, J: 2 }
+    residuals:
+      - { ruleset: "{}", predicted: 0, observed: 0, signed_residual: 0 }
+      - { ruleset: "{A}", predicted: 8, observed: 8, signed_residual: 0 }
+      - { ruleset: "{J}", predicted: 2, observed: 2, signed_residual: 0 }
+      - { ruleset: "{J,A}", predicted: 10, observed: 1, signed_residual: -9 }
+      - { ruleset: "{A,A}", predicted: 8, observed: 1, signed_residual: -7 }
+    total_abs_residual: 16
+    fits_2rule_points: false
+independent_verdict: AMBIGUOUS
+verdict_rationale: "Both model classes fit the 3 forced points ({}, {A}, {J}) exactly by construction and both fail badly on the two 2-rule points ({J,A} residual -9 under both; {A,A} residual -15 linear / -7 OR). The 2-rule collapse to 1 is unexplained by either class; no class survives."

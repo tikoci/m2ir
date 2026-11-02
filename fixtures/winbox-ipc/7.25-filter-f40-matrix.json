@@ -1,0 +1,1210 @@
+{
+	"provenance": {
+		"report": "G1 write leg, 2026-11-02 (ws21 7.25 x86, 25w+0r)",
+		"routeros_version": "7.25",
+		"route": "[20,3] filter rows: 9-value f40 action matrix (each cell = fresh rule + kept jump host)",
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. Source: proof/G1-f40-matrix/step-M{1..9}.jsonl GETALL rx. Control ground truth: proof/G1-f40-matrix/control-M{1..9}-read.json (read-back after every add; symmetric reversals in step-M{1..9}rev.jsonl)."
+	},
+	"records": [
+		{
+			"id": "getall-m1-rx",
+			"role": "GETALL [20,3] rx with drop rule (f40=10) + jump host",
+			"source": "ws21 7.25 M1 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea802003d004d321c00fea000000700fe000800fe0028000009010100fe09022700002107666f7277617264290000210467316a740900fe210967312d632d6a756d7034004d321c00fea000000700fe000800fe00280000090a0100fe09032700002107666f72776172640900fe210967312d6d2d64726f700300ff09021900fe09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0x000029",
+								"tcode": "0x21",
+								"value": "g1jt"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-c-jump"
+							}
+						],
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 10
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-m-drop"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-m2-rx",
+			"role": "GETALL [20,3] rx with reject rule (f40=11) + jump host",
+			"source": "ws21 7.25 M2 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea802003d004d321c00fea000000700fe000800fe0028000009010100fe09022700002107666f7277617264290000210467316a740900fe210967312d632d6a756d7036004d321c00fea000000700fe000800fe00280000090b0100fe09042700002107666f72776172640900fe210b67312d6d2d72656a6563740300ff09021900fe09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0x000029",
+								"tcode": "0x21",
+								"value": "g1jt"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-c-jump"
+							}
+						],
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 11
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-m-reject"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-m3-rx",
+			"role": "GETALL [20,3] rx with passthrough rule (f40=4) + jump host",
+			"source": "ws21 7.25 M3 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea802003d004d321c00fea000000700fe000800fe0028000009010100fe09022700002107666f7277617264290000210467316a740900fe210967312d632d6a756d703b004d321c00fea000000700fe000800fe0028000009040100fe09052700002107666f72776172640900fe211067312d6d2d706173737468726f7567680300ff09021900fe09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0x000029",
+								"tcode": "0x21",
+								"value": "g1jt"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-c-jump"
+							}
+						],
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 5
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-m-passthrough"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-m4-rx",
+			"role": "GETALL [20,3] rx with return rule (f40=2) + jump host",
+			"source": "ws21 7.25 M4 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea802003d004d321c00fea000000700fe000800fe0028000009010100fe09022700002107666f7277617264290000210467316a740900fe210967312d632d6a756d7036004d321c00fea000000700fe000800fe0028000009020100fe09062700002107666f72776172640900fe210b67312d6d2d72657475726e0300ff09021900fe09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0x000029",
+								"tcode": "0x21",
+								"value": "g1jt"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-c-jump"
+							}
+						],
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 6
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-m-return"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-m5-rx",
+			"role": "GETALL [20,3] rx with log rule (f40=3) + jump host",
+			"source": "ws21 7.25 M5 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea802003d004d321c00fea000000700fe000800fe0028000009010100fe09022700002107666f7277617264290000210467316a740900fe210967312d632d6a756d7033004d321c00fea000000700fe000800fe0028000009030100fe09072700002107666f72776172640900fe210867312d6d2d6c6f670300ff09021900fe09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0x000029",
+								"tcode": "0x21",
+								"value": "g1jt"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-c-jump"
+							}
+						],
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 7
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-m-log"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-m6-rx",
+			"role": "GETALL [20,3] rx with add-src-to-address-list rule (f40=5) + jump host",
+			"source": "ws21 7.25 M6 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea802003d004d321c00fea000000700fe000800fe0028000009010100fe09022700002107666f7277617264290000210467316a740900fe210967312d632d6a756d7043004d321c00fea000000700fe000800fe0028000009050100fe09082700002107666f72776172645b0000210867312d70726f62650900fe210b67312d6d2d6164647372630300ff09021900fe09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0x000029",
+								"tcode": "0x21",
+								"value": "g1jt"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-c-jump"
+							}
+						],
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 5
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 8
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0x00005b",
+								"tcode": "0x21",
+								"value": "g1-probe"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-m-addsrc"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-m7-rx",
+			"role": "GETALL [20,3] rx with add-dst-to-address-list rule (f40=6) + jump host",
+			"source": "ws21 7.25 M7 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea802003d004d321c00fea000000700fe000800fe0028000009010100fe09022700002107666f7277617264290000210467316a740900fe210967312d632d6a756d7043004d321c00fea000000700fe000800fe0028000009060100fe09092700002107666f72776172645b0000210867312d70726f62650900fe210b67312d6d2d6164646473740300ff09021900fe09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0x000029",
+								"tcode": "0x21",
+								"value": "g1jt"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-c-jump"
+							}
+						],
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 6
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 9
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0x00005b",
+								"tcode": "0x21",
+								"value": "g1-probe"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-m-adddst"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-m8-rx",
+			"role": "GETALL [20,3] rx with tarpit rule (f40=12) + jump host",
+			"source": "ws21 7.25 M8 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea802003d004d321c00fea000000700fe000800fe0028000009010100fe09022700002107666f7277617264290000210467316a740900fe210967312d632d6a756d7043004d321c00fea00000160000000700fe000800fe0094010001280000090c0100fe090e0b000009062700002107666f72776172640900fe210b67312d6d2d7461727069740300ff09021900fe09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0x000029",
+								"tcode": "0x21",
+								"value": "g1jt"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-c-jump"
+							}
+						],
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x000016",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000194",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 12
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 14
+							},
+							{
+								"key": "0x00000b",
+								"tcode": "0x9",
+								"value": 6
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-m-tarpit"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-m9-rx",
+			"role": "GETALL [20,3] rx with fasttrack-connection rule (f40=40) + jump host",
+			"source": "ws21 7.25 M9 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea803004e004d320700fe0128000009040100fe09102700002107666f72776172640900fe212d7370656369616c2064756d6d792072756c6520746f2073686f772066617374747261636b20636f756e746572733d004d321c00fea000000700fe000800fe0028000009010100fe09022700002107666f7277617264290000210467316a740900fe210967312d632d6a756d703d004d321c00fea00000c60100010700fe000800fe0028000009280100fe090f2700002107666f72776172640900fe210e67312d6d2d66617374747261636b0300ff09021900fe09030600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe0007",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 16
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "special dummy rule to show fasttrack counters"
+							}
+						],
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0x000029",
+								"tcode": "0x21",
+								"value": "g1jt"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-c-jump"
+							}
+						],
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x0001c6",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 40
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 15
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "g1-m-fasttrack"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		}
+	]
+}

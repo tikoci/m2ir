@@ -1,0 +1,214 @@
+# cspell:ignore rowid getcount getall getobj subtable reqid m2g0a e3jump fe0019 preds minmax overfitting gcd
+proof: "G0a offline [20,32] model fit: 5-point dataset verified 5/5, bounded family scored, AMBIGUOUS (ws21/7.25 captures, 2026-11-02)"
+worker: G0a
+date: 2026-11-02
+inputs_commit: "da5f8bb (read-only; no input file modified)"
+router_contact: "ZERO. No VM started, no quickchr, no centrs execute/retrieve against any router, no probe run. Static file analysis only (JSONL/JSON/YAML reads + local bun script). `centrs explain` used OFFLINE (no router argument) on 9 proposed commands only."
+scope: "filter handler family only; 1 unresolved field ([20,32] GETCOUNT value); 0 private verbs; 0 executed experiments. Sibling G0* proof dirs out of scope (not read). Phase F closures re-stated, never re-proven."
+complete: true
+verdict: "AMBIGUOUS: no bounded model fits all 5 points (17/17 hand models FAIL, exhaustive affine-modular search 0/2264031 fit). Ambiguity stop is the RESULT."
+transcription_check: "brief transcription ({}->0, {A}->8, {J}->2, {J,A}->1, {A,A}->1) VERIFIED 5/5 against primary evidence below; zero discrepancy. TRUSTED after verification."
+
+dataset:
+  - id: P0-empty
+    rules: "{}"
+    n_accept: 0
+    n_jump: 0
+    value: 0
+    provenance: "F-jump step-baseline.jsonl rx line 4 (0xfe0019=0); symmetric restore step-restored.jsonl rx line 4 (=0). Ground truth: 5-menu control 0 rows (control-base-firewall-*.json) + GETALL [20,3] 0 rows."
+  - id: P1-accept
+    rules: "{A}"
+    n_accept: 1
+    n_jump: 0
+    value: 8
+    provenance: "E3-W step-filter-sweep.jsonl rx line 90 (seq 89, 0xfe0019=8, wire fe0908). Ground truth: control-filter-find-read.json exactly 1 row (forward/accept, packets 0, bytes 0). Base/restored counterparts read 0."
+  - id: P2-jump
+    rules: "{J}"
+    n_accept: 0
+    n_jump: 1
+    value: 2
+    provenance: "F-jump step-j1.jsonl rx line 4 (0xfe0019=2). Ground truth: control-j1-read.json action=jump; native GETALL f40=[1]."
+  - id: P3-jump-accept
+    rules: "{J,A}"
+    n_accept: 1
+    n_jump: 1
+    value: 1
+    provenance: "F-jump step-j2b.jsonl rx line 4 (0xfe0019=1). NO control read-back (F-jump procedural gap); ground truth is native GETALL f40=[1,0] in J-then-A insertion order + add ack ret *2."
+  - id: P4-accept-accept
+    rules: "{A,A}"
+    n_accept: 2
+    n_jump: 0
+    value: 1
+    provenance: "F-jump step-j3read.jsonl rx line 4 (0xfe0019=1). Ground truth: control-j3-read.json [*1 accept, *2 accept]; native f40=[0,0] with f41 jump-target residue retained on rowid 1 (native/control divergence noted, does not affect the value)."
+  - id: BONUS-J2-target-vary
+    rules: "{J'} (jump-target e3jump->e3jump2, same actions)"
+    n_accept: 0
+    n_jump: 1
+    value: 2
+    provenance: "F-jump step-j2.jsonl rx line 4 (0xfe0019=2, unchanged from J1). NOT part of the 5-point set; structural bonus: [20,32] is insensitive to the jump-target string value."
+    use: "structurally disproves full-row-content-hash models (any hash over bytes including f41 must move when f41 moves; observed unchanged)."
+
+models_scored:
+  note: "predictions/residuals in dataset order [P0,P1,P2,P3,P4]; residual = predicted - observed; machine-checked by score-models.ts (see scores.yaml)."
+  - { id: M-count, family: counting, note: "row count N", predictions: [0, 1, 1, 2, 2], residuals: [0, -7, -1, 1, 1], verdict: FAIL }
+  - { id: M-presence, family: counting, note: "presence flag", predictions: [0, 1, 1, 1, 1], residuals: [0, -7, -1, 0, 0], verdict: FAIL }
+  - { id: M-accept-count, family: counting, note: "accept-rule count", predictions: [0, 1, 0, 1, 2], residuals: [0, -7, -2, 0, 1], verdict: FAIL }
+  - { id: M-jump-count, family: counting, note: "jump-rule count", predictions: [0, 0, 1, 1, 0], residuals: [0, -8, -1, 0, -1], verdict: FAIL }
+  - { id: M-linear, family: linear-weighted-sum, note: "weights forced by singletons (wA=8, wJ=2)", predictions: [0, 8, 2, 10, 16], residuals: [0, 0, 0, 9, 15], verdict: FAIL }
+  - { id: M-distinct, family: counting, note: "distinct-action count", predictions: [0, 1, 1, 2, 1], residuals: [0, -7, -1, 1, 0], verdict: FAIL }
+  - { id: M-or, family: bit-accumulation, note: "bitmask OR over actions present; also violates OR-monotonicity ({J,A}=1 < {J}=2)", predictions: [0, 8, 2, 10, 8], residuals: [0, 0, 0, 9, 7], verdict: FAIL }
+  - { id: M-xor, family: bit-accumulation, note: "XOR accumulation", predictions: [0, 8, 2, 10, 0], residuals: [0, 0, 0, 9, -1], verdict: FAIL }
+  - { id: M-and, family: bit-accumulation, note: "AND accumulation", predictions: [0, 8, 2, 0, 8], residuals: [0, 0, 0, -1, 7], verdict: FAIL }
+  - { id: M-min, family: min-max, note: "min over per-action values", predictions: [0, 8, 2, 2, 8], residuals: [0, 0, 0, 1, 7], verdict: FAIL }
+  - { id: M-max, family: min-max, note: "max over per-action values", predictions: [0, 8, 2, 8, 8], residuals: [0, 0, 0, 7, 7], verdict: FAIL }
+  - { id: M-gcd, family: arithmetic, note: "gcd(8,2)=2 for the pair", predictions: [0, 8, 2, 2, 8], residuals: [0, 0, 0, 1, 7], verdict: FAIL }
+  - { id: M-diff, family: arithmetic, note: "|weighted difference|", predictions: [0, 8, 2, 6, 16], residuals: [0, 0, 0, 5, 15], verdict: FAIL }
+  - { id: M-product, family: arithmetic, note: "product of per-action values", predictions: [0, 8, 2, 16, 64], residuals: [0, 0, 0, 15, 63], verdict: FAIL }
+  - { id: M-first-wins, family: order-dependent, note: "first-added rule wins (J added before A in P3)", predictions: [0, 8, 2, 2, 8], residuals: [0, 0, 0, 1, 7], verdict: FAIL }
+  - { id: M-last-wins, family: order-dependent, note: "last-added rule wins", predictions: [0, 8, 2, 8, 8], residuals: [0, 0, 0, 7, 7], verdict: FAIL }
+  - { id: M-pow2, family: arithmetic, note: "2^max(0,3-nA-2nJ) gated on nonempty; closest (maxAbs 4) but still fails", predictions: [0, 4, 2, 1, 2], residuals: [0, -4, 0, 0, 1], verdict: FAIL }
+  - { id: M-mod-affine-search, family: modular, note: "exhaustive f=(a*nA+b*nJ+c) mod m over a,b<=32, m<=64: 2264031 combos, 0 fit (analytic check: singletons force m>8 while P3/P4 force m|6 — contradiction)", verdict: NO-FIT }
+  - { id: M-lookup-tautology, family: slot-indexed-lookup, note: "5 free parameters for 5 points — reproduces the data by construction, predicts nothing, unfalsifiable. NOT scored as a model; recorded to block silent overfitting.", verdict: VACUOUS }
+  - { id: M-content-hash, family: hash, note: "any hash over full row bytes including f41 — structurally disproven by BONUS-J2 (f41 vary leaves value 2)", verdict: DISPROVEN-STRUCTURAL }
+survivors: []
+
+proven:
+  - id: P-g0a-transcription-verified
+    claim: "brief 5-point transcription matches primary evidence 5/5 with zero discrepancy; every value re-read from raw rx records by score-models.ts"
+    evidence: [scores.yaml, score-models.ts]
+  - id: P-g0a-bonus-j2-invariance
+    claim: "[20,32] is insensitive to the jump-target string value: J1->J2 (e3jump->e3jump2) leaves the value at 2"
+    evidence: [step-j1.jsonl, step-j2.jsonl]
+  - id: P-g0a-mod-affine-empty
+    claim: "no affine-modular model fits: exhaustive search over 2264031 (a,b,c,m) combos finds zero, corroborated analytically (m>8 vs m|6 contradiction)"
+    evidence: [scores.yaml, score-models.ts]
+  - id: P-g0a-explain-9-pass
+    claim: "all 9 proposed stimulus commands pass offline `centrs explain` (0 rejections); runtime acceptance not proven (offline canonicalizer only)"
+    evidence: [explain-m1-accept.txt, explain-m2-drop.txt, explain-m3-log.txt, explain-m4a-jump1.txt, explain-m4b-jump2.txt, explain-m5a-accept.txt, explain-m5b-jump.txt, explain-m6-input.txt, explain-rm.txt]
+
+disproven:
+  - id: D-g0a-counting-family
+    claim: "row count, presence flag, per-action counts, and distinct-action count all fail (maxAbs 7-8)"
+    evidence: [scores.yaml]
+  - id: D-g0a-linear-sum
+    claim: "action-weighted sum with singleton-forced weights fails on both 2-rule points (residuals +9, +15)"
+    evidence: [scores.yaml]
+  - id: D-g0a-bit-accumulation
+    claim: "OR/XOR/AND accumulation all fail; OR additionally violates OR-monotonicity (adding a rule DECREASED 2->1)"
+    evidence: [scores.yaml]
+  - id: D-g0a-minmax-arithmetic
+    claim: "min, max, gcd, |difference|, product, and gated power-of-two all fail (maxAbs 4-63)"
+    evidence: [scores.yaml]
+  - id: D-g0a-order-wins
+    claim: "first-added-wins and last-added-wins both fail (P4 alone kills both: single action present yet value 1, not 8)"
+    evidence: [scores.yaml]
+  - id: D-g0a-content-hash
+    claim: "full-row-content hash models are structurally dead: J2 varies f41 bytes with no value change"
+    evidence: [step-j1.jsonl, step-j2.jsonl]
+
+unresolved:
+  - id: U-g0a-32-role
+    claim: "[20,32] exact semantics still open; no bounded rule-set-only model survives"
+    next: "action-varied matrix leg per the stimulus sheet below (coordinator schedules; needs per-leg yes)"
+  - id: U-g0a-history-sensitivity
+    claim: "whether the value depends on session history (prior removes, rowid allocation) vs the current rule-set alone — M1 replication cell decides"
+    next: "stimulus M1"
+  - id: U-g0a-singleton-map
+    claim: "singleton values for actions beyond accept/jump (drop, log, passthrough, ...) unmapped"
+    next: "stimulus M2/M3 (+ passthrough if budget allows)"
+
+blocked:
+  - id: B-g0a-needs-leg-yes
+    claim: "stimulus sheet execution needs the user's explicit per-leg yes in-session plus coordinator VM scheduling (proposed: ws21 7.25, same line as F0a/F-jump evidence)"
+    next: "coordinator presents the sheet; this worker executes nothing"
+
+stimulus_sheet:
+  design_only: true
+  executed: 0
+  proposed_vm: "ws21 (7.25, same line as F0a/F-jump evidence; coordinator assigns)"
+  budget: { counted_writes: 8, optional_plus_m6: 1, reboots: 0, total_with_m6: 9 }
+  counting_rule: "F-jump sheet rule: counted writes = control adds/sets + native verbs + 1 per restore branch; removes bundled (0); native reads 0"
+  commands_explained_offline: "9/9 pass (explain-*.txt in this dir); runtime acceptance not proven"
+  cells:
+    - id: M0-baseline
+      writes: 0
+      steps: ["control retrieve all five firewall menus (expect 0 rows each)", "native read: GETCOUNT [20,3]=0, [20,32]=0; paged GETALL [20,3] 0 rows complete"]
+    - id: M1-accept-replicate
+      writes: 1
+      rule_set: "{A}"
+      steps: ["/ip/firewall/filter/add chain=forward action=accept comment=m2g0a1", "control read-back (MANDATORY: closes the J2/J2b procedural gap) + native read ([20,32]? [20,3]=1, GETALL f40, packets/bytes==0 guard)", "remove the rule"]
+      decides: "M1=8 replicates E3-W (rule-set-only models stay alive; within-line anti-monotonicity {A}=8->{A,A}=1 confirmed). M1!=8 proves HISTORY/session dependence (value is not a function of the current rule-set alone) — STOP and report, all rule-set-only models dead."
+    - id: M2-drop-singleton
+      writes: 1
+      rule_set: "{D}"
+      steps: ["/ip/firewall/filter/add chain=forward action=drop comment=m2g0a2", "control read-back + native read (as M1)", "remove the rule"]
+      decides: "extends the singleton map with v_drop; any future rule-set model must reproduce {8, 2, v_drop, v_log}. A novel value (not in {0,1,2,8}) kills all 3-bit-mask readings."
+    - id: M3-log-singleton
+      writes: 1
+      rule_set: "{L}"
+      steps: ["/ip/firewall/filter/add chain=forward action=log comment=m2g0a3", "control read-back + native read (as M1)", "remove the rule"]
+      decides: "extends the singleton map with v_log (same constraining force as M2)."
+    - id: M4-jump-pair
+      writes: 2
+      rule_set: "{J,J}"
+      steps: ["/ip/firewall/filter/add chain=forward action=jump jump-target=m2g0aj1 comment=m2g0a4a", "/ip/firewall/filter/add chain=forward action=jump jump-target=m2g0aj2 comment=m2g0a4b", "control read-back (2 jump rows) + native read", "remove both rules"]
+      decides: "M4=1 supports pair-COLLAPSE (any 2-rule set -> 1, action-insensitive); M4!=1 proves action-sensitive pair interaction and kills collapse."
+    - id: M5-order-swap
+      writes: 2
+      rule_set: "{A,J} (accept FIRST, jump second — reverse of P3)"
+      steps: ["/ip/firewall/filter/add chain=forward action=accept comment=m2g0a5a", "/ip/firewall/filter/add chain=forward action=jump jump-target=m2g0aj5 comment=m2g0a5b", "control read-back + native read", "remove both rules"]
+      decides: "M5=1 (== P3 {J,A}) kills pure order-dependence; M5!=1 proves insertion order contributes (first/last-wins classes revive in modified form)."
+    - id: M6-input-chain-optional
+      writes: 1
+      rule_set: "{A on chain=input}"
+      steps: ["/ip/firewall/filter/add chain=input action=accept comment=m2g0a6", "control read-back + native read (as M1)", "remove the rule"]
+      decides: "M6=8 kills chain-dependence; M6!=8 proves the chain contributes to the value."
+    - id: M7-restore-verify
+      writes: 1
+      steps: ["5-menu control verify (0 rows each)", "native read ([20,3]=0 [20,32]=0, GETALL 0 rows complete)"]
+  controls:
+    - "chain=forward fixed on M1-M5 (M6 varies chain ONLY)"
+    - "control read-back after EVERY add (mandatory; the F-jump J2/J2b gap must not recur)"
+    - "[20,3] must read N at every cell (linearity guard; P-jump-4 counter behavior)"
+    - "packets/bytes must read 0 at every read (zero-traffic guard; else traffic counters confound the value)"
+    - "record [20,17] f15/f206 as a volatility witness only; do not reason from them (P-jump-7: volatile)"
+  restore_step: "remove every added rule (bundled, 0w) + M7 restore-verify branch (1w); end state: 5 menus 0 rows, native zeros, VM stopped"
+  stop_conditions:
+    - "M1 != 8: STOP, keep VM for coordinator inspection, report history-dependence (re-plans all later cells)"
+    - "any control read-back disagrees with the intended rule-set: STOP (stimulus invalid)"
+    - "[20,3] != N at any cell: STOP (counter guard tripped)"
+    - "packets/bytes nonzero at any read: STOP (traffic confound)"
+    - "restore-verify fails: non-sheet recovery, recorded honestly (never silently re-run)"
+
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/report.yaml
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/scores.yaml
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/score-models.ts
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/explain-m1-accept.txt
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/explain-m2-drop.txt
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/explain-m3-log.txt
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/explain-m4a-jump1.txt
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/explain-m4b-jump2.txt
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/explain-m5a-accept.txt
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/explain-m5b-jump.txt
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/explain-m6-input.txt
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/explain-rm.txt
+  - work/2026-11-winbox-attributes/proof/F-jump/step-baseline.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-j1.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-j2.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-j2b.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-j3read.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-restored.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/control-j1-read.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-j3-read.json
+  - work/2026-11-winbox-attributes/proof/E3-W/step-filter-sweep.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/step-base-sweep.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/step-filter-restored.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-find-read.json
+  - work/2026-11-winbox-attributes/proof/F0a-filter-hid/report.yaml
+  - work/2026-11-winbox-attributes/proof/F-jump/report.yaml
+  - profiles/winbox-ipc/gui-handlers.yaml (unknown-20-32 notes, READ-ONLY reference)
+
+budgets: { counted_writes: 0, reboots: 0, note: "offline slice: zero router contact, nothing to restore" }
+forbidden_paths_edited: none

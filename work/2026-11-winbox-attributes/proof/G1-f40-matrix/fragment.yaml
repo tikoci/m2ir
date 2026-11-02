@@ -1,0 +1,25 @@
+# cspell:ignore rowid getall tarpit fasttrack passthrough unmapped mangle
+# G1 promotion fragment (coordinator integrates).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> filter-20-3 f40
+    op: extend-values-and-role
+    values: { 0: accept, 1: jump, 2: return, 3: log, 4: passthrough, 5: add-src-to-address-list, 6: add-dst-to-address-list, 10: drop, 11: reject, 12: tarpit, 40: fasttrack-connection }
+    role: "11-value action enum, single add-samples each + symmetric reversals (observed-only — no public source names the numeric association). NAT-shared values CONFIRMED on filter (2/3/4/5/6 match NAT f40); filter-only values (10/11/12/40) have no NAT counterpart (terminal pair drop/reject clusters 10/11). Cross-checks: drop=10 via R1 control exit, passthrough=4 via a device-created dummy row. Bare tarpit add is device-rejected ('tarpit valid only for tcp'); bare fasttrack add accepted."
+    evidence_add: 1
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> filter-20-3 f91
+    op: add-field
+    field: "91: { name: address-list, tcode: string, role: \"address-list name (t=0x21): 'g1-probe' on both the add-src and add-dst rows (single samples each, SHARED wire field); cleared on control action-exit (2/2 reversals)\" }"
+    evidence_add: 0
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> filter-20-3 notes
+    op: add-notes
+    notes: "G1 write leg (ws21 7.25, 2026-11-02, 25w+0r) maps 9 f40 values (above) with symmetric reversals. Lifecycle: control-plane SET is the 0xfd002a trigger class (appears after 9/9 action-sets + the L1 jump-target set; always empty = presence flag); 0xfd002a is STICKY-once-set (survives the L2 reversal); f41 + 0xfd002a retention on action-exit is GENERAL behavior (R1 control exit jump->drop retains both while control drops jump-target — J3 was not a SETOBJ artifact); jump re-entry is a clean overwrite (R2, no compound, no third state). Adjunct classes differ: f41/fd002a sticky vs f91/0x1c6 cleared-on-exit vs protocol matchers (0x16/0x194/0x0b) persistent. Fasttrack side effect: the add spawns 5 builtin 'special dummy rule to show fasttrack counters' rows (filter + raw/prerouting + mangle x3), all dynamic + 'cannot remove builtin', surviving parent reversal and removal — restore PARTIAL by device design; dummies are invisible to [20,32] (=0) and the f34/f46 presence bools (empty pattern) while [20,3] counts them (=1)."
+    evidence_add: 0
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> unknown-20-32 notes
+    op: add-notes
+    notes: "G1 bycatch table (values only, NO model; ws21 7.25, 2026-11-02): {A}->2 (C1, does NOT replicate E3-W {A}->8 — uncontrolled comparison, G3-M1 decides); {J}->2 (C2, replicates); {J,A-edited}->3 (M1-M5 reversals, 5x) vs F-jump {J-edited,A-fresh}->1; {J,A-after-addsrc/dst}->4 (M6rev/M7rev); {J,drop/reject/passthrough/log/addsrc/adddst}->4, {J,return/tarpit}->5; {J,fasttrack,dummy}->3; {dummy}->0. f15/f206 covary at some cells and break at others (volatile stands)."
+    evidence_add: 1
+no_promotion_for:
+  - "0x1c6 / 0x16 / 0x194 / 0x0b semantics (enumerate-only single samples)"
+  - "U-g1-rowid-gap mechanism (unresolved)"
+  - "U-g1-dummy-lifetime (untested, 0r)"
+  - "[20,32] role (bycatch values only; G3 decides)"

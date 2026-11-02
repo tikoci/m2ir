@@ -60,7 +60,19 @@ describe("filter jump value replay", () => {
 		const user = required(filter.fields?.["namespace-user"], "user fields");
 		expect(user["39"]?.name).toBe("chain");
 		expect(user["40"]?.name).toBe("action");
-		expect(user["40"]?.values).toEqual({ 0: "accept", 1: "jump" });
+		expect(user["40"]?.values).toEqual({
+			0: "accept",
+			1: "jump",
+			2: "return",
+			3: "log",
+			4: "passthrough",
+			5: "add-src-to-address-list",
+			6: "add-dst-to-address-list",
+			10: "drop",
+			11: "reject",
+			12: "tarpit",
+			40: "fasttrack-connection",
+		});
 		expect(user["41"]?.name).toBe("jump-target");
 		const session = required(
 			filter.fields?.["namespace-session"],

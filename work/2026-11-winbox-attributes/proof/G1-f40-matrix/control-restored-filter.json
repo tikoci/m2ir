@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*10",
+      "action": "passthrough",
+      "bytes": "0",
+      "chain": "forward",
+      "comment": "special dummy rule to show fasttrack counters",
+      "dynamic": "true",
+      "packets": "0"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 1,
+      "path": "/ip/firewall/filter"
+    }
+  }
+}

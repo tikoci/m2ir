@@ -1,0 +1,25 @@
+{
+  "ok": false,
+  "data": null,
+  "warnings": [],
+  "tips": [],
+  "error": {
+    "code": "routeros/command-failed",
+    "summary": "RouterOS command failed: tarpit valid only for tcp",
+    "message": "RouterOS command failed: tarpit valid only for tcp",
+    "remediation": "Inspect the RouterOS failure message, then adjust the path, attributes, or request shape accordingly.",
+    "cause": "failure: tarpit valid only for tcp",
+    "context": {
+      "command": "/ip/firewall/filter/add",
+      "message": "failure: tarpit valid only for tcp"
+    }
+  },
+  "meta": {
+    "via": "native-api",
+    "operation": {
+      "kind": "execute",
+      "objectCount": 0,
+      "path": null
+    }
+  }
+}

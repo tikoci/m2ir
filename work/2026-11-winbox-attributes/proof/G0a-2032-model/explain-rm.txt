@@ -1,0 +1,14 @@
+verdict: pass — 1 statement(s), 0 diagnostic(s)
+gate: structured /ip/firewall/filter remove · 1 arg(s) · write-shaped
+write: true
+statements:
+  [0,37)       resolved  command  path=/ip/firewall/filter verb=remove  via=unknown
+    why: the tested remove mapping requires exactly one literal RouterOS .id
+values:
+  [35,37)      attribute  name=numbers shapes=id
+evidence: e0 canonicalizeExecuteCommand (direct), e1 analyzeCoordinates (direct), e4 resolveVerbs (heuristic), e6 containsWrite (heuristic), e8 classifyExplainTransport (heuristic), e9 valueShapeHints (heuristic)
+runtimeAcceptance: not-proven
+
+Tips:
+  - [tip/explain-offline-only] No router was given, so this is the canonicalizer's reading alone.
+    fix: Add a router (`centrs explain <router> '<input>'`) for read-only parse, highlight and argument-name evidence; `--schema` and `--complete` then describe paths and complete at the cursor.

@@ -59,7 +59,7 @@ describe("bridge-vlan f4 [16,13] replay", () => {
 		expect(handler["sys-to"]).toEqual([16, 13]);
 		const user = handler.fields["namespace-user"];
 		expect(user["4"]?.name).toBe("configured-untagged");
-		expect(user["7"]?.name).toBe("unknown-7");
+		expect(user["7"]?.name).toBe("mvrp-forbidden");
 		expect(user["7"]?.tcode).toBe("u32_array");
 	});
 

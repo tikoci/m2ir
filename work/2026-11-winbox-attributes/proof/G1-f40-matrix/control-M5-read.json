@@ -1,0 +1,36 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*2",
+      "action": "jump",
+      "bytes": "0",
+      "chain": "forward",
+      "comment": "g1-c-jump",
+      "dynamic": "false",
+      "invalid": "false",
+      "jump-target": "g1jt",
+      "packets": "0"
+    },
+    {
+      ".id": "*7",
+      "action": "log",
+      "bytes": "0",
+      "chain": "forward",
+      "comment": "g1-m-log",
+      "dynamic": "false",
+      "invalid": "false",
+      "packets": "0"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 2,
+      "path": "/ip/firewall/filter"
+    }
+  }
+}
