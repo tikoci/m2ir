@@ -1,0 +1,94 @@
+{
+  "ok": true,
+  "data": [],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "target": {
+      "input": "e3-beta4",
+      "host": "redacted",
+      "port": 0,
+      "baseUrl": "redacted",
+      "identity": "e3-beta4",
+      "source": {
+        "kind": "provider",
+        "key": "quickchr:e3-beta4"
+      },
+      "sources": {
+        "host": {
+          "kind": "provider",
+          "key": "quickchr:e3-beta4"
+        },
+        "port": {
+          "kind": "provider",
+          "key": "quickchr:e3-beta4"
+        }
+      }
+    },
+    "via": "rest-api",
+    "settings": {
+      "via": {
+        "kind": "default",
+        "key": "via"
+      },
+      "host": {
+        "kind": "provider",
+        "key": "quickchr:e3-beta4"
+      },
+      "port": {
+        "kind": "provider",
+        "key": "quickchr:e3-beta4"
+      },
+      "timeoutMs": {
+        "kind": "default",
+        "key": "timeout"
+      },
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      },
+      "validate": {
+        "kind": "default",
+        "key": "validate"
+      },
+      "username": {
+        "kind": "provider",
+        "key": "quickchr:e3-beta4:username"
+      },
+      "password": {
+        "kind": "provider",
+        "key": "quickchr:e3-beta4:password"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "source": "live /console/inspect request=child",
+      "result": "passed",
+      "stages": [
+        {
+          "stage": "device",
+          "source": "live /console/inspect request=child",
+          "result": "passed"
+        }
+      ]
+    },
+    "operation": {
+      "kind": "data",
+      "objectCount": 0,
+      "request": {
+        "path": "/ip/firewall/nat",
+        "attributes": [],
+        "allAttributes": false,
+        "listAttributes": false,
+        "validate": true,
+        "verbose": false,
+        "timeoutMs": 10000,
+        "format": "json"
+      },
+      "auth": {
+        "username": "admin",
+        "passwordProvided": true
+      }
+    }
+  }
+}

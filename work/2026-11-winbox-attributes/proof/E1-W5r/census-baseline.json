@@ -1,0 +1,217 @@
+{
+	"proof": "E1-W5r native scan",
+	"machine": "twin3",
+	"routeros_version": "7.25",
+	"tag": "baseline",
+	"zero_writes": true,
+	"census_16_0_32": {
+		"total_slots": 33,
+		"ok_slots": 13,
+		"cells": [
+			{
+				"slot": 0,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 1,
+				"status": "ok",
+				"count19": 4294967295,
+				"count14": null
+			},
+			{
+				"slot": 2,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 3,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 4,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 5,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 6,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 7,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 8,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 9,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 10,
+				"status": "ok",
+				"count19": 4294967295,
+				"count14": null
+			},
+			{
+				"slot": 11,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 12,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 13,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 14,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 15,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 16,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 17,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 18,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 19,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 20,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 21,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 22,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 23,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 24,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 25,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 26,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 27,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 28,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 29,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 30,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 31,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 32,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			}
+		]
+	},
+	"getall-16-2": {
+		"rows": 0,
+		"pages": 1,
+		"complete": true,
+		"shapes": []
+	}
+}

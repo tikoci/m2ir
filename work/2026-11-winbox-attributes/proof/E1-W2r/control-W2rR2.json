@@ -1,0 +1,101 @@
+{
+  "data": {
+    "ret": ""
+  },
+  "meta": {
+    "operation": {
+      "auth": {
+        "passwordProvided": true,
+        "username": "admin"
+      },
+      "kind": "execute",
+      "objectCount": 1,
+      "request": {
+        "canonical": {
+          "attributes": {},
+          "input": "/interface/bridge/port/remove *0",
+          "mode": "script",
+          "path": "",
+          "queries": [],
+          "verb": ""
+        },
+        "command": "/interface/bridge/port/remove *0",
+        "format": "json",
+        "timeoutMs": 10000,
+        "validate": true,
+        "verbose": false,
+        "write": true,
+        "yes": true
+      }
+    },
+    "settings": {
+      "format": {
+        "key": "format",
+        "kind": "cli"
+      },
+      "host": "[redacted]",
+      "insecure": {
+        "key": "insecure",
+        "kind": "default"
+      },
+      "password": {
+        "key": "quickchr:twin3:password",
+        "kind": "provider"
+      },
+      "port": "[redacted]",
+      "timeoutMs": {
+        "key": "timeout",
+        "kind": "default"
+      },
+      "username": {
+        "key": "quickchr:twin3:username",
+        "kind": "provider"
+      },
+      "validate": {
+        "key": "validate",
+        "kind": "default"
+      },
+      "via": {
+        "key": "via",
+        "kind": "default"
+      }
+    },
+    "target": {
+      "baseUrl": "[redacted]",
+      "host": "[redacted]",
+      "identity": "twin3",
+      "input": "twin3",
+      "port": "[redacted]",
+      "source": {
+        "key": "quickchr:twin3",
+        "kind": "provider"
+      },
+      "sources": {
+        "host": "[redacted]",
+        "port": "[redacted]"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "result": "passed",
+      "source": ":put [:parse]",
+      "stages": [
+        {
+          "result": "passed",
+          "source": "offline explain (canonicalizer)",
+          "stage": "offline"
+        },
+        {
+          "result": "passed",
+          "source": ":put [:parse]",
+          "stage": "device"
+        }
+      ],
+      "syntax": true
+    },
+    "via": "native-api"
+  },
+  "ok": true,
+  "tips": [],
+  "warnings": []
+}

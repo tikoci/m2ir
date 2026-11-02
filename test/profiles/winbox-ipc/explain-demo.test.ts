@@ -203,7 +203,7 @@ describe("schema-driven consumer demo", () => {
 		expect(answer.access).toBe("read-write");
 		expect(answer.writeEnabled).toBe(true);
 		expect(answer.versionOk).toBe(true);
-		expect(answer.valueCount).toBe(11);
+		expect(answer.valueCount).toBe(12);
 		expect(answer.evidenceCount).toBeGreaterThan(0);
 	});
 

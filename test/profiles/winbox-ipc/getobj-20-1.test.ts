@@ -72,15 +72,15 @@ function ipFields(): Map<number, FieldDef> {
 }
 
 describe("getobj [20,1] replay", () => {
-	test("schema carries the flat-row shape + UNKNOWN extras + notes", () => {
+	test("schema carries the flat-row shape + vrf/f11 extras + notes", () => {
 		const gui = loadYamlDoc<GuiHandlersDoc>(
 			"profiles/winbox-ipc/gui-handlers.yaml",
 		);
 		const handler = required(gui.handlers["ip-address"], "handlers.ip-address");
 		expect(handler["sys-to"]).toEqual([20, 1]);
 		const fields = ipFields();
-		// v7-only extras: presence + tcode in the YAML, meaning UNKNOWN.
-		expect(fields.get(6)?.name).toBe("unknown-6");
+		// v7-only extras: f6 promoted to vrf (E2-W), f11 still UNKNOWN.
+		expect(fields.get(6)?.name).toBe("vrf");
 		expect(fields.get(6)?.tcode).toBe("u32");
 		expect(fields.get(11)?.name).toBe("unknown-11");
 		expect(fields.get(11)?.tcode).toBe("bool");
@@ -161,7 +161,7 @@ describe("getobj [20,1] replay", () => {
 		}
 	});
 
-	test("extras 0x06/0x0b ride v7 rows only, no meaning checks", () => {
+	test("extras 0x06/0x0b ride v7 rows only (f6=vrf=main here, f11 unknown)", () => {
 		const fields = ipFields();
 		const keyOf = (name: string): string => {
 			for (const [id, def] of fields) {
@@ -190,10 +190,9 @@ describe("getobj [20,1] replay", () => {
 						? [entries]
 						: rowsOf(requiredEntry(entries, "0xfe0002", "STD_OBJS"));
 				for (const row of rows) {
-					// Presence + tcode + verbatim value only; the YAML
-					// records the meanings as UNKNOWN and this test must
-					// not decode them either.
-					const f6 = requiredEntry(row, keyOf("unknown-6"), "0x06");
+					// f6 is the row VRF (0 = main on these single-VRF
+					// lab rows); f11 stays UNKNOWN (value check only).
+					const f6 = requiredEntry(row, keyOf("vrf"), "0x06");
 					expect(f6.tcode).toBe("0x9");
 					expect(f6.value).toBe(0);
 					const f11 = requiredEntry(row, keyOf("unknown-11"), "0x0b");
@@ -217,7 +216,7 @@ describe("getobj [20,1] replay", () => {
 					? [entries]
 					: rowsOf(requiredEntry(entries, "0xfe0002", "STD_OBJS"));
 			for (const row of rows) {
-				expect(findEntry(row, keyOf("unknown-6"))).toBeUndefined();
+				expect(findEntry(row, keyOf("vrf"))).toBeUndefined();
 				expect(findEntry(row, keyOf("unknown-11"))).toBeUndefined();
 			}
 		}

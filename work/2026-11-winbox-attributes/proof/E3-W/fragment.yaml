@@ -1,0 +1,70 @@
+# cspell:ignore rowid u32 getall getcount calea moveobj notimp brkpath redacted e3same e3mv
+# E3-W proposed gui-handlers.yaml / std-commands.yaml fragment (coordinator integrates; worker edits nothing canonical).
+# Only PROVEN wire claims are proposed. The filter-hid co-flip (ambiguous
+# stop), jump/same-remaining opens, the P-move-2 gate-out, and the
+# f40-drop negative (untouched) propose NOTHING.
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> nat-20-5 -> fields.namespace-user.40
+    op: extend-enum-and-role
+    confidence: observed-only
+    values_add: { 24: same }
+    role_add: "12-value action enum: same=24 proven by 4 control adds (base/to-addresses, +same-not-by-dst, +proto+to-ports, +to-addresses-range), every row f40/0x9=24. same-not-by-dst does not move f40 (on and off both 24). to-addresses is control-plane-required for same ('failure: to-addresses must be specified'). drop still has NO value (prior negative untouched); jump untested (no filter hid)."
+    evidence_add:
+      - source: sample
+        ref: "live CHR interrogation (E3-W same-matrix, ws21 7.25, 2026-11-02): 4 same rows f40=24 + bare-add rejection — work/2026-11-winbox-attributes/proof/E3-W/{step-same-v1b.jsonl,step-same-v2.jsonl,step-same-v3.jsonl,step-same-v4.jsonl,control-same-v1-add.json}"
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> nat-20-5 -> fields.namespace-user.1005
+    op: new-field
+    confidence: observed-only
+    entry:
+      name: same-not-by-dst
+      tcode: bool
+      cli-alias: "/ip/firewall/nat same-not-by-dst"
+      role: "same-action adjunct: absent on the base same row, present-true with same-not-by-dst=yes as the ONLY row delta (f40 stays 24); absent from every prior in-repo NAT row (accept/passthrough/redirect/src-nat/dst-nat/netmap)."
+      access: read-write
+    evidence_add:
+      - source: sample
+        ref: "live CHR interrogation (E3-W same-matrix V1b/V2, ws21 7.25, 2026-11-02): single-field delta 0x3ed/0x1 — work/2026-11-winbox-attributes/proof/E3-W/{step-same-v1b.jsonl,step-same-v2.jsonl}"
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> nat-20-5 -> fields.namespace-user.1006
+    op: new-field
+    confidence: observed-only
+    entry:
+      name: unknown-f1006
+      tcode: bool
+      role: "presence correlation only (no semantic name proven): true on all 4 same rows + prior src-nat/dst-nat/netmap rows (all carry f1000/f1001); absent on accept/passthrough/redirect-without-to-addresses rows. Co-occurs with f1000/f1001 presence across 5 actions, 10 rows."
+      access: read-only
+    evidence_add:
+      - source: sample
+        ref: "live CHR interrogation (E3-W same-matrix, ws21 7.25, 2026-11-02) + prior proofs: 0x3ee/0x1 correlation — work/2026-11-winbox-attributes/proof/E3-W/{step-same-v1b.jsonl,step-same-v2.jsonl,step-same-v3.jsonl,step-same-v4.jsonl}"
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> nat-20-5 -> fields.namespace-user.1000/1001
+    op: append-notes-and-evidence
+    confidence: observed-only
+    notes_add: |
+      E3-W range leg (ws21 7.25, 2026-11-02): to-addresses=192.0.2.1-192.0.2.10
+      rides f1000=192.0.2.1 + f1001=192.0.2.10 (tcode 0x8, octet-ordered bytes),
+      confirming the start/end split; single-IP rows carry start=end. to-ports
+      rides f1002/f1003 with the redirect-identical presence cluster
+      (f22=false, f404=true, f1007=true), so that cluster is a proto/to-ports
+      adjunct, not same-specific.
+    evidence_add:
+      - source: sample
+        ref: "live CHR interrogation (E3-W same-matrix V3/V4, ws21 7.25, 2026-11-02): range split + redirect-identical cluster — work/2026-11-winbox-attributes/proof/E3-W/{step-same-v3.jsonl,step-same-v4.jsonl}"
+  - target: profiles/winbox-ipc/std-commands.yaml -> 0xfe0007 CMD_MOVEOBJ
+    op: append-notes-and-evidence
+    confidence: observed-only
+    notes_add: |
+      Destination-as-start is a second ok-noop shape (E3-W P-move-1, ws21
+      7.25, 2026-11-02): MOVEOBJ {0xfe0001=7, 0xfe0003=6} answers ok but the
+      GETALL order is unchanged on BOTH the native and control surfaces
+      (A#6,B#7 before and after). H-move-1 disproven for this shape; reorder
+      parameters (if any) remain UNKNOWN. P-move-2 did not run (static gate
+      negative, guessing forbidden).
+    evidence_add:
+      - source: sample
+        ref: "live CHR interrogation (E3-W P-move-1, ws21 7.25, 2026-11-02): dual-surface no-op — work/2026-11-winbox-attributes/proof/E3-W/{step-move-before.jsonl,step-move-p1.jsonl,control-move-p1-read.json}"
+no_promotion_for:
+  - "filter hid: [20,3] 0->1->0 vs [20,32] 0->8->0 co-flip hit the sheet ambiguity stop - no hid claimed, no GETALL row-identity proof taken (stop literally followed)"
+  - "filter action=jump / jump-target: still blocked on the hid; jump mapping was never in this cap"
+  - "f40-drop: proven negative stands, never re-probed"
+  - "P-move-2 / moveobj-params: probe gated out by the negative static gate; reorder params still unknown"
+  - "f1006 semantic name: presence correlation only, not a named mapping"
+  - "V1 bare-same rejection: control-plane required-arg fact, no wire-mapping target"

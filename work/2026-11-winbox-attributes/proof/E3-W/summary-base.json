@@ -1,0 +1,4654 @@
+{
+  "proof": "E3-R read-only firewall/services census",
+  "target": "ws21",
+  "routeros_version": "7.25",
+  "winbox_port": "redacted",
+  "sweep_max": 140,
+  "legs": [
+    {
+      "leg": "getall-20-5",
+      "route": [
+        20,
+        5
+      ],
+      "cmd": "CMD_GETALL",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        5
+      ],
+      "rowCount": 0,
+      "pages": 1,
+      "complete": true,
+      "fieldKeys": [],
+      "note": "empty table: 0 rows",
+      "seqStart": 0,
+      "seqEnd": 1
+    },
+    {
+      "leg": "getcount-20-5",
+      "route": [
+        20,
+        5
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        5
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 2,
+      "seqEnd": 3
+    },
+    {
+      "leg": "getobj-20-5-1",
+      "route": [
+        20,
+        5
+      ],
+      "cmd": "CMD_GETOBJ",
+      "status": "router-error",
+      "errno": 16646148,
+      "errnoName": "ERROR_UNKNOWNID",
+      "errstr": null,
+      "from": [
+        20,
+        5
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 4,
+      "seqEnd": 5
+    },
+    {
+      "leg": "getobj-20-5-999",
+      "route": [
+        20,
+        5
+      ],
+      "cmd": "CMD_GETOBJ",
+      "status": "router-error",
+      "errno": 16646148,
+      "errnoName": "ERROR_UNKNOWNID",
+      "errstr": null,
+      "from": [
+        20,
+        5
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 6,
+      "seqEnd": 7
+    },
+    {
+      "leg": "getall-20-87",
+      "route": [
+        20,
+        87
+      ],
+      "cmd": "CMD_GETALL",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        87
+      ],
+      "rowCount": 0,
+      "pages": 1,
+      "complete": true,
+      "fieldKeys": [],
+      "note": "empty table: 0 rows",
+      "seqStart": 8,
+      "seqEnd": 9
+    },
+    {
+      "leg": "getcount-20-87",
+      "route": [
+        20,
+        87
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        87
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 10,
+      "seqEnd": 11
+    },
+    {
+      "leg": "getobj-20-87-1",
+      "route": [
+        20,
+        87
+      ],
+      "cmd": "CMD_GETOBJ",
+      "status": "router-error",
+      "errno": 16646148,
+      "errnoName": "ERROR_UNKNOWNID",
+      "errstr": null,
+      "from": [
+        20,
+        87
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 12,
+      "seqEnd": 13
+    },
+    {
+      "leg": "getobj-20-87-999",
+      "route": [
+        20,
+        87
+      ],
+      "cmd": "CMD_GETOBJ",
+      "status": "router-error",
+      "errno": 16646148,
+      "errnoName": "ERROR_UNKNOWNID",
+      "errstr": null,
+      "from": [
+        20,
+        87
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 14,
+      "seqEnd": 15
+    },
+    {
+      "leg": "getall-20-39",
+      "route": [
+        20,
+        39
+      ],
+      "cmd": "CMD_GETALL",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        39
+      ],
+      "rowCount": 0,
+      "pages": 1,
+      "complete": true,
+      "fieldKeys": [],
+      "note": "empty table: 0 rows",
+      "seqStart": 16,
+      "seqEnd": 17
+    },
+    {
+      "leg": "getcount-20-39",
+      "route": [
+        20,
+        39
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        39
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 18,
+      "seqEnd": 19
+    },
+    {
+      "leg": "getobj-20-39-1",
+      "route": [
+        20,
+        39
+      ],
+      "cmd": "CMD_GETOBJ",
+      "status": "router-error",
+      "errno": 16646148,
+      "errnoName": "ERROR_UNKNOWNID",
+      "errstr": null,
+      "from": [
+        20,
+        39
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 20,
+      "seqEnd": 21
+    },
+    {
+      "leg": "getobj-20-39-999",
+      "route": [
+        20,
+        39
+      ],
+      "cmd": "CMD_GETOBJ",
+      "status": "router-error",
+      "errno": 16646148,
+      "errnoName": "ERROR_UNKNOWNID",
+      "errstr": null,
+      "from": [
+        20,
+        39
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 22,
+      "seqEnd": 23
+    },
+    {
+      "leg": "sweep-getcount-20-0",
+      "route": [
+        20,
+        0
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        0
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 24,
+      "seqEnd": 25
+    },
+    {
+      "leg": "sweep-getcount-20-1",
+      "route": [
+        20,
+        1
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        1
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 1,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 26,
+      "seqEnd": 27
+    },
+    {
+      "leg": "sweep-getcount-20-2",
+      "route": [
+        20,
+        2
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        2
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 3,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 28,
+      "seqEnd": 29
+    },
+    {
+      "leg": "sweep-getcount-20-3",
+      "route": [
+        20,
+        3
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        3
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 30,
+      "seqEnd": 31
+    },
+    {
+      "leg": "sweep-getcount-20-4",
+      "route": [
+        20,
+        4
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        4
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 32,
+      "seqEnd": 33
+    },
+    {
+      "leg": "sweep-getcount-20-5",
+      "route": [
+        20,
+        5
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        5
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 34,
+      "seqEnd": 35
+    },
+    {
+      "leg": "sweep-getcount-20-6",
+      "route": [
+        20,
+        6
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        6
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 5,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 36,
+      "seqEnd": 37
+    },
+    {
+      "leg": "sweep-getcount-20-7",
+      "route": [
+        20,
+        7
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        7
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 38,
+      "seqEnd": 39
+    },
+    {
+      "leg": "sweep-getcount-20-8",
+      "route": [
+        20,
+        8
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        8
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 40,
+      "seqEnd": 41
+    },
+    {
+      "leg": "sweep-getcount-20-9",
+      "route": [
+        20,
+        9
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        9
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 42,
+      "seqEnd": 43
+    },
+    {
+      "leg": "sweep-getcount-20-10",
+      "route": [
+        20,
+        10
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        10
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 10,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 44,
+      "seqEnd": 45
+    },
+    {
+      "leg": "sweep-getcount-20-11",
+      "route": [
+        20,
+        11
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 46,
+      "seqEnd": 47
+    },
+    {
+      "leg": "sweep-getcount-20-12",
+      "route": [
+        20,
+        12
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        12
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 48,
+      "seqEnd": 49
+    },
+    {
+      "leg": "sweep-getcount-20-13",
+      "route": [
+        20,
+        13
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        13
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 1,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 50,
+      "seqEnd": 51
+    },
+    {
+      "leg": "sweep-getcount-20-14",
+      "route": [
+        20,
+        14
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        14
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 1,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 52,
+      "seqEnd": 53
+    },
+    {
+      "leg": "sweep-getcount-20-15",
+      "route": [
+        20,
+        15
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 54,
+      "seqEnd": 55
+    },
+    {
+      "leg": "sweep-getcount-20-16",
+      "route": [
+        20,
+        16
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 56,
+      "seqEnd": 57
+    },
+    {
+      "leg": "sweep-getcount-20-17",
+      "route": [
+        20,
+        17
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        17
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 58,
+      "seqEnd": 59
+    },
+    {
+      "leg": "sweep-getcount-20-18",
+      "route": [
+        20,
+        18
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 60,
+      "seqEnd": 61
+    },
+    {
+      "leg": "sweep-getcount-20-19",
+      "route": [
+        20,
+        19
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 62,
+      "seqEnd": 63
+    },
+    {
+      "leg": "sweep-getcount-20-20",
+      "route": [
+        20,
+        20
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 64,
+      "seqEnd": 65
+    },
+    {
+      "leg": "sweep-getcount-20-21",
+      "route": [
+        20,
+        21
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 66,
+      "seqEnd": 67
+    },
+    {
+      "leg": "sweep-getcount-20-22",
+      "route": [
+        20,
+        22
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 68,
+      "seqEnd": 69
+    },
+    {
+      "leg": "sweep-getcount-20-23",
+      "route": [
+        20,
+        23
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 70,
+      "seqEnd": 71
+    },
+    {
+      "leg": "sweep-getcount-20-24",
+      "route": [
+        20,
+        24
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 72,
+      "seqEnd": 73
+    },
+    {
+      "leg": "sweep-getcount-20-25",
+      "route": [
+        20,
+        25
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 74,
+      "seqEnd": 75
+    },
+    {
+      "leg": "sweep-getcount-20-26",
+      "route": [
+        20,
+        26
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 76,
+      "seqEnd": 77
+    },
+    {
+      "leg": "sweep-getcount-20-27",
+      "route": [
+        20,
+        27
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 78,
+      "seqEnd": 79
+    },
+    {
+      "leg": "sweep-getcount-20-28",
+      "route": [
+        20,
+        28
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        28
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 2,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 80,
+      "seqEnd": 81
+    },
+    {
+      "leg": "sweep-getcount-20-29",
+      "route": [
+        20,
+        29
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        29
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 82,
+      "seqEnd": 83
+    },
+    {
+      "leg": "sweep-getcount-20-30",
+      "route": [
+        20,
+        30
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        30
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 3,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 84,
+      "seqEnd": 85
+    },
+    {
+      "leg": "sweep-getcount-20-31",
+      "route": [
+        20,
+        31
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        31
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 86,
+      "seqEnd": 87
+    },
+    {
+      "leg": "sweep-getcount-20-32",
+      "route": [
+        20,
+        32
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        32
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 88,
+      "seqEnd": 89
+    },
+    {
+      "leg": "sweep-getcount-20-33",
+      "route": [
+        20,
+        33
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        33
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 10,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 90,
+      "seqEnd": 91
+    },
+    {
+      "leg": "sweep-getcount-20-34",
+      "route": [
+        20,
+        34
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        34
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 92,
+      "seqEnd": 93
+    },
+    {
+      "leg": "sweep-getcount-20-35",
+      "route": [
+        20,
+        35
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        35
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 94,
+      "seqEnd": 95
+    },
+    {
+      "leg": "sweep-getcount-20-36",
+      "route": [
+        20,
+        36
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 96,
+      "seqEnd": 97
+    },
+    {
+      "leg": "sweep-getcount-20-37",
+      "route": [
+        20,
+        37
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        37
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 98,
+      "seqEnd": 99
+    },
+    {
+      "leg": "sweep-getcount-20-38",
+      "route": [
+        20,
+        38
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        38
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 2,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 100,
+      "seqEnd": 101
+    },
+    {
+      "leg": "sweep-getcount-20-39",
+      "route": [
+        20,
+        39
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        39
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 102,
+      "seqEnd": 103
+    },
+    {
+      "leg": "sweep-getcount-20-40",
+      "route": [
+        20,
+        40
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        40
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 104,
+      "seqEnd": 105
+    },
+    {
+      "leg": "sweep-getcount-20-41",
+      "route": [
+        20,
+        41
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        41
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 3,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 106,
+      "seqEnd": 107
+    },
+    {
+      "leg": "sweep-getcount-20-42",
+      "route": [
+        20,
+        42
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        42
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 108,
+      "seqEnd": 109
+    },
+    {
+      "leg": "sweep-getcount-20-43",
+      "route": [
+        20,
+        43
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        43
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 5,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 110,
+      "seqEnd": 111
+    },
+    {
+      "leg": "sweep-getcount-20-44",
+      "route": [
+        20,
+        44
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        44
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 112,
+      "seqEnd": 113
+    },
+    {
+      "leg": "sweep-getcount-20-45",
+      "route": [
+        20,
+        45
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        45
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 114,
+      "seqEnd": 115
+    },
+    {
+      "leg": "sweep-getcount-20-46",
+      "route": [
+        20,
+        46
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 116,
+      "seqEnd": 117
+    },
+    {
+      "leg": "sweep-getcount-20-47",
+      "route": [
+        20,
+        47
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        47
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 118,
+      "seqEnd": 119
+    },
+    {
+      "leg": "sweep-getcount-20-48",
+      "route": [
+        20,
+        48
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        48
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 120,
+      "seqEnd": 121
+    },
+    {
+      "leg": "sweep-getcount-20-49",
+      "route": [
+        20,
+        49
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        49
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 122,
+      "seqEnd": 123
+    },
+    {
+      "leg": "sweep-getcount-20-50",
+      "route": [
+        20,
+        50
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        50
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 124,
+      "seqEnd": 125
+    },
+    {
+      "leg": "sweep-getcount-20-51",
+      "route": [
+        20,
+        51
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        51
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 126,
+      "seqEnd": 127
+    },
+    {
+      "leg": "sweep-getcount-20-52",
+      "route": [
+        20,
+        52
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        52
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 128,
+      "seqEnd": 129
+    },
+    {
+      "leg": "sweep-getcount-20-53",
+      "route": [
+        20,
+        53
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        53
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 130,
+      "seqEnd": 131
+    },
+    {
+      "leg": "sweep-getcount-20-54",
+      "route": [
+        20,
+        54
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        54
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 132,
+      "seqEnd": 133
+    },
+    {
+      "leg": "sweep-getcount-20-55",
+      "route": [
+        20,
+        55
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        55
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 134,
+      "seqEnd": 135
+    },
+    {
+      "leg": "sweep-getcount-20-56",
+      "route": [
+        20,
+        56
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 136,
+      "seqEnd": 137
+    },
+    {
+      "leg": "sweep-getcount-20-57",
+      "route": [
+        20,
+        57
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        57
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 19,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 138,
+      "seqEnd": 139
+    },
+    {
+      "leg": "sweep-getcount-20-58",
+      "route": [
+        20,
+        58
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        58
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 3,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 140,
+      "seqEnd": 141
+    },
+    {
+      "leg": "sweep-getcount-20-59",
+      "route": [
+        20,
+        59
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        59
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 142,
+      "seqEnd": 143
+    },
+    {
+      "leg": "sweep-getcount-20-60",
+      "route": [
+        20,
+        60
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        60
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 144,
+      "seqEnd": 145
+    },
+    {
+      "leg": "sweep-getcount-20-61",
+      "route": [
+        20,
+        61
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        61
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 146,
+      "seqEnd": 147
+    },
+    {
+      "leg": "sweep-getcount-20-62",
+      "route": [
+        20,
+        62
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        10,
+        1
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 148,
+      "seqEnd": 149
+    },
+    {
+      "leg": "sweep-getcount-20-63",
+      "route": [
+        20,
+        63
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 150,
+      "seqEnd": 151
+    },
+    {
+      "leg": "sweep-getcount-20-64",
+      "route": [
+        20,
+        64
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        64
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 152,
+      "seqEnd": 153
+    },
+    {
+      "leg": "sweep-getcount-20-65",
+      "route": [
+        20,
+        65
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        65
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 154,
+      "seqEnd": 155
+    },
+    {
+      "leg": "sweep-getcount-20-66",
+      "route": [
+        20,
+        66
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        66
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 156,
+      "seqEnd": 157
+    },
+    {
+      "leg": "sweep-getcount-20-67",
+      "route": [
+        20,
+        67
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        67
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 158,
+      "seqEnd": 159
+    },
+    {
+      "leg": "sweep-getcount-20-68",
+      "route": [
+        20,
+        68
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        68
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 160,
+      "seqEnd": 161
+    },
+    {
+      "leg": "sweep-getcount-20-69",
+      "route": [
+        20,
+        69
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        69
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 162,
+      "seqEnd": 163
+    },
+    {
+      "leg": "sweep-getcount-20-70",
+      "route": [
+        20,
+        70
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        70
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 164,
+      "seqEnd": 165
+    },
+    {
+      "leg": "sweep-getcount-20-71",
+      "route": [
+        20,
+        71
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        71
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 166,
+      "seqEnd": 167
+    },
+    {
+      "leg": "sweep-getcount-20-72",
+      "route": [
+        20,
+        72
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        72
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 168,
+      "seqEnd": 169
+    },
+    {
+      "leg": "sweep-getcount-20-73",
+      "route": [
+        20,
+        73
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        73
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 170,
+      "seqEnd": 171
+    },
+    {
+      "leg": "sweep-getcount-20-74",
+      "route": [
+        20,
+        74
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        74
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 172,
+      "seqEnd": 173
+    },
+    {
+      "leg": "sweep-getcount-20-75",
+      "route": [
+        20,
+        75
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        75
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 174,
+      "seqEnd": 175
+    },
+    {
+      "leg": "sweep-getcount-20-76",
+      "route": [
+        20,
+        76
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        76
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 176,
+      "seqEnd": 177
+    },
+    {
+      "leg": "sweep-getcount-20-77",
+      "route": [
+        20,
+        77
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        77
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 178,
+      "seqEnd": 179
+    },
+    {
+      "leg": "sweep-getcount-20-78",
+      "route": [
+        20,
+        78
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        78
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 180,
+      "seqEnd": 181
+    },
+    {
+      "leg": "sweep-getcount-20-79",
+      "route": [
+        20,
+        79
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        79
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 182,
+      "seqEnd": 183
+    },
+    {
+      "leg": "sweep-getcount-20-80",
+      "route": [
+        20,
+        80
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        80
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 184,
+      "seqEnd": 185
+    },
+    {
+      "leg": "sweep-getcount-20-81",
+      "route": [
+        20,
+        81
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        81
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 186,
+      "seqEnd": 187
+    },
+    {
+      "leg": "sweep-getcount-20-82",
+      "route": [
+        20,
+        82
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        82
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 188,
+      "seqEnd": 189
+    },
+    {
+      "leg": "sweep-getcount-20-83",
+      "route": [
+        20,
+        83
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        83
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 190,
+      "seqEnd": 191
+    },
+    {
+      "leg": "sweep-getcount-20-84",
+      "route": [
+        20,
+        84
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        84
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 192,
+      "seqEnd": 193
+    },
+    {
+      "leg": "sweep-getcount-20-85",
+      "route": [
+        20,
+        85
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        85
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 194,
+      "seqEnd": 195
+    },
+    {
+      "leg": "sweep-getcount-20-86",
+      "route": [
+        20,
+        86
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        86
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 2,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 196,
+      "seqEnd": 197
+    },
+    {
+      "leg": "sweep-getcount-20-87",
+      "route": [
+        20,
+        87
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        87
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 198,
+      "seqEnd": 199
+    },
+    {
+      "leg": "sweep-getcount-20-88",
+      "route": [
+        20,
+        88
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        88
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 2,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 200,
+      "seqEnd": 201
+    },
+    {
+      "leg": "sweep-getcount-20-89",
+      "route": [
+        20,
+        89
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        89
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 202,
+      "seqEnd": 203
+    },
+    {
+      "leg": "sweep-getcount-20-90",
+      "route": [
+        20,
+        90
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        90
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 204,
+      "seqEnd": 205
+    },
+    {
+      "leg": "sweep-getcount-20-91",
+      "route": [
+        20,
+        91
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        91
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 206,
+      "seqEnd": 207
+    },
+    {
+      "leg": "sweep-getcount-20-92",
+      "route": [
+        20,
+        92
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 208,
+      "seqEnd": 209
+    },
+    {
+      "leg": "sweep-getcount-20-93",
+      "route": [
+        20,
+        93
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 210,
+      "seqEnd": 211
+    },
+    {
+      "leg": "sweep-getcount-20-94",
+      "route": [
+        20,
+        94
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 212,
+      "seqEnd": 213
+    },
+    {
+      "leg": "sweep-getcount-20-95",
+      "route": [
+        20,
+        95
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 214,
+      "seqEnd": 215
+    },
+    {
+      "leg": "sweep-getcount-20-96",
+      "route": [
+        20,
+        96
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 216,
+      "seqEnd": 217
+    },
+    {
+      "leg": "sweep-getcount-20-97",
+      "route": [
+        20,
+        97
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 218,
+      "seqEnd": 219
+    },
+    {
+      "leg": "sweep-getcount-20-98",
+      "route": [
+        20,
+        98
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 220,
+      "seqEnd": 221
+    },
+    {
+      "leg": "sweep-getcount-20-99",
+      "route": [
+        20,
+        99
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 222,
+      "seqEnd": 223
+    },
+    {
+      "leg": "sweep-getcount-20-100",
+      "route": [
+        20,
+        100
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 224,
+      "seqEnd": 225
+    },
+    {
+      "leg": "sweep-getcount-20-101",
+      "route": [
+        20,
+        101
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        101
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 1,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 226,
+      "seqEnd": 227
+    },
+    {
+      "leg": "sweep-getcount-20-102",
+      "route": [
+        20,
+        102
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        102
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 1,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 228,
+      "seqEnd": 229
+    },
+    {
+      "leg": "sweep-getcount-20-103",
+      "route": [
+        20,
+        103
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        103
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 230,
+      "seqEnd": 231
+    },
+    {
+      "leg": "sweep-getcount-20-104",
+      "route": [
+        20,
+        104
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        104
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 232,
+      "seqEnd": 233
+    },
+    {
+      "leg": "sweep-getcount-20-105",
+      "route": [
+        20,
+        105
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        105
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 234,
+      "seqEnd": 235
+    },
+    {
+      "leg": "sweep-getcount-20-106",
+      "route": [
+        20,
+        106
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        106
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 236,
+      "seqEnd": 237
+    },
+    {
+      "leg": "sweep-getcount-20-107",
+      "route": [
+        20,
+        107
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        107
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 238,
+      "seqEnd": 239
+    },
+    {
+      "leg": "sweep-getcount-20-108",
+      "route": [
+        20,
+        108
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 240,
+      "seqEnd": 241
+    },
+    {
+      "leg": "sweep-getcount-20-109",
+      "route": [
+        20,
+        109
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        109
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 242,
+      "seqEnd": 243
+    },
+    {
+      "leg": "sweep-getcount-20-110",
+      "route": [
+        20,
+        110
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        110
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 244,
+      "seqEnd": 245
+    },
+    {
+      "leg": "sweep-getcount-20-111",
+      "route": [
+        20,
+        111
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        111
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 246,
+      "seqEnd": 247
+    },
+    {
+      "leg": "sweep-getcount-20-112",
+      "route": [
+        20,
+        112
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        112
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 248,
+      "seqEnd": 249
+    },
+    {
+      "leg": "sweep-getcount-20-113",
+      "route": [
+        20,
+        113
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        113
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 250,
+      "seqEnd": 251
+    },
+    {
+      "leg": "sweep-getcount-20-114",
+      "route": [
+        20,
+        114
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        114
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 1,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 252,
+      "seqEnd": 253
+    },
+    {
+      "leg": "sweep-getcount-20-115",
+      "route": [
+        20,
+        115
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        115
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 1,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 254,
+      "seqEnd": 255
+    },
+    {
+      "leg": "sweep-getcount-20-116",
+      "route": [
+        20,
+        116
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        116
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 256,
+      "seqEnd": 257
+    },
+    {
+      "leg": "sweep-getcount-20-117",
+      "route": [
+        20,
+        117
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        117
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 258,
+      "seqEnd": 259
+    },
+    {
+      "leg": "sweep-getcount-20-118",
+      "route": [
+        20,
+        118
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 260,
+      "seqEnd": 261
+    },
+    {
+      "leg": "sweep-getcount-20-119",
+      "route": [
+        20,
+        119
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 262,
+      "seqEnd": 263
+    },
+    {
+      "leg": "sweep-getcount-20-120",
+      "route": [
+        20,
+        120
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        120
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 2,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 264,
+      "seqEnd": 265
+    },
+    {
+      "leg": "sweep-getcount-20-121",
+      "route": [
+        20,
+        121
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        121
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 8,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 266,
+      "seqEnd": 267
+    },
+    {
+      "leg": "sweep-getcount-20-122",
+      "route": [
+        20,
+        122
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        122
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 268,
+      "seqEnd": 269
+    },
+    {
+      "leg": "sweep-getcount-20-123",
+      "route": [
+        20,
+        123
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 270,
+      "seqEnd": 271
+    },
+    {
+      "leg": "sweep-getcount-20-124",
+      "route": [
+        20,
+        124
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646150,
+      "errnoName": "ERROR_FAILED",
+      "errstr": "no INTERFACE_IDS",
+      "from": [
+        20,
+        124
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9",
+        "0xff0009/0x21"
+      ],
+      "seqStart": 272,
+      "seqEnd": 273
+    },
+    {
+      "leg": "sweep-getcount-20-125",
+      "route": [
+        20,
+        125
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        125
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 274,
+      "seqEnd": 275
+    },
+    {
+      "leg": "sweep-getcount-20-126",
+      "route": [
+        20,
+        126
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        126
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 1,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 276,
+      "seqEnd": 277
+    },
+    {
+      "leg": "sweep-getcount-20-127",
+      "route": [
+        20,
+        127
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        127
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 278,
+      "seqEnd": 279
+    },
+    {
+      "leg": "sweep-getcount-20-128",
+      "route": [
+        20,
+        128
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        128
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 280,
+      "seqEnd": 281
+    },
+    {
+      "leg": "sweep-getcount-20-129",
+      "route": [
+        20,
+        129
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        129
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 0,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 282,
+      "seqEnd": 283
+    },
+    {
+      "leg": "sweep-getcount-20-130",
+      "route": [
+        20,
+        130
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        130
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 284,
+      "seqEnd": 285
+    },
+    {
+      "leg": "sweep-getcount-20-131",
+      "route": [
+        20,
+        131
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 286,
+      "seqEnd": 287
+    },
+    {
+      "leg": "sweep-getcount-20-132",
+      "route": [
+        20,
+        132
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 288,
+      "seqEnd": 289
+    },
+    {
+      "leg": "sweep-getcount-20-133",
+      "route": [
+        20,
+        133
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 290,
+      "seqEnd": 291
+    },
+    {
+      "leg": "sweep-getcount-20-134",
+      "route": [
+        20,
+        134
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        134
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 1,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 292,
+      "seqEnd": 293
+    },
+    {
+      "leg": "sweep-getcount-20-135",
+      "route": [
+        20,
+        135
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 294,
+      "seqEnd": 295
+    },
+    {
+      "leg": "sweep-getcount-20-136",
+      "route": [
+        20,
+        136
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 296,
+      "seqEnd": 297
+    },
+    {
+      "leg": "sweep-getcount-20-137",
+      "route": [
+        20,
+        137
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 298,
+      "seqEnd": 299
+    },
+    {
+      "leg": "sweep-getcount-20-138",
+      "route": [
+        20,
+        138
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 300,
+      "seqEnd": 301
+    },
+    {
+      "leg": "sweep-getcount-20-139",
+      "route": [
+        20,
+        139
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 302,
+      "seqEnd": 303
+    },
+    {
+      "leg": "sweep-getcount-20-140",
+      "route": [
+        20,
+        140
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "router-error",
+      "errno": 16646146,
+      "errnoName": "ERROR_BRKPATH",
+      "errstr": null,
+      "from": [
+        20
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 304,
+      "seqEnd": 305
+    },
+    {
+      "leg": "getall-20-13",
+      "route": [
+        20,
+        13
+      ],
+      "cmd": "CMD_GETALL",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        13
+      ],
+      "rowCount": 1,
+      "pages": 1,
+      "complete": true,
+      "fieldKeys": [
+        "0xfe0001/0x9",
+        "0xfe0010/0x21"
+      ],
+      "note": "first-row keys listed; rows=1",
+      "seqStart": 306,
+      "seqEnd": 307
+    },
+    {
+      "leg": "getcount-20-13",
+      "route": [
+        20,
+        13
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        13
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 1,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 308,
+      "seqEnd": 309
+    },
+    {
+      "leg": "getall-20-14",
+      "route": [
+        20,
+        14
+      ],
+      "cmd": "CMD_GETALL",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        14
+      ],
+      "rowCount": 1,
+      "pages": 1,
+      "complete": true,
+      "fieldKeys": [
+        "0xfe0001/0x9",
+        "0xfe0010/0x21"
+      ],
+      "note": "first-row keys listed; rows=1",
+      "seqStart": 310,
+      "seqEnd": 311
+    },
+    {
+      "leg": "getcount-20-14",
+      "route": [
+        20,
+        14
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        14
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 1,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 312,
+      "seqEnd": 313
+    },
+    {
+      "leg": "get-20-17",
+      "route": [
+        20,
+        17
+      ],
+      "cmd": "CMD_GET",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        17
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0x00005c/0x1",
+        "0x000064/0x1",
+        "0x000065/0x0",
+        "0x000066/0x1",
+        "0x000010/0x0",
+        "0x000012/0x1",
+        "0x000013/0x1",
+        "0x000014/0x0",
+        "0x000015/0x0",
+        "0x000016/0x1",
+        "0x000018/0x1",
+        "0x00001a/0x0",
+        "0x000072/0x0",
+        "0x0000cd/0x0",
+        "0x00001e/0x1",
+        "0x00001f/0x1",
+        "0x000022/0x1",
+        "0x00012c/0x0",
+        "0x00012d/0x0",
+        "0x00012e/0x0",
+        "0x00012f/0x0",
+        "0x000026/0x0",
+        "0x000029/0x1",
+        "0x00002a/0x0",
+        "0x00002d/0x0",
+        "0x00002e/0x0",
+        "0x00002f/0x0",
+        "0x000190/0x0",
+        "0x000034/0x0",
+        "0x000039/0x0",
+        "0x00003a/0x0",
+        "0x00003b/0x0",
+        "0x00003c/0x0",
+        "0x00003d/0x0",
+        "0x00003e/0x0",
+        "0x00003f/0x0",
+        "0x000040/0x1",
+        "0x000041/0x1",
+        "0x000046/0x0",
+        "0x000047/0x1",
+        "0x00004a/0x1",
+        "0x00004b/0x0",
+        "0x00004e/0x0",
+        "0x000050/0x1",
+        "0x000053/0x0",
+        "0x000054/0x0",
+        "0x000030/0x9",
+        "0x000031/0x9",
+        "0x000035/0x8",
+        "0x000036/0x8",
+        "0x000037/0x9",
+        "0x000038/0x9",
+        "0xfe0012/0x9",
+        "0x00005a/0x8",
+        "0x00005b/0x8",
+        "0x000068/0x9",
+        "0x000069/0x8",
+        "0x00006a/0x9",
+        "0x00006b/0x8",
+        "0x00006c/0x9",
+        "0x00006d/0x8",
+        "0x00006e/0x8",
+        "0x00006f/0x8",
+        "0x000070/0x9",
+        "0x000071/0x9",
+        "0x000073/0x9",
+        "0xff0003/0x9",
+        "0xff0006/0x9",
+        "0x000fcf/0x8",
+        "0x000fd0/0x8",
+        "0x000fd1/0x9",
+        "0x000002/0x8",
+        "0x000003/0x8",
+        "0x000004/0x8",
+        "0x000005/0x8",
+        "0x000006/0x8",
+        "0x000007/0x8",
+        "0x000008/0x8",
+        "0x000009/0x8",
+        "0x00000a/0x8",
+        "0x00000b/0x8",
+        "0x00000c/0x8",
+        "0x00000d/0x8",
+        "0x00000e/0x8",
+        "0x00000f/0x9",
+        "0x000011/0x9",
+        "0x000017/0x9",
+        "0x000019/0x9",
+        "0x0000c9/0x9",
+        "0x00001b/0x9",
+        "0x00001c/0x8",
+        "0x00001d/0x8",
+        "0x0000ce/0x9",
+        "0x0000cf/0x9",
+        "0x0000d0/0x8",
+        "0x000020/0x9",
+        "0x0000ca/0x9",
+        "0x0000cb/0x8",
+        "0x0000cc/0x8",
+        "0x000021/0x8",
+        "0x00002b/0x9",
+        "0x00002c/0x9",
+        "0x000052/0x10",
+        "0x000051/0x10",
+        "0x000045/0x10",
+        "0x000044/0x10",
+        "0x000043/0x10",
+        "0x000042/0x10",
+        "0x00004f/0x21",
+        "0x00004d/0x10",
+        "0x00004c/0x10",
+        "0x000049/0x10",
+        "0x000048/0x10",
+        "0x000028/0x10",
+        "0x000027/0x10",
+        "0x000024/0x10",
+        "0x000023/0x10"
+      ],
+      "seqStart": 314,
+      "seqEnd": 315
+    },
+    {
+      "leg": "getcount-20-17",
+      "route": [
+        20,
+        17
+      ],
+      "cmd": "CMD_GETCOUNT",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        17
+      ],
+      "countSlot": "0xfe0019",
+      "countValue": 4294967295,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0003/0x9",
+        "0xfe0019/0x8",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 316,
+      "seqEnd": 317
+    },
+    {
+      "leg": "get-20-61-bare",
+      "route": [
+        20,
+        61
+      ],
+      "cmd": "CMD_GET",
+      "status": "router-error",
+      "errno": 16646148,
+      "errnoName": "ERROR_UNKNOWNID",
+      "errstr": null,
+      "from": [
+        20,
+        61
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "note": "negative control",
+      "seqStart": 318,
+      "seqEnd": 319
+    },
+    {
+      "leg": "get-20-61-f7-lte1",
+      "route": [
+        20,
+        61
+      ],
+      "cmd": "CMD_GET",
+      "status": "router-error",
+      "errno": 16646148,
+      "errnoName": "ERROR_UNKNOWNID",
+      "errstr": null,
+      "from": [
+        20,
+        61
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "note": "negative control",
+      "seqStart": 320,
+      "seqEnd": 321
+    },
+    {
+      "leg": "get-20-61-f7-foo",
+      "route": [
+        20,
+        61
+      ],
+      "cmd": "CMD_GET",
+      "status": "router-error",
+      "errno": 16646148,
+      "errnoName": "ERROR_UNKNOWNID",
+      "errstr": null,
+      "from": [
+        20,
+        61
+      ],
+      "countSlot": null,
+      "countValue": null,
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "note": "negative control",
+      "seqStart": 322,
+      "seqEnd": 323
+    }
+  ]
+}

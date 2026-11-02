@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*80000001",
+      "active": "true",
+      "dhcp": "true",
+      "distance": "1",
+      "dst-address": "0.0.0.0/0",
+      "dynamic": "true",
+      "gateway": "10.0.2.2",
+      "immediate-gw": "10.0.2.2%ether1",
+      "inactive": "false",
+      "routing-table": "main",
+      "scope": "30",
+      "target-scope": "10",
+      "vrf-interface": "ether1"
+    },
+    {
+      ".id": "*20183010",
+      "active": "true",
+      "connect": "true",
+      "distance": "0",
+      "dst-address": "10.0.2.0/24",
+      "dynamic": "true",
+      "gateway": "ether1",
+      "immediate-gw": "ether1",
+      "inactive": "false",
+      "local-address": "10.0.2.15%ether1",
+      "routing-table": "main",
+      "scope": "10",
+      "target-scope": "5"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 2,
+      "path": "/ip/route"
+    }
+  }
+}

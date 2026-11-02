@@ -1,0 +1,593 @@
+{
+	"provenance": {
+		"report": "E3-W same-matrix, 2026-11-02 (live CHR interrogation, ws21 7.25 x86)",
+		"routeros_version": "7.25",
+		"route": [20, 5],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. Machine names + versions only; lab addresses are synthetic QEMU state. Source: proof/E3-W/step-same-{v1b,v2,v3,v4}.jsonl GETALL rx (lines 1-2 each): V1b base same row, V2 +same-not-by-dst single delta, V3 +proto/to-ports cluster, V4 to-addresses range split."
+	},
+	"records": [
+		{
+			"id": "same-base-tx",
+			"role": "GETALL [20,5] base same row, tx",
+			"source": "ws21 7.25 E3-W V1b tx",
+			"hex": "4d320500ff010600ff09020700ff080400fe000100ff88020014000000050000000200ff880200000000000b000000",
+			"cmd": 16646148,
+			"to": [20, 5],
+			"from": [0, 11],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "same-base-rx",
+			"role": "GETALL [20,5] base same row, rx",
+			"source": "ws21 7.25 E3-W V1b rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010046004d321c00fea00000ee0300010800fe000700fe0028000009180100fe0902e8030008c0000201e9030008c000020127000021067372636e61740900fe2108653373616d6531620300ff09021900fe09010600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x0003ee",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 24
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x0003e8",
+								"tcode": "0x8",
+								"value": 16908480
+							},
+							{
+								"key": "0x0003e9",
+								"tcode": "0x8",
+								"value": 16908480
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "e3same1b"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "same-not-by-dst-tx",
+			"role": "GETALL [20,5] same +same-not-by-dst row, tx",
+			"source": "ws21 7.25 E3-W V2 tx",
+			"hex": "4d320500ff010600ff09020700ff080400fe000100ff88020014000000050000000200ff880200000000000b000000",
+			"cmd": 16646148,
+			"to": [20, 5],
+			"from": [0, 11],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "same-not-by-dst-rx",
+			"role": "GETALL [20,5] same +same-not-by-dst row, rx",
+			"source": "ws21 7.25 E3-W V2 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010049004d321c00fea00000ed030001ee0300010800fe000700fe0028000009180100fe0903e8030008c0000201e9030008c000020127000021067372636e61740900fe2107653373616d65320300ff09021900fe09010600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x0003ed",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x0003ee",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 24
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0x0003e8",
+								"tcode": "0x8",
+								"value": 16908480
+							},
+							{
+								"key": "0x0003e9",
+								"tcode": "0x8",
+								"value": 16908480
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "e3same2"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "same-to-ports-tx",
+			"role": "GETALL [20,5] same +proto/to-ports row, tx",
+			"source": "ws21 7.25 E3-W V3 tx",
+			"hex": "4d320500ff010600ff09020700ff080400fe000100ff88020014000000050000000200ff880200000000000b000000",
+			"cmd": 16646148,
+			"to": [20, 5],
+			"from": [0, 11],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "same-to-ports-rx",
+			"role": "GETALL [20,5] same +proto/to-ports row, rx",
+			"source": "ws21 7.25 E3-W V3 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010066004d321c00fea00000160000000700fe000800fe0094010001ee030001ef030001e8030008c0000201e9030008c00002010b00000906ea030008901f0000eb030008901f000028000009180100fe090427000021067372636e61740900fe2107653373616d65330300ff09021900fe09010600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x000016",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000194",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x0003ee",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x0003ef",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x0003e8",
+								"tcode": "0x8",
+								"value": 16908480
+							},
+							{
+								"key": "0x0003e9",
+								"tcode": "0x8",
+								"value": 16908480
+							},
+							{
+								"key": "0x00000b",
+								"tcode": "0x9",
+								"value": 6
+							},
+							{
+								"key": "0x0003ea",
+								"tcode": "0x8",
+								"value": 8080
+							},
+							{
+								"key": "0x0003eb",
+								"tcode": "0x8",
+								"value": 8080
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 24
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "e3same3"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "same-range-tx",
+			"role": "GETALL [20,5] same to-addresses range row, tx",
+			"source": "ws21 7.25 E3-W V4 tx",
+			"hex": "4d320500ff010600ff09020700ff080400fe000100ff88020014000000050000000200ff880200000000000b000000",
+			"cmd": 16646148,
+			"to": [20, 5],
+			"from": [0, 11],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "same-range-rx",
+			"role": "GETALL [20,5] same to-addresses range row, rx",
+			"source": "ws21 7.25 E3-W V4 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010045004d321c00fea00000ee0300010800fe000700fe0028000009180100fe0905e8030008c0000201e9030008c000020a27000021067372636e61740900fe2107653373616d65340300ff09021900fe09010600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x0003ee",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 24
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 5
+							},
+							{
+								"key": "0x0003e8",
+								"tcode": "0x8",
+								"value": 16908480
+							},
+							{
+								"key": "0x0003e9",
+								"tcode": "0x8",
+								"value": 167903424
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "e3same4"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		}
+	]
+}

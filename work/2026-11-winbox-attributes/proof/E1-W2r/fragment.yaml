@@ -1,0 +1,33 @@
+# cspell:ignore rowid vlan getall w2r e1br ether1 untagged
+# E1-W2r mapping fragment: NO PROMOTION (worker W2r). Read-only proposal file;
+# no canonical schema file was edited.
+fragment: "E1-W2r mapping fragment (twin3 7.25)"
+leg: W2-rerun
+promotion: NONE
+reason: >-
+  The leg stopped at W2r.4 (swap rejected, 0 writes), so cells B-D were never
+  observed and u-vlan-f5-f6 (f5/f6 = current tagged/untagged) remains UNKNOWN:
+  the only new native cell (cell A) shows f5=f6=[] while both REST currents
+  are empty, which fits any reading and discriminates nothing — the same
+  1/4-cell position as E1. Cell A corroborates the already-promoted
+  p-vlan-f4 (f4=[2]=etherRowId non-empty while currents empty) but adds no
+  new field identity. The W2r.4 rejection extends the control-plane
+  disproof d-vlan-single-var to the bare-`untagged=` swap form (device
+  text: "interface cannot be in tagged and untagged at the same time"),
+  which is follow-up design input, not a wire mapping. No schema change
+  is proposed.
+proven_this_leg:
+  - id: cell-A-reproduced
+    claim: "p-vlan-f4 premise holds on twin3 this session (f4=[2] while currents empty; session-local rowids ether=2 bridge=3 lo=1)"
+    status: corroborated-not-new
+    evidence:
+      - work/2026-11-winbox-attributes/proof/E1-W2r/cell-A-vlan.json
+      - work/2026-11-winbox-attributes/proof/E1-W2r/step-cell-A.jsonl
+      - work/2026-11-winbox-attributes/proof/E1-W2r/step-cell-A-iface.jsonl
+  - id: d-vlan-swap-bare-empty
+    claim: "bare `untagged=` swap set is device-rejected with the tagged/untagged overlap message (control-plane, not a mapping)"
+    status: proven-control-plane
+    evidence:
+      - work/2026-11-winbox-attributes/proof/E1-W2r/control-W2r4.json
+still_unknown:
+  - "u-vlan-f5-f6: which of f5/f6 is current-tagged vs current-untagged (needs cells B-D via a future leg testing the quoted untagged=\"\" form or another move)"

@@ -1,0 +1,19 @@
+# cspell:ignore u32 rowid vrf
+# E2-W proposed gui-handlers.yaml fragment. Coordinator integrates; E2-W edits nothing canonical.
+fragment_for: profiles/winbox-ipc/gui-handlers.yaml
+promotion_ready:
+  - target: ip-address.namespace-user.6
+    action: rename unknown-6 -> vrf (tracks-row-VRF claim only)
+    lines:
+      - '        6: { name: vrf, tcode: u32, cli-alias: "/ip/address vrf", role: "VRF identity of the address row: 0 on main (dynamic DHCP, static, comment-unset, disabled states), 1 on the m2ir-vrf row; VRF creation without an address row moves no existing row (VRF-membership is per-row, not per-table). Single non-main-VRF sample; numeric identity beyond row-VRF tracking (e.g. registry rowid) is corroboration-level, not proven." }'
+    evidence_to_attach:
+      - source: sample
+        ref: "live CHR interrogation (E2-W legs A+B, 7.25 ws20, 2026-11-02, 8w+0r): f6=0 on all main rows across add/unset/disable/remove, f6=1 only on the vrf=m2ir-vrf row (stimulus-gated), byte-identical without-address control — work/2026-11-winbox-attributes/proof/E2-W/{report.yaml,step-legA-*.json,step-legB-*.json,control-*.json,native-ws20.jsonl}"
+    rationale: "f6 prime SUPPORTED per the frozen E2 outcomes table (move only on the vrf row + static leg-A row stayed 0); `vrf` is inside the frozen 10 (priority 1)"
+not_proposed:
+  - what: "U1 f11 semantics (slave or any other mapping)"
+    reason: "unknown — E2-W ruled out disabled only (stayed false under disabled=yes); slave-prime survives untested and `slave` is OUTSIDE the frozen 10, so any promotion needs a coordinator unfreeze decision plus the bridge-enslave follow-up leg (blocked, over cap)"
+  - what: "f6 numeric identity as a VRF registry rowid (e.g. [20,101])"
+    reason: "corroboration-level only — E2-W did not read [20,101]; E2-R 'main' rowid=0 is shape corroboration, not proof. Fragment claims row-VRF tracking only."
+  - what: "comment/disabled/delete visibility entries"
+    reason: "control observations (unset-no-effect, disabled-still-listed) confirm existing behavior; no schema change needed"

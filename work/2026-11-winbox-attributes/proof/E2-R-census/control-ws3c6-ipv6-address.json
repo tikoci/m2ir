@@ -1,0 +1,25 @@
+{
+  "ok": false,
+  "data": null,
+  "warnings": [],
+  "tips": [],
+  "error": {
+    "code": "routeros/unknown-path",
+    "summary": "RouterOS does not recognize the path: no such command prefix",
+    "message": "RouterOS does not recognize the path: no such command prefix",
+    "remediation": "Check the slash-prefixed RouterOS path against the device's command tree (use `--list-attributes` or `--no-validate` to narrow the mismatch).",
+    "cause": "no such command prefix",
+    "context": {
+      "command": "/ipv6/address/print",
+      "message": "no such command prefix"
+    }
+  },
+  "meta": {
+    "via": "native-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 0,
+      "path": "/ipv6/address"
+    }
+  }
+}

@@ -1,0 +1,188 @@
+# cspell:ignore cliref rowid bycatch
+# Phase E coordinator handoff (durable handoff rule, attribute-discovery-plan.md).
+# Written 2026-11-02 at S0 completion, before worker dispatch.
+head: 7303e785a7550f495a7b2d5102b5306de1142534
+git_status: "Phase E complete 2026-11-02; reviewed and committed on user instruction (supersedes the S0-era do-not-commit note below, kept as history)"
+dirty_files:
+  - work/2026-11-winbox-attributes/candidates.yaml (regenerated: +4 menus)
+  - work/2026-11-winbox-attributes/source-inventory.yaml (regenerated)
+  - work/2026-11-winbox-attributes/queries/20-pilot-cliref.sql
+  - work/2026-11-winbox-attributes/queries/22-pilot-inspect.sql
+  - work/2026-11-winbox-attributes/queries/23-pilot-entry-links.sql
+  - work/2026-11-winbox-attributes/queries/24-pilot-field-links.sql
+  - work/2026-11-winbox-attributes/proof/S0-replay-freeze/report.yaml (new)
+  - work/2026-11-winbox-attributes/proof/S0-replay-freeze/e2-candidates.yaml (new)
+  - work/2026-11-winbox-attributes/proof/S0-replay-freeze/e3-candidates.yaml (new)
+  - work/2026-11-winbox-attributes/handoff.yaml (this file)
+slices:
+  done: [S0, E1-followup-prep, E3-R, E2-R, reviewer, reconcile, integrate-readonly,
+    E2-W, E3-W, E1-W2-rerun, E1-W5-retry, integrate-write-dependent]
+  in_progress: []
+  queued: [followups-unbudgeted]
+execution_results:
+  E2-W: { spent: "8w+0r of 8w+0r", complete: true, restores: verified, vm: ws20 stopped,
+    findings: f6=vrf-rowid proven (0 main / 1 m2ir-vrf), f6-alt disproven, f11-disabled ruled out }
+  E3-W: { spent: "11w+0r of 12w+0r", complete: false, restores: verified, vm: ws21 stopped,
+    findings: same=24 + f1005 + f1006-corr + f1000/f1001 split + P-move-1 noop proven; filter-find AMBIGUITY stop ([20,3] 0->1->0 vs [20,32] 0->8->0, no hid claimed); P-move-2 gated out }
+  E1-W2-rerun: { spent: "6w+0r of 9w+0r", complete: false, restores: verified, vm: twin3 stopped,
+    findings: "cell A reproduced; W2r.4 swap rejected (0w, overlap message); B-D lost; u-vlan-f5-f6 still UNKNOWN" }
+  E1-W5-retry: { spent: "6w+0r of 6w+0r", complete: true, restores: verified, vm: twin3 stopped,
+    findings: u-host-owner ASSIGNED [16,3] (GETCOUNT 0->3 + MAC rows); gate passes live; row shape 12/13 keys }
+integration_write_dependent:
+  E2-W: ip-address f6->vrf + f11 disabled-note + 2 evidence + notes; fixture 7.25-vrf-f6-20-1.json; vrf-f6-20-1.test.ts
+  E3-W: nat f40+24same + f1005 + f1006 + f1000/f1001 notes + 5 evidence; MOVEOBJ P-move-1 notes + 2 evidence; fixtures 7.25-nat-same-20-5.json + 7.25-moveobj-p1-20-5.json; 2 test files
+  W2r: bridge-vlan notes (swap rejection) + 1 evidence; +1 test in bridge-vlan-f4.test.ts (no fixture: control-plane negative)
+  W5r: new bridge-host [16,3] handler (12 fields) + 3 evidence + notes; bridge-port v6-note fix; fixture 7.25-bridge-host-16-3.json; bridge-host-16-3.test.ts
+  preexisting_tests_updated: [getobj-20-1 (vrf promotion), nat-f40-enum (12 values + same-exclusion), explain-demo (12 values)]
+  counts: handlers 46, fields 326 (167 named, 159 unknown), confidence 286 (150/133/3), evidence 545; GLOSSARY += same, same-not-by-dst
+  gates: tests 294/0 across 44 files; lint:ci green
+  commit_state: uncommitted by design; do not commit or push
+followups_unbudgeted:
+  - jump-value mapping (~3w after coordinator resolves the filter hid from the [20,3]/[20,32] co-flip)
+  - f11 slave-prime bridge-enslave leg (over E2 cap; slave outside frozen 10, needs unfreeze)
+  - quoted untagged="" vlan move (new leg, new budget; cells B-D still lost)
+  - v6 [16,3] membership-vs-host ambiguity (no v6 host retrieve; needs hardware or v6 package leg)
+  - E1 7.26beta4 repeat (still outstanding: bridge-port/vlan/vrf verbs 7.25-scoped)
+  - v7 slot-19 / libumsg7 handleCmd static pass (non-lab); [20,38]/[20,57]/[20,58] bycatch identities
+approvals:
+  quoted_user_yes: "yes -- E2-W 8w+0r on ws20 (U1 f6/f11) · E3-W 12w+0r on ws21 (same-matrix + filter-find + MOVEOBJ) · E1-W2-rerun 9w+0r on twin3 (swap untested, zero headroom, confirm console access for the filtering step) · E1-W5-retry 6w+0r on twin3 (gate untested, zero headroom, runs after W2)"
+  scope: 4 named legs, in-session; earlier general go-ahead messages approved file work only, never router writes
+  E2-W: { approved: "8w+0r", spent: "8w+0r", vm: ws20, result: complete=true, f6-prime SUPPORTED (f6=vrf id), f6-alt DISPROVEN, f11-disabled ruled out, restores verified }
+  E3-W: { approved: "12w+0r", spent: "11w+0r", vm: ws21, result: "complete=false, sheeted stop at filter-find ambiguity; same-matrix + P-move-1 proven, restores verified, vm stopped" }
+  E1-W2-rerun: { approved: "9w+0r", spent: "6w+0r", vm: twin3, result: complete=false sheeted stop at W2r.4 (swap rejected 0w, cells B-D lost, u-vlan-f5-f6 still UNKNOWN), restore verified clean }
+  E1-W5-retry: { approved: "6w+0r", spent: "6w+0r", vm: twin3, gate: SATISFIED (W2r restore-verified + stopped), result: "complete=true, [16,3]=bridge-host assigned, restores verified, vm stopped" }
+w2r_coordinator_confirms:
+  - twin3 + sequential W2-then-W5: CONFIRMED (per user yes)
+  - G-static-mac predicate: CONFIRMED as sheeted (pass iff >=1 host row attaches lab ether1 MAC to e1br/ether1; dynamic co-rows allowed); NO out-of-leg static pinning (unbudgeted)
+  - W2r.5 access hazard: NO console exists for quickchr VMs; CONFIRMED alternate recovery instead - cells A+B banked before W2r.5 bound the loss; on post-W2r.5 access loss the worker stops the sheet and recovers via quickchr stop+clean+start + factory re-verify (recorded honestly, not sheet restore); W5r proceeds only on verified-clean baseline
+reviewer_record:
+  complete: true
+  evidence: [work/2026-11-winbox-attributes/proof/Reviewer/report.yaml]
+  blindness_verified: 0 forbidden read_file calls in reviewer session log
+  R1_E2: "[20,37] 7.25 {1-9,14,15,16,17,19} vs beta4 +{10,11} (0x9, 0), GETOBJ==GETALL, wire spot-check - AGREES with E2-R fragment, no discrepancy"
+  R2_E3: "[20,17] GETCOUNT ok+0xfe0019/0x8=4294967295 both versions (2 agreeing pairs each); [20,124] ERROR_FAILED + no INTERFACE_IDS both versions - AGREES with E3-R fragment, no discrepancy"
+  unresolved: []
+reconcile_record:
+  cross_worker_corroboration: E2-R + E3-R independently found [20,124] FAILED errstr (E2 on 3 verbs, E3 on GETCOUNT) + [20,17] 0xFFFFFFFF shape; reviewer confirms both blind - triple-sourced
+  decisions:
+    - "ACCEPT E2 fragment (ipv6 unknown-10/11 OPEN) at step 5: blind-verified"
+    - "ACCEPT E3 fragment ([20,17] + GETCOUNT notes) at step 5: blind-verified"
+    - "ACCEPT optional [20,124] unknown-holder entry at step 5: triple-sourced despite bycatch status"
+    - "DEFER [20,37] u8-vs-0x9 tcode churn: record wire observation in handler notes only, no field-type changes"
+    - "f11 slave-prime may be TESTED in E2-W but promotion needs a coordinator unfreeze (slave outside frozen 10)"
+    - "jump-value mapping needs a ~3w follow-up cap AFTER W-filter-find names the hid; not inside E3-W 12w"
+  gates: tests 266/0; lint:ci green (coordinator fixed 20 cspell hits: cspell.json +work/**/*.jsonl exemption, E2-R report/fragment headers, census.ts reword, handoff header)
+  dirty_extra: [cspell.json, work/2026-11-winbox-attributes/proof/E2-R-census/report.yaml, work/2026-11-winbox-attributes/proof/E2-R-census/fragment.yaml, work/2026-11-winbox-attributes/proof/E2-R-census/census.ts]
+  awaiting: user per-leg yes for E2-W, E3-W, E1-W2-rerun, E1-W5-retry (4 separate yeses; recorded/proposed != approved)
+  proposed_execution_order: [E2-W, E3-W, E1-W2-rerun, E1-W5-retry]
+  execution_agent: coordinator, sequential
+integration_readonly_record:
+  date: 2026-11-02
+  trigger: user "continue" + "write okay" = general go-ahead; per hard gate, file integration proceeded but NO router write leg executed (all 4 still await per-leg yes)
+  integrated_e2:
+    - profiles/winbox-ipc/gui-handlers.yaml ipv6-address: unknown-10/11 OPEN + 2 evidence + notes (wire-0x9 note, widths unchanged)
+    - fixtures/winbox-ipc/{7.25,7.26beta4}-ipv6-20-37.json (GETALL+GETOBJ rx pairs)
+    - test/profiles/winbox-ipc/ipv6-20-37.test.ts (4 tests)
+  integrated_e3:
+    - gui-handlers.yaml neighbor-discovery-settings: notes + 2 evidence
+    - profiles/winbox-ipc/std-commands.yaml CMD_GETCOUNT: notes + 2 evidence
+    - gui-handlers.yaml unknown-20-124 (new holder, role-open, 4 evidence incl. E2 cross-corroboration)
+    - fixtures/winbox-ipc/{7.25,7.26beta4}-getcount-20-17-124.json
+    - test/profiles/winbox-ipc/getcount-20-17-124.test.ts (5 tests)
+  test_helper: test/profiles/winbox-ipc/m2-replay.ts + tcode 0x18 bytes16 (per physical/nv-message.yaml fixed-16)
+  counts: handlers 44->45, fields 310->312 (161 named, 151 unknown), confidence 284->285 (132 observed-only), evidence 522->532; both READMEs + GLOSSARY.txt (INTERFACE_IDS)
+  gates: tests 275/0 (266 + 9 new); lint:ci green (biome fixture format + Reviewer cspell header fixed by coordinator)
+  not_integrated_write_dependent: [U1 f6/f11 semantics, f40 same-value, jump-value, MOVEOBJ params, W-filter-find result, f5/f6 cells, host-table owner]
+  commit_state: uncommitted by design; do not commit or push
+e2_r_record:
+  complete: true
+  evidence_root: work/2026-11-winbox-attributes/proof/E2-R-census/
+  proven:
+    - "[20,1] U1 f6=0 (0x9) + f11=false (0x0) on 7.25 AND 7.26beta4 (GETALL+GETOBJ); absent on v6"
+    - "[20,37] beta4-only drift: f10+f11 (0x9 u32c, both 0) on GETALL+GETOBJ, absent on 7.25"
+    - "[20,0..255] sweep identical ok-sets both 7.x (101 ok / 155 err); only population-driven count diffs"
+    - "route-table handler MISS in [20,*] (control: 2 route rows; every count-2 slot identified non-route)"
+    - "v6 [20,37] BRKPATH = ipv6 package disabled (control-proven), not drift"
+    - "[20,124] FAILED no INTERFACE_IDS on 3 verbs both 7.x (cross-corroborates E3-R)"
+    - "two unchanged GETALLs byte-identical; f6/f11 non-volatile in-session"
+    - "21 unknown-slot shapes recorded, no mapping claims (incl. [20,101] main rowid 0)"
+    - E2-W command strings pass offline explain
+  unresolved:
+    - U1-f6/f11 semantics need E2-W (8w+0r sheet proposed, NOT approved)
+    - route-handler needs read-only [13,*]/[11,*] sweep follow-up
+    - v6 [20,37] shape blocked on ipv6-enable + reboot (unbudgeted)
+    - beta4 [20,37] f10/f11 need nonzero stimulus
+    - "[20,37] wire-width question (wire 0x9 vs schema u8) is a coordinator call"
+    - "[20,57]/[20,58]/[20,102]/[20,121] shapes recorded, no claims"
+  mapping_claims: none
+  vm_end_state: [ws20 stopped, winbox-beta4 stopped, ws3c6 stopped]
+  writes: 0
+e3_r_record:
+  complete: true
+  evidence_root: work/2026-11-winbox-attributes/proof/E3-R-census/
+  files: [report.yaml, fragment.yaml, census-e3r.ts, step-7.25-census.jsonl,
+    step-7.26beta4-census.jsonl, summary-7.25.json, summary-7.26beta4.json,
+    control-ws21-*.json (8), control-e3-beta4-*.json (8)]
+  proven:
+    - empty-table shapes [20,5]/[20,87]/[20,39] reproduce queue-3 on 7.25 + 7.26beta4
+    - "[20,0..140] GETCOUNT sweep: ok-vs-BRKPATH identical all 141 slots both versions (no presence drift)"
+    - "[20,0]/[20,37] count diffs environmental (3 NICs vs 1), control-proven"
+    - "[20,61] bare/f7=lte1/f7=foo identical UNKNOWNID both versions (negative control)"
+    - bycatch "[20,124] GETCOUNT -> FAILED + no INTERFACE_IDS (first sighting); [20,17] GETCOUNT ok + 0xFFFFFFFF"
+  unresolved:
+    - U1 filter hid narrowed to 15 candidates; needs E3-W W-filter-find (one control add flips one slot 0->1)
+    - U2 f40 same-value + adjuncts designed; needs E3-W writes
+    - U3 jump value + jump-target BLOCKED on U1 (contingent design only)
+    - U4 MOVEOBJ params: 3 hypotheses + 2 gated probes; needs E3-W writes
+    - U5 "[20,38]/[20,57]/[20,58] NIC-correlated bycatch (cross-family, unclaimed)"
+    - B2 v7 slot-19 narrowed (slot19=cmdRemoveObj, JT bound 0x1a, case 0x14->slot29); needs libumsg7 handleCmd pass
+    - E3-W leg sheet proposed at exactly 12w+0r on ws21/7.25, NOT approved
+  vm_end_state: [ws21 stopped, e3-beta4 stopped (created by worker, kept for E3-W reuse)]
+  writes: 0
+e1_followup_prep_record:
+  complete: true
+  evidence:
+    - work/2026-11-winbox-attributes/proof/E1-followup/report.yaml
+    - work/2026-11-winbox-attributes/proof/E1-followup/leg-W2-rerun.yaml
+    - work/2026-11-winbox-attributes/proof/E1-followup/leg-W5-retry.yaml
+  verdicts: W2-rerun fits 9w+0r (headroom 0); W5-retry fits 6w+0r; all commands pass centrs explain offline
+  unresolved:
+    - coordinator confirms twin3 7.25 + sequential W2-then-W5 + port resolution at execution
+    - coordinator confirms reconstructed G-static-mac predicate before W2-rerun
+    - coordinator confirms console/alternate access before W2r.5 filtering step
+s0_record:
+  proven:
+    - E1 replay green on native versions (16 pass / 0 fail, 191 expects)
+    - Rosetta provenance unchanged (v0.12.0 / sha eee45741...); E2/E3 menus extracted (489 cliref rows, 1650 inspect rows)
+    - nat action enum carries same; filter action enum carries jump (Rosetta raw_type, 7.25)
+  disproven: []
+  unknown:
+    - U1 [20,1] f6/f11 semantics (E2)
+    - route-table handler route (E2 census target)
+    - f40 same-value; filter-table handler route; MOVEOBJ reorder params (E3)
+  blocked:
+    - E1 7.26beta4 repeat outstanding on all three 7.25 legs (needs live beta4 reads; not S0-offline)
+    - "[20,61] hit needs registered modem w/ SIM (CHR-negative + LTE-hardware-negative recorded)"
+    - v7 slot-19 private-cmd dispatch is static-analysis-only (non-lab)
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/S0-replay-freeze/report.yaml
+  - work/2026-11-winbox-attributes/proof/S0-replay-freeze/e2-candidates.yaml
+  - work/2026-11-winbox-attributes/proof/S0-replay-freeze/e3-candidates.yaml
+  - work/2026-11-winbox-attributes/candidates.yaml
+budgets_approved_vs_spent:
+  # format: leg -> {approved, spent}; NOTHING is approved in this session yet
+  E2-R: { approved: "0w+0r", spent: "0w+0r" }
+  E3-R: { approved: "0w+0r", spent: "0w+0r" }
+  E1-followup-prep: { approved: "0w+0r", spent: "0w+0r" }
+  E2-W-proposed: { approved: none, proposed: "8w+0r", spent: "0w+0r" }
+  E3-W-proposed: { approved: none, proposed: "12w+0r", spent: "0w+0r" }
+  E1-W2-rerun-recorded: { approved: none, recorded: "9w+0r", spent: "0w+0r" }
+  E1-W5-retry-recorded: { approved: none, recorded: "6w+0r", spent: "0w+0r" }
+vm_state:
+  all_stopped: true
+  baseline_restored: n/a (S0 ran no VM)
+  assignments_next:
+    E2-R: [ws20, winbox-beta4, ws3c6]
+    E3-R: [ws21, e3-beta4(to-create)]
+    E1-followup-prep: []
+next_action: "Phase E closed: all 4 write legs executed and integrated, gates green (294/0, lint:ci), committed and pushed on user instruction 2026-11-02. Remaining work is the unbudgeted followups_unbudgeted list above; each needs its own per-leg yes before any router write. Historical pre-execution text: DISPATCHED-ORIGINAL: (subagent-3 E2-R, subagent-1 E3-R, subagent-2 E1-prep)."

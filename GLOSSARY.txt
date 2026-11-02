@@ -606,3 +606,6 @@ dccp # verbatim RouterOS protocol name in the quoted to-ports NAT error (phase-C
 mvrp # Multiple VLAN Registration Protocol; RouterOS bridge mvrp-forbidden property (E1 vlan f7 hypothesis, gui-handlers.yaml/proof)
 VID # verbatim VLAN-id template variable in bridge-row strings '$(INTERFACE):$(VID)' (E1 interface builder block, gui-handlers.yaml/fixtures)
 BRIDGEMAC # verbatim bridge-MAC template variable in bridge-row strings '$(BRIDGEMAC)' (E1 interface builder block, gui-handlers.yaml/fixtures)
+INTERFACE_IDS # verbatim RouterOS errstr in the first-sighted [20,124] GETCOUNT FAILED reply (E3-R census, gui-handlers.yaml/std-commands.yaml/fixtures)
+same # NAT same action, f40 value 24 (E3-W same-matrix, gui-handlers.yaml/fixtures)
+same-not-by-dst # NAT same-action adjunct property, f1005 bool (E3-W same-matrix, gui-handlers.yaml/fixtures)

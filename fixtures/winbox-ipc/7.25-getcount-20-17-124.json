@@ -1,0 +1,178 @@
+{
+	"provenance": {
+		"report": "E3-R read-only census, 2026-11-02 (live CHR interrogation, ws21 7.25 x86)",
+		"routeros_version": "7.25",
+		"route": "[20,17] neighbor-discovery-settings + [20,124] unknown holder",
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. Machine names + versions only; lab addresses are synthetic QEMU state. Source: proof/E3-R-census/step-7.25-census.jsonl [20,17] GETCOUNT reqId=31 (lines 59-60) + [20,124] GETCOUNT reqId=138 (lines 273-274)."
+	},
+	"records": [
+		{
+			"id": "getcount-20-17-tx",
+			"role": "GETCOUNT bare [20,17] tx",
+			"source": "ws21 7.25 step-census reqId=31 tx",
+			"hex": "4d320500ff010600ff091f0700ff081500fe000100ff88020014000000110000000200ff880200000000000b000000",
+			"cmd": 16646165,
+			"to": [20, 17],
+			"from": [0, 11],
+			"reqId": 31,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 31
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646165
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 17]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "getcount-20-17-rx",
+			"role": "GETCOUNT bare [20,17] rx",
+			"source": "ws21 7.25 step-census reqId=31 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000110000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe08ffffffff0600ff091f",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 17],
+			"reqId": 31,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 17]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 31
+				}
+			]
+		},
+		{
+			"id": "getcount-20-124-tx",
+			"role": "GETCOUNT bare [20,124] tx",
+			"source": "ws21 7.25 step-census reqId=138 tx",
+			"hex": "4d320500ff010600ff098a0700ff081500fe000100ff880200140000007c0000000200ff880200000000000b000000",
+			"cmd": 16646165,
+			"to": [20, 124],
+			"from": [0, 11],
+			"reqId": 138,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 138
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646165
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 124]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "getcount-20-124-rx",
+			"role": "GETCOUNT bare [20,124] rx",
+			"source": "ws21 7.25 step-census reqId=138 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007c0000001c00ffa001000e006d73672d70726f78792d372e32350800ff080600fe000300ff09020400ff09020600ff098a0900ff21106e6f20494e544552464143455f494453",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 124],
+			"reqId": 138,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 124]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646150
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 138
+				},
+				{
+					"key": "0xff0009",
+					"tcode": "0x21",
+					"value": "no INTERFACE_IDS"
+				}
+			]
+		}
+	]
+}

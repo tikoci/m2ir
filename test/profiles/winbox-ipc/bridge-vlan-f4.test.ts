@@ -138,4 +138,25 @@ describe("bridge-vlan f4 [16,13] replay", () => {
 		expect(row.untagged).toBe("ether1");
 		expect(row["mvrp-forbidden"]).toBe("");
 	});
+
+	test("W2 re-run swap rejection is recorded with its control envelope", () => {
+		interface NotesDoc {
+			handlers: Record<string, { notes?: string }>;
+		}
+		const gui = loadYamlDoc<NotesDoc>("profiles/winbox-ipc/gui-handlers.yaml");
+		const notes = required(
+			gui.handlers["bridge-vlan"],
+			"handlers.bridge-vlan",
+		).notes;
+		expect(notes).toContain("bare-`untagged=` swap");
+		expect(notes).toContain("cells B-D lost again");
+		const rel = "work/2026-11-winbox-attributes/proof/E1-W2r/control-W2r4.json";
+		expect(existsSync(repoPath(rel))).toBe(true);
+		const control = JSON.parse(readFileSync(repoPath(rel), "utf8")) as {
+			error: { cause: string };
+		};
+		expect(control.error.cause).toContain(
+			"interface cannot be in tagged and untagged at the same time",
+		);
+	});
 });

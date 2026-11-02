@@ -1,0 +1,50 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*1",
+      "actual-interface": "lo",
+      "address": "::1/128",
+      "advertise": "false",
+      "auto-link-local": "true",
+      "deprecated": "false",
+      "disabled": "false",
+      "dynamic": "true",
+      "eui-64": "false",
+      "from-pool": "",
+      "interface": "lo",
+      "invalid": "false",
+      "no-dad": "false",
+      "slave": "false",
+      "vrf": "main"
+    },
+    {
+      ".id": "*2",
+      "actual-interface": "ether1",
+      "address": "fe80::93:40ff:fea1:7fc2/64",
+      "advertise": "false",
+      "auto-link-local": "true",
+      "deprecated": "false",
+      "disabled": "false",
+      "dynamic": "true",
+      "eui-64": "false",
+      "from-pool": "",
+      "interface": "ether1",
+      "invalid": "false",
+      "link-local": "true",
+      "no-dad": "false",
+      "slave": "false",
+      "vrf": "main"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 2,
+      "path": "/ipv6/address"
+    }
+  }
+}

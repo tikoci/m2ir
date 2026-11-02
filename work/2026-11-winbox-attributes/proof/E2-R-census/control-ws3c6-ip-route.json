@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*30000001",
+      "dst-address": "0.0.0.0/0",
+      "gateway": "10.0.2.2",
+      "gateway-status": "10.0.2.2 reachable via  ether1",
+      "distance": "1",
+      "scope": "30",
+      "target-scope": "10",
+      "vrf-interface": "ether1",
+      "active": "true",
+      "dynamic": "true",
+      "static": "true",
+      "disabled": "false"
+    },
+    {
+      ".id": "*4206A54B",
+      "dst-address": "10.0.2.0/24",
+      "pref-src": "10.0.2.15",
+      "gateway": "ether1",
+      "gateway-status": "ether1 reachable",
+      "distance": "0",
+      "scope": "10",
+      "active": "true",
+      "dynamic": "true",
+      "connect": "true",
+      "disabled": "false"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "native-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 2,
+      "path": "/ip/route"
+    }
+  }
+}

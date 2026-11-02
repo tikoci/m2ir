@@ -1,0 +1,97 @@
+{
+  "data": [
+    {
+      ".about": "vlan-filtering is disabled",
+      ".id": "*1",
+      "bridge": "e1br",
+      "current-tagged": "",
+      "current-untagged": "",
+      "disabled": "false",
+      "dynamic": "false",
+      "managed": "false",
+      "mvrp-forbidden": "",
+      "tagged": "e1br",
+      "untagged": "ether1",
+      "vlan-ids": "10"
+    }
+  ],
+  "meta": {
+    "operation": {
+      "auth": {
+        "passwordProvided": true,
+        "username": "admin"
+      },
+      "kind": "data",
+      "objectCount": 1,
+      "request": {
+        "allAttributes": false,
+        "attributes": [],
+        "format": "json",
+        "listAttributes": false,
+        "path": "/interface/bridge/vlan",
+        "timeoutMs": 10000,
+        "validate": true,
+        "verbose": false
+      }
+    },
+    "settings": {
+      "format": {
+        "key": "format",
+        "kind": "cli"
+      },
+      "host": "[redacted]",
+      "password": {
+        "key": "quickchr:twin3:password",
+        "kind": "provider"
+      },
+      "port": "[redacted]",
+      "timeoutMs": {
+        "key": "timeout",
+        "kind": "default"
+      },
+      "username": {
+        "key": "quickchr:twin3:username",
+        "kind": "provider"
+      },
+      "validate": {
+        "key": "validate",
+        "kind": "default"
+      },
+      "via": {
+        "key": "via",
+        "kind": "default"
+      }
+    },
+    "target": {
+      "baseUrl": "[redacted]",
+      "host": "[redacted]",
+      "identity": "twin3",
+      "input": "twin3",
+      "port": "[redacted]",
+      "source": {
+        "key": "quickchr:twin3",
+        "kind": "provider"
+      },
+      "sources": {
+        "host": "[redacted]",
+        "port": "[redacted]"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "result": "passed",
+      "source": "live /console/inspect request=child",
+      "stages": [
+        {
+          "result": "passed",
+          "source": "live /console/inspect request=child",
+          "stage": "device"
+        }
+      ]
+    },
+    "via": "rest-api"
+  },
+  "ok": true,
+  "tips": [],
+  "warnings": []
+}

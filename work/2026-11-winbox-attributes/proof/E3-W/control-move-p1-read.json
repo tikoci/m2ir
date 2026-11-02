@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*6",
+      "action": "accept",
+      "bytes": "63",
+      "chain": "srcnat",
+      "comment": "e3mv-A",
+      "dynamic": "false",
+      "invalid": "false",
+      "packets": "1"
+    },
+    {
+      ".id": "*7",
+      "action": "passthrough",
+      "bytes": "0",
+      "chain": "srcnat",
+      "comment": "e3mv-B",
+      "dynamic": "false",
+      "invalid": "false",
+      "packets": "0"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 2,
+      "path": "/ip/firewall/nat"
+    }
+  }
+}

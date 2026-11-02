@@ -1,0 +1,123 @@
+{
+	"ok": true,
+	"data": [
+		{
+			".id": "*3",
+			"actual-mtu": "1500",
+			"ageing-time": "5m",
+			"arp": "enabled",
+			"arp-timeout": "auto",
+			"auto-mac": "true",
+			"dhcp-snooping": "false",
+			"dhcpv6-snooping": "false",
+			"disabled": "false",
+			"dynamic": "false",
+			"fast-forward": "true",
+			"forward-delay": "15s",
+			"igmp-snooping": "false",
+			"l2mtu": "65535",
+			"mac-address": "AA:88:53:9A:5D:B7",
+			"managed": "false",
+			"max-learned-entries": "auto",
+			"max-message-age": "20s",
+			"mlag-heartbeat": "5s",
+			"mlag-init-delay": "1m",
+			"mlag-lacp-fallback": "true",
+			"mlag-peer-port": "none",
+			"mlag-priority": "128",
+			"mtu": "auto",
+			"name": "e1br",
+			"port-cost-mode": "long",
+			"priority": "0x8000",
+			"protocol-mode": "rstp",
+			"ra-guard": "false",
+			"running": "true",
+			"transmit-hold-count": "6",
+			"vlan-filtering": "false"
+		}
+	],
+	"warnings": [],
+	"tips": [],
+	"meta": {
+		"target": {
+			"input": "twin3",
+			"host": "[redacted]",
+			"port": "[redacted]",
+			"baseUrl": "[redacted]",
+			"identity": "twin3",
+			"source": {
+				"kind": "provider",
+				"key": "quickchr:twin3"
+			},
+			"sources": {
+				"host": "[redacted]",
+				"port": "[redacted]"
+			}
+		},
+		"via": "rest-api",
+		"settings": {
+			"via": {
+				"kind": "default",
+				"key": "via"
+			},
+			"host": {
+				"kind": "provider",
+				"key": "quickchr:twin3"
+			},
+			"port": {
+				"kind": "provider",
+				"key": "quickchr:twin3"
+			},
+			"timeoutMs": {
+				"kind": "default",
+				"key": "timeout"
+			},
+			"format": {
+				"kind": "cli",
+				"key": "format"
+			},
+			"validate": {
+				"kind": "default",
+				"key": "validate"
+			},
+			"username": {
+				"kind": "provider",
+				"key": "quickchr:twin3:username"
+			},
+			"password": {
+				"kind": "provider",
+				"key": "quickchr:twin3:password"
+			}
+		},
+		"validation": {
+			"enabled": true,
+			"source": "live /console/inspect request=child",
+			"result": "passed",
+			"stages": [
+				{
+					"stage": "device",
+					"source": "live /console/inspect request=child",
+					"result": "passed"
+				}
+			]
+		},
+		"operation": {
+			"kind": "data",
+			"objectCount": 1,
+			"request": {
+				"path": "/interface/bridge",
+				"attributes": [],
+				"allAttributes": false,
+				"listAttributes": false,
+				"validate": true,
+				"verbose": false,
+				"timeoutMs": 10000,
+				"format": "json"
+			},
+			"auth": {
+				"username": "admin",
+				"passwordProvided": true
+			}
+		}
+	}
+}

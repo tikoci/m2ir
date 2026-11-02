@@ -1,0 +1,107 @@
+# cspell:ignore rowid rowids vlan untagged getall getcount setobj chr w2r w5r e1br ether1 vlanids mvrp qemu llms
+# E1-followup PREP report (read-only). No VM touched, no command sent.
+proof: "E1-followup prep: executable W2-rerun + W5-retry leg sheets (offline validation only)"
+date: 2026-11-02
+worker: E1-followup-prep
+head: 7303e78-dirty-S0 (no git commands run by this worker; value from brief)
+scope: "Read-only prep only. ZERO router contact: no quickchr start/add/stop/
+  remove/list, no centrs retrieve/execute/api against any target. Only
+  `centrs explain` (offline, no router) was used for RouterOS-adjacent validation."
+inputs_read:
+  - AGENTS.md
+  - README.md
+  - DESIGN.md
+  - llms.txt
+  - work/2026-11-winbox-attributes/attribute-discovery-plan.md
+  - work/2026-11-winbox-attributes/proof/S0-replay-freeze/report.yaml
+  - work/2026-11-winbox-attributes/proof/7.25-e1-bridges/report.yaml
+  - work/2026-11-winbox-attributes/proof/7.25-e1-bridges/control-w1.json
+  - work/2026-11-winbox-attributes/proof/7.25-e1-bridges/control-w2.json
+  - work/2026-11-winbox-attributes/proof/7.25-e1-bridges/control-w5.json
+  - profiles/winbox-ipc/gui-handlers.yaml (interface + bridge-port + bridge-vlan sections; READ ONLY, not edited)
+  - work/2026-11-winbox-attributes/handoff.yaml
+  - skill routeros-centrs (read_skill)
+sheets:
+  - file: work/2026-11-winbox-attributes/proof/E1-followup/leg-W2-rerun.yaml
+    leg: W2-rerun
+    recorded_followup: f-w2-rerun
+    targets: u-vlan-f5-f6
+    budget_recorded: { counted_writes: 9, reboots: 0 }
+    budget_planned: { counted_writes: 9, reboots: 0 }
+    budget_itemized: "setup 3 (bridge/vlan/port add) + swap 1 (W2r.4) +
+      filtering=yes 1 (W2r.5) + reverse swap 1 (W2r.6) + restore 3
+      (vlan/port/bridge remove) = 9; all reads and gates 0 writes"
+    fits_budget: true
+    headroom: 0
+    design: "Full 2x2 (filtering x move): cell A (no,unmoved) reproduces E1;
+      B (no,moved) inverse-corroborates p-vlan-f4; C (yes,moved) assigns
+      current-tagged; D (yes,unmoved) assigns current-untagged."
+    verdict: PREP-COMPLETE
+    blockers: []
+  - file: work/2026-11-winbox-attributes/proof/E1-followup/leg-W5-retry.yaml
+    leg: W5-retry
+    recorded_followup: f-w5-retry
+    targets: u-host-owner
+    budget_recorded: { counted_writes: 6, reboots: 0 }
+    budget_planned: { counted_writes: 6, reboots: 0 }
+    budget_itemized: "setup 3 (bridge/port/static-host add) + restore 3
+      (host/port/bridge remove) = 6; gate + populated [16,0..32] scan cost
+      0 writes"
+    fits_budget: true
+    headroom: 0
+    design: "Same W5 with the corrected presence gate (static MAC present,
+      dynamic co-rows allowed — the `rows===1` predicate is explicitly
+      forbidden); recovers the lost populated scan with a three-way outcome
+      classification (one mover assigns, zero movers refutes [16,*], many
+      movers narrows)."
+    verdict: PREP-COMPLETE
+    blockers: []
+explain_record:
+  tool: "centrs 0.1.9-next, `centrs explain '<cmd>' --json`, offline (no router)"
+  verdict_all: pass
+  runtimeAcceptance_all: not-proven
+  note: "Offline pass = well-formed per the canonicalizer; device acceptance
+    is NEVER proven offline. No command was rejected, so no rework was needed."
+  commands:
+    - { command: "/interface/bridge/add name=e1br", verdict: pass, writeShaped: true, used_in: [W2r.1, W5r.1] }
+    - { command: "/interface/bridge/vlan/add bridge=e1br vlan-ids=10 tagged=e1br untagged=ether1", verdict: pass, writeShaped: true, used_in: [W2r.2] }
+    - { command: "/interface/bridge/port/add bridge=e1br interface=ether1", verdict: pass, writeShaped: true, used_in: [W2r.3, W5r.2] }
+    - { command: "/interface/bridge/host/add mac-address=02:00:00:E1:00:01 bridge=e1br interface=ether1", verdict: pass, writeShaped: true, used_in: [W5r.3] }
+    - { command: "/interface/bridge/vlan/set *1 tagged=e1br,ether1 untagged=", verdict: pass, writeShaped: true, used_in: [W2r.4], status: "NEW (untested)" }
+    - { command: "/interface/bridge/vlan/set *1 tagged=e1br,ether1 untagged=\"\"", verdict: pass, writeShaped: true, used_in: [], status: "validated spelling variant, reserved for a FUTURE leg (no in-leg retry per stop rule)" }
+    - { command: "/interface/bridge/set e1br vlan-filtering=yes", verdict: pass, writeShaped: true, used_in: [W2r.5], status: "NEW (untested), LAB-ACCESS HAZARD" }
+    - { command: "/interface/bridge/vlan/set *1 tagged=e1br untagged=ether1", verdict: pass, writeShaped: true, used_in: [W2r.6], status: "NEW (untested)" }
+    - { command: "/interface/bridge/vlan/remove *1", verdict: pass, writeShaped: true, used_in: [W2r.R1] }
+    - { command: "/interface/bridge/port/remove *0", verdict: pass, writeShaped: true, used_in: [W2r.R2, W5r.R2] }
+    - { command: "/interface/bridge/remove e1br", verdict: pass, writeShaped: true, used_in: [W2r.R3, W5r.R3] }
+    - { command: "/interface/bridge/host/remove *6", verdict: pass, writeShaped: true, used_in: [W5r.R1], note: "*6 is the E1 value shown for explain only; execution resolves the selector from the gate read" }
+    - { command: "/interface/bridge/print", verdict: pass, writeShaped: false, used_in: [baseline reads (path validation)] }
+    - { command: "/interface/bridge/vlan/print", verdict: pass, writeShaped: false, used_in: [baseline reads (path validation)] }
+    - { command: "/interface/bridge/port/print", verdict: pass, writeShaped: false, used_in: [baseline reads (path validation)] }
+    - { command: "/interface/bridge/host/print", verdict: pass, writeShaped: false, used_in: [baseline reads (path validation)] }
+execution_order: "W2-rerun first, then W5-retry, SEQUENTIAL on twin3 7.25
+  (coordinator confirms VM at execution; ports resolved from the live quickchr
+  record at execution — prep read no ports). Rationale in each sheet."
+new_untested_items_requiring_coordinator_confirmation:
+  - "W2r.4 swap form (reconstructed; in-script text not in repo)"
+  - "G-static-mac predicate (reconstructed; in-script text not in repo)"
+  - "W2r.5 filtering=yes (lab-access hazard; needs console/alternate access)"
+  - "W2r.6 reverse swap (NEW direction under filtering=yes)"
+  - "G-host-corrected predicate (corrected per f-w5-retry, never live-tested)"
+  - "twin3 7.25 for both legs, sequential W2-then-W5"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/E1-followup/report.yaml
+  - work/2026-11-winbox-attributes/proof/E1-followup/leg-W2-rerun.yaml
+  - work/2026-11-winbox-attributes/proof/E1-followup/leg-W5-retry.yaml
+out_of_scope_explicit:
+  - "f7-SET leg (u-vlan-f7 mvrp-forbidden hypothesis) — unbudgeted"
+  - "v7 [16,3] membership-count leg (u-16-3) — unbudgeted"
+  - "0xFFFFFFFF count-vs-sentinel leg (u-ffffffff) — unbudgeted"
+  - "0x38 writer static analysis (u-38-writer) — non-lab, unbudgeted"
+  - "u-port-15-drift, u-fe0005 — context at most, no experiment"
+  - "Dynamic-row traffic stimulus — no traffic generated in either leg"
+gates_observed:
+  - "ZERO router contact: no quickchr invocation at all, no centrs target command"
+  - "No edits to profiles/winbox-ipc/*.yaml, profiles/winbox-ipc/README.md, README.md, GLOSSARY.txt"
+  - "No git commands run"
+  - "No E1 evidence invented: every step cites an E1 control/report section or is marked NEW (untested) with risk"

@@ -1,0 +1,204 @@
+# cspell:ignore rowid rowids vlan untagged getall getcount getalls w5r e1br ether1 centrs quickchr
+# E1-W5r execution report (worker W5r). twin3 ONLY. No commit, no push, no git commands.
+proof: "E1 W5-retry execution on twin3 7.25: gate PASS (first live test), populated scan recovered, u-host-owner ASSIGNED to [16,3] pending reviewer; restore verified clean"
+date: 2026-11-02
+worker: W5r
+leg: W5-retry
+sheet: work/2026-11-winbox-attributes/proof/E1-followup/leg-W5-retry.yaml
+approval_quoted: "E1-W5-retry 6w+0r on twin3 (gate untested, zero headroom, runs after W2)"
+vm:
+  name: twin3
+  routeros: "7.25"
+  arch: x86
+  network: user
+  ports: "resolved live from `quickchr list` at execution (http/ssh/api/winbox block); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed; left for the coordinator)
+tooling:
+  centrs: 0.1.9-next
+  quickchr: 0.5.2
+  control_via: "centrs execute/retrieve --quickchr twin3"
+  native_via: "proof/E1-W5r/scan-w5r.ts ([16,0..32] GETCOUNT census + paged GETALL, read-only)"
+baseline_snapshot:
+  verdict: PASS
+  control:
+    - { route: /interface/bridge, objectCount: 0, file: baseline_interface_bridge.json }
+    - { route: /interface/bridge/port, objectCount: 0, file: baseline_interface_bridge_port.json }
+    - { route: /interface/bridge/host, objectCount: 0, file: baseline_interface_bridge_host.json }
+    - { route: /interface/bridge/vlan, objectCount: 0, file: baseline_interface_bridge_vlan.json }
+  native:
+    - { op: "GETALL [16,2]", rows: 0, pages: 1 }
+    - op: "GETCOUNT [16,0..32]"
+      ok_slots: "1,2,3,9,10,11,12,13,14,15,16,17,18 (13/33)"
+      ffffffff_in_0xfe0019: [1, 10]
+      absent_shape: "router-error errno=0xfe0002 errstr=null (all other slots)"
+      matches_e1_p_16_scan_v7: true
+  native_files: [step-baseline.jsonl, census-baseline.json]
+steps:
+  - tag: W5r.1
+    command: "/interface/bridge/add name=e1br"
+    explain: { verdict: pass, writeShaped: true, runtimeAcceptance: not-proven, diagnostics: [] }
+    outcome: ok
+    result: "e1br .id *3"
+    verify: "retrieve shows e1br *3, vlan-filtering=false"
+    verify_file: verify-W5r1.json
+    control_file: control-W5r1.json
+    writes: 1
+    cumulative: 1
+  - tag: W5r.2
+    command: "/interface/bridge/port/add bridge=e1br interface=ether1"
+    explain: { verdict: pass, writeShaped: true, runtimeAcceptance: not-proven, diagnostics: [] }
+    outcome: ok
+    result: "port .id *0"
+    verify: "retrieve shows the e1br/ether1 port row *0"
+    verify_file: verify-W5r2.json
+    control_file: control-W5r2.json
+    writes: 1
+    cumulative: 2
+  - tag: W5r.3
+    command: "/interface/bridge/host/add mac-address=02:00:00:E1:00:01 bridge=e1br interface=ether1"
+    explain: { verdict: pass, writeShaped: true, runtimeAcceptance: not-proven, diagnostics: [] }
+    outcome: ok
+    result: "static host .id *6"
+    verify: "gate read contains 02:00:00:E1:00:01 dynamic=false (see G-host-corrected)"
+    control_file: control-W5r3.json
+    writes: 1
+    cumulative: 3
+  - tag: G-host-corrected
+    read: "retrieve /interface/bridge/host"
+    file: gate-host.json
+    static_row: "*6 mac 02:00:00:E1:00:01 bridge e1br interface ether1 on-interface ether1 dynamic=false local=false"
+    co_rows:
+      - "*4 mac 02:91:A6:6C:44:D5 bridge e1br interface ether1 on-interface ether1 (local, dynamic)"
+      - "*5 mac 52:55:0A:00:02:02 bridge e1br interface ether1 on-interface ether1 (dynamic)"
+    verdict: PASS
+    predicate: "presence gate as sheeted: static MAC present with dynamic=false; dynamic co-rows ALLOWED (2 recorded, not gated); NO row-count predicate used anywhere in this leg"
+    first_live_test: true
+    writes: 0
+    cumulative: 3
+  - tag: scan-populated
+    verdict: RECOVERED (the lost E1 scan ran in full)
+    census:
+      file: census-populated.json
+      native_file: step-populated.jsonl
+      diff_vs_own_baseline:
+        - { slot: 2, before: 0, after: 1 }
+        - { slot: 3, before: 0, after: 3 }
+      held: "all other cells identical (0xFFFFFFFF in {1,10} held; absent shape unchanged)"
+    mover_getalls:
+      - op: "GETALL [16,2]"
+        rows: 1
+        result: "exactly the added port row (rowid 0, f3=2=etherRowId, f4=3=bridgeRowId — live [20,0] rowids); the [16,2] 0->1 move is the known port table, fully explained"
+      - op: "GETALL [16,3]"
+        rows: 3
+        files: [step-mover-16-3.jsonl, mover-16-3.json]
+        result: "3 rows, each carrying one host-table MAC in user f2 (tcode 0x31, 6 bytes): rowid 6 = 02:00:00:e1:00:01 (static), rowid 8 = 02:91:a6:6c:44:d5 (dynamic), rowid 7 = 52:55:0a:00:02:02 (dynamic); session 0xfe0007 false on static / true on both dynamics; user f4=3 on all rows (= live e1br rowid)"
+    context_getalls:
+      - op: "GETALL [16,2]"
+        result: "1 port row (same read as the mover GETALL above)"
+      - op: "GETALL [20,0]"
+        rows: 3
+        mapping_live: "ether1 rowid 2, e1br rowid 3, lo rowid 1 (session-local; cited live, not assumed)"
+    writes: 0
+    cumulative: 3
+  - tag: W5r.R1
+    command: "/interface/bridge/host/remove *6"
+    selector: "*6 resolved from the gate read at execution (static row .id *6); dynamic co-rows NOT targeted (d-dynamic-remove)"
+    explain: { verdict: pass, writeShaped: true, runtimeAcceptance: not-proven, diagnostics: [] }
+    outcome: ok
+    control_file: control-W5rR1.json
+    writes: 1
+    cumulative: 4
+  - tag: W5r.R2
+    command: "/interface/bridge/port/remove *0"
+    selector: "*0 resolved from the pre-restore retrieve at execution"
+    pre_restore_file: pre-restore-port.json
+    explain: { verdict: pass, writeShaped: true, runtimeAcceptance: not-proven, diagnostics: [] }
+    outcome: ok
+    control_file: control-W5rR2.json
+    writes: 1
+    cumulative: 5
+  - tag: W5r.R3
+    command: "/interface/bridge/remove e1br"
+    explain: { verdict: pass, writeShaped: true, runtimeAcceptance: not-proven, diagnostics: [] }
+    outcome: ok
+    note: "dynamic co-rows self-cleared on bridge removal (d-dynamic-remove); verified by restore_verification"
+    control_file: control-W5rR3.json
+    writes: 1
+    cumulative: 6
+spend:
+  counted_writes: 6
+  reboots: 0
+  cap: "6w+0r"
+  itemized: "W5r.1 + W5r.2 + W5r.3 + R1 + R2 + R3 = 6; gate + all scans + all verifies = 0"
+  within_cap: true
+  note: "recorded budget fully spent with zero headroom as sheeted; no extra write attempted"
+scan_vs_u_host_owner:
+  target: "u-host-owner (host-table owner handler, populated scan never ran)"
+  candidate_predicate: "sheet proves-clause: the handler whose count moves 0->N with N host rows (N=3 per gate-host.json)"
+  movers: "[16,2] 0->1 and [16,3] 0->3"
+  explained_co_mover: "[16,2] 0->1 is the known port table (p-port-row-40): its GETALL shows exactly the 1 added port row with live f3/f4 rowids; N=1 != 3 host rows, so it does not satisfy the candidate predicate"
+  verdict: "ASSIGN u-host-owner = [16,3] (pending reviewer reconstruction)"
+  evidence:
+    - "exactly one candidate-mover: [16,3] 0->3 with 3 host rows"
+    - "[16,3] GETALL rows carry exactly the 3 host-table MACs in user f2 (static + both dynamics, byte-identical)"
+    - "session 0xfe0007 tracks the control dynamic flag (false static / true both dynamics)"
+    - "user f4=3 on all [16,3] rows equals the live e1br [20,0] rowid"
+  bearing_on_u_16_3: "v6 W8 saw [16,3] 0->2 with 1 bridge + 1 port and NO host-table retrieve (one cell, two fits: membership vs host rows). This v7 leg has bridges+ports=2 but [16,3]=3 while host rows=3: the v7 leg discriminates AGAINST the bridge-membership reading for v7. The v6 reading stays with the reviewer (no v6 host data exists)."
+restore_verification:
+  verdict: PASS
+  control:
+    - { route: /interface/bridge, objectCount: 0, file: restored_interface_bridge.json }
+    - { route: /interface/bridge/port, objectCount: 0, file: restored_interface_bridge_port.json }
+    - { route: /interface/bridge/host, objectCount: 0, file: restored_interface_bridge_host.json }
+    - { route: /interface/bridge/vlan, objectCount: 0, file: restored_interface_bridge_vlan.json }
+  native:
+    - { op: "GETALL [16,2]", rows: 0, pages: 1 }
+    - { op: "GETCOUNT [16,0..32]", cells_identical_to_baseline: true, note: "byte-identical cell JSON vs census-baseline.json" }
+  native_files: [step-restored.jsonl, census-restored.json]
+cleanup_state:
+  definition: "per sheet: all e1* objects removed; twin3 left for the coordinator"
+  tables: "bridge/vlan/port/host all empty on both surfaces (control + native)"
+  vm: "twin3 STOPPED via `quickchr stop twin3` (not removed; no clean)"
+  writes_on_other_machines: 0
+honesty_notes:
+  - "First baseline attempt used a broken shell path expansion (`/interface/bridge${r#/bridge}`) and all four retrieves failed client-side with validation/unknown-path; the device never evaluated an intended read. Re-ran with explicit paths (0 writes involved). The error files were deleted, not shipped."
+  - "ws21 was observed RUNNING at leg start and STOPPED at leg end; this worker never named it in any command and did not stop it (likely coordinator or peer action). Recorded, not explained."
+  - "Leak-scan grep hits for '9120'/'9190' in step-*.jsonl are hex coincidences inside plaintextHex wire bytes, not endpoint disclosures (same class as prior legs' lossless captures)."
+  - "Zero git commands run in this leg (not even read-only status checks)."
+  - "All control JSON envelopes sanitized: host/port/baseUrl/sources redacted; no credential values ever present (passwordProvided booleans + provider key labels only). Native jsonl/summaries: ts redacted at write, bytes + decode lossless. MACs are synthetic QEMU lab addresses."
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/E1-W5r/report.yaml
+  - work/2026-11-winbox-attributes/proof/E1-W5r/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/E1-W5r/scan-w5r.ts
+  - work/2026-11-winbox-attributes/proof/E1-W5r/baseline_interface_bridge.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/baseline_interface_bridge_port.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/baseline_interface_bridge_host.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/baseline_interface_bridge_vlan.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/step-baseline.jsonl
+  - work/2026-11-winbox-attributes/proof/E1-W5r/census-baseline.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/control-W5r1.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/verify-W5r1.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/control-W5r2.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/verify-W5r2.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/control-W5r3.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/gate-host.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/step-populated.jsonl
+  - work/2026-11-winbox-attributes/proof/E1-W5r/census-populated.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/step-mover-16-3.jsonl
+  - work/2026-11-winbox-attributes/proof/E1-W5r/mover-16-3.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/pre-restore-port.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/control-W5rR1.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/control-W5rR2.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/control-W5rR3.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/restored_interface_bridge.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/restored_interface_bridge_port.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/restored_interface_bridge_vlan.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/restored_interface_bridge_host.json
+  - work/2026-11-winbox-attributes/proof/E1-W5r/step-restored.jsonl
+  - work/2026-11-winbox-attributes/proof/E1-W5r/census-restored.json
+gates_observed:
+  - "twin3 ONLY: every centrs/quickchr/native invocation named twin3 and nothing else"
+  - "every write string re-validated with live `centrs explain` before sending; *6/*0 selectors resolved from the latest retrieve at execution"
+  - "cumulative verified before every write (max reached 6 of 6)"
+  - "no edits to profiles/winbox-ipc/*.yaml, profiles/winbox-ipc/README.md, README.md, GLOSSARY.txt"
+  - "no commit, no push, no git commands at all"

@@ -1,0 +1,99 @@
+# cspell:ignore rowid u32 jump dst src socksify bfd num unsettable vms cliref
+# FROZEN E3 candidate list (S0, 2026-11-02). Coordinator-owned.
+# Slice: E3-R read-only firewall/services census + jump/same and
+# MOVEOBJ-reorder design, then E3-W write legs under a fresh per-leg yes
+# (not yet approved).
+# Source: work/2026-11-winbox-attributes/candidates.yaml (Rosetta v0.12.0,
+# db eee45741..., manuals 7.24/7.25/7.26 + inspect 7.25/7.26beta4).
+# CLI names are experiment aliases, not protocol identity.
+slice: E3
+family: firewall/services (net-process tables + services-adjacent census)
+handlers:
+  known:
+    - route: [20, 5]
+      name: nat-20-5
+      role: f40 same-value open; MOVEOBJ reorder params unknown; SET proven 7.25-only
+    - route: [20, 87]
+      name: raw-20-87
+      role: census row-shape (same field numbering as NAT per schema)
+    - route: [20, 39]
+      name: calea-20-39
+      role: census row-shape
+  discovery:
+    - target: filter-table handler
+      method: read-only GETCOUNT/GETALL scan across [20,*] on 7.25 + 7.26beta4
+      note: no filter handler in the catalog; jump lives here if anywhere
+  negative_control_only:
+    - route: [20, 61]
+      name: modem-aux-20-61
+      note: CHR-negative AND LTE-hardware-negative recorded; SIM-absent/running=false
+        confound unresolved; read-only GETs only, zero writes budgeted, no hit expected
+  services_census_context:
+    - routes: [[20, 13], [20, 14], [20, 17]]
+      names: [packet-mark-registry, connection-mark-registry, neighbor-discovery-settings]
+      note: row-shape capture only; no frozen candidates, no writes
+wire_unknowns_in_scope:
+  - id: f40-same
+    route: [20, 5]
+    field: 40
+    note: "action=same value untested (nat action enum carries same per Rosetta); drop is a PROVEN NEGATIVE (control :parse rejects) - do not re-probe"
+  - id: filter-row-shape
+    route: TBD-by-census
+    note: filter handler unknown; E3-R census finds it or records the miss
+  - id: moveobj-reorder-params
+    route: [20, 5]
+    cmd: 0xfe0007
+    note: rowid-only MOVEOBJ is a proven no-op (byte-identical order both surfaces); reorder params unknown
+  - id: v7-slot-19
+    kind: static-analysis
+    note: "v7 private-cmd dispatch open (v7 [20,0] slot 19 = base cmdRemoveObj; switch at v7 slot 24; libumsg DEFAULT routing open); non-lab work inside E3-R, no VM, no budget"
+cli_candidates:
+  # 10 frozen (worker bound). Order is priority, not mapping order.
+  - { menu: ip/firewall/nat, property: action, kind: Argument, raw_type: "enum (... | same | ...)",
+      inspect_args: [/ip/firewall/nat/add/action, /ip/firewall/nat/set/action, /ip/firewall/nat/reset/action],
+      note: same-value only; drop excluded (proven negative) }
+  - { menu: ip/firewall/nat, property: same-not-by-dst, kind: Argument, raw_type: bool,
+      inspect_args: [/ip/firewall/nat/add/same-not-by-dst, /ip/firewall/nat/set/same-not-by-dst, /ip/firewall/nat/reset/same-not-by-dst],
+      note: same-action adjunct }
+  - { menu: ip/firewall/nat, property: to-addresses, kind: Argument, raw_type: "super { min: ipRange }",
+      inspect_args: [/ip/firewall/nat/add/to-addresses, /ip/firewall/nat/set/to-addresses, /ip/firewall/nat/reset/to-addresses] }
+  - { menu: ip/firewall/nat, property: to-ports, kind: Argument, raw_type: "super { min: num [0..65535], [max] }",
+      inspect_args: [/ip/firewall/nat/add/to-ports, /ip/firewall/nat/set/to-ports, /ip/firewall/nat/reset/to-ports],
+      note: redirect precedent needed proto+to-ports before the control plane would add }
+  - { menu: ip/firewall/nat, property: chain, kind: Argument, raw_type: enum, mandatory: true,
+      inspect_args: [/ip/firewall/nat/add/chain, /ip/firewall/nat/set/chain, /ip/firewall/nat/reset/chain, /ip/firewall/nat/print/chain] }
+  - { menu: ip/firewall/nat, property: protocol, kind: Argument,
+      inspect_args: [/ip/firewall/nat/add/protocol, /ip/firewall/nat/set/protocol, /ip/firewall/nat/reset/protocol],
+      note: matcher control }
+  - { menu: ip/firewall/filter, property: action, kind: Argument, raw_type: "enum (... | jump | ...)",
+      inspect_args: [/ip/firewall/filter/add/action, /ip/firewall/filter/set/action, /ip/firewall/filter/reset/action],
+      note: jump-value only; needs the filter handler from census first }
+  - { menu: ip/firewall/filter, property: jump-target, kind: Argument, raw_type: "enum ()",
+      inspect_args: [/ip/firewall/filter/add/jump-target, /ip/firewall/filter/set/jump-target, /ip/firewall/filter/reset/jump-target] }
+  - { menu: ip/firewall/filter, property: chain, kind: Argument, raw_type: enum, mandatory: true,
+      inspect_args: [/ip/firewall/filter/add/chain, /ip/firewall/filter/set/chain, /ip/firewall/filter/reset/chain, /ip/firewall/filter/print/chain] }
+  - { menu: ip/firewall/filter, property: protocol, kind: Argument,
+      inspect_args: [/ip/firewall/filter/add/protocol, /ip/firewall/filter/set/protocol, /ip/firewall/filter/reset/protocol],
+      note: matcher control }
+private_verb:
+  cmd: 0xfe0007
+  name: CMD_MOVEOBJ
+  scope: reorder-parameter design in E3-R; native probes (if the design converges) in E3-W
+experiment_cap: <=2 discriminating experiments per unresolved field
+budgets:
+  E3-R: { counted_writes: 0, reboots: 0, note: read-only census + design; needs no yes }
+  E3-W-proposed: { counted_writes: 12, reboots: 0,
+    note: "cap only, NOT approved; same-matrix ~6 + filter-jump ~2 (if handler found) + MOVEOBJ native probes ~4; needs fresh per-leg yes" }
+vm_assignment:
+  worker: E3-R
+  vms: [ws21, e3-beta4]
+  versions: { ws21: "7.25", e3-beta4: "7.26beta4" }
+  provision: "e3-beta4 does not exist yet; worker creates it via: quickchr add --name e3-beta4 --version 7.26beta4 --arch x86 --add-network user"
+  note: disjoint from E2-R; if the exact-version add fails, report blocked - do NOT substitute 7.26beta3 (twin1/2/4) or share winbox-beta4
+owned_paths:
+  - work/2026-11-winbox-attributes/proof/E3-R-census/
+stop_conditions:
+  - any VM fails to boot within the bounded wait -> record, stop that version column, continue others
+  - any census write attempted (control or native) -> forbidden in E3-R; stop and report
+  - e3-beta4 exact-version add fails -> E3-R continues 7.25-only, records beta4 blocked
+  - filter-handler scan finds nothing new after the full [20,*] sweep -> record the miss, do not widen to other processes

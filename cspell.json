@@ -15,6 +15,7 @@
 		"test/fixtures",
 		"work/2026-10-chr-extraction/ws3c/ev/**",
 		"work/**/*.json",
+		"work/**/*.jsonl",
 		"work/**/*.sha256",
 		"work/**/sys2-res-getall.asm.txt",
 		"work/2026-05-m2ir-bootstrap/**",

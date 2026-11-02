@@ -1,0 +1,164 @@
+{
+  "data": {
+    ".id": "*3",
+    "ret": "*3"
+  },
+  "meta": {
+    "operation": {
+      "auth": {
+        "passwordProvided": true,
+        "username": "admin"
+      },
+      "kind": "execute",
+      "objectCount": 1,
+      "request": {
+        "canonical": {
+          "attributes": {
+            "name": "e1br"
+          },
+          "input": "/interface/bridge/add name=e1br",
+          "mode": "structured",
+          "path": "/interface/bridge",
+          "queries": [],
+          "verb": "add"
+        },
+        "command": "/interface/bridge/add name=e1br",
+        "format": "json",
+        "timeoutMs": 10000,
+        "validate": true,
+        "verbose": false,
+        "write": true,
+        "yes": true
+      }
+    },
+    "settings": {
+      "format": {
+        "key": "format",
+        "kind": "cli"
+      },
+      "host": "[redacted]",
+      "insecure": {
+        "key": "insecure",
+        "kind": "default"
+      },
+      "password": {
+        "key": "quickchr:twin3:password",
+        "kind": "provider"
+      },
+      "port": "[redacted]",
+      "timeoutMs": {
+        "key": "timeout",
+        "kind": "default"
+      },
+      "username": {
+        "key": "quickchr:twin3:username",
+        "kind": "provider"
+      },
+      "validate": {
+        "key": "validate",
+        "kind": "default"
+      },
+      "via": {
+        "key": "via",
+        "kind": "default"
+      }
+    },
+    "target": {
+      "baseUrl": "[redacted]",
+      "host": "[redacted]",
+      "identity": "twin3",
+      "input": "twin3",
+      "port": "[redacted]",
+      "source": {
+        "key": "quickchr:twin3",
+        "kind": "provider"
+      },
+      "sources": {
+        "host": "[redacted]",
+        "port": "[redacted]"
+      }
+    },
+    "validation": {
+      "availableAttributes": [
+        "admin-mac",
+        "ageing-time",
+        "arp",
+        "arp-inspection",
+        "arp-timeout",
+        "auto-mac",
+        "comment",
+        "copy-from",
+        "dhcp-agent-circuit-id",
+        "dhcp-agent-remote-id",
+        "dhcp-snooping",
+        "dhcpv6-agent-circuit-id",
+        "dhcpv6-agent-remote-id",
+        "dhcpv6-snooping",
+        "disabled",
+        "ether-type",
+        "fast-forward",
+        "forward-delay",
+        "forward-reserved-addresses",
+        "frame-types",
+        "igmp-snooping",
+        "igmp-version",
+        "ingress-filtering",
+        "ip-source-guard",
+        "last-member-interval",
+        "last-member-query-count",
+        "last-member-query-interval",
+        "max-hops",
+        "max-learned-entries",
+        "max-message-age",
+        "membership-interval",
+        "mlag-heartbeat",
+        "mlag-init-delay",
+        "mlag-lacp-fallback",
+        "mlag-peer-port",
+        "mlag-priority",
+        "mld-version",
+        "mtu",
+        "multicast-querier",
+        "multicast-router",
+        "mvrp",
+        "name",
+        "port-cost-mode",
+        "priority",
+        "protocol-mode",
+        "pvid",
+        "querier-interval",
+        "querier-uses-bridge-address",
+        "query-interval",
+        "query-response-interval",
+        "ra-guard",
+        "region-name",
+        "region-revision",
+        "startup-query-count",
+        "startup-query-interval",
+        "transmit-hold-count",
+        "vlan-filtering"
+      ],
+      "enabled": true,
+      "result": "passed",
+      "semantic": true,
+      "source": ":put [:parse] + /console/inspect",
+      "stages": [
+        {
+          "result": "passed",
+          "source": "offline explain (canonicalizer)",
+          "stage": "offline"
+        },
+        {
+          "result": "passed",
+          "source": ":put [:parse] + /console/inspect",
+          "stage": "device"
+        }
+      ],
+      "syntax": true
+    },
+    "via": "native-api"
+  },
+  "ok": true,
+  "tips": [],
+  "warnings": []
+}

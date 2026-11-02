@@ -1,0 +1,33 @@
+{
+  "ok": false,
+  "data": null,
+  "warnings": [
+    {
+      "code": "transport/write-outcome-unknown",
+      "message": "The write was sent before it failed with transport/timeout, so it may have run on the router. centrs does not retry a write it has sent; check the router's state before running it again.",
+      "context": {
+        "cause": "transport/timeout"
+      }
+    }
+  ],
+  "tips": [],
+  "error": {
+    "code": "transport/timeout",
+    "summary": "The RouterOS API command to api://redacted timed out after 10000ms.",
+    "message": "The RouterOS API command to api://redacted timed out after 10000ms.",
+    "remediation": "Raise `--timeout`, or confirm the api service is responsive.",
+    "cause": null,
+    "context": {
+      "command": null,
+      "message": null
+    }
+  },
+  "meta": {
+    "via": "native-api",
+    "operation": {
+      "kind": "execute",
+      "objectCount": 0,
+      "path": null
+    }
+  }
+}

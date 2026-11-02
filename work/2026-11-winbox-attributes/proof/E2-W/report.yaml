@@ -1,0 +1,263 @@
+# cspell:ignore rowid u32 be32 vrf cliref unfreezing prevalidation vrfadd rowremove addressless vms
+proof: "E2-W: U1 f6/f11 write-leg discrimination on ws20 (7.25), 8w+0r"
+worker: E2-W
+date: 2026-11-02
+sheet: work/2026-11-winbox-attributes/proof/E2-R-census/report.yaml (e2w_leg_sheet)
+freeze: work/2026-11-winbox-attributes/proof/S0-replay-freeze/e2-candidates.yaml
+scope: legs A+B on ws20 ONLY; native reads ([20,1] GETALL) + centrs control writes/reads
+approval: in-session user yes to "E2-W 8w+0r on ws20 (U1 f6/f11)"
+
+budgets:
+  cap: { counted_writes: 8, reboots: 0 }
+  spent: { counted_writes: 8, reboots: 0 }
+  cap_reached: true  # exactly at cap after the final authorized restore write; nothing further sent
+
+# Spend ledger: every counted write, cumulative totals, live-explain verdicts.
+writes:
+  - n: 1
+    cumulative: 1
+    leg: leg-A-static-unset-disable-delete
+    step: control-add
+    cmd: "/ip/address/add address=198.51.100.10/24 interface=ether2 comment=m2ir-e2w"
+    explain_live: pass (write-shaped, via=api-candidate)
+    result: ok via native-api, new row .id *2 (native rowid 2)
+    rowid1_touched: false
+  - n: 2
+    cumulative: 2
+    leg: leg-A-static-unset-disable-delete
+    step: control-unset
+    cmd: '/ip/address/set *2 comment=""'
+    explain_live: pass (write-shaped)
+    result: ok via native-api; comment absent both transports after
+    rowid1_touched: false
+  - n: 3
+    cumulative: 3
+    leg: leg-A-static-unset-disable-delete
+    step: control-disable
+    cmd: "/ip/address/set *2 disabled=yes"
+    explain_live: pass (write-shaped)
+    result: ok via native-api; row still listed (2 rows), disabled=true both transports
+    rowid1_touched: false
+  - n: 4
+    cumulative: 4
+    leg: leg-A-static-unset-disable-delete
+    step: control-remove
+    cmd: "/ip/address/remove *2"
+    explain_live: pass (write-shaped)
+    result: ok via native-api; row gone (1 row)
+    rowid1_touched: false
+  - n: 5
+    cumulative: 5
+    leg: leg-B-vrf
+    step: control-vrf-add
+    cmd: "/ip/vrf/add name=m2ir-vrf interfaces=ether2"
+    explain_live: pass (write-shaped, 2 args)
+    result: ok via native-api, new vrf .id *1
+    rowid1_touched: false
+  - n: 6
+    cumulative: 6
+    leg: leg-B-vrf
+    step: control-add
+    cmd: "/ip/address/add address=198.51.100.20/24 interface=ether2"
+    explain_live: pass (write-shaped, 2 args)
+    result: ok via native-api, new row .id *3 (native rowid 3); STIMULUS GATE PASS (vrf=m2ir-vrf)
+    rowid1_touched: false
+  - n: 7
+    cumulative: 7
+    leg: leg-B-vrf
+    step: control-remove
+    cmd: "/ip/address/remove *3"
+    explain_live: pass (write-shaped)
+    result: ok via native-api; row gone (1 row, native equals leg-B baseline)
+    rowid1_touched: false
+  - n: 8
+    cumulative: 8
+    leg: leg-B-vrf
+    step: control-vrf-remove
+    cmd_sheet_literal: "/ip/vrf/remove m2ir-vrf"
+    cmd_sent: "/ip/vrf/remove *1"
+    explain_live: pass on the sent string (write-shaped, DELETE /ip/vrf/*1)
+    selector_adaptation: "sheet literal REJECTED at device :parse (see rejections); *1 pre-verified by control read as m2ir-vrf (interfaces=ether2) before sending; same sheet-authorized operation, same spend slot"
+    result: ok via native-api; vrf gone (only main remains)
+    rowid1_touched: false
+
+# Rejected attempts spend 0 writes (device parse refused, state verified unchanged).
+rejections:
+  - cmd: "/ip/vrf/remove m2ir-vrf"
+    when: leg-B control-vrf-remove, before write 8
+    explain_offline: pass (sheet prevalidation + E2-W live explain both passed this string shape)
+    device_verdict: rejected
+    code: validation/syntax
+    detail: "syntax error (line 1 column 16) — column 16 is the `m2ir-vrf` selector token"
+    state_after: unchanged (control /ip/vrf still 2 rows incl. m2ir-vrf on ether2)
+    spend: 0
+    data_note: "bare-name remove selector is device-rejected over this path; .id selector accepted. Future legs: resolve .id live and prefer it for remove/set."
+
+legs:
+  - id: leg-A-static-unset-disable-delete
+    counted_writes: 4
+    cumulative_after: 4
+    baseline:
+      native: "step-legA-baseline.json (GETALL x2, volatility identical=true)"
+      control_address: "control-legA-baseline-ip-address.json (1 row: DHCP rowid 1, vrf=main, slave=false)"
+      control_vrf: "control-legA-baseline-ip-vrf.json (1 vrf: main)"
+    observations:
+      - step: control-add
+        native: step-legA-add.json
+        control: control-legA-add-ip-address.json
+        finding: "static row rowid 2: f6=0 (0x9), f11=false (0x0) — IDENTICAL to dynamic rowid 1; f5/f10=3 (ether2 rowid); comment set both sides; DHCP row byte-identical"
+      - step: control-unset
+        native: step-legA-unset.json
+        control: control-legA-unset-ip-address.json
+        finding: "comment unset (absent CLI, empty native); f6/f11 unmoved (0/false)"
+      - step: control-disable
+        native: step-legA-disable.json
+        control: control-legA-disable-ip-address.json
+        finding: "row STILL LISTED (2 rows); disabled=true both sides (fe000a=0x1); slave=false; f6=0 f11=false unmoved"
+      - step: control-remove
+        native: step-legA-post.json
+        control: control-legA-post-ip-address.json
+        finding: "row gone (1 row); post-leg snapshot EQUALS pre-leg on all three reads"
+    restore_verified:
+      native_equal: true (step-legA-post.json read1 == step-legA-baseline.json read1, JSON-equal)
+      control_address_equal: true
+      control_vrf_equal: true
+      post_volatility_identical: true
+    verdict: "pass — proceed to leg B allowed (sheet: snapshot equal, no stop trigger)"
+
+  - id: leg-B-vrf
+    counted_writes: 4
+    cumulative_after: 8
+    baseline:
+      native: step-legB-baseline.json (GETALL x2, volatility identical=true; equals leg-A-post)
+      control_address: control-legB-baseline-ip-address.json
+      control_vrf: control-legB-baseline-ip-vrf.json
+    observations:
+      - step: control-vrf-add
+        native: step-legB-vrfadd.json
+        control: control-legB-vrfadd-ip-vrf.json
+        finding: "VARY-VRF-WITHOUT-ADDRESS CONTROL HOLDS: [20,1] rows byte-identical to baseline (f6=0 on rowid 1); VRF existence alone moves nothing"
+      - step: control-add
+        native: step-legB-add.json
+        control: control-legB-add-ip-address.json
+        stimulus_gate: PASS — control row *3 shows vrf=m2ir-vrf (else the sheet required STOP)
+        finding: "PRIME TEST: vrf row rowid 3 reads f6=1 (0x9, nonzero) while main rowid 1 stays f6=0; f11=false both rows; slave=false"
+      - step: control-remove
+        native: step-legB-rowremove.json
+        control: none (native-only intermediate read; final snapshot covers restore)
+        finding: "row gone; native equals leg-B baseline (VRF still present, no address rows in it)"
+      - step: control-vrf-remove
+        native: step-legB-post.json
+        control_address: control-legB-post-ip-address.json
+        control_vrf: control-legB-post-ip-vrf.json
+        finding: "vrf gone (only main); ether2 back in main; post-leg snapshot EQUALS pre-leg on all three reads (and equals leg-A baseline)"
+    restore_verified:
+      native_equal: true
+      control_address_equal: true
+      control_vrf_equal: true
+      post_volatility_identical: true
+    verdict: pass — leg complete, cap reached exactly
+
+# Cell-by-cell evaluation against the sheet outcomes_table.
+outcomes_table_evaluation:
+  - cell: "f6 moves (nonzero/new value) ONLY on the leg-B vrf row"
+    observed: TRUE — f6=1 on rowid 3 (vrf=m2ir-vrf) only; every main-vrf row in both legs reads f6=0
+    conclusion: "f6 prime (vrf identity) SUPPORTED; alt weakened (leg-A static row stayed 0)"
+  - cell: "f6 stays 0 on the vrf=m2ir-vrf row"
+    observed: FALSE — it reads 1
+    conclusion: n/a (prime-survival branch not taken)
+  - cell: "f6 differs leg-A static row vs dynamic rowid 1 (same vrf=main)"
+    observed: FALSE — both read f6=0
+    conclusion: "f6 alt static-vs-dynamic discriminator DISPROVEN (no creation-source split); prime stands on the leg-B move"
+  - cell: "f11 flips with disabled=yes AND control slave flips with it"
+    observed: FALSE — neither flipped
+    conclusion: n/a (no ambiguity to resolve)
+  - cell: "f11 flips with disabled=yes while slave stays false"
+    observed: FALSE — f11 stayed false
+    conclusion: n/a
+  - cell: "f11 stays false through both legs"
+    observed: TRUE — false under add/unset/disable/remove (leg A) and vrf add/address/vrf-remove (leg B), slave=false throughout
+    conclusion: "disabled RULED OUT as f11 driver; slave-prime SURVIVES untested -> bridge-enslave follow-up leg (sheet blocked item f11-slave-direct-test)"
+  - cell: "f6/f11 move on any baseline re-read (no stimulus)"
+    observed: FALSE — all four baselines volatility-identical, plus post-leg re-reads
+    conclusion: n/a (no volatility; leg conclusions valid)
+
+proven:
+  - id: U1-f6-tracks-row-vrf
+    claim: "[20,1] f6 (u32, wire 0x9) tracks the address row's VRF: 0 on every main-vrf row (dynamic DHCP, static, comment-unset, disabled states), 1 on the m2ir-vrf row; creating the VRF without an address row moves no existing row"
+    evidence: [step-legA-baseline.json, step-legA-add.json, step-legA-unset.json,
+      step-legA-disable.json, step-legB-baseline.json, step-legB-vrfadd.json,
+      step-legB-add.json, control-legA-add-ip-address.json, control-legA-disable-ip-address.json,
+      control-legB-add-ip-address.json, control-legB-vrfadd-ip-vrf.json, native-ws20.jsonl]
+    scope: "values observed: 0 (main, n=4 row-states across 2 rows) and 1 (m2ir-vrf, n=1 row). Single non-main-VRF sample."
+  - id: f11-disabled-ruled-out
+    claim: "f11 does NOT track CLI disabled: stayed false while disabled flipped false->true on the same row (slave=false throughout)"
+    evidence: [step-legA-disable.json, control-legA-disable-ip-address.json,
+      step-legB-add.json, native-ws20.jsonl]
+  - id: comment-unset-no-f6f11-effect
+    claim: "comment set-at-create vs unset moves neither f6 nor f11"
+    evidence: [step-legA-add.json, step-legA-unset.json]
+  - id: delete-vs-disable-visibility
+    claim: "disabled address row is still listed by native GETALL (2 rows); removed row is gone (1 row)"
+    evidence: [step-legA-disable.json, step-legA-post.json]
+  - id: name-selector-remove-rejected
+    claim: "device :parse rejects `/ip/vrf/remove m2ir-vrf` (bare-name selector, col 16); `.id` selector accepted for the same operation"
+    evidence: [report.yaml (rejections; observed envelope recorded inline, no separate file)]
+
+disproven:
+  - id: not-f6-static-vs-dynamic
+    claim: "f6 does NOT discriminate static vs DHCP-created rows (both 0 under vrf=main) — the f6-alt creation-source axis is disproven"
+  - id: not-f11-disabled
+    claim: "f11 is NOT a disabled echo (false under disabled=yes)"
+
+unknown:
+  - id: U1-f11-semantics
+    status: unknown; disabled ruled out, slave-prime survives untested
+    next: bridge-enslave follow-up leg (sheet blocked item; needs new cap + coordinator freeze decision — `slave` is outside the frozen 10)
+  - id: f6-numeric-identity
+    status: corroboration-level only — f6=1 coincides with the second VRF but E2-W did not read [20,101] to test registry-rowid identity
+    note: "E2-R follow-ws20.json 'main' rowid=0 is shape corroboration, not proof; fragment claims 'tracks row VRF' only"
+
+mapping_claims: f6 vrf-identity promotion proposed in fragment.yaml; NO f11 promotion claimed
+
+budgets_spent:
+  E2-W: { counted_writes: 8, reboots: 0 }
+  rowid1_writes: 0 (DHCP/management row never targeted; verified per write above)
+
+vm_end_state:
+  ws20: { version: "7.25", state: stopped, removed: false, writes: 8, baseline_restored: true (leg-B post == leg-B pre == leg-A baseline; only main VRF, only DHCP address, ether2 addressless in main) }
+  others: "no other VM touched (ws20 only, per approval)"
+
+cleanup_state:
+  vms: "ws20 stopped via `quickchr stop` (not removed)"
+  tmp: "no /tmp scratch files created by E2-W"
+  sanitization: "proof files carry no ts/hosts/ports/credentials (verified by grep: no ts keys, no 918x ports, no passwords, no timestamps); M2 plaintextHex retained (wire bytes, not secrets); lab IPs/MACs retained as synthetic lab data per E2-R precedent"
+
+evidence_files:
+  - read.ts  # E2-W native reader (paged GETALL [20,1] xN, reads only; refuses non-ws20 targets)
+  - sanitize.ts  # control-envelope sanitizer (copied from E2-R)
+  - native-ws20.jsonl  # 28 sanitized captures (ts stripped, per-step tag field)
+  - step-legA-baseline.json  # GETALL x2, 1 row, volatility identical
+  - step-legA-add.json  # 2 rows; static rowid 2 f6=0 f11=false
+  - step-legA-unset.json  # 2 rows; comment empty, f6/f11 unmoved
+  - step-legA-disable.json  # 2 rows; disabled row listed, fe000a=true, f11=false
+  - step-legA-post.json  # GETALL x2, 1 row, equals baseline
+  - step-legB-baseline.json  # GETALL x2, equals leg-A-post
+  - step-legB-vrfadd.json  # 1 row, byte-identical to baseline (without-address control)
+  - step-legB-add.json  # 2 rows; vrf rowid 3 f6=1, main rowid 1 f6=0
+  - step-legB-rowremove.json  # 1 row, equals baseline
+  - step-legB-post.json  # GETALL x2, 1 row, equals baseline
+  - control-legA-baseline-ip-address.json
+  - control-legA-baseline-ip-vrf.json
+  - control-legA-add-ip-address.json
+  - control-legA-unset-ip-address.json
+  - control-legA-disable-ip-address.json
+  - control-legA-post-ip-address.json
+  - control-legA-post-ip-vrf.json
+  - control-legB-baseline-ip-address.json
+  - control-legB-baseline-ip-vrf.json
+  - control-legB-vrfadd-ip-vrf.json
+  - control-legB-add-ip-address.json  # stimulus-gate row: *3 vrf=m2ir-vrf
+  - control-legB-post-ip-address.json
+  - control-legB-post-ip-vrf.json  # only main
+  - fragment.yaml  # proposed gui-handlers.yaml fragment (f6 only)

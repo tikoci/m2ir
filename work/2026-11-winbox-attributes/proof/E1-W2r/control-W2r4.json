@@ -1,0 +1,113 @@
+{
+  "error": {
+    "cause": "failure: interface cannot be in tagged and untagged at the same time (/interface/bridge/vlan/set; line 1)",
+    "code": "routeros/command-failed",
+    "context": {
+      "detail": "failure: interface cannot be in tagged and untagged at the same time (/interface/bridge/vlan/set; line 1)",
+      "failure": "interface cannot be in tagged and untagged at the same time (/interface/bridge/vlan/set; line 1)",
+      "via": "native-api"
+    },
+    "detailsUrl": "https://tikoci.github.io/centrs/errors/routeros/command-failed",
+    "details_url": "https://tikoci.github.io/centrs/errors/routeros/command-failed",
+    "message": "RouterOS command failed: interface cannot be in tagged and untagged at the same time (/interface/bridge/vlan/set; line 1)",
+    "name": "CentrsError",
+    "remediation": "Inspect the RouterOS failure message, then adjust the path, attributes, or request shape accordingly.",
+    "summary": "RouterOS command failed: interface cannot be in tagged and untagged at the same time (/interface/bridge/vlan/set; line 1)"
+  },
+  "meta": {
+    "operation": {
+      "auth": {
+        "passwordProvided": true,
+        "username": "admin"
+      },
+      "kind": "execute",
+      "objectCount": 0,
+      "request": {
+        "canonical": {
+          "attributes": {},
+          "input": "/interface/bridge/vlan/set *1 tagged=e1br,ether1 untagged=",
+          "mode": "script",
+          "path": "",
+          "queries": [],
+          "verb": ""
+        },
+        "command": "/interface/bridge/vlan/set *1 tagged=e1br,ether1 untagged=",
+        "format": "json",
+        "timeoutMs": 10000,
+        "validate": true,
+        "verbose": false,
+        "write": true,
+        "yes": true
+      }
+    },
+    "settings": {
+      "format": {
+        "key": "format",
+        "kind": "cli"
+      },
+      "host": "[redacted]",
+      "insecure": {
+        "key": "insecure",
+        "kind": "default"
+      },
+      "password": {
+        "key": "quickchr:twin3:password",
+        "kind": "provider"
+      },
+      "port": "[redacted]",
+      "timeoutMs": {
+        "key": "timeout",
+        "kind": "default"
+      },
+      "username": {
+        "key": "quickchr:twin3:username",
+        "kind": "provider"
+      },
+      "validate": {
+        "key": "validate",
+        "kind": "default"
+      },
+      "via": {
+        "key": "via",
+        "kind": "default"
+      }
+    },
+    "target": {
+      "baseUrl": "[redacted]",
+      "host": "[redacted]",
+      "identity": "twin3",
+      "input": "twin3",
+      "port": "[redacted]",
+      "source": {
+        "key": "quickchr:twin3",
+        "kind": "provider"
+      },
+      "sources": {
+        "host": "[redacted]",
+        "port": "[redacted]"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "result": "passed",
+      "source": ":put [:parse]",
+      "stages": [
+        {
+          "result": "passed",
+          "source": "offline explain (canonicalizer)",
+          "stage": "offline"
+        },
+        {
+          "result": "passed",
+          "source": ":put [:parse]",
+          "stage": "device"
+        }
+      ],
+      "syntax": true
+    },
+    "via": "native-api"
+  },
+  "ok": false,
+  "tips": [],
+  "warnings": []
+}

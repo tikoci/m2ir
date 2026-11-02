@@ -1,0 +1,234 @@
+# cspell:ignore rowid rowids vlan untagged getall getcount setobj addobj removeobj chr w5r e1br ether1 mvrp qemu
+# E1 follow-up leg sheet: W5-retry (host-table owner scan). READ-ONLY PREP.
+# No VM was touched to produce this sheet; no command below has been sent.
+# Execution requires the coordinator's confirmation plus the user's explicit
+# per-leg yes in-session (recorded budget != approved).
+leg: W5-retry
+recorded_followup: f-w5-retry
+targets_unknown: u-host-owner
+target_claim: "host-table owner handler (populated scan never ran)"
+handler_scope: "[16,0..32] GETCOUNT census + GETALL on movers ([16,2]/[20,0] context reads only)"
+budget:
+  recorded: { counted_writes: 6, reboots: 0 }
+  planned: { counted_writes: 6, reboots: 0 }
+  headroom: 0
+  warning: "Sheet spends the full recorded budget; zero headroom. Any extra
+    counted write is forbidden in-leg: record and stop instead."
+prior_failure_mode_foregrounded:
+  summary: "E1 W5 (b-w5-gate): the static host add SUCCEEDED (E1-W5.3 ok),
+    but the over-strict `host rows === 1` gate tripped on 2 self-learned
+    dynamic co-rows (*4 lab ether1 MAC 02:91:A6:6C:44:D5 local=true, *5
+    52:55:0A:00:02:02 local=false — control-w5.json), so the populated
+    [16,*] scan never ran and the host-table owner stayed unknown."
+  recurrence_prevention:
+    - "Gate G-host-corrected REPLACES the count gate with a presence gate:
+      PASS iff the static MAC is present with dynamic=false; dynamic co-rows
+      are ALLOWED in any count (recorded, not gated)."
+    - "The `rows === 1` predicate is EXPLICITLY FORBIDDEN in this leg (see
+      gate fail_action: there is no row-count fail branch)."
+    - "Learning churn between gate and scan (new dynamic rows appearing
+      mid-scan) is recorded as evidence, never re-gated: the gate runs once."
+caveats_foregrounded:
+  - "CAVEAT (from S0 budgets): the corrected gate was NEVER LIVE-TESTED. It
+    is a NEW (untested) read-only predicate; offline validation cannot prove
+    it. If the static row is absent at gate time, the leg stops at cumulative
+    3 with restore affordable."
+  - "Dynamic co-row MACs/ids are VM-state-specific (E1 values cited, never
+    assumed): the gate keys ONLY on the static MAC
+    02:00:00:E1:00:01 + dynamic=false, never on co-row identities."
+vm:
+  proposed: twin3
+  routeros: "7.25"
+  rationale:
+    - "Same VM + version as E1 (report provenance: twin3 7.25): host-table
+      self-learning (which MACs appear as dynamic co-rows) is version/VM-
+      specific; a same-VM retry keeps the E1 co-row observation comparable."
+    - "SEQUENTIAL after W2-rerun: both legs enslave ether1 to e1br; W5-retry
+      starts only after W2-rerun's restore_verification passes (re-verified
+      at W5 baseline_snapshot — a dirty baseline blocks this leg before any
+      write)."
+  confirmation: "Coordinator confirms the VM choice at execution."
+  how_to_read_ports: "Coordinator, at execution (prep touched no VM): resolve
+    twin3's forwarded ports (SSH / REST / API) from the live quickchr VM
+    record per the routeros-quickchr-cli skill, then drive control reads and
+    writes via `centrs --quickchr twin3` and native reads via the
+    work/2026-11-winbox-attributes/harness session. Record the resolved
+    ports in the execution log; this sheet names no ports because none were
+    read during prep."
+baseline_snapshot:
+  purpose: "Prove W2-rerun restored clean (or the VM is otherwise at E1
+    baseline) before W5r.1. A dirty baseline BLOCKS this leg with 0 spent."
+  steps:
+    - tool: "centrs retrieve"
+      route: /interface/bridge
+      expect: "[] (no e1br row)"
+    - tool: "centrs retrieve"
+      route: /interface/bridge/port
+      expect: "[]"
+    - tool: "centrs retrieve"
+      route: /interface/bridge/host
+      expect: "[]"
+    - tool: "centrs retrieve"
+      route: /interface/bridge/vlan
+      expect: "[]"
+    - tool: native
+      op: "GETALL [16,2]"
+      expect: "0 rows"
+    - tool: native
+      op: "GETCOUNT [16,0..32]"
+      expect: "empty-table census matching E1 p-16-scan v7 row (ok on
+        1,2,3,9,10,11,12,13,14,15,16,17,18; RECORD the actual values as the retry's
+        own empty baseline — cite E1, do not assume)"
+  writes: 0
+explain_provenance: "centrs 0.1.9-next, `centrs explain '<cmd>' --json`, offline
+  (no router). Every verdict below is pass with runtimeAcceptance not-proven:
+  well-formed per the canonicalizer, device acceptance NOT proven."
+steps:
+  - tag: W5r.1
+    writes: 1
+    cumulative: 1
+    e1_cite: "control-w5.json E1-W5.1 (outcome ok)"
+    status: CITED
+    control: { tool: "centrs execute", command: "/interface/bridge/add name=e1br" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    verify: "retrieve /interface/bridge shows e1br"
+  - tag: W5r.2
+    writes: 1
+    cumulative: 2
+    e1_cite: "control-w5.json E1-W5.2 (outcome ok)"
+    status: CITED
+    control: { tool: "centrs execute", command: "/interface/bridge/port/add bridge=e1br interface=ether1" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    verify: "retrieve /interface/bridge/port shows the e1br/ether1 row"
+  - tag: W5r.3
+    writes: 1
+    cumulative: 3
+    e1_cite: "control-w5.json E1-W5.3 (outcome ok; static host rows are device-accepted)"
+    status: CITED
+    control: { tool: "centrs execute", command: "/interface/bridge/host/add mac-address=02:00:00:E1:00:01 bridge=e1br interface=ether1" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    verify: "retrieve /interface/bridge/host contains 02:00:00:E1:00:01 dynamic=false"
+    note: "Locally-administered synthetic MAC, same value as E1 for comparability."
+  - tag: G-host-corrected
+    writes: 0
+    cumulative: 3
+    e1_cite: "control-w5.json host-table shape (1 static + 2 dynamic); predicate itself is NEW"
+    status: "NEW (untested) — the corrected gate; NEVER LIVE-TESTED"
+    risk: "If the static row fails to appear (device behavior drift), the
+      leg stops here at cumulative 3 — safe, restore fits. The gate cannot
+      over-trip on co-rows by construction (no count predicate exists)."
+    gate:
+      read: "retrieve /interface/bridge/host"
+      pass_iff: "a row with mac-address=02:00:00:E1:00:01 AND dynamic=false
+        is present (bridge e1br, interface ether1)"
+      record_always: "full host table: every row's .id, mac-address, dynamic,
+        local, bridge, interface (E1 saw *6 static + *4/*5 dynamic — cite,
+        do not assume)"
+      forbidden: "ANY row-count predicate (`rows === N`) is forbidden in this
+        leg — that was b-w5-gate"
+      fail_action: "RECORD the host table, STOP the leg, run restore W5r.R1-R3"
+  - tag: scan-populated
+    writes: 0
+    cumulative: 3
+    e1_cite: "report.yaml p-16-scan (empty census shape) + u-host-owner next
+      (the scan this leg recovers)"
+    status: "NEW (untested) — the lost E1 scan"
+    reads:
+      - tool: native
+        op: "GETCOUNT [16,0..32]"
+        expect: "RECORD all cells; diff against this leg's own empty baseline"
+      - tool: native
+        op: "GETALL on every count-mover vs baseline"
+        expect: "RECORD full rows (rowids, keys, MAC-carrying fields)"
+      - tool: native
+        op: "GETALL [16,2]"
+        expect: "1 port row (context: co-row check)"
+      - tool: native
+        op: "GETALL [20,0]"
+        expect: "ether1/lo/e1br rows (context: live rowids for the mover rows)"
+    proves: "The handler whose count moves 0->N with N host rows is the
+      host-table owner candidate: exactly-one-mover ASSIGNS u-host-owner
+      (pending reviewer reconstruction); zero movers PROVES the host table
+      is not under [16,*] (unknown stays, census narrows); multiple movers
+      NARROW the candidates (unknown stays with bounded next steps). Any
+      outcome classifies u-host-owner — the leg cannot re-lose the scan
+      except via a stop-rule block, which is itself recorded."
+  - tag: W5r.R1
+    writes: 1
+    cumulative: 4
+    e1_cite: "control-w5.json restore (host remove; outcome ok) + d-dynamic-remove
+      (dynamic rows are NOT CLI-removable — remove ONLY the static row by .id)"
+    status: CITED
+    control: { tool: "centrs execute", command: "/interface/bridge/host/remove *6" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    id_resolution: "Selector *6 is the E1 value SHOWN FOR EXPLAIN ONLY — the
+      execution selector resolves from the gate read at execution. NEVER send
+      *6 without resolving."
+  - tag: W5r.R2
+    writes: 1
+    cumulative: 5
+    e1_cite: "control-w5.json restore (port remove; outcome ok) + d-no-cascade
+      (explicit port remove required — bridge removal orphans ports)"
+    status: CITED
+    control: { tool: "centrs execute", command: "/interface/bridge/port/remove *0" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    id_resolution: "Selector resolves from the latest retrieve at execution."
+  - tag: W5r.R3
+    writes: 1
+    cumulative: 6
+    e1_cite: "control-w5.json restore (bridge remove; outcome ok;
+      bridge-first cleanup cleared the dynamic co-rows)"
+    status: CITED
+    control: { tool: "centrs execute", command: "/interface/bridge/remove e1br" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    note: "Dynamic co-rows self-clear on bridge removal (d-dynamic-remove);
+      explicit host/port removes precede it so no orphaned rows survive."
+restore_verification:
+  purpose: "Prove baseline is restored."
+  steps:
+    - tool: "centrs retrieve"
+      route: /interface/bridge
+      expect: "[]"
+    - tool: "centrs retrieve"
+      route: /interface/bridge/port
+      expect: "[]"
+    - tool: "centrs retrieve"
+      route: /interface/bridge/host
+      expect: "[] (static gone by R1, dynamics cleared by R3)"
+    - tool: "centrs retrieve"
+      route: /interface/bridge/vlan
+      expect: "[]"
+    - tool: native
+      op: "GETALL [16,2]"
+      expect: "0 rows + total 0 (empty envelope)"
+    - tool: native
+      op: "GETCOUNT [16,0..32]"
+      expect: "empty-table census again (matches this leg's baseline_snapshot)"
+  writes: 0
+  on_failure: "Baseline NOT restored: record exactly which rows remain, STOP,
+    hand to the coordinator. Do not spend unbudgeted writes."
+stop_conditions:
+  - "E1 STOP RULE: on ANY block (rejection, gate fail, unexpected scan
+    transport behavior) do NOT re-run within the leg — record the evidence
+    and stop, then run restore W5r.R1-R3 (restore always fits: the latest
+    possible stop is after scan-populated at cumulative 3, restore adds
+    3 = 6)."
+  - "Dirty baseline_snapshot: BLOCK with 0 spent — do not start W5r.1 until
+    the coordinator restores the baseline."
+  - "Gate fail (static row absent): STOP — record the host table, restore."
+  - "Any step exceeding cumulative 6: forbidden — the sheet has no such step."
+cleanup_state:
+  definition: "All e1* objects removed (bridge/port/host/vlan tables empty
+    per restore_verification); twin3 left for the coordinator (VM lifecycle
+    is the coordinator's — prep touched no VM); execution log records every
+    write, the gate outcome, the full host table, and the populated census."
+out_of_scope:
+  - "f7-SET leg (u-vlan-f7): unbudgeted; this leg creates no vlan rows."
+  - "v7 [16,3] membership-count leg (u-16-3): unbudgeted; [16,3] is one
+    census cell here (context), not a discrimination target."
+  - "0xFFFFFFFF count-vs-sentinel leg (u-ffffffff): unbudgeted; census cells
+    carrying 0xFFFFFFFF are recorded, not interpreted."
+  - "0x38 writer static analysis (u-38-writer): non-lab work, unbudgeted."
+  - "u-port-15-drift, u-fe0005: observed context at most, no experiment here."
+  - "Dynamic-row stimulus/traffic generation: no traffic is generated in
+    this leg; whatever the bridge self-learns is recorded as-is."

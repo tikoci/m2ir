@@ -1,0 +1,141 @@
+{
+  "data": {
+    ".id": "*0",
+    "ret": "*0"
+  },
+  "meta": {
+    "operation": {
+      "auth": {
+        "passwordProvided": true,
+        "username": "admin"
+      },
+      "kind": "execute",
+      "objectCount": 1,
+      "request": {
+        "canonical": {
+          "attributes": {
+            "bridge": "e1br",
+            "interface": "ether1"
+          },
+          "input": "/interface/bridge/port/add bridge=e1br interface=ether1",
+          "mode": "structured",
+          "path": "/interface/bridge/port",
+          "queries": [],
+          "verb": "add"
+        },
+        "command": "/interface/bridge/port/add bridge=e1br interface=ether1",
+        "format": "json",
+        "timeoutMs": 10000,
+        "validate": true,
+        "verbose": false,
+        "write": true,
+        "yes": true
+      }
+    },
+    "settings": {
+      "format": {
+        "key": "format",
+        "kind": "cli"
+      },
+      "host": "[redacted]",
+      "insecure": {
+        "key": "insecure",
+        "kind": "default"
+      },
+      "password": {
+        "key": "quickchr:twin3:password",
+        "kind": "provider"
+      },
+      "port": "[redacted]",
+      "timeoutMs": {
+        "key": "timeout",
+        "kind": "default"
+      },
+      "username": {
+        "key": "quickchr:twin3:username",
+        "kind": "provider"
+      },
+      "validate": {
+        "key": "validate",
+        "kind": "default"
+      },
+      "via": {
+        "key": "via",
+        "kind": "default"
+      }
+    },
+    "target": {
+      "baseUrl": "[redacted]",
+      "host": "[redacted]",
+      "identity": "twin3",
+      "input": "twin3",
+      "port": "[redacted]",
+      "source": {
+        "key": "quickchr:twin3",
+        "kind": "provider"
+      },
+      "sources": {
+        "host": "[redacted]",
+        "port": "[redacted]"
+      }
+    },
+    "validation": {
+      "availableAttributes": [
+        "auto-isolate",
+        "bpdu-guard",
+        "bridge",
+        "broadcast-flood",
+        "comment",
+        "copy-from",
+        "disabled",
+        "edge",
+        "fast-leave",
+        "frame-types",
+        "horizon",
+        "hw",
+        "ingress-filtering",
+        "interface",
+        "internal-path-cost",
+        "learn",
+        "multicast-router",
+        "mvrp-applicant-state",
+        "mvrp-registrar-state",
+        "path-cost",
+        "place-before",
+        "point-to-point",
+        "priority",
+        "pvid",
+        "restricted-role",
+        "restricted-tcn",
+        "tag-stacking",
+        "trusted",
+        "trusted-arp",
+        "trusted-dhcpv6",
+        "trusted-ra",
+        "unknown-multicast-flood",
+        "unknown-unicast-flood"
+      ],
+      "enabled": true,
+      "result": "passed",
+      "semantic": true,
+      "source": ":put [:parse] + /console/inspect",
+      "stages": [
+        {
+          "result": "passed",
+          "source": "offline explain (canonicalizer)",
+          "stage": "offline"
+        },
+        {
+          "result": "passed",
+          "source": ":put [:parse] + /console/inspect",
+          "stage": "device"
+        }
+      ],
+      "syntax": true
+    },
+    "via": "native-api"
+  },
+  "ok": true,
+  "tips": [],
+  "warnings": []
+}

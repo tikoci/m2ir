@@ -1,0 +1,60 @@
+# cspell:ignore rowid rowids getall getcount w5r e1br ether1
+# E1-W5r mapping fragment (worker W5r). Read-only proposal file;
+# no canonical schema file was edited. Promotion needs reviewer
+# reconstruction + coordinator integration per the sheet.
+fragment: "E1-W5r mapping fragment (twin3 7.25)"
+leg: W5-retry
+promotion: PROPOSED
+assignment: "u-host-owner = [16,3] (pending reviewer reconstruction)"
+proven_this_leg:
+  - id: p-host-owner-16-3
+    claim: "[16,3] is the bridge host-table owner on 7.25: GETCOUNT 0->3 with exactly 3 control host rows, and its GETALL rows carry the 3 host-table MACs"
+    status: assigned-pending-reviewer
+    wire: "[16,3] GETCOUNT 0->3 (only candidate-mover; [16,2] 0->1 is the explained port-table co-move); 3 GETALL rows each carrying one host MAC in user f2 (tcode 0x31, 6 bytes, byte-identical to the control table); session 0xfe0007 false on the static row / true on both dynamic rows; user f4=3 on all rows (= live e1br [20,0] rowid)"
+    evidence:
+      - work/2026-11-winbox-attributes/proof/E1-W5r/gate-host.json
+      - work/2026-11-winbox-attributes/proof/E1-W5r/census-baseline.json
+      - work/2026-11-winbox-attributes/proof/E1-W5r/census-populated.json
+      - work/2026-11-winbox-attributes/proof/E1-W5r/mover-16-3.json
+      - work/2026-11-winbox-attributes/proof/E1-W5r/step-mover-16-3.jsonl
+      - work/2026-11-winbox-attributes/proof/E1-W5r/step-populated.jsonl
+  - id: p-host-row-shape-16-3
+    claim: "[16,3] row shape on 7.25 is 12 keys (static) / 13 keys (dynamic): session {1,7,8,9,10} + user {1,2,4,7,101,102,104} + user 105 on dynamics only"
+    status: observed-single-session
+    wire: "static row (rowid 6): user {1=2, 2=MAC, 4=3, 7=false, 101=2, 102=false, 104=false}; dynamic rows (rowids 8,7): same + user 105=0; session 0xfe0007 false/true tracks control dynamic; user 102 true ONLY on the local=true dynamic row (single-row correlation, no name claimed); user 1=101=2 equals the live ether1 rowid (observed, unnamed); per-row wire order identical (dynamics insert 105 after 4)"
+    evidence:
+      - work/2026-11-winbox-attributes/proof/E1-W5r/mover-16-3.json
+      - work/2026-11-winbox-attributes/proof/E1-W5r/step-mover-16-3.jsonl
+  - id: p-gate-corrected-live
+    claim: "G-host-corrected presence gate passes live with dynamic co-rows present (first live test); the b-w5-gate failure mode does not recur"
+    status: proven-method
+    wire: "gate-host.json: static *6 present with dynamic=false alongside 2 dynamic co-rows; no count predicate used"
+    evidence:
+      - work/2026-11-winbox-attributes/proof/E1-W5r/gate-host.json
+proposed_yaml:
+  handler: bridge-host
+  sys-to: [16, 3]
+  process-id: 0x10
+  confidence: observed-only
+  note: "New handler entry proposed; field names below are evidence-led and minimal — MAC + dynamic only; all other keys stay unknown-*."
+  fields:
+    row-id: { namespace: session, field: 1 }
+    namespace-user:
+      1: { name: unknown-1, tcode: u32, role: "OPEN — 2 on all 3 host rows (t=0x09), equals the live ether1 [20,0] rowid this session; meaning UNKNOWN" }
+      2: { name: mac-address, tcode: bytes, size: 6, role: "row MAC (t=0x31, 6 bytes): byte-identical to the control host-table MACs on all 3 rows (static + both dynamics)" }
+      4: { name: unknown-4, tcode: u32, role: "OPEN — 3 on all 3 host rows (t=0x09), equals the live e1br [20,0] rowid this session; meaning UNKNOWN" }
+      7: { name: unknown-7, tcode: bool, role: "OPEN — false on all 3 host rows (t=0x00); meaning UNKNOWN" }
+      101: { name: unknown-101, tcode: u32, role: "OPEN — 2 on all 3 host rows (t=0x09), equals the live ether1 [20,0] rowid this session; meaning UNKNOWN" }
+      102: { name: unknown-102, tcode: bool, role: "OPEN — true ONLY on the local=true dynamic row, false on the static and the non-local dynamic row (t=0x00/0x01; single-row correlation, no name claimed)" }
+      104: { name: unknown-104, tcode: bool, role: "OPEN — false on all 3 host rows (t=0x00); meaning UNKNOWN" }
+      105: { name: unknown-105, tcode: u32, role: "OPEN — 0 on both dynamic rows (t=0x09), ABSENT on the static row; meaning UNKNOWN" }
+    namespace-session:
+      7: { name: dynamic, tcode: bool, role: "false on the static row, true on both dynamic rows (t=0x00/0x01); tracks the control dynamic flag; documented STD_DYNAMIC elsewhere" }
+      8: { name: unknown-8, tcode: bool, role: "OPEN — false on all 3 host rows (t=0x00); documented STD_INACTIVE elsewhere, local name unassigned" }
+      9: { name: comment, tcode: string }
+      10: { name: disabled, tcode: bool }
+still_unknown:
+  - "u-16-3 (v6 side): the v6 [16,3] 0->2 reading stays with the reviewer — no v6 host-table retrieve exists, so the v6 membership-vs-host ambiguity is unresolvable from E1 data; this leg discriminates the v7 side only"
+  - "[16,3] user f1/f101/f4 rowid-target identities (live-value correlations only, one session)"
+  - "[16,3] user f102/f105 semantics (single-session correlations)"
+  - "[16,3] write path (ADDOBJ/SET/REMOVE): never attempted; read visibility does not imply write support"

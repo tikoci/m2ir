@@ -1,0 +1,130 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*1",
+      "name": "routeros-x86",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "disabled": "false"
+    },
+    {
+      ".id": "*2",
+      "name": "system",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "bundle": "routeros-x86",
+      "disabled": "false"
+    },
+    {
+      ".id": "*3",
+      "name": "ipv6",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "bundle": "routeros-x86",
+      "disabled": "true"
+    },
+    {
+      ".id": "*4",
+      "name": "ups",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "bundle": "routeros-x86",
+      "disabled": "false"
+    },
+    {
+      ".id": "*5",
+      "name": "wireless",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "bundle": "routeros-x86",
+      "disabled": "false"
+    },
+    {
+      ".id": "*6",
+      "name": "hotspot",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "bundle": "routeros-x86",
+      "disabled": "false"
+    },
+    {
+      ".id": "*7",
+      "name": "mpls",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "bundle": "routeros-x86",
+      "disabled": "false"
+    },
+    {
+      ".id": "*8",
+      "name": "routing",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "bundle": "routeros-x86",
+      "disabled": "false"
+    },
+    {
+      ".id": "*9",
+      "name": "ppp",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "bundle": "routeros-x86",
+      "disabled": "false"
+    },
+    {
+      ".id": "*A",
+      "name": "dhcp",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "bundle": "routeros-x86",
+      "disabled": "false"
+    },
+    {
+      ".id": "*B",
+      "name": "security",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "bundle": "routeros-x86",
+      "disabled": "false"
+    },
+    {
+      ".id": "*C",
+      "name": "advanced-tools",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "bundle": "routeros-x86",
+      "disabled": "false"
+    },
+    {
+      ".id": "*D",
+      "name": "dude",
+      "version": "6.49.23",
+      "build-time": "redacted",
+      "scheduled": "",
+      "disabled": "false"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "native-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 13,
+      "path": "/system/package"
+    }
+  }
+}

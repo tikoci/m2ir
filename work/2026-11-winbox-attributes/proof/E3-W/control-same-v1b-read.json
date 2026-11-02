@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*2",
+      "action": "same",
+      "bytes": "0",
+      "chain": "srcnat",
+      "comment": "e3same1b",
+      "dynamic": "false",
+      "invalid": "false",
+      "packets": "0",
+      "to-addresses": "192.0.2.1"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 1,
+      "path": "/ip/firewall/nat"
+    }
+  }
+}

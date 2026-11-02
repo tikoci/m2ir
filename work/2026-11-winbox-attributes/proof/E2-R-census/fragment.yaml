@@ -1,0 +1,26 @@
+# cspell:ignore u32 rowid vrf cliref undiscriminated
+# E2-R proposed gui-handlers.yaml fragment. Coordinator integrates; E2-R edits nothing canonical.
+fragment_for: profiles/winbox-ipc/gui-handlers.yaml
+promotion_ready:
+  - target: ipv6-address.namespace-user
+    action: add two OPEN unknown-* entries (7.26beta4-only shape drift)
+    lines:
+      - '        10: { name: unknown-10, tcode: u32, role: "OPEN — 7.26beta4-only (GETALL+GETOBJ), 0 on the observed rows (wire 0x09 u32_compact; semantic width follows the u32_compact family per the [20,1] f6 precedent); meaning UNKNOWN, no CLI-guess recorded" }'
+      - '        11: { name: unknown-11, tcode: u32, role: "OPEN — 7.26beta4-only (GETALL+GETOBJ), 0 on the observed rows (wire 0x09 u32_compact; same family note); meaning UNKNOWN, no CLI-guess recorded" }'
+    evidence_to_attach:
+      - source: sample
+        ref: "live CHR interrogation (E2-R census, 7.25 + 7.26beta4 + 6.49.23, 2026-11-02): beta4 [20,37] rows carry f10/f11 u32c zeros on GETALL+GETOBJ, absent on 7.25; v6 BRKPATH (ipv6 package disabled) — work/2026-11-winbox-attributes/proof/E2-R-census/{report.yaml,shape-ws20.json,shape-winbox-beta4.json,shape-ws3c6.json}"
+    rationale: "mirrors the U1 unknown-6/unknown-11 precedent (single-sample zero-valued OPEN entries with explicit no-CLI-guess); version scope is inline prose as elsewhere in this file"
+not_proposed:
+  - what: "U1 f6/f11 semantics (vrf/slave or any other mapping)"
+    reason: "unknown — discrimination needs E2-W legs (see report.yaml e2w_leg_sheet); no mapping claim with zero manipulations"
+  - what: "route-table handler entry"
+    reason: "census MISS — no [20,*] slot carries route content; nothing to promote"
+  - what: "chain-registry / service-port / queue-type / neighbor / iface-list shapes ([20,2/4/6/10/28/30/33/38/...])"
+    reason: "firewall/queue/neighbor shapes belong to E3-R's family or later batches; proposing here risks colliding with in-flight E3-R fragments. Shapes are recorded in follow-*.json for whoever owns the family."
+  - what: "[20,101] 'main' registry entry and any vrf/routing-table mapping"
+    reason: "single-row shape only; registry identity (vrf vs routing-table) undiscriminated — E2-W leg B reads it as corroboration, not promotion"
+  - what: "[20,124] handler entry"
+    reason: "error-only sample (FAILED 'no INTERFACE_IDS' on 3 verbs); suggest an error-census fixture instead of a handler entry"
+  - what: "ipv6-address f2/f3/f5/f7/f17/f19 tcode changes (u8 vs wire 0x9)"
+    reason: "semantic-width question for the coordinator; census records wire tcodes without claiming the schema type is wrong"

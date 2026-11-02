@@ -1,0 +1,122 @@
+{
+	"ok": true,
+	"data": {
+		"ret": "*6",
+		".id": "*6"
+	},
+	"warnings": [],
+	"tips": [],
+	"meta": {
+		"target": {
+			"input": "twin3",
+			"host": "[redacted]",
+			"port": "[redacted]",
+			"baseUrl": "[redacted]",
+			"identity": "twin3",
+			"source": {
+				"kind": "provider",
+				"key": "quickchr:twin3"
+			},
+			"sources": {
+				"host": "[redacted]",
+				"port": "[redacted]"
+			}
+		},
+		"via": "native-api",
+		"settings": {
+			"via": {
+				"kind": "default",
+				"key": "via"
+			},
+			"host": {
+				"kind": "provider",
+				"key": "quickchr:twin3"
+			},
+			"port": {
+				"kind": "provider",
+				"key": "quickchr:twin3"
+			},
+			"timeoutMs": {
+				"kind": "default",
+				"key": "timeout"
+			},
+			"format": {
+				"kind": "cli",
+				"key": "format"
+			},
+			"validate": {
+				"kind": "default",
+				"key": "validate"
+			},
+			"insecure": {
+				"kind": "default",
+				"key": "insecure"
+			},
+			"username": {
+				"kind": "provider",
+				"key": "quickchr:twin3:username"
+			},
+			"password": {
+				"kind": "provider",
+				"key": "quickchr:twin3:password"
+			}
+		},
+		"validation": {
+			"enabled": true,
+			"source": ":put [:parse] + /console/inspect",
+			"result": "passed",
+			"syntax": true,
+			"semantic": true,
+			"availableAttributes": [
+				"bridge",
+				"comment",
+				"copy-from",
+				"disabled",
+				"interface",
+				"mac-address",
+				"vid"
+			],
+			"stages": [
+				{
+					"stage": "offline",
+					"source": "offline explain (canonicalizer)",
+					"result": "passed"
+				},
+				{
+					"stage": "device",
+					"source": ":put [:parse] + /console/inspect",
+					"result": "passed"
+				}
+			]
+		},
+		"operation": {
+			"kind": "execute",
+			"objectCount": 1,
+			"request": {
+				"command": "/interface/bridge/host/add mac-address=02:00:00:E1:00:01 bridge=e1br interface=ether1",
+				"canonical": {
+					"mode": "structured",
+					"input": "/interface/bridge/host/add mac-address=02:00:00:E1:00:01 bridge=e1br interface=ether1",
+					"path": "/interface/bridge/host",
+					"verb": "add",
+					"attributes": {
+						"mac-address": "02:00:00:E1:00:01",
+						"bridge": "e1br",
+						"interface": "ether1"
+					},
+					"queries": []
+				},
+				"write": true,
+				"yes": true,
+				"validate": true,
+				"verbose": false,
+				"timeoutMs": 10000,
+				"format": "json"
+			},
+			"auth": {
+				"username": "admin",
+				"passwordProvided": true
+			}
+		}
+	}
+}

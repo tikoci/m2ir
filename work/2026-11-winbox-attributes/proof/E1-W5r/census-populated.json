@@ -1,0 +1,1295 @@
+{
+	"proof": "E1-W5r native scan",
+	"machine": "twin3",
+	"routeros_version": "7.25",
+	"tag": "populated",
+	"zero_writes": true,
+	"census_16_0_32": {
+		"total_slots": 33,
+		"ok_slots": 13,
+		"cells": [
+			{
+				"slot": 0,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 1,
+				"status": "ok",
+				"count19": 4294967295,
+				"count14": null
+			},
+			{
+				"slot": 2,
+				"status": "ok",
+				"count19": 1,
+				"count14": null
+			},
+			{
+				"slot": 3,
+				"status": "ok",
+				"count19": 3,
+				"count14": null
+			},
+			{
+				"slot": 4,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 5,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 6,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 7,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 8,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 9,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 10,
+				"status": "ok",
+				"count19": 4294967295,
+				"count14": null
+			},
+			{
+				"slot": 11,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 12,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 13,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 14,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 15,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 16,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 17,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 18,
+				"status": "ok",
+				"count19": 0,
+				"count14": null
+			},
+			{
+				"slot": 19,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 20,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 21,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 22,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 23,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 24,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 25,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 26,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 27,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 28,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 29,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 30,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 31,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			},
+			{
+				"slot": 32,
+				"status": "router-error",
+				"errno": "0xfe0002",
+				"errstr": null
+			}
+		]
+	},
+	"getall-16-2": {
+		"rows": 1,
+		"pages": 1,
+		"complete": true,
+		"shapes": [
+			[
+				{
+					"key": "0x00000e",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00000f",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000019",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x00001a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe0007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00001b",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00001c",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe000a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00001d",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00001f",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000020",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000021",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe0008",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000025",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000026",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000027",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000028",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x0000d7",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000004",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0x00000a",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00000b",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000012",
+					"tcode": "0x9",
+					"value": 10
+				},
+				{
+					"key": "0x000013",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000014",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xfe0005",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x00001e",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000022",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000023",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x9",
+					"value": 10
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x9",
+					"value": 128
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		]
+	},
+	"getall-20-0": {
+		"rows": 3,
+		"pages": 1,
+		"complete": true,
+		"shapes": [
+			[
+				{
+					"key": "0x01003c",
+					"tcode": "0x88",
+					"value": [
+						9,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0
+					]
+				},
+				{
+					"key": "0x00040c",
+					"tcode": "0x88",
+					"value": []
+				},
+				{
+					"key": "0x0003f4",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x001388",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe000a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x01000d",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000400",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x0003eb",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x01000e",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x010029",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x0003f3",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x0003f8",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x0003f9",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x0003fa",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x010001",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x010003",
+					"tcode": "0x8",
+					"value": 546121
+				},
+				{
+					"key": "0x010002",
+					"tcode": "0x8",
+					"value": 270947
+				},
+				{
+					"key": "0x010004",
+					"tcode": "0x9",
+					"value": 4
+				},
+				{
+					"key": "0x010064",
+					"tcode": "0x8",
+					"value": 1500
+				},
+				{
+					"key": "0x01000c",
+					"tcode": "0x8",
+					"value": 4294967292
+				},
+				{
+					"key": "0x000416",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000417",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000418",
+					"tcode": "0x9",
+					"value": 5
+				},
+				{
+					"key": "0x000419",
+					"tcode": "0x8",
+					"value": 300
+				},
+				{
+					"key": "0xfe0012",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00041b",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0x010069",
+					"tcode": "0x8",
+					"value": 1500
+				},
+				{
+					"key": "0x00041c",
+					"tcode": "0x8",
+					"value": 1000
+				},
+				{
+					"key": "0x00041e",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x010066",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x01001e",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0x01001f",
+					"tcode": "0x9",
+					"value": 5
+				},
+				{
+					"key": "0x000487",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x01002e",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x01002f",
+					"tcode": "0x8",
+					"value": 4294967292
+				},
+				{
+					"key": "0x010038",
+					"tcode": "0x8",
+					"value": 1234
+				},
+				{
+					"key": "0x010039",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x0003ea",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x01003a",
+					"tcode": "0x8",
+					"value": 4294967292
+				},
+				{
+					"key": "0x01003b",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x0003f2",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x0003f5",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x01006a",
+					"tcode": "0x21",
+					"value": "main"
+				},
+				{
+					"key": "0x010020",
+					"tcode": "0x21",
+					"value": "br0"
+				},
+				{
+					"key": "0x010031",
+					"tcode": "0x21",
+					"value": "ether1"
+				},
+				{
+					"key": "0x010005",
+					"tcode": "0x21",
+					"value": "eth0"
+				},
+				{
+					"key": "0x010006",
+					"tcode": "0x21",
+					"value": "ether1"
+				},
+				{
+					"key": "0x01001e",
+					"tcode": "0x21",
+					"value": "ether"
+				},
+				{
+					"key": "0xfe0009",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000404",
+					"tcode": "0x31",
+					"value": "hex:0291a66c44d5"
+				},
+				{
+					"key": "0x0003e9",
+					"tcode": "0x31",
+					"value": "hex:0291a66c44d5"
+				}
+			],
+			[
+				{
+					"key": "0x01003c",
+					"tcode": "0x88",
+					"value": [
+						9,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0
+					]
+				},
+				{
+					"key": "0xfe001c",
+					"tcode": "0xa0",
+					"value": []
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000065",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000068",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000069",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00006a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00006d",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x00006f",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000070",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00007a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00007d",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x00007e",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000080",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000087",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00008a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00008b",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00008c",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00008f",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000090",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000091",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000092",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000093",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000095",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xfe0007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe000a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x01000d",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x01000e",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000094",
+					"tcode": "0x9",
+					"value": 60
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0x010001",
+					"tcode": "0x9",
+					"value": 12
+				},
+				{
+					"key": "0x010003",
+					"tcode": "0x8",
+					"value": 526145
+				},
+				{
+					"key": "0x010002",
+					"tcode": "0x8",
+					"value": 98851
+				},
+				{
+					"key": "0x010004",
+					"tcode": "0x9",
+					"value": 5
+				},
+				{
+					"key": "0x010064",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x01000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x010065",
+					"tcode": "0x8",
+					"value": 65535
+				},
+				{
+					"key": "0x010066",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x010069",
+					"tcode": "0x8",
+					"value": 1500
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x8",
+					"value": 32768
+				},
+				{
+					"key": "0x000004",
+					"tcode": "0x8",
+					"value": 300
+				},
+				{
+					"key": "0x000005",
+					"tcode": "0x9",
+					"value": 15
+				},
+				{
+					"key": "0x000008",
+					"tcode": "0x9",
+					"value": 20
+				},
+				{
+					"key": "0x000064",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000067",
+					"tcode": "0x9",
+					"value": 6
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000013",
+					"tcode": "0x9",
+					"value": 20
+				},
+				{
+					"key": "0x00006b",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x00006c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00006e",
+					"tcode": "0x8",
+					"value": 33024
+				},
+				{
+					"key": "0x01002f",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000071",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000072",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000073",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000074",
+					"tcode": "0x9",
+					"value": 100
+				},
+				{
+					"key": "0x000075",
+					"tcode": "0x8",
+					"value": 26000
+				},
+				{
+					"key": "0x000076",
+					"tcode": "0x8",
+					"value": 25500
+				},
+				{
+					"key": "0x000077",
+					"tcode": "0x8",
+					"value": 12500
+				},
+				{
+					"key": "0x000078",
+					"tcode": "0x8",
+					"value": 1000
+				},
+				{
+					"key": "0x000079",
+					"tcode": "0x8",
+					"value": 3125
+				},
+				{
+					"key": "0x0003ea",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x00007b",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00007c",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x01003a",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x01003b",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x010038",
+					"tcode": "0x8",
+					"value": 7023
+				},
+				{
+					"key": "0x010039",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000081",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000083",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000084",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x000085",
+					"tcode": "0x9",
+					"value": 128
+				},
+				{
+					"key": "0x000086",
+					"tcode": "0x9",
+					"value": 5
+				},
+				{
+					"key": "0x01006a",
+					"tcode": "0x21",
+					"value": "main"
+				},
+				{
+					"key": "0x010005",
+					"tcode": "0x21",
+					"value": "br0"
+				},
+				{
+					"key": "0x010006",
+					"tcode": "0x21",
+					"value": "e1br"
+				},
+				{
+					"key": "0x01001e",
+					"tcode": "0x21",
+					"value": "bridge"
+				},
+				{
+					"key": "0xfe0009",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000066",
+					"tcode": "0x31",
+					"value": "hex:000000000000"
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000088",
+					"tcode": "0x21",
+					"value": "$(INTERFACE):$(VID)"
+				},
+				{
+					"key": "0x000089",
+					"tcode": "0x21",
+					"value": "$(BRIDGEMAC)"
+				},
+				{
+					"key": "0x00008d",
+					"tcode": "0x21",
+					"value": "$(INTERFACE):$(VID)"
+				},
+				{
+					"key": "0x00008e",
+					"tcode": "0x21",
+					"value": "$(BRIDGEMAC)"
+				},
+				{
+					"key": "0x000082",
+					"tcode": "0x31",
+					"value": "hex:0291a66c44d5"
+				},
+				{
+					"key": "0x0003e9",
+					"tcode": "0x31",
+					"value": "hex:0291a66c44d5"
+				}
+			],
+			[
+				{
+					"key": "0x01003c",
+					"tcode": "0x88",
+					"value": [
+						9,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0
+					]
+				},
+				{
+					"key": "0x01000e",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x0003eb",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe000a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x010001",
+					"tcode": "0x9",
+					"value": 76
+				},
+				{
+					"key": "0x010003",
+					"tcode": "0x8",
+					"value": 525633
+				},
+				{
+					"key": "0x010002",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x01002f",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x010004",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x010064",
+					"tcode": "0x8",
+					"value": 65536
+				},
+				{
+					"key": "0x01000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000416",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x0003ea",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000418",
+					"tcode": "0x9",
+					"value": 5
+				},
+				{
+					"key": "0x000417",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000419",
+					"tcode": "0x8",
+					"value": 300
+				},
+				{
+					"key": "0x01003a",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x01003b",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x010069",
+					"tcode": "0x8",
+					"value": 65536
+				},
+				{
+					"key": "0x010066",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x010038",
+					"tcode": "0x9",
+					"value": 245
+				},
+				{
+					"key": "0x010039",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x01006a",
+					"tcode": "0x21",
+					"value": "main"
+				},
+				{
+					"key": "0x010005",
+					"tcode": "0x21",
+					"value": "lo"
+				},
+				{
+					"key": "0x010006",
+					"tcode": "0x21",
+					"value": "lo"
+				},
+				{
+					"key": "0x01001e",
+					"tcode": "0x21",
+					"value": "loopback"
+				},
+				{
+					"key": "0xfe0009",
+					"tcode": "0x21",
+					"value": ""
+				},
+				{
+					"key": "0x000404",
+					"tcode": "0x31",
+					"value": "hex:000000000000"
+				},
+				{
+					"key": "0x0003e9",
+					"tcode": "0x31",
+					"value": "hex:000000000000"
+				}
+			]
+		]
+	}
+}

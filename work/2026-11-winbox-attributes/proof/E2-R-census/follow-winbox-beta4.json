@@ -1,0 +1,699 @@
+{
+  "proof": "E2-R sweep follow-up",
+  "machine": "winbox-beta4",
+  "routeros_version": "7.26beta4",
+  "zero_writes": true,
+  "slots": {
+    "20-28": {
+      "getall": {
+        "complete": true,
+        "rows": [
+          [
+            {
+              "key": "0xfe0001",
+              "tcode": "0x9",
+              "value": 1
+            },
+            {
+              "key": "0xfe0010",
+              "tcode": "0x21",
+              "value": "dstnat"
+            }
+          ],
+          [
+            {
+              "key": "0xfe0001",
+              "tcode": "0x9",
+              "value": 2
+            },
+            {
+              "key": "0xfe0010",
+              "tcode": "0x21",
+              "value": "srcnat"
+            }
+          ]
+        ],
+        "pages": 1
+      },
+      "getobj": {
+        "status": "ok",
+        "row": [
+          {
+            "key": "0xff0001",
+            "tcode": "0x88",
+            "value": [
+              0,
+              11
+            ]
+          },
+          {
+            "key": "0xff0002",
+            "tcode": "0x88",
+            "value": [
+              20,
+              28
+            ]
+          },
+          {
+            "key": "0xff001c",
+            "tcode": "0xa0",
+            "value": [
+              "msg-proxy-7.26beta4"
+            ]
+          },
+          {
+            "key": "0xfe0001",
+            "tcode": "0x9",
+            "value": 1
+          },
+          {
+            "key": "0xff0003",
+            "tcode": "0x9",
+            "value": 2
+          },
+          {
+            "key": "0xff0006",
+            "tcode": "0x9",
+            "value": 3
+          },
+          {
+            "key": "0xfe0010",
+            "tcode": "0x21",
+            "value": "dstnat"
+          }
+        ]
+      }
+    },
+    "20-38": {
+      "getall": {
+        "complete": true,
+        "rows": [
+          [
+            {
+              "key": "0xfe0007",
+              "tcode": "0x1",
+              "value": true
+            },
+            {
+              "key": "0xfe000a",
+              "tcode": "0x0",
+              "value": false
+            },
+            {
+              "key": "0x000004",
+              "tcode": "0x9",
+              "value": 1
+            },
+            {
+              "key": "0x000006",
+              "tcode": "0x9",
+              "value": 0
+            },
+            {
+              "key": "0xfe0001",
+              "tcode": "0x9",
+              "value": 1
+            },
+            {
+              "key": "0x000002",
+              "tcode": "0x9",
+              "value": 2
+            },
+            {
+              "key": "0x000005",
+              "tcode": "0x21",
+              "value": "stale"
+            },
+            {
+              "key": "0x000003",
+              "tcode": "0x31",
+              "value": "hex:525600000002"
+            },
+            {
+              "key": "0xfe0009",
+              "tcode": "0x21",
+              "value": ""
+            },
+            {
+              "key": "0x000001",
+              "tcode": "0x18",
+              "value": "hex:fec00000000000000000000000000002"
+            }
+          ],
+          [
+            {
+              "key": "0xfe0007",
+              "tcode": "0x1",
+              "value": true
+            },
+            {
+              "key": "0xfe000a",
+              "tcode": "0x0",
+              "value": false
+            },
+            {
+              "key": "0x000004",
+              "tcode": "0x9",
+              "value": 1
+            },
+            {
+              "key": "0x000006",
+              "tcode": "0x9",
+              "value": 0
+            },
+            {
+              "key": "0xfe0001",
+              "tcode": "0x9",
+              "value": 2
+            },
+            {
+              "key": "0x000002",
+              "tcode": "0x9",
+              "value": 2
+            },
+            {
+              "key": "0x000005",
+              "tcode": "0x21",
+              "value": "stale"
+            },
+            {
+              "key": "0x000003",
+              "tcode": "0x31",
+              "value": "hex:525600000002"
+            },
+            {
+              "key": "0xfe0009",
+              "tcode": "0x21",
+              "value": ""
+            },
+            {
+              "key": "0x000001",
+              "tcode": "0x18",
+              "value": "hex:fe800000000000000000000000000002"
+            }
+          ]
+        ],
+        "pages": 1
+      },
+      "getobj": {
+        "status": "ok",
+        "row": [
+          {
+            "key": "0xff0001",
+            "tcode": "0x88",
+            "value": [
+              0,
+              11
+            ]
+          },
+          {
+            "key": "0xff0002",
+            "tcode": "0x88",
+            "value": [
+              20,
+              38
+            ]
+          },
+          {
+            "key": "0xff001c",
+            "tcode": "0xa0",
+            "value": [
+              "msg-proxy-7.26beta4"
+            ]
+          },
+          {
+            "key": "0xfe0007",
+            "tcode": "0x1",
+            "value": true
+          },
+          {
+            "key": "0xfe000a",
+            "tcode": "0x0",
+            "value": false
+          },
+          {
+            "key": "0x000004",
+            "tcode": "0x9",
+            "value": 1
+          },
+          {
+            "key": "0x000006",
+            "tcode": "0x9",
+            "value": 0
+          },
+          {
+            "key": "0xfe0001",
+            "tcode": "0x9",
+            "value": 1
+          },
+          {
+            "key": "0xff0003",
+            "tcode": "0x9",
+            "value": 2
+          },
+          {
+            "key": "0x000002",
+            "tcode": "0x9",
+            "value": 2
+          },
+          {
+            "key": "0xff0006",
+            "tcode": "0x9",
+            "value": 5
+          },
+          {
+            "key": "0x000005",
+            "tcode": "0x21",
+            "value": "stale"
+          },
+          {
+            "key": "0x000003",
+            "tcode": "0x31",
+            "value": "hex:525600000002"
+          },
+          {
+            "key": "0xfe0009",
+            "tcode": "0x21",
+            "value": ""
+          },
+          {
+            "key": "0x000001",
+            "tcode": "0x18",
+            "value": "hex:fec00000000000000000000000000002"
+          }
+        ]
+      }
+    },
+    "20-86": {
+      "getall": {
+        "complete": true,
+        "rows": [
+          [
+            {
+              "key": "0xfe0001",
+              "tcode": "0x9",
+              "value": 1
+            },
+            {
+              "key": "0xfe0010",
+              "tcode": "0x21",
+              "value": "prerouting"
+            }
+          ],
+          [
+            {
+              "key": "0xfe0001",
+              "tcode": "0x9",
+              "value": 2
+            },
+            {
+              "key": "0xfe0010",
+              "tcode": "0x21",
+              "value": "output"
+            }
+          ]
+        ],
+        "pages": 1
+      },
+      "getobj": {
+        "status": "ok",
+        "row": [
+          {
+            "key": "0xff0001",
+            "tcode": "0x88",
+            "value": [
+              0,
+              11
+            ]
+          },
+          {
+            "key": "0xff0002",
+            "tcode": "0x88",
+            "value": [
+              20,
+              86
+            ]
+          },
+          {
+            "key": "0xff001c",
+            "tcode": "0xa0",
+            "value": [
+              "msg-proxy-7.26beta4"
+            ]
+          },
+          {
+            "key": "0xfe0001",
+            "tcode": "0x9",
+            "value": 1
+          },
+          {
+            "key": "0xff0003",
+            "tcode": "0x9",
+            "value": 2
+          },
+          {
+            "key": "0xff0006",
+            "tcode": "0x9",
+            "value": 7
+          },
+          {
+            "key": "0xfe0010",
+            "tcode": "0x21",
+            "value": "prerouting"
+          }
+        ]
+      }
+    },
+    "20-88": {
+      "getall": {
+        "complete": true,
+        "rows": [
+          [
+            {
+              "key": "0xfe0001",
+              "tcode": "0x9",
+              "value": 1
+            },
+            {
+              "key": "0xfe0010",
+              "tcode": "0x21",
+              "value": "prerouting"
+            }
+          ],
+          [
+            {
+              "key": "0xfe0001",
+              "tcode": "0x9",
+              "value": 2
+            },
+            {
+              "key": "0xfe0010",
+              "tcode": "0x21",
+              "value": "output"
+            }
+          ]
+        ],
+        "pages": 1
+      },
+      "getobj": {
+        "status": "ok",
+        "row": [
+          {
+            "key": "0xff0001",
+            "tcode": "0x88",
+            "value": [
+              0,
+              11
+            ]
+          },
+          {
+            "key": "0xff0002",
+            "tcode": "0x88",
+            "value": [
+              20,
+              88
+            ]
+          },
+          {
+            "key": "0xff001c",
+            "tcode": "0xa0",
+            "value": [
+              "msg-proxy-7.26beta4"
+            ]
+          },
+          {
+            "key": "0xfe0001",
+            "tcode": "0x9",
+            "value": 1
+          },
+          {
+            "key": "0xff0003",
+            "tcode": "0x9",
+            "value": 2
+          },
+          {
+            "key": "0xff0006",
+            "tcode": "0x9",
+            "value": 9
+          },
+          {
+            "key": "0xfe0010",
+            "tcode": "0x21",
+            "value": "prerouting"
+          }
+        ]
+      }
+    },
+    "20-101": {
+      "getall": {
+        "complete": true,
+        "rows": [
+          [
+            {
+              "key": "0x000003",
+              "tcode": "0xa8",
+              "value": [
+                [
+                  {
+                    "key": "0x000004",
+                    "tcode": "0x8",
+                    "value": 33554432
+                  }
+                ]
+              ]
+            },
+            {
+              "key": "0x000001",
+              "tcode": "0x1",
+              "value": true
+            },
+            {
+              "key": "0xfe0007",
+              "tcode": "0x1",
+              "value": true
+            },
+            {
+              "key": "0xfe000a",
+              "tcode": "0x0",
+              "value": false
+            },
+            {
+              "key": "0xfe0001",
+              "tcode": "0x9",
+              "value": 0
+            },
+            {
+              "key": "0xfe0009",
+              "tcode": "0x21",
+              "value": ""
+            },
+            {
+              "key": "0xfe0010",
+              "tcode": "0x21",
+              "value": "main"
+            }
+          ]
+        ],
+        "pages": 1
+      },
+      "getobj": {
+        "status": "router-error",
+        "errno": "0xfe0004",
+        "errstr": null
+      }
+    },
+    "20-120": {
+      "getall": {
+        "complete": true,
+        "rows": [
+          [
+            {
+              "key": "0xfe0007",
+              "tcode": "0x1",
+              "value": true
+            },
+            {
+              "key": "0xfe0008",
+              "tcode": "0x1",
+              "value": true
+            },
+            {
+              "key": "0xfe000a",
+              "tcode": "0x0",
+              "value": false
+            },
+            {
+              "key": "0xfe000d",
+              "tcode": "0x1",
+              "value": true
+            },
+            {
+              "key": "0xfe0029",
+              "tcode": "0x0",
+              "value": false
+            },
+            {
+              "key": "0x00001e",
+              "tcode": "0x9",
+              "value": 255
+            },
+            {
+              "key": "0xfe0001",
+              "tcode": "0x9",
+              "value": 0
+            },
+            {
+              "key": "0xfe0010",
+              "tcode": "0x21",
+              "value": "default"
+            }
+          ],
+          [
+            {
+              "key": "0xfe0007",
+              "tcode": "0x1",
+              "value": true
+            },
+            {
+              "key": "0xfe0008",
+              "tcode": "0x1",
+              "value": true
+            },
+            {
+              "key": "0xfe000a",
+              "tcode": "0x0",
+              "value": false
+            },
+            {
+              "key": "0xfe000d",
+              "tcode": "0x1",
+              "value": true
+            },
+            {
+              "key": "0xfe0029",
+              "tcode": "0x0",
+              "value": false
+            },
+            {
+              "key": "0x00001e",
+              "tcode": "0x9",
+              "value": 255
+            },
+            {
+              "key": "0xfe0001",
+              "tcode": "0x9",
+              "value": 1
+            },
+            {
+              "key": "0xfe0009",
+              "tcode": "0x21",
+              "value": "Use this for permanently disconnected ports"
+            },
+            {
+              "key": "0xfe0010",
+              "tcode": "0x21",
+              "value": "offline"
+            }
+          ]
+        ],
+        "pages": 1
+      },
+      "getobj": {
+        "status": "ok",
+        "row": [
+          {
+            "key": "0xff0001",
+            "tcode": "0x88",
+            "value": [
+              0,
+              11
+            ]
+          },
+          {
+            "key": "0xff0002",
+            "tcode": "0x88",
+            "value": [
+              20,
+              120
+            ]
+          },
+          {
+            "key": "0xff001c",
+            "tcode": "0xa0",
+            "value": [
+              "msg-proxy-7.26beta4"
+            ]
+          },
+          {
+            "key": "0xfe000d",
+            "tcode": "0x1",
+            "value": true
+          },
+          {
+            "key": "0xfe0007",
+            "tcode": "0x1",
+            "value": true
+          },
+          {
+            "key": "0xfe0008",
+            "tcode": "0x1",
+            "value": true
+          },
+          {
+            "key": "0xfe0029",
+            "tcode": "0x0",
+            "value": false
+          },
+          {
+            "key": "0xfe000a",
+            "tcode": "0x0",
+            "value": false
+          },
+          {
+            "key": "0x00001e",
+            "tcode": "0x9",
+            "value": 255
+          },
+          {
+            "key": "0xfe0001",
+            "tcode": "0x9",
+            "value": 1
+          },
+          {
+            "key": "0xff0003",
+            "tcode": "0x9",
+            "value": 2
+          },
+          {
+            "key": "0xff0006",
+            "tcode": "0x9",
+            "value": 13
+          },
+          {
+            "key": "0xfe0009",
+            "tcode": "0x21",
+            "value": "Use this for permanently disconnected ports"
+          },
+          {
+            "key": "0xfe0010",
+            "tcode": "0x21",
+            "value": "offline"
+          }
+        ]
+      }
+    },
+    "20-124": {
+      "getall": {
+        "complete": false,
+        "rows": [],
+        "pages": 1,
+        "cause": "page-error errno=0xfe0006 errstr=\"no INTERFACE_IDS\""
+      },
+      "getobj": {
+        "status": "router-error",
+        "errno": "0xfe0006",
+        "errstr": "no INTERFACE_IDS"
+      }
+    }
+  }
+}

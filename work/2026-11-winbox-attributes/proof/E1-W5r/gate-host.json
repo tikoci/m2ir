@@ -1,0 +1,125 @@
+{
+	"ok": true,
+	"data": [
+		{
+			".id": "*6",
+			"bridge": "e1br",
+			"disabled": "false",
+			"dynamic": "false",
+			"external": "false",
+			"interface": "ether1",
+			"invalid": "false",
+			"local": "false",
+			"mac-address": "02:00:00:E1:00:01",
+			"on-interface": "ether1"
+		},
+		{
+			".id": "*4",
+			"bridge": "e1br",
+			"disabled": "false",
+			"dynamic": "true",
+			"external": "false",
+			"interface": "ether1",
+			"invalid": "false",
+			"local": "true",
+			"mac-address": "02:91:A6:6C:44:D5",
+			"on-interface": "ether1"
+		},
+		{
+			".id": "*5",
+			"bridge": "e1br",
+			"disabled": "false",
+			"dynamic": "true",
+			"external": "false",
+			"interface": "ether1",
+			"invalid": "false",
+			"local": "false",
+			"mac-address": "52:55:0A:00:02:02",
+			"on-interface": "ether1"
+		}
+	],
+	"warnings": [],
+	"tips": [],
+	"meta": {
+		"target": {
+			"input": "twin3",
+			"host": "[redacted]",
+			"port": "[redacted]",
+			"baseUrl": "[redacted]",
+			"identity": "twin3",
+			"source": {
+				"kind": "provider",
+				"key": "quickchr:twin3"
+			},
+			"sources": {
+				"host": "[redacted]",
+				"port": "[redacted]"
+			}
+		},
+		"via": "rest-api",
+		"settings": {
+			"via": {
+				"kind": "default",
+				"key": "via"
+			},
+			"host": {
+				"kind": "provider",
+				"key": "quickchr:twin3"
+			},
+			"port": {
+				"kind": "provider",
+				"key": "quickchr:twin3"
+			},
+			"timeoutMs": {
+				"kind": "default",
+				"key": "timeout"
+			},
+			"format": {
+				"kind": "cli",
+				"key": "format"
+			},
+			"validate": {
+				"kind": "default",
+				"key": "validate"
+			},
+			"username": {
+				"kind": "provider",
+				"key": "quickchr:twin3:username"
+			},
+			"password": {
+				"kind": "provider",
+				"key": "quickchr:twin3:password"
+			}
+		},
+		"validation": {
+			"enabled": true,
+			"source": "live /console/inspect request=child",
+			"result": "passed",
+			"stages": [
+				{
+					"stage": "device",
+					"source": "live /console/inspect request=child",
+					"result": "passed"
+				}
+			]
+		},
+		"operation": {
+			"kind": "data",
+			"objectCount": 3,
+			"request": {
+				"path": "/interface/bridge/host",
+				"attributes": [],
+				"allAttributes": false,
+				"listAttributes": false,
+				"validate": true,
+				"verbose": false,
+				"timeoutMs": 10000,
+				"format": "json"
+			},
+			"auth": {
+				"username": "admin",
+				"passwordProvided": true
+			}
+		}
+	}
+}

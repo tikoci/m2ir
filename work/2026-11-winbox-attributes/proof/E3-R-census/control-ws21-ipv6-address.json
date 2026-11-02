@@ -1,0 +1,166 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*1",
+      "actual-interface": "lo",
+      "address": "::1/128",
+      "advertise": "false",
+      "auto-link-local": "true",
+      "deprecated": "false",
+      "disabled": "false",
+      "dynamic": "true",
+      "eui-64": "false",
+      "from-pool": "",
+      "interface": "lo",
+      "invalid": "false",
+      "no-dad": "false",
+      "slave": "false",
+      "vrf": "main"
+    },
+    {
+      ".id": "*2",
+      "actual-interface": "ether1",
+      "address": "fe80::<redacted>/64",
+      "advertise": "false",
+      "auto-link-local": "true",
+      "deprecated": "false",
+      "disabled": "false",
+      "dynamic": "true",
+      "eui-64": "false",
+      "from-pool": "",
+      "interface": "ether1",
+      "invalid": "false",
+      "link-local": "true",
+      "no-dad": "false",
+      "slave": "false",
+      "vrf": "main"
+    },
+    {
+      ".id": "*3",
+      "actual-interface": "ether3",
+      "address": "fe80::<redacted>/64",
+      "advertise": "false",
+      "auto-link-local": "true",
+      "deprecated": "false",
+      "disabled": "false",
+      "dynamic": "true",
+      "eui-64": "false",
+      "from-pool": "",
+      "interface": "ether3",
+      "invalid": "false",
+      "link-local": "true",
+      "no-dad": "false",
+      "slave": "false",
+      "vrf": "main"
+    },
+    {
+      ".id": "*4",
+      "actual-interface": "ether2",
+      "address": "fe80::<redacted>/64",
+      "advertise": "false",
+      "auto-link-local": "true",
+      "deprecated": "false",
+      "disabled": "false",
+      "dynamic": "true",
+      "eui-64": "false",
+      "from-pool": "",
+      "interface": "ether2",
+      "invalid": "false",
+      "link-local": "true",
+      "no-dad": "false",
+      "slave": "false",
+      "vrf": "main"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "target": {
+      "input": "ws21",
+      "host": "redacted",
+      "port": 0,
+      "baseUrl": "redacted",
+      "identity": "ws21",
+      "source": {
+        "kind": "provider",
+        "key": "quickchr:ws21"
+      },
+      "sources": {
+        "host": {
+          "kind": "provider",
+          "key": "quickchr:ws21"
+        },
+        "port": {
+          "kind": "provider",
+          "key": "quickchr:ws21"
+        }
+      }
+    },
+    "via": "rest-api",
+    "settings": {
+      "via": {
+        "kind": "default",
+        "key": "via"
+      },
+      "host": {
+        "kind": "provider",
+        "key": "quickchr:ws21"
+      },
+      "port": {
+        "kind": "provider",
+        "key": "quickchr:ws21"
+      },
+      "timeoutMs": {
+        "kind": "default",
+        "key": "timeout"
+      },
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      },
+      "validate": {
+        "kind": "default",
+        "key": "validate"
+      },
+      "username": {
+        "kind": "provider",
+        "key": "quickchr:ws21:username"
+      },
+      "password": {
+        "kind": "provider",
+        "key": "quickchr:ws21:password"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "source": "live /console/inspect request=child",
+      "result": "passed",
+      "stages": [
+        {
+          "stage": "device",
+          "source": "live /console/inspect request=child",
+          "result": "passed"
+        }
+      ]
+    },
+    "operation": {
+      "kind": "data",
+      "objectCount": 4,
+      "request": {
+        "path": "/ipv6/address",
+        "attributes": [],
+        "allAttributes": false,
+        "listAttributes": false,
+        "validate": true,
+        "verbose": false,
+        "timeoutMs": 10000,
+        "format": "json"
+      },
+      "auth": {
+        "username": "admin",
+        "passwordProvided": true
+      }
+    }
+  }
+}

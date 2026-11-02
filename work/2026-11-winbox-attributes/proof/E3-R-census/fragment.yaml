@@ -1,0 +1,56 @@
+# cspell:ignore rowid u32 getall getcount getobj calea notimp brkpath unknownid unprobed bycatch
+# E3-R proposed gui-handlers.yaml fragment (coordinator integrates; worker edits nothing canonical).
+# Only genuinely NEW schema facts are proposed. Corroborations (P1/P2/P4/P5/P7/P8),
+# the filter-hid narrowing (U1, no mappable claim), designs, and the v7 slot-19
+# blocker (B2, already covered by commands.yaml open-questions) propose NOTHING.
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> neighbor-discovery-settings
+    op: append-notes-and-evidence
+    confidence: observed-only
+    notes_add: |
+      E3-R census legs (ws21 7.25 + e3-beta4 7.26beta4, 2026-11-02):
+      GET is value-identical across both versions (excl routes/banner/reqid).
+      GETCOUNT answers ok + 4294967295 (0xFFFFFFFF) in 0xfe0019/0x8 (wire
+      `1900fe08ffffffff`) on both — the second live 0xFFFFFFFF-GETCOUNT case
+      after [20,61], so the shape is not modem-aux-specific. Control
+      /ip/neighbor/discovery-settings is identical on both VMs.
+    evidence_add:
+      - source: sample
+        ref: "live CHR interrogation (E3-R read-only census, 7.25 + 7.26beta4, 2026-11-02): [20,17] GET value-identity + GETCOUNT ok/0xFFFFFFFF — work/2026-11-winbox-attributes/proof/E3-R-census/{step-7.25-census.jsonl,step-7.26beta4-census.jsonl,control-{ws21,e3-beta4}-neighbor-discovery.json}"
+  - target: profiles/winbox-ipc/std-commands.yaml -> 0xfe0015 CMD_GETCOUNT
+    op: append-notes-and-evidence
+    confidence: observed-only
+    notes_add: |
+      E3-R census legs (ws21 7.25 + e3-beta4 7.26beta4, 2026-11-02): [20,17]
+      GETCOUNT -> ok + 0xFFFFFFFF in 0xfe0019/0x8 on both versions (second
+      such case after [20,61]); [20,124] GETCOUNT -> FAILED 0xfe0006 +
+      0xff0009 'no INTERFACE_IDS' from the full route on both (first sighting
+      of this errstr; count gated on an interface-ids selector). Full
+      [20,0..140] sweep: ok-vs-BRKPATH identical all 141 slots across both
+      versions (no presence drift).
+    evidence_add:
+      - source: sample
+        ref: "live CHR interrogation (E3-R read-only census, 7.25 + 7.26beta4, 2026-11-02): [20,0..140] GETCOUNT sweep + [20,17]/[20,124] legs — work/2026-11-winbox-attributes/proof/E3-R-census/{step-7.25-census.jsonl,step-7.26beta4-census.jsonl,summary-7.25.json,summary-7.26beta4.json}"
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> unknown-20-124 (NEW, OPTIONAL BYCATCH)
+    op: new-entry
+    confidence: observed-only
+    coordinator_may_defer: "outside the E3 firewall/services family; two error replies only; no role evidence"
+    entry:
+      sys-to: [20, 124]
+      status: role-open
+      process-id: 0x14
+      cmd: GET_ONE
+      role: "unknown holder gated on an interface-ids selector: GETCOUNT -> FAILED 0xfe0006 + 0xff0009 'no INTERFACE_IDS' from the full route (both 7.x); GET -> FAILED selector-required shape (prior hscan). Present, not further identifiable read-only."
+      confidence: observed-only
+      evidence:
+        - source: sample
+          ref: "live CHR interrogation (E3-R read-only census, 7.25 + 7.26beta4, 2026-11-02): GETCOUNT FAILED + errstr — work/2026-11-winbox-attributes/proof/E3-R-census/{step-7.25-census.jsonl,step-7.26beta4-census.jsonl}"
+        - source: sample
+          ref: "live CHR interrogation (WS-3C prober, 7.25): GET -> FAILED in ev/7.25-hscan-20-hi.txt"
+no_promotion_for:
+  - "nat-20-5 / raw-20-87 / calea-20-39 empty-table legs: corroborate queue-3 on both versions, no new scope (beta4 already covered)"
+  - "packet-mark-registry / connection-mark-registry: single no-mark row reproduces the catalogued shape"
+  - "modem-aux-20-61: negatives reproduce queue-3 + LTE-leg shapes; SIM-absent confound untouched (no hit chased)"
+  - "filter hid: narrowed to 15, not identified - no mappable claim exists"
+  - "f40 same / jump / MOVEOBJ: designs only, zero writes - nothing to promote"
+  - "v7 slot-19: narrowed + exact blocker; commands.yaml open-questions already covers it"

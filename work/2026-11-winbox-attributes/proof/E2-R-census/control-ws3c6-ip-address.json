@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*1",
+      "address": "10.0.2.15/24",
+      "network": "10.0.2.0",
+      "interface": "ether1",
+      "actual-interface": "ether1",
+      "invalid": "false",
+      "dynamic": "true",
+      "disabled": "false"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "native-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 1,
+      "path": "/ip/address"
+    }
+  }
+}

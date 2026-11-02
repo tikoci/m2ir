@@ -1,0 +1,80 @@
+{
+  "proof": "E2-R sweep follow-up",
+  "machine": "ws20",
+  "routeros_version": "7.25",
+  "zero_writes": true,
+  "slots": {
+    "20-3": {
+      "getall": {
+        "complete": true,
+        "rows": [],
+        "pages": 1
+      },
+      "getobj": {
+        "status": "router-error",
+        "errno": "0xfe0004",
+        "errstr": null
+      }
+    },
+    "20-12": {
+      "getall": {
+        "complete": true,
+        "rows": [],
+        "pages": 1
+      },
+      "getobj": {
+        "status": "router-error",
+        "errno": "0xfe0004",
+        "errstr": null
+      }
+    },
+    "20-29": {
+      "getall": {
+        "complete": true,
+        "rows": [],
+        "pages": 1
+      },
+      "getobj": {
+        "status": "router-error",
+        "errno": "0xfe0004",
+        "errstr": null
+      }
+    },
+    "20-62": {
+      "getall": {
+        "complete": true,
+        "rows": [],
+        "pages": 1
+      },
+      "getobj": {
+        "status": "router-error",
+        "errno": "0xfe0004",
+        "errstr": null
+      }
+    },
+    "20-104": {
+      "getall": {
+        "complete": true,
+        "rows": [],
+        "pages": 1
+      },
+      "getobj": {
+        "status": "router-error",
+        "errno": "0xfe0004",
+        "errstr": null
+      }
+    },
+    "20-127": {
+      "getall": {
+        "complete": true,
+        "rows": [],
+        "pages": 1
+      },
+      "getobj": {
+        "status": "router-error",
+        "errno": "0xfe0004",
+        "errstr": null
+      }
+    }
+  }
+}

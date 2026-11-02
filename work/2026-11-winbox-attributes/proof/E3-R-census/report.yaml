@@ -1,0 +1,198 @@
+# cspell:ignore rowid u32 reqid getall getcount getobj calea mangle notimp brkpath unknownid moveobj dst notimpl vhi hscan subtable prefilter unprobed getset syscap cliref bycatch readback vms novabin uncharacterized
+proof: "E3-R read-only firewall/services census + jump/same and MOVEOBJ-reorder design (ZERO writes)"
+worker: E3-R
+date: 2026-11-02
+head: "7303e78 per brief + uncommitted S0 files (UNVERIFIED: worker ran no git commands per brief)"
+freeze:
+  - work/2026-11-winbox-attributes/proof/S0-replay-freeze/e3-candidates.yaml
+  - work/2026-11-winbox-attributes/proof/S0-replay-freeze/report.yaml
+scope: "ONE handler family: firewall/services (net-process tables [20,5]/[20,87]/[20,39], services context [20,13]/[20,14]/[20,17], negative control [20,61]); 10 frozen CLI candidates; 1 private verb (CMD_MOVEOBJ design only)"
+budgets:
+  E3-R-spent: { counted_writes: 0, reboots: 0 }
+  E3-W-proposed: { counted_writes: 12, reboots: 0, approved: false }
+vms:
+  assigned: [ws21, e3-beta4]
+  versions: { ws21: "7.25", e3-beta4: "7.26beta4" }
+  forbidden_touched: none (never touched ws20/winbox-beta4/ws3c6 or any other VM)
+  ports: "read from `quickchr list`/`inspect` at runtime; not recorded (sanitized)"
+  e3-beta4_provision: "created by worker with the exact briefed command; warm-cache image chr-7.26beta4 x86, user network"
+  end_state: "both STOPPED (not removed) at end of census; see cleanup"
+methods:
+  native: "harness modules capture.ts + correlate.ts + paging.ts + session.ts + target.ts via proof-local census-e3r.ts (GET/GETALL-paged/GETOBJ/GETCOUNT only)"
+  control: "centrs retrieve --quickchr <vm> <path> --json (reads only, no --yes anywhere)"
+  validation: "every RouterOS CLI string passed `centrs explain` BEFORE sending; 8/8 offline pass, 0 rejections"
+  legs_per_vm: 162
+  sweep: "[20,0..140] bare GETCOUNT per slot (141 slots x 2 versions)"
+proven:
+  - id: P1-empty-table-shapes
+    claim: "[20,5]/[20,87]/[20,39] empty-table shapes reproduce queue-3 exactly on ws21/7.25 AND e3-beta4/7.26beta4"
+    detail: "GETALL -> 0 rows, 0xfe0002/0xa8=[] PRESENT + 0xfe0019/0x9=0; GETCOUNT -> 0 in 0xfe0019/0x9; GETOBJ obj=1 AND obj=999 -> UNKNOWNID from the full route, no total, no errstr"
+    evidence: [step-7.25-census.jsonl, step-7.26beta4-census.jsonl, summary-7.25.json, summary-7.26beta4.json]
+  - id: P2-mark-registries
+    claim: "[20,13]/[20,14] each carry exactly one row {0xfe0001/0x9=0, 0xfe0010/0x21='no-mark'} on both versions; GETCOUNT=1"
+    evidence: [step-7.25-census.jsonl, step-7.26beta4-census.jsonl, control-ws21-firewall-mangle.json, control-e3-beta4-firewall-mangle.json]
+  - id: P3-discovery-settings
+    claim: "[20,17] GET is value-identical across 7.25/7.26beta4 (excl routes/banner/reqid); GETCOUNT answers ok + 0xFFFFFFFF in 0xfe0019/0x8"
+    detail: "second live 0xFFFFFFFF-GETCOUNT case after [20,61]; control /ip/neighbor/discovery-settings identical on both VMs"
+    evidence: [step-7.25-census.jsonl, step-7.26beta4-census.jsonl, control-ws21-neighbor-discovery.json, control-e3-beta4-neighbor-discovery.json]
+  - id: P4-modem-aux-negatives
+    claim: "[20,61] bare + f7=lte1 + f7=foo GETs all answer the identical 7-key SYS-only UNKNOWNID shape on both versions (byte-equal modulo reqid)"
+    detail: "negative controls hold; no hit chased per brief (zero writes budgeted there)"
+    evidence: [step-7.25-census.jsonl, step-7.26beta4-census.jsonl]
+  - id: P5-sweep-no-presence-drift
+    claim: "[20,0..140] GETCOUNT ok-vs-BRKPATH identical on all 141 slots across 7.25/7.26beta4; only 5 count-value diffs, all in populated slots"
+    detail: "[20,0] 4v2 and [20,37] 4v2 are environmental (ws21 has ether1/2/3+lo, e3-beta4 ether1+lo; ipv6 link-locals match) proven by control reads; [20,38] 2v1, [20,57] 19v13, [20,58] 3v0 are NIC-correlated but roles unknown (U5)"
+    evidence: [summary-7.25.json, summary-7.26beta4.json, control-ws21-interface.json, control-e3-beta4-interface.json, control-ws21-ipv6-address.json, control-e3-beta4-ipv6-address.json]
+  - id: P6-124-interface-ids
+    claim: "[20,124] GETCOUNT answers FAILED (0xfe0006) + 0xff0009='no INTERFACE_IDS' from the full route on BOTH 7.x versions (first sighting of this errstr anywhere)"
+    detail: "bycatch outside the firewall family; consistent with the prior hscan GET->FAILED selector-required shape; handler present, count gated on an interface-ids selector"
+    evidence: [step-7.25-census.jsonl, step-7.26beta4-census.jsonl, summary-7.25.json, summary-7.26beta4.json]
+  - id: P7-brkpath-envelope
+    claim: "absent [20,*] slots answer GETCOUNT with ERROR_BRKPATH (0xff0008/0x8=16646146) from=[20] (process-level), no total, no errstr, both versions"
+    evidence: [step-7.25-census.jsonl, step-7.26beta4-census.jsonl]
+  - id: P8-controls-empty
+    claim: "control reads confirm all five firewall menus empty (0 rows) on both VMs; /ip/firewall/calea EXISTS via REST (ok, 0 rows); all 8 CLI strings explain-pass offline with 0 rejections"
+    evidence: [control-ws21-firewall-filter.json, control-ws21-firewall-nat.json, control-ws21-firewall-raw.json, control-ws21-firewall-mangle.json, control-ws21-firewall-calea.json, control-e3-beta4-firewall-filter.json, control-e3-beta4-firewall-nat.json, control-e3-beta4-firewall-raw.json, control-e3-beta4-firewall-mangle.json, control-e3-beta4-firewall-calea.json]
+disproven:
+  - id: D1-drop-reprobe
+    claim: "f40-drop re-probe explicitly NOT run: the control-:parse rejection stands as a PROVEN NEGATIVE; zero E3-R legs spent on it"
+    evidence: []
+  - id: D2-sweep-finds-filter
+    claim: "GETCOUNT sweep alone does NOT identify the filter handler: every empty table answers ok:0 identically (expected per brief: empty tables do not prove absence, nor identity)"
+    evidence: [summary-7.25.json, summary-7.26beta4.json]
+  - id: D3-124-is-filter
+    claim: "[20,124] ruled OUT as the filter table: FAILED/selector-gated, not table-shaped (filter is a plain rule table like NAT)"
+    evidence: [step-7.25-census.jsonl, summary-7.25.json]
+unknown:
+  - id: U1-filter-hid
+    claim: "filter-table hid narrowed to 15 candidates, not identified"
+    detail: "GET->NOTIMP (prior 7.25 hscan ev/7.25-hscan-20{,-hi,-vhi}.txt, two consistent runs) INTERSECT GETCOUNT->ok:0 (this census, both versions) MINUS known tables {5=NAT, 39=calea, 87=raw} = {3,7,9,29,31,40,42,44,45,54,89,110,111,127,128}; zero in-repo static attributions for any of them"
+    next: "E3-W W-filter-find: one control filter-rule add flips exactly one slot 0->1 (see leg sheet)"
+  - id: U2-f40-same
+    claim: "f40 same-value + adjunct representation untested (design in E3-W-DESIGN below; writes needed)"
+  - id: U3-jump-value
+    claim: "filter action=jump value + jump-target representation untested; BLOCKED on U1 (no handler to read)"
+  - id: U4-moveobj-params
+    claim: "CMD_MOVEOBJ reorder parameters unknown; rowid-only proven no-op (prior); designs in E3-W-DESIGN below"
+  - id: U5-sweep-count-roles
+    claim: "[20,38] 2v1 / [20,57] 19v13 / [20,58] 3v0 roles unknown; NIC-correlated (ws21 3x ether vs beta4 1x) but uncatalogued and outside the firewall family"
+    note: "[20,58] 3v0 does NOT fit ether-count (beta4 has 1 ether but count 0); left as cross-family bycatch for the coordinator"
+  - id: U6-v7-default-slot
+    claim: "v7 base DEFAULT dispatch slot unknown (narrowed, not closed; see static-analysis)"
+blocked:
+  - id: B1-jump-leg
+    claim: "jump-value leg BLOCKED on the filter hid (U1)"
+    exact_next_step: "E3-W W-filter-find (1 control add + sweep re-run + remove + verify, 2 counted writes): add chain=forward action=accept comment=e3find via control on ws21, re-run census-e3r.ts sweep legs only, the single 0->1 slot IS the filter hid; then jump legs become designable"
+  - id: B2-v7-slot-19
+    claim: "v7 private-cmd base dispatch NOT closed by static analysis; exact blocker recorded (see static-analysis)"
+static-analysis:
+  scope: "non-lab, no VM, no new disassembly; cite only what is already extracted in work/ + pinned hashes"
+  pinned_binaries:
+    - "RouterOS 7.25 x86 nova/bin/net sha256 4dfdc32ac9979b8ab86478dab601b79444875f936f7ff1b6b132553a565f6e7c (work/2026-10-chr-extraction/novabin-7.25.sha256)"
+    - "v6 libumsg.so handleCmd @0x28508 (6.49.23) per net-bridge2-handler-tables.md section 1"
+    - "NO recorded hash for libumsg7 itself (novabin-7.25.sha256 covers nova/bin only) and NO recorded v7 handleCmd address (blocker component)"
+  narrowed:
+    - "v7 Handler vtable shifts past slot 12: 13=cmdGetObj-overload, 14=cmdSetObj(u32), 15=cmdSetObj-overload, 16=cmdGetAll, 17=cmdStopGetAll, 18=cmdAddObj, 19=cmdRemoveObj(u32), 20=cmdRemoveObj-overload; slots 0-12 align with v6 (net-bridge2-handler-tables.md section 8)"
+    - "v7 slot 19 is OCCUPIED by cmdRemoveObj, so the v6 model 'DEFAULT routes to slot 19 cmdUnknown' canNOT transfer unchanged to v7"
+    - "v7 libumsg handleCmd jump-table bound is 0x1a (27 cases, cmds 0xfe0000-0xfe001a), vs v6 bound 0x16; case 0x14 (CMD_DISCONNECTED) calls *0x74 = slot 29 (findings section 42; std-commands.yaml dispatch-model)"
+    - "schema std-command range ends at 0xfe0016: v7 JT cases 0x17-0x1a (cmds 0xfe0017-0xfe001a) are UNDECODED"
+    - "v7 [20,0] slot 24 = LOCAL private-cmd switch 0x806885c (cmds 2..15, reads start/count): the per-handler local answer for net-0 only, NOT the base DEFAULT route (net-bridge2-handler-tables.md section 8)"
+  exact_blocker: "v7 libumsg handleCmd DEFAULT-branch target slot + cases 0x17-0x1a meanings undecoded; needs an objdump/Ghidra pass over 7.25 x86 libumsg handleCmd (function address itself unrecorded) with a recorded binary hash; no live unknown-cmd probe exists on v7 (static-first recommended: unknown SYS_CMD effects are uncharacterized)"
+e3-w-design:
+  note: "DESIGN ONLY - zero writes executed in E3-R; all legs below need the user's fresh per-leg yes"
+  counting_rule: "counted writes = control adds + native verbs + 1 per restore branch; per-leg cleanup removes are bundled (matches 7.25-nat-action 11+1=12 and 7.25-moveobj 2+1+1=4)"
+  f40-same-hypotheses:
+    - id: H-same-1
+      claim: "action=same carries a distinct f40 u32 value V_same (discover by control add + native GETALL read-back)"
+      controls: "same-not-by-dst=true variant (adjunct on/off must not move f40 if it rides its own field); to-addresses set (required arg?); to-ports + proto=tcp variant per the redirect precedent (bare redirect add failed until proto+to-ports were supplied)"
+      discriminates: "V_same value; whether adjuncts share f40 or ride separate fields; minimal addable same-rule shape"
+    - id: H-same-2
+      claim: "same-not-by-dst rides its own bool field (not f40); to-addresses rides f1000/f1001 be32 pair; to-ports rides f1002/f1003 u32 pair (same numbering as proven for redirect/src-nat rows)"
+      controls: "vary one adjunct at a time against a fixed same base; enumerate EVERY changed field per the plan (do not name the first changed TLV)"
+      discriminates: "adjunct field identities; split-vs-shared representation"
+    - id: H-same-negative
+      claim: "if the control plane rejects a same add combination, the rejection (:parse/inspect text) is DATA about required args, not a failure to route around"
+  jump-value-design:
+    status: "BLOCKED on U1 (no filter handler to read); leg stays blocked with the exact next step in B1"
+    contingent_design: "once W-filter-find names the hid: (1) control add chain=forward action=jump jump-target=<chain> + native GETALL -> jump f40-analog value + jump-target field identity; (2) control vary jump-target only -> which field moves; (3) native SETOBJ inverse write of the jump value + control read-back. Needs a follow-up cap (~3w): the 12w cap below covers filter-FIND only, not jump-value mapping"
+  moveobj-ruled-out: "rowid-only MOVEOBJ answers ok but is a byte-identical no-op on BOTH surfaces (prior): rules out 'bare rowid moves to a default position' (no move-to-top/bottom either) and rules out status-ok as proof of reorder"
+  moveobj-static-gate: "BEFORE burning native probes, decode what v7 net slot-17 (cmdMoveObj) reads besides 0xfe0001 (v6 case 0x28685 reads obj-id; v7 slot map past slot 20 incl. cmdMoveObj slot is undecoded) - non-lab, no budget; if static yields the field, probes target it directly"
+  moveobj-hypotheses:
+    - id: H-move-1-destination
+      claim: "reorder needs a destination selector alongside 0xfe0001 (target rowid or place-before token)"
+    - id: H-move-2-position
+      claim: "reorder needs a position token in a pagination-adjacent field (0xfe0003 start/count family?)"
+    - id: H-move-3-flags
+      claim: "reorder needs a flag/verb-modifier field (0xfe000c flags-word family?)"
+  moveobj-native-probes-max-2:
+    - id: P-move-1
+      shape: "MOVEOBJ {0xfe0001=rowid-B, 0xfe0003=rowid-A} (destination-as-start)"
+      readback: "native GETALL order + control retrieve order must BOTH show B-before-A; else negative"
+    - id: P-move-2
+      shape: "MOVEOBJ {0xfe0001=rowid-B, 0xfe000c=<flags>} ONLY if the static gate suggests a flags word; else second probe = {0xfe0001=rowid-B, 0xfe0004=...} is FORBIDDEN (guessing) - instead spend probe 2 on the static-gate finding"
+      readback: "same dual-surface order check; any ok-without-reorder repeats the rowid-only negative for that shape"
+e3-w-leg-sheet:
+  cap: "12 counted writes + 0 reboots (PROPOSED, NOT approved; needs fresh per-leg yes)"
+  version_scope: "ws21/7.25 ONLY; beta4 repeat is a separate ask (no room in 12w)"
+  named_vm: "ws21 (7.25); ports read from `quickchr list` at execution time, never hardcoded"
+  baseline_snapshot: "control retrieve of /ip/firewall/{filter,nat,raw,mangle,calea} (expect 0 rows, record) + native GETALL/GETCOUNT on [20,5]/[20,87]/[20,39] + full [20,*] GETCOUNT sweep (this census is the baseline; re-run sweep legs at leg start to confirm no drift)"
+  legs:
+    - id: W-same-matrix
+      budget: 5
+      steps: "4 control adds (same base / +same-not-by-dst / +to-ports+proto / +to-addresses-only) each with native GETALL read-back + per-leg cleanup remove; final restore-verify (1)"
+      stop: "any add rejected -> record :parse/inspect text, vary args ONCE per frozen candidate, then stop the variant (do not burn the matrix on one rejection)"
+    - id: W-filter-find
+      budget: 2
+      steps: "1 control add (chain=forward action=accept comment=e3find) + sweep re-run (expect exactly one 0->1 slot) + remove + verify-all-zero (1)"
+      stop: "zero flips -> filter hid NOT in [20,0..140], stop (do not widen: freeze stop-condition); more than one flip -> record all, stop (ambiguous, needs coordinator review)"
+    - id: W-moveobj
+      budget: 5
+      steps: "static gate FIRST (no budget); then 2 control setup adds + up to 2 native MOVEOBJ probes (P-move-1, P-move-2-as-gated) each with dual-surface read-back + remove/restore-verify (1)"
+      stop: "either probe reorders only one surface -> stop (split-brain, needs review); cleanup remove fails -> stop, VM stays for coordinator inspection"
+  restore_step: "control remove per non-initial .id + control verify 0 rows on all five menus + native GETALL/GETCOUNT re-read; record restored true/false per branch (no fallback destroys the VM: E3-R created e3-beta4 but W legs run on ws21, which E3-R does not own for removal)"
+  stop_conditions_global: ["any VM fails to boot within the bounded wait -> stop that leg", "any unbudgeted write attempted -> stop everything, report", "transport incomplete/truncated mid-leg -> stop the shard, record", "12th counted write spent -> stop even mid-matrix; remainder needs a new yes"]
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/E3-R-census/census-e3r.ts
+  - work/2026-11-winbox-attributes/proof/E3-R-census/step-7.25-census.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-R-census/step-7.26beta4-census.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-R-census/summary-7.25.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/summary-7.26beta4.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-ws21-firewall-filter.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-ws21-firewall-nat.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-ws21-firewall-raw.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-ws21-firewall-mangle.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-ws21-firewall-calea.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-ws21-interface.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-ws21-ipv6-address.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-ws21-neighbor-discovery.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-e3-beta4-firewall-filter.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-e3-beta4-firewall-nat.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-e3-beta4-firewall-filter.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-e3-beta4-firewall-nat.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-e3-beta4-firewall-raw.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-e3-beta4-firewall-mangle.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-e3-beta4-firewall-calea.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-e3-beta4-interface.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-e3-beta4-ipv6-address.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/control-e3-beta4-neighbor-discovery.json
+  - work/2026-11-winbox-attributes/proof/E3-R-census/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/E3-R-census/report.yaml
+sanitization:
+  derived_artifacts: true
+  native_manifests: "ts wall-clock redacted at write (seq preserves order); plaintextHex + decode lossless; no auth material captured (captures start after login)"
+  controls: "meta.target host/port/baseUrl redacted; mac-address redacted; last-link-up-time redacted; fe80 IIDs redacted (prefix kept); rx/tx/fp byte+packet counters marked redacted-volatile; VM identity + row counts + config values kept (synthetic lab data)"
+  raw_copies: "none retained (raw-controls/ removed after sanitized write)"
+  verified: "grep for 127.x/ports-as-values/MACs/timestamps returns no hits (reqid hex-substring false positives only)"
+verification:
+  biome: "clean on owned path (19 files)"
+  yaml_lint: "repo lint-yaml green (18 files OK, includes report.yaml + fragment.yaml)"
+  cspell: "0 issues on owned path"
+  secretlint: "no findings on owned path"
+  tsc: "0 errors in E3-R files; repo-wide tsc is red from 22 errors in work/2026-11-winbox-attributes/proof/E2-R-census/*.ts (concurrent worker's files, outside E3-R scope, not touched)"
+cleanup:
+  vms_stopped: [ws21, e3-beta4]
+  vms_removed: []
+  baselines_restored: "n/a (zero writes; no state was changed on either VM)"
+  owned_path: work/2026-11-winbox-attributes/proof/E3-R-census/
+  forbidden_paths_edited: none
+  git_commands_run: 0

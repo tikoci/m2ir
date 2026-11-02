@@ -1,0 +1,71 @@
+# cspell:ignore rowid u32 vrf cliref vms
+proof: "S0: E1 replay repeat vs 7.26beta4 (offline) + frozen E2/E3 candidate lists + per-leg budget sheets"
+head: 7303e785a7550f495a7b2d5102b5306de1142534
+date: 2026-11-02
+coordinator: phase-E S0 (no subagents)
+e1_replay:
+  command: bun test test/profiles/winbox-ipc/bridge-port-16-2.test.ts test/profiles/winbox-ipc/bridge-vlan-f4.test.ts test/profiles/winbox-ipc/vrf-6a.test.ts
+  result: 16 pass / 0 fail (191 expect calls)
+  per_fixture:
+    - fixture: fixtures/winbox-ipc/7.25-bridge-port-16-2.json
+      native_replay: pass
+      beta4_counterpart: none
+      beta4_schema_scope: none (bridge-port set/add/remove versions ["7.25"] only)
+      beta4_verdict: OUTSTANDING
+    - fixture: fixtures/winbox-ipc/6.49-bridge-port-16-2.json
+      native_replay: pass
+      beta4_counterpart: n/a (v6 row-shape leg)
+      beta4_verdict: n/a
+    - fixture: fixtures/winbox-ipc/7.25-bridge-vlan-f4.json
+      native_replay: pass
+      beta4_counterpart: none
+      beta4_schema_scope: none (bridge-vlan has no verbs, no beta4 scoping)
+      beta4_verdict: OUTSTANDING
+    - fixture: fixtures/winbox-ipc/7.25-vrf-6a.json
+      native_replay: pass
+      beta4_counterpart: none
+      beta4_schema_scope: none (interface [20,0] carries no 7.26beta4 scoping)
+      beta4_verdict: OUTSTANDING
+  conclusion: E1 replays green on native versions; all three 7.25 legs need a live 7.26beta4 repeat (read-only GETALL row-shape + verb replies) before any beta4 scope claim. That repeat is NOT S0 (S0 is offline); it rides with the E2-R/E3-R census VMs or a later leg.
+extraction:
+  command: bun work/2026-11-winbox-attributes/rosetta-extract.ts
+  db: ~/.rosetta/ros-help-0.12.0.db
+  provenance: release v0.12.0, schema 12, commit 6b6397d7739a563b894f9b07f7ac2f6b1ad7f4bf, built 2026-10-30T21:34:20.911Z, sha256 eee45741... (unchanged)
+  counts: cliref 7.24=10758 7.25=10833 7.26=11284; inspect 7.25=37240 7.26beta4=37233 (all match EXPECTED)
+  queries_extended: [20-pilot-cliref.sql, 22-pilot-inspect.sql, 23-pilot-entry-links.sql, 24-pilot-field-links.sql]
+  menus_added: [ip/route, ipv6/address, ip/firewall/nat, ip/firewall/filter]
+  output_rows: cliref 489, inspect nodes 1650 (+720), strict identity-token hits 0
+frozen_lists:
+  - work/2026-11-winbox-attributes/proof/S0-replay-freeze/e2-candidates.yaml
+  - work/2026-11-winbox-attributes/proof/S0-replay-freeze/e3-candidates.yaml
+budgets:
+  E2-R: { counted_writes: 0, reboots: 0 }
+  E2-W-proposed: { counted_writes: 8, reboots: 0, approved: false }
+  E3-R: { counted_writes: 0, reboots: 0 }
+  E3-W-proposed: { counted_writes: 12, reboots: 0, approved: false }
+  E1-W2-rerun-recorded: { counted_writes: 9, reboots: 0, approved: false,
+    caveat: swap form written in-script but NEVER LIVE-TESTED; static-MAC gate never live-tested }
+  E1-W5-retry-recorded: { counted_writes: 6, reboots: 0, approved: false,
+    caveat: corrected gate (static MAC present, dynamic co-rows allowed) never live-tested }
+  note: no write leg runs without the user's explicit per-leg yes in-session; recorded != approved
+vm_inventory_all_stopped:
+  "7.25": [twin3, centrs-btest-client-1793164337485, ws19-2nic, ws20, ws21, twin-zt(arm64)]
+  "7.26beta3": [twin1, twin2, twin4, twin-app]
+  "7.26beta4": [winbox-beta4]
+  "6.49.23": [ws3c6]
+worker_dispatch:
+  - worker: E2-R
+    brief: read-only IP/routing census + U1 f6/f11 discrimination DESIGN (no writes)
+    vms: [ws20, winbox-beta4, ws3c6]
+    owned_paths: [work/2026-11-winbox-attributes/proof/E2-R-census/]
+    freeze: e2-candidates.yaml
+  - worker: E3-R
+    brief: read-only firewall/services census + jump/same + MOVEOBJ-reorder design (no writes)
+    vms: [ws21, e3-beta4(to-create)]
+    owned_paths: [work/2026-11-winbox-attributes/proof/E3-R-census/]
+    freeze: e3-candidates.yaml
+  - worker: E1-followup
+    brief: W2-rerun (9) + W5-retry (6) leg sheets, read-only prep only, no VM
+    vms: []
+    owned_paths: [work/2026-11-winbox-attributes/proof/E1-followup/]
+next_action: dispatch the three read-only workers with the briefs above; then reviewer; then reconcile + STOP for per-leg yes

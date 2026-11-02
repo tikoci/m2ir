@@ -1,0 +1,244 @@
+# cspell:ignore llms
+# Phase E blind-reviewer report (R1 + R2 reconstructions from RAW jsonl only)
+#
+# Role: Phase E REVIEWER, fresh context, adversarial to labels.
+# Method: every reported key/value cites its *.jsonl record (file + line +
+# seq + reqId). Derived files (control-*.json, shape-*.json, summary-*.json)
+# were NOT used for any reported value. Forbidden files (E2/E3
+# report.yaml + fragment.yaml, handoff.yaml, S0 e2/e3-candidates.yaml)
+# were never read, grepped, or globbed. No VM, no centrs, no git, no
+# profile edits. Agreement/disagreement with proposers is the
+# coordinator's call; this file reports reconstructions only.
+
+reviewer: phase-E-blind
+date: 2026-11-02
+repo-state: HEAD 7303e78 plus uncommitted S0/worker files (read-only for this review)
+read-first-completed:
+  - AGENTS.md
+  - README.md
+  - DESIGN.md
+  - llms.txt
+  - work/2026-11-winbox-attributes/attribute-discovery-plan.md (plan + Phase E status)
+  - profiles/winbox-ipc/gui-handlers.yaml (ip-address, ipv6-address, nat-20-5, neighbor-discovery-settings)
+  - profiles/winbox-ipc/std-commands.yaml (CMD_GETCOUNT + CMD_GETALL/CMD_GETOBJ names)
+  - profiles/winbox-ipc/sys-keys.yaml (0xff0003/0xff0004/0xff0008/0xff0009 envelope names)
+  - profiles/winbox-ipc/std-keys.yaml (0xfe0019 STD_OBJ_COUNT)
+  - profiles/winbox-ipc/std-errors.yaml (0xfe0006 ERROR_FAILED)
+not-read-per-blindness:
+  - proof/E2-R-census/report.yaml
+  - proof/E2-R-census/fragment.yaml
+  - proof/E3-R-census/report.yaml
+  - proof/E3-R-census/fragment.yaml
+  - work/2026-11-winbox-attributes/handoff.yaml
+  - proof/S0-replay-freeze/e2-candidates.yaml
+  - proof/S0-replay-freeze/e3-candidates.yaml
+verb-numbers-used:
+  16646148: 0xfe0004 CMD_GETALL
+  16646146: 0xfe0002 CMD_GETOBJ
+  16646165: 0xfe0015 CMD_GETCOUNT
+  16646157: 0xfe000d (seen only as context tx on [20,17]; not reconstructed)
+
+# =====================================================================
+# R1 — family E2 IP/routing: [20,37] USER-key set, 7.25 vs 7.26beta4
+# Sources (ONLY):
+#   proof/E2-R-census/native-ws20.jsonl         (7.25, 16 lines)
+#   proof/E2-R-census/native-winbox-beta4.jsonl (7.26beta4, 16 lines)
+# Both files: zero decode failures (grep '"ok":false' -> 0 each).
+# Record layout per file: lines 1-8 = [20,1] legs (out of R1 scope except
+# as verb-shape reference), lines 9-16 = [20,37] legs:
+#   line 9/11: GETALL tx (reqId 6/7) / line 10/12: GETALL rx (reqId 6/7)
+#   line 13:   GETOBJ tx (reqId 8, 0xfe0001=1) / line 14: GETOBJ rx (reqId 8)
+#   line 15:   GETCOUNT tx (reqId 9) / line 16: GETCOUNT rx (reqId 9)
+# =====================================================================
+R1:
+  route: [20, 37]
+  catalog-context: >
+    Current gui-handlers.yaml ipv6-address lists USER keys
+    {1,2,3,4,5,6,7,8,9,14,15,16,17,19} with u8 tcodes on
+    {2,3,5,7,17,19}. The reconstruction below reports OBSERVED wire
+    tcodes (0x9 on those keys in these captures); the coordinator owns
+    any catalog-vs-reconstruction reconciliation.
+  version-7.25:
+    file: proof/E2-R-census/native-ws20.jsonl
+    getall-rx-1: { line: 10, seq: 9, reqId: 6, rows: 3, total-0xfe0019: 3 }
+    getall-rx-2: { line: 12, seq: 11, reqId: 7, rows: 3, total-0xfe0019: 3 }
+    getall-repeat-check: >
+      rx-2 plaintextHex is byte-identical to rx-1 except the trailing
+      SYS_REQID byte (06 vs 07); all three rows repeat exactly.
+    getobj-rx: { line: 14, seq: 13, reqId: 8, shape: flat-row-no-0xfe0002-wrapper, row-0xfe0001: 1 }
+    getcount-rx: { line: 16, seq: 15, reqId: 9, keys: "0xfe0019/0x9 = 3 (ok, no 0xff0004, no errstr)" }
+    # USER keys: id, wire tcode, value per GETALL row (rowid 1/2/3),
+    # GETOBJ flat-row value (rowid 1). Session keys observed alongside
+    # (not USER, listed once): 0xfe0007/0x1=true, 0xfe0008/0x0=false,
+    # 0xfe000a/0x0=false, 0xfe0001/0x9=rowid, 0xfe0009/0x21="".
+    user-keys:
+      1:  { tcode: "0x18", row1: "hex:00000000000000000000000000000001", row2: "hex:fe80000000000000003e5bfffe1af517", row3: "hex:fe800000000000000069b8fffec1693f", getobj: "hex:00000000000000000000000000000001" }
+      2:  { tcode: "0x9", row1: 128, row2: 64, row3: 64, getobj: 128 }
+      3:  { tcode: "0x9", row1: 1, row2: 3, row3: 2, getobj: 1 }
+      4:  { tcode: "0x0", row1: false, row2: false, row3: false, getobj: false }
+      5:  { tcode: "0x9", row1: 3, row2: 1, row3: 1, getobj: 3 }
+      6:  { tcode: "0x0", row1: false, row2: false, row3: false, getobj: false }
+      7:  { tcode: "0x9", row1: 1, row2: 3, row3: 2, getobj: 1 }
+      8:  { tcode: "0x21", row1: "", row2: "", row3: "", getobj: "" }
+      9:  { tcode: "0x0", row1: false, row2: false, row3: false, getobj: false }
+      14: { tcode: "0x0", row1: false, row2: false, row3: false, getobj: false }
+      15: { tcode: "0x0", row1: false, row2: false, row3: false, getobj: false }
+      16: { tcode: "0x1", row1: true, row2: true, row3: true, getobj: true }
+      17: { tcode: "0x9", row1: 0, row2: 0, row3: 0, getobj: 0 }
+      19: { tcode: "0x9", row1: 0, row2: 0, row3: 0, getobj: 0 }
+    user-key-set: [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 15, 16, 17, 19]
+    getobj-vs-getall: >
+      GETOBJ flat row (line 14) carries exactly the GETALL USER-key set
+      with rowid-1 values; no key present in one shape and absent in
+      the other.
+  version-7.26beta4:
+    file: proof/E2-R-census/native-winbox-beta4.jsonl
+    getall-rx-1: { line: 10, seq: 9, reqId: 6, rows: 2, total-0xfe0019: 2 }
+    getall-rx-2: { line: 12, seq: 11, reqId: 7, rows: 2, total-0xfe0019: 2 }
+    getall-repeat-check: >
+      rx-2 plaintextHex is byte-identical to rx-1 except the trailing
+      SYS_REQID byte (06 vs 07); both rows repeat exactly.
+    getobj-rx: { line: 14, seq: 13, reqId: 8, shape: flat-row-no-0xfe0002-wrapper, row-0xfe0001: 1 }
+    getcount-rx: { line: 16, seq: 15, reqId: 9, keys: "0xfe0019/0x9 = 2 (ok, no 0xff0004, no errstr)" }
+    user-keys:
+      1:  { tcode: "0x18", row1: "hex:00000000000000000000000000000001", row2: "hex:fe80000000000000009340fffea17fc2", getobj: "hex:00000000000000000000000000000001" }
+      2:  { tcode: "0x9", row1: 128, row2: 64, getobj: 128 }
+      3:  { tcode: "0x9", row1: 1, row2: 2, getobj: 1 }
+      4:  { tcode: "0x0", row1: false, row2: false, getobj: false }
+      5:  { tcode: "0x9", row1: 3, row2: 1, getobj: 3 }
+      6:  { tcode: "0x0", row1: false, row2: false, getobj: false }
+      7:  { tcode: "0x9", row1: 1, row2: 2, getobj: 1 }
+      8:  { tcode: "0x21", row1: "", row2: "", getobj: "" }
+      9:  { tcode: "0x0", row1: false, row2: false, getobj: false }
+      10: { tcode: "0x9", row1: 0, row2: 0, getobj: 0 }
+      11: { tcode: "0x9", row1: 0, row2: 0, getobj: 0 }
+      14: { tcode: "0x0", row1: false, row2: false, getobj: false }
+      15: { tcode: "0x0", row1: false, row2: false, getobj: false }
+      16: { tcode: "0x1", row1: true, row2: true, getobj: true }
+      17: { tcode: "0x9", row1: 0, row2: 0, getobj: 0 }
+      19: { tcode: "0x9", row1: 0, row2: 0, getobj: 0 }
+    user-key-set: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 19]
+    getobj-vs-getall: >
+      GETOBJ flat row (line 14) carries exactly the GETALL USER-key set
+      with rowid-1 values, including keys 10 and 11.
+  delta-7.25-to-7.26beta4:
+    added-user-keys:
+      10: { tcode: "0x9", values: "0 on every observed row (GETALL rows 1-2 + GETOBJ row; beta4 lines 10, 12, 14)", absent-7.25: "key 0x00000a appears in NO 7.25 [20,37] row record (lines 10, 12, 14)" }
+      11: { tcode: "0x9", values: "0 on every observed row (GETALL rows 1-2 + GETOBJ row; beta4 lines 10, 12, 14)", absent-7.25: "key 0x00000b appears in NO 7.25 [20,37] row record (lines 10, 12, 14)" }
+    removed-user-keys: []
+    tcode-changes-on-shared-keys: none (all 14 shared keys ride identical tcodes on both versions)
+    value-note: >
+      Row POPULATION differs (7.25: 3 rows incl. two distinct link-local
+      EUI-64 addresses; beta4: 2 rows, one link-local with a different
+      EUI-64) and per-row values of keys 2/3/5/7 vary by row on both
+      versions. Population/EUI-64 differences are lab-VM state, not a
+      key-set delta; no claim is made about them beyond the rows cited.
+    wire-spot-check: >
+      beta4 GETALL row-1 hex carries `0a00000900` + `0b00000900`
+      (u10=0, u11=0) immediately before `1100000900` (u17=0); the 7.25
+      row-1 hex at the same position carries only `1100000900` after
+      `0700000901` (u7=1). Plaintext, not decoder inference.
+  internal-inconsistencies-R1: none found
+  missing-or-ambiguous-R1: none; all six [20,37] rx records per file present, reqId-correlated, decode ok:true
+
+# =====================================================================
+# R2 — family E3 firewall: [20,17] + [20,124] GETCOUNT replies, both versions
+# Sources (ONLY):
+#   proof/E3-R-census/step-7.25-census.jsonl      (324 lines)
+#   proof/E3-R-census/step-7.26beta4-census.jsonl (324 lines)
+# Both files: zero decode failures (grep '"ok":false' -> 0 each).
+# [20,17] GETCOUNT appears TWICE per file (sweep reqId 31 + tail reqId 160);
+# both replies are reconstructed and cross-checked. [20,124] GETCOUNT
+# appears ONCE per file (reqId 138). No other tx/rx touches these routes
+# with CMD_GETCOUNT (verified by grep on '"to":[20,17]' / '"to":[20,124]'
+# and '"from":[20,17]' / '"from":[20,124]').
+# =====================================================================
+R2:
+  route-20-17-getcount:
+    note: >
+      The [20,17] 0xFFFFFFFF reply matches the ALREADY-CATALOGUED [20,61]
+      GETCOUNT precedent (std-commands.yaml CMD_GETCOUNT: ok +
+      4294967295 in the version slot). The precedent is cited for shape
+      only; the values below are reconstructed from the E3 jsonl.
+    version-7.25:
+      file: proof/E3-R-census/step-7.25-census.jsonl
+      pair-1: { tx-line: 59, tx-seq: 58, tx-reqId: 31, rx-line: 60, rx-seq: 59, rx-reqId: 31 }
+      pair-2: { tx-line: 317, tx-seq: 316, tx-reqId: 160, rx-line: 318, rx-seq: 317, rx-reqId: 160 }
+      rx-keys-pair-1:
+        - { key: 0xff0001, tcode: "0x88", value: [0, 11] }
+        - { key: 0xff0002, tcode: "0x88", value: [20, 17] }
+        - { key: 0xff001c, tcode: "0xa0", value: ["msg-proxy-7.25"] }
+        - { key: 0xff0003, tcode: "0x9", value: 2 }
+        - { key: 0xfe0019, tcode: "0x8", value: 4294967295 }
+        - { key: 0xff0006, tcode: "0x9", value: 31 }
+      rx-keys-pair-2: identical to pair-1 except 0xff0006 = 160
+      absent: [0xff0004 (no SYS_STATUS: ok shape), 0xff0008 (no errno), 0xff0009 (no errstr), 0xfe0014 (no v6 count slot)]
+      wire: "count rides `1900fe08ffffffff` (0xfe0019 tcode 0x8 = full u32, NOT the 0x9 compact form)"
+    version-7.26beta4:
+      file: proof/E3-R-census/step-7.26beta4-census.jsonl
+      pair-1: { tx-line: 59, tx-seq: 58, tx-reqId: 31, rx-line: 60, rx-seq: 59, rx-reqId: 31 }
+      pair-2: { tx-line: 317, tx-seq: 316, tx-reqId: 160, rx-line: 318, rx-seq: 317, rx-reqId: 160 }
+      rx-keys-pair-1:
+        - { key: 0xff0001, tcode: "0x88", value: [0, 11] }
+        - { key: 0xff0002, tcode: "0x88", value: [20, 17] }
+        - { key: 0xff001c, tcode: "0xa0", value: ["msg-proxy-7.26beta4"] }
+        - { key: 0xff0003, tcode: "0x9", value: 2 }
+        - { key: 0xfe0019, tcode: "0x8", value: 4294967295 }
+        - { key: 0xff0006, tcode: "0x9", value: 31 }
+      rx-keys-pair-2: identical to pair-1 except 0xff0006 = 160
+      absent: [0xff0004, 0xff0008, 0xff0009, 0xfe0014]
+      wire: "count rides `1900fe08ffffffff`, same as 7.25"
+    cross-version-delta-20-17: none except the proxy banner string (msg-proxy-7.25 vs msg-proxy-7.26beta4)
+    internal-consistency-20-17: >
+      pair-1 and pair-2 replies agree exactly within each file
+      (same keys, tcodes, values modulo reqId echo); no same-route+verb
+      disagreement.
+  route-20-124-getcount:
+    version-7.25:
+      file: proof/E3-R-census/step-7.25-census.jsonl
+      pair: { tx-line: 273, tx-seq: 272, tx-reqId: 138, rx-line: 274, rx-seq: 273, rx-reqId: 138 }
+      rx-keys:
+        - { key: 0xff0001, tcode: "0x88", value: [0, 11] }
+        - { key: 0xff0002, tcode: "0x88", value: [20, 124] }
+        - { key: 0xff001c, tcode: "0xa0", value: ["msg-proxy-7.25"] }
+        - { key: 0xff0008, tcode: "0x8", value: 16646150 }
+        - { key: 0xff0003, tcode: "0x9", value: 2 }
+        - { key: 0xff0004, tcode: "0x9", value: 2 }
+        - { key: 0xff0006, tcode: "0x9", value: 138 }
+        - { key: 0xff0009, tcode: "0x21", value: "no INTERFACE_IDS" }
+      reading: >
+        ERROR shape: SYS_STATUS (0xff0004) = 2 = ERROR, SYS_ERRNO
+        (0xff0008) = 16646150 = 0xfe0006 = ERROR_FAILED (std-errors.yaml),
+        SYS_ERRSTR (0xff0009) = "no INTERFACE_IDS" (16 chars, tcode 0x21).
+        NO count slot is present (neither 0xfe0019 nor 0xfe0014).
+      wire: "tail `0800ff080600fe000300ff09020400ff09020600ff098a0900ff21106e6f20494e544552464143455f494453`"
+    version-7.26beta4:
+      file: proof/E3-R-census/step-7.26beta4-census.jsonl
+      pair: { tx-line: 273, tx-seq: 272, tx-reqId: 138, rx-line: 274, rx-seq: 273, rx-reqId: 138 }
+      rx-keys:
+        - { key: 0xff0001, tcode: "0x88", value: [0, 11] }
+        - { key: 0xff0002, tcode: "0x88", value: [20, 124] }
+        - { key: 0xff001c, tcode: "0xa0", value: ["msg-proxy-7.26beta4"] }
+        - { key: 0xff0008, tcode: "0x8", value: 16646150 }
+        - { key: 0xff0003, tcode: "0x9", value: 2 }
+        - { key: 0xff0004, tcode: "0x9", value: 2 }
+        - { key: 0xff0006, tcode: "0x9", value: 138 }
+        - { key: 0xff0009, tcode: "0x21", value: "no INTERFACE_IDS" }
+      reading: same ERROR_FAILED shape as 7.25, identical errno + errstr
+      wire: same tail as 7.25
+    cross-version-delta-20-124: none except the proxy banner string
+    internal-consistency-20-124: >
+      Only one GETCOUNT pair per file exists for this route, so no
+      intra-file cross-check is possible; the single pair is complete
+      (tx reqId 138 -> rx reqId 138) and decode ok:true on both files.
+  internal-inconsistencies-R2: none found
+  missing-or-ambiguous-R2: none; all six target rx records present and unambiguous (no interpolation performed)
+
+evidence-paths:
+  - work/2026-11-winbox-attributes/proof/E2-R-census/native-ws20.jsonl
+  - work/2026-11-winbox-attributes/proof/E2-R-census/native-winbox-beta4.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-R-census/step-7.25-census.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-R-census/step-7.26beta4-census.jsonl
+  - work/2026-11-winbox-attributes/proof/Reviewer/report.yaml
+
+unresolved: []

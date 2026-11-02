@@ -1,0 +1,301 @@
+{
+  "proof": "E2-R census",
+  "machine": "ws3c6",
+  "routeros_version": "6.49.23",
+  "zero_writes": true,
+  "volatility": {
+    "20-1-identical": true,
+    "20-37-identical": true
+  },
+  "steps": {
+    "getall-20-1-read1": {
+      "kind": "getall",
+      "rows": [
+        [
+          {
+            "key": "0xfe0007",
+            "tcode": "0x1",
+            "value": true
+          },
+          {
+            "key": "0xfe0008",
+            "tcode": "0x0",
+            "value": false
+          },
+          {
+            "key": "0xfe000a",
+            "tcode": "0x0",
+            "value": false
+          },
+          {
+            "key": "0x000004",
+            "tcode": "0x8",
+            "value": 4278321162
+          },
+          {
+            "key": "0x000005",
+            "tcode": "0x9",
+            "value": 1
+          },
+          {
+            "key": "0x00000a",
+            "tcode": "0x9",
+            "value": 1
+          },
+          {
+            "key": "0xfe0001",
+            "tcode": "0x9",
+            "value": 1
+          },
+          {
+            "key": "0x000001",
+            "tcode": "0x8",
+            "value": 251789322
+          },
+          {
+            "key": "0x000002",
+            "tcode": "0x8",
+            "value": 131082
+          },
+          {
+            "key": "0x000003",
+            "tcode": "0x8",
+            "value": 16777215
+          },
+          {
+            "key": "0xfe0009",
+            "tcode": "0x21",
+            "value": ""
+          }
+        ]
+      ],
+      "pages": 1,
+      "complete": true
+    },
+    "getall-20-1-read2": {
+      "kind": "getall",
+      "rows": [
+        [
+          {
+            "key": "0xfe0007",
+            "tcode": "0x1",
+            "value": true
+          },
+          {
+            "key": "0xfe0008",
+            "tcode": "0x0",
+            "value": false
+          },
+          {
+            "key": "0xfe000a",
+            "tcode": "0x0",
+            "value": false
+          },
+          {
+            "key": "0x000004",
+            "tcode": "0x8",
+            "value": 4278321162
+          },
+          {
+            "key": "0x000005",
+            "tcode": "0x9",
+            "value": 1
+          },
+          {
+            "key": "0x00000a",
+            "tcode": "0x9",
+            "value": 1
+          },
+          {
+            "key": "0xfe0001",
+            "tcode": "0x9",
+            "value": 1
+          },
+          {
+            "key": "0x000001",
+            "tcode": "0x8",
+            "value": 251789322
+          },
+          {
+            "key": "0x000002",
+            "tcode": "0x8",
+            "value": 131082
+          },
+          {
+            "key": "0x000003",
+            "tcode": "0x8",
+            "value": 16777215
+          },
+          {
+            "key": "0xfe0009",
+            "tcode": "0x21",
+            "value": ""
+          }
+        ]
+      ],
+      "pages": 1,
+      "complete": true
+    },
+    "getobj-20-1-1": {
+      "kind": "getobj",
+      "row": [
+        {
+          "key": "0xff0001",
+          "tcode": "0x88",
+          "value": [
+            0,
+            11
+          ]
+        },
+        {
+          "key": "0xff0002",
+          "tcode": "0x88",
+          "value": [
+            20,
+            1
+          ]
+        },
+        {
+          "key": "0xfe0007",
+          "tcode": "0x1",
+          "value": true
+        },
+        {
+          "key": "0xfe0008",
+          "tcode": "0x0",
+          "value": false
+        },
+        {
+          "key": "0xfe000a",
+          "tcode": "0x0",
+          "value": false
+        },
+        {
+          "key": "0x000004",
+          "tcode": "0x8",
+          "value": 4278321162
+        },
+        {
+          "key": "0x000005",
+          "tcode": "0x9",
+          "value": 1
+        },
+        {
+          "key": "0x000003",
+          "tcode": "0x8",
+          "value": 16777215
+        },
+        {
+          "key": "0x00000a",
+          "tcode": "0x9",
+          "value": 1
+        },
+        {
+          "key": "0xfe0001",
+          "tcode": "0x9",
+          "value": 1
+        },
+        {
+          "key": "0xff0003",
+          "tcode": "0x9",
+          "value": 2
+        },
+        {
+          "key": "0x000001",
+          "tcode": "0x8",
+          "value": 251789322
+        },
+        {
+          "key": "0xff0006",
+          "tcode": "0x9",
+          "value": 4
+        },
+        {
+          "key": "0x000002",
+          "tcode": "0x8",
+          "value": 131082
+        },
+        {
+          "key": "0xfe0009",
+          "tcode": "0x21",
+          "value": ""
+        }
+      ],
+      "status": "ok",
+      "errno": null
+    },
+    "getcount-20-1": {
+      "kind": "getcount",
+      "status": "ok",
+      "count19": null,
+      "count14": 1,
+      "errno": null,
+      "errstr": null
+    },
+    "getall-20-37-read1": {
+      "kind": "getall",
+      "rows": [],
+      "pages": 1,
+      "complete": false,
+      "cause": "page-error errno=0xfe0002"
+    },
+    "getall-20-37-read2": {
+      "kind": "getall",
+      "rows": [],
+      "pages": 1,
+      "complete": false,
+      "cause": "page-error errno=0xfe0002"
+    },
+    "getobj-20-37-1": {
+      "kind": "getobj",
+      "row": [
+        {
+          "key": "0xff0001",
+          "tcode": "0x88",
+          "value": [
+            0,
+            11
+          ]
+        },
+        {
+          "key": "0xff0002",
+          "tcode": "0x88",
+          "value": [
+            20
+          ]
+        },
+        {
+          "key": "0xff0008",
+          "tcode": "0x8",
+          "value": 16646146
+        },
+        {
+          "key": "0xff0003",
+          "tcode": "0x9",
+          "value": 2
+        },
+        {
+          "key": "0xff0004",
+          "tcode": "0x9",
+          "value": 2
+        },
+        {
+          "key": "0xff0006",
+          "tcode": "0x9",
+          "value": 8
+        }
+      ],
+      "status": "router-error",
+      "errno": "0xfe0002"
+    },
+    "getcount-20-37": {
+      "kind": "getcount",
+      "status": "router-error",
+      "count19": null,
+      "count14": null,
+      "errno": "0xfe0002",
+      "errstr": null
+    }
+  },
+  "sweep_20_star": null
+}

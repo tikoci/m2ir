@@ -1,0 +1,303 @@
+# cspell:ignore rowid rowids vlan untagged getall getcount setobj addobj removeobj chr w2r e1br ether1 vlanids mvrp
+# E1 follow-up leg sheet: W2-rerun (vlan f5/f6 discrimination). READ-ONLY PREP.
+# No VM was touched to produce this sheet; no command below has been sent.
+# Execution requires the coordinator's confirmation plus the user's explicit
+# per-leg yes in-session (recorded budget != approved).
+leg: W2-rerun
+recorded_followup: f-w2-rerun
+targets_unknown: u-vlan-f5-f6
+target_claim: "f5/f6 = current tagged/untagged (HYPOTHESIS, strong)"
+handler_scope: "[16,13] bridge-vlan rows (+ [16,2]/[20,0] context reads only)"
+budget:
+  recorded: { counted_writes: 9, reboots: 0 }
+  planned: { counted_writes: 9, reboots: 0 }
+  headroom: 0
+  warning: "Sheet spends the full recorded budget; zero headroom. Any extra
+    counted write (retry, set-back, extra remove) exceeds budget and is
+    forbidden in-leg: record and stop instead."
+caveats_foregrounded:
+  - "CAVEAT 1 (from f-w2-rerun): the swap form was written in-script but NEVER
+    LIVE-TESTED. The referenced in-script text is NOT in this repo (E1 session
+    manifests are LOCAL-ONLY by design); the W2r.4 swap command below is a
+    RECONSTRUCTED, NEW (untested) step. Offline `centrs explain` passes it,
+    but offline pass never proves device acceptance."
+  - "CAVEAT 2 (from f-w2-rerun + gui-handlers.yaml interface notes): the
+    static-MAC gate was likewise NEVER LIVE-TESTED, and its predicate text is
+    not in the repo either. Gate G-static-mac below is a RECONSTRUCTED,
+    read-only (0-write) gate. The coordinator MUST confirm its predicate
+    before execution; a gate fail stops the leg at cumulative 3 with restore
+    still affordable (3 + 3 = 6)."
+  - "CAVEAT 3 (NEW, this sheet): step W2r.5 sets vlan-filtering=yes on a
+    bridge enslaving ether1, the lab path. This is a LAB-ACCESS HAZARD (cf.
+    E1 W7-redesigned, which moved off ether1 for access safety). W2r.5 runs
+    ONLY with coordinator-confirmed console or alternate access to twin3."
+vm:
+  proposed: twin3
+  routeros: "7.25"
+  rationale:
+    - "Same VM + version as E1 (report provenance: twin3 7.25): rowids,
+      self-learned host rows, and the tagged/untagged overlap rule are
+      version/VM-specific; a same-VM repeat minimizes drift."
+    - "SEQUENTIAL with W5-retry (W2-rerun first): both legs enslave ether1
+      to e1br and touch the same tables, so parallel execution would
+      collide; sequential + restore-verified baseline between legs keeps
+      each leg's cells attributable."
+    - "W2 first because its filtering=yes step is the riskiest (lab-access
+      hazard): run it on a fresh-verified baseline so an access incident
+      cannot strand W5 state."
+  confirmation: "Coordinator confirms the VM choice at execution."
+  how_to_read_ports: "Coordinator, at execution (prep touched no VM): resolve
+    twin3's forwarded ports (SSH / REST / API) from the live quickchr VM
+    record per the routeros-quickchr-cli skill, then drive control reads and
+    writes via `centrs --quickchr twin3` and native reads via the
+    work/2026-11-winbox-attributes/harness session. Record the resolved
+    ports in the execution log; this sheet names no ports because none were
+    read during prep."
+baseline_snapshot:
+  purpose: "Prove the tables are at E1 baseline (empty e1* state) before W2r.1."
+  steps:
+    - tool: "centrs retrieve"
+      route: /interface/bridge
+      expect: "[] (no e1br row)"
+    - tool: "centrs retrieve"
+      route: /interface/bridge/vlan
+      expect: "[]"
+    - tool: "centrs retrieve"
+      route: /interface/bridge/port
+      expect: "[]"
+    - tool: "centrs retrieve"
+      route: /interface/bridge/host
+      expect: "[]"
+    - tool: native
+      op: "GETALL [16,13]"
+      expect: "0 rows"
+    - tool: native
+      op: "GETALL [16,2]"
+      expect: "0 rows"
+    - tool: native
+      op: "GETALL [20,0]"
+      expect: "ether1 + lo rows only; RECORD live rowids (E1 twin3 values
+        were ether=2/lo=1 — cite, do not assume; all later rowid
+        expectations resolve from this read)"
+  writes: 0
+explain_provenance: "centrs 0.1.9-next, `centrs explain '<cmd>' --json`, offline
+  (no router). Every verdict below is pass with runtimeAcceptance not-proven:
+  well-formed per the canonicalizer, device acceptance NOT proven."
+steps:
+  - tag: W2r.1
+    writes: 1
+    cumulative: 1
+    e1_cite: "control-w2.json E1-W2.1 (outcome ok)"
+    status: CITED
+    control: { tool: "centrs execute", command: "/interface/bridge/add name=e1br" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    verify: "retrieve /interface/bridge shows e1br"
+  - tag: W2r.2
+    writes: 1
+    cumulative: 2
+    e1_cite: "control-w2.json E1-W2.2 (outcome ok)"
+    status: CITED
+    control: { tool: "centrs execute", command: "/interface/bridge/vlan/add bridge=e1br vlan-ids=10 tagged=e1br untagged=ether1" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    verify: "retrieve /interface/bridge/vlan shows *1 tagged=e1br untagged=ether1"
+  - tag: W2r.3
+    writes: 1
+    cumulative: 3
+    e1_cite: "control-w2.json E1-W2.3 (outcome ok)"
+    status: CITED
+    control: { tool: "centrs execute", command: "/interface/bridge/port/add bridge=e1br interface=ether1" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    verify: "retrieve /interface/bridge/port shows the e1br/ether1 row"
+  - tag: G-static-mac
+    writes: 0
+    cumulative: 3
+    e1_cite: none
+    status: "NEW (untested) — reconstructed; in-script predicate not in repo"
+    risk: "Predicate may not match the original E1 intent; a wrong predicate
+      either blocks a good leg (safe: 0 further writes) or waves through an
+      unpinned forwarding state (weakens cells B-D). Coordinator MUST confirm
+      the predicate before execution."
+    gate:
+      read: "retrieve /interface/bridge/host"
+      pass_iff: "at least one host row attaches the lab ether1 MAC (or the
+        static-pinned MAC, if the coordinator pins one out-of-leg) to
+        e1br/ether1; dynamic co-rows allowed, count recorded"
+      fail_action: "RECORD the host table, STOP the leg (no further writes),
+        run restore W2r.R1-R3"
+    note: "Read-only by budget necessity: pinning a static host row in-leg
+      would cost +2 writes (add + remove) and exceed budget 9. If the
+      coordinator requires a pinned static row, that is a NEW leg with a NEW
+      budget, not this sheet."
+  - tag: cell-A
+    writes: 0
+    cumulative: 3
+    e1_cite: "control-w2.json after-E1-W2.3 cell (filtering=no)"
+    status: CITED
+    reads:
+      - tool: "centrs retrieve"
+        route: /interface/bridge/vlan
+        expect: "tagged=e1br untagged=ether1 current-tagged='' current-untagged=''"
+      - tool: native
+        op: "GETALL [16,13]"
+        expect: "1 row (vlan rowid 1): f1=[10,10], f3=[bridgeRowId],
+          f4=[etherRowId], f5=f6=f7=[]"
+    proves: "Reproduces the E1 filtering=no cell (p-vlan-f4 control): f4
+      non-empty while both currents empty. If f4 is empty here, the E1
+      premise fails on this VM state — STOP, record, restore."
+  - tag: W2r.4
+    writes: 1
+    cumulative: 4
+    e1_cite: none
+    status: "NEW (untested) — the swap form; NEVER LIVE-TESTED (f-w2-rerun caveat)"
+    risk: "Device may reject the empty `untagged=` assignment or the
+      combined move (overlap rule variant). Rejection costs 0 writes and
+      blocks the leg per the stop rule; the recorded rejection becomes the
+      follow-up design input. Quoted form `untagged=\"\"` also passes offline
+      explain and is reserved for a FUTURE leg, not an in-leg retry."
+    control: { tool: "centrs execute", command: "/interface/bridge/vlan/set *1 tagged=e1br,ether1 untagged=" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    id_resolution: "Selector *1 resolves from the cell-A retrieve at execution
+      (E1 vlan rowid was *1 — cite, do not assume)."
+    verify: "retrieve /interface/bridge/vlan shows tagged=e1br,ether1 untagged=''"
+  - tag: cell-B
+    writes: 0
+    cumulative: 4
+    e1_cite: none
+    status: "NEW (untested) — lost E1 cell (filtering=no, moved)"
+    reads:
+      - tool: native
+        op: "GETALL [16,13]"
+        expect: "f4=[] (ether1 left configured-untagged), f5=f6=[] (currents
+          still empty under filtering=no)"
+    proves: "Inverse corroboration of p-vlan-f4 (f4 tracks configured
+      untagged down to empty); f5/f6 still empty is CONSISTENT with the
+      current-side hypothesis but does not discriminate f5 vs f6 alone."
+  - tag: W2r.5
+    writes: 1
+    cumulative: 5
+    e1_cite: none
+    status: "NEW (untested) — W2b.1 filtering=yes; LAB-ACCESS HAZARD, see caveat 3"
+    risk: "vlan-filtering=yes on the bridge enslaving the lab path may drop
+      untagged management traffic and strand the session. Preconditions:
+      coordinator-confirmed console/alternate access; wall-clock deadline on
+      the post-set retrieve; on unreachable: recover via console, record,
+      restore via console (restore commands are unchanged)."
+    control: { tool: "centrs execute", command: "/interface/bridge/set e1br vlan-filtering=yes" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    verify: "retrieve /interface/bridge shows vlan-filtering=yes AND the
+      session is still alive"
+  - tag: cell-C
+    writes: 0
+    cumulative: 5
+    e1_cite: none
+    status: "NEW (untested) — lost E1 cell (filtering=yes, moved)"
+    reads:
+      - tool: "centrs retrieve"
+        route: /interface/bridge/vlan
+        expect: "current-tagged populated (e1br,ether1), current-untagged=''
+          — RECORD the actual values, do not assume"
+      - tool: native
+        op: "GETALL [16,13]"
+        expect: "exactly one of f5/f6 populates with the tagged-side rowids,
+          the other stays []"
+    proves: "Assigns CURRENT-TAGGED to whichever of f5/f6 populates (first
+      half of u-vlan-f5-f6); the empty one is still ambiguous."
+  - tag: W2r.6
+    writes: 1
+    cumulative: 6
+    e1_cite: "Inverse of E1-W2.2 config (restores tagged=e1br untagged=ether1)"
+    status: "NEW (untested) — W2b.2 reverse swap under filtering=yes"
+    risk: "Same overlap-rule family as W2r.4, but this direction restores a
+      previously device-accepted config, so rejection is less likely. On
+      rejection: record, STOP, restore (cell D lost; cells A-C still stand)."
+    control: { tool: "centrs execute", command: "/interface/bridge/vlan/set *1 tagged=e1br untagged=ether1" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    verify: "retrieve /interface/bridge/vlan shows tagged=e1br untagged=ether1"
+  - tag: cell-D
+    writes: 0
+    cumulative: 6
+    e1_cite: none
+    status: "NEW (untested) — lost E1 cell (filtering=yes, unmoved)"
+    reads:
+      - tool: "centrs retrieve"
+        route: /interface/bridge/vlan
+        expect: "current-tagged=e1br, current-untagged=ether1 — RECORD the actual values"
+      - tool: native
+        op: "GETALL [16,13]"
+        expect: "BOTH f5 and f6 populated, split across the tagged/untagged
+          rowids"
+    proves: "Assigns CURRENT-UNTAGGED to the f5/f6 member carrying
+      [etherRowId] (second half of u-vlan-f5-f6). Together cells A-D form the
+      full 2x2 (filtering x move) the E1 leg lost at 1/4."
+  - tag: W2r.R1
+    writes: 1
+    cumulative: 7
+    e1_cite: "control-w2.json shared restore (vlan remove; outcome ok)"
+    status: CITED
+    control: { tool: "centrs execute", command: "/interface/bridge/vlan/remove *1" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    id_resolution: "Selector resolves from the latest retrieve at execution."
+  - tag: W2r.R2
+    writes: 1
+    cumulative: 8
+    e1_cite: "control-w2.json shared restore (port remove; outcome ok) +
+      d-no-cascade (explicit port remove required)"
+    status: CITED
+    control: { tool: "centrs execute", command: "/interface/bridge/port/remove *0" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+    id_resolution: "Selector resolves from the latest retrieve at execution."
+  - tag: W2r.R3
+    writes: 1
+    cumulative: 9
+    e1_cite: "control-w2.json shared restore (bridge remove; outcome ok)"
+    status: CITED
+    control: { tool: "centrs execute", command: "/interface/bridge/remove e1br" }
+    explain: { verdict: pass, writeShaped: true, diagnostics: [] }
+restore_verification:
+  purpose: "Prove baseline is restored (E1 legs all ended restore-clean)."
+  steps:
+    - tool: "centrs retrieve"
+      route: /interface/bridge
+      expect: "[]"
+    - tool: "centrs retrieve"
+      route: /interface/bridge/vlan
+      expect: "[]"
+    - tool: "centrs retrieve"
+      route: /interface/bridge/port
+      expect: "[]"
+    - tool: native
+      op: "GETALL [16,13]"
+      expect: "0 rows + total 0 (empty envelope)"
+    - tool: native
+      op: "GETALL [16,2]"
+      expect: "0 rows + total 0 (empty envelope)"
+  writes: 0
+  on_failure: "Baseline NOT restored: record exactly which rows remain, STOP,
+    hand to the coordinator. Do not spend unbudgeted writes."
+stop_conditions:
+  - "E1 STOP RULE: on ANY block (rejection, gate fail, unexpected cell,
+    lost access without console recovery) do NOT re-run within the leg —
+    record the evidence and stop, then run restore W2r.R1-R3 (restore always
+    fits: a stop before step N leaves cumulative writes < 9 with restore
+    affordable... verified: latest possible stop is after cell-D at
+    cumulative 6, restore adds 3 = 9)."
+  - "Cell-A premise fail (f4 empty while currents empty): STOP — the E1
+    p-vlan-f4 premise does not hold in this VM state."
+  - "W2r.4 rejected: STOP — the swap-form rejection is itself the finding;
+    cells B-D are lost again and the recorded error text seeds the next design."
+  - "Post-W2r.5 unreachable without console recovery: STOP — record, hand to
+    the coordinator; no further writes from this sheet."
+  - "Any step exceeding cumulative 9: forbidden — the sheet has no such step."
+cleanup_state:
+  definition: "All e1* objects removed (bridge/vlan/port/host tables empty
+    per restore_verification); twin3 left for the coordinator (VM lifecycle
+    is the coordinator's — prep touched no VM); execution log records every
+    write, cell, and gate outcome."
+out_of_scope:
+  - "f7-SET leg (u-vlan-f7 mvrp-forbidden hypothesis): needs a leg that SETS
+    mvrp-forbidden — unbudgeted, no step here touches f7/mvrp."
+  - "v7 [16,3] membership-count leg (u-16-3): unbudgeted; [16,3] reads, if
+    any, are context only and prove nothing here."
+  - "0xFFFFFFFF count-vs-sentinel leg (u-ffffffff): unbudgeted."
+  - "0x38 writer static analysis (u-38-writer): non-lab work, unbudgeted."
+  - "u-port-15-drift, u-fe0005: observed context at most, no experiment here."

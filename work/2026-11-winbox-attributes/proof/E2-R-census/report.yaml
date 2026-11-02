@@ -1,0 +1,213 @@
+# cspell:ignore rowid u32 be32 vrf cliref dad eui unfreezing errstr BRKPATH vms unsanitized prevalidation ifaces addressless vrfs
+proof: "E2-R: read-only IP/routing census + U1 f6/f11 discrimination DESIGN (no writes)"
+worker: E2-R
+head: 7303e785a7550f495a7b2d5102b5306de1142534
+date: 2026-11-02
+freeze: work/2026-11-winbox-attributes/proof/S0-replay-freeze/e2-candidates.yaml
+scope: one handler family (IP/routing); ZERO writes of any kind
+vms_used: [ws20, winbox-beta4, ws3c6]
+vms_never_touched: [ws21, e3-beta4, twin3]
+
+proven:
+  - id: U1-f6-f11-v7-only-values
+    claim: "[20,1] U1 f6 (u32) + f11 (bool) present on 7.25 AND 7.26beta4 (GETALL+GETOBJ), f6=0 (wire tcode 0x9) + f11=false (tcode 0x0) on the observed DHCP row; both absent on 6.49.23"
+    evidence: [shape-ws20.json, shape-winbox-beta4.json, shape-ws3c6.json,
+      native-ws20.jsonl, native-winbox-beta4.jsonl, native-ws3c6.jsonl]
+    detail: "7.x GETALL row user keys: f1/f2/f3/f4 (0x8 be32: 10.0.2.15/10.0.2.0//24/10.0.2.255), f5/f10 (0x9 =2 iface rowid), f6 (0x9 =0), f11 (0x0 =false); session fe0007=T fe0008=F fe000a=F fe0001=1 fe0009=''. v6 row identical minus f6/f11, f5/f10=1 (version-local rowid). GETOBJ flat row carries the same per-version field set."
+  - id: ipv6-shape-7x-plus-beta4-drift
+    claim: "[20,37] full row-shape on 7.25 (3 rows) + 7.26beta4 (2 rows); beta4 rows carry TWO extra user fields f10+f11 (0x9 u32_compact, both 0), absent on 7.25 — on GETALL and GETOBJ alike"
+    evidence: [shape-ws20.json, shape-winbox-beta4.json, native-ws20.jsonl, native-winbox-beta4.jsonl]
+    detail: "7.25 user keys {1:bytes16, 2,3,4,5,6,7,8,9,14,15,16,17,19} match the catalog exactly (::1/128 lo + fe80::/64 per ether). beta4 adds {10:0, 11:0} (wire 0x9). Row counts (3v2) track interface count (ws20 has ether2, beta4 does not), not version drift."
+  - id: getcount-truthful
+    claim: "GETCOUNT counts match independent control reads on [20,1] (1v1, v6 via 0xfe0014) and [20,37] (3v2); 6 ok+0 unknown slots spot-checked return 0-row complete GETALL"
+    evidence: [shape-ws20.json, shape-winbox-beta4.json, shape-ws3c6.json,
+      control-ws20-ip-address.json, control-ws20-ipv6-address.json,
+      control-winbox-beta4-ip-address.json, control-winbox-beta4-ipv6-address.json,
+      control-ws3c6-ip-address.json, zero-check-ws20.json, zero-check-ws20.jsonl]
+  - id: sweep-identical-slots
+    claim: "[20,0..255] GETCOUNT sweep: 256 slots each, ok=101 / router-error=155 (154 ERROR_BRKPATH 0xfe0002 + 1 ERROR_FAILED 0xfe0006 at slot 124) on BOTH 7.25 and 7.26beta4 with IDENTICAL ok-sets; only count diffs are 4 population-driven slots (0: 3v2 ifaces, 37: 3v2 ipv6, 57: 16v13, 58: 2v0)"
+    evidence: [shape-ws20.json, shape-winbox-beta4.json, sweep-ws20.jsonl, sweep-winbox-beta4.jsonl]
+  - id: route-table-miss-in-20-star
+    claim: "MISS: no [20,*] slot on either 7.x version carries /ip/route content. Control shows 2 route rows both VMs; every count-2v2 unknown slot is identified as non-route ([20,28]/[20,86]/[20,88] chain registries, [20,38] ipv6-neighbor, [20,120] interface-list); [20,58] is 2v0 (excluded); no other slot has route-shaped content"
+    evidence: [shape-ws20.json, shape-winbox-beta4.json, follow-ws20.json,
+      follow-winbox-beta4.json, control-ws20-ip-route.json, control-winbox-beta4-ip-route.json]
+  - id: v6-ipv6-absence-is-package-state
+    claim: "v6 [20,37] GETALL/GETOBJ/GETCOUNT -> ERROR_BRKPATH from=[20] because the ipv6 package is disabled on ws3c6 (control: disabled=true; /ipv6/address -> routeros/unknown-path 'no such command prefix'), NOT version drift"
+    evidence: [shape-ws3c6.json, native-ws3c6.jsonl, control-ws3c6-ipv6-address.json,
+      control-ws3c6-system-package.json]
+  - id: slot-124-failed-errstr
+    claim: "[20,124] answers ERROR_FAILED (0xfe0006) errstr 'no INTERFACE_IDS' on GETCOUNT+GETALL+GETOBJ, both 7.x versions — first errstr-bearing FAILED sample in this family"
+    evidence: [shape-ws20.json, shape-winbox-beta4.json, follow-ws20.json,
+      follow-winbox-beta4.json, follow-ws20.jsonl, follow-winbox-beta4.jsonl]
+  - id: zero-write-volatility
+    claim: "two unchanged GETALL reads byte-identical (JSON-equal incl. wire order) for [20,1] and [20,37] on all three VMs; f6/f11 non-volatile in-session"
+    evidence: [shape-ws20.json, shape-winbox-beta4.json, shape-ws3c6.json]
+  - id: census-shapes-21-slots
+    claim: "row-shape recorded (shape only, NO mapping claims) for 21 unknown [20,*] slots incl. chain registries (2/4/6/28/30/41/43/86/88/112), queue-type defaults (10), service-ports (33), ipv6-neighbor (38), irq-like (57), iface-list/member (90/120), routing/vrf registry 'main' rowid 0 (101)"
+    evidence: [follow-ws20.json, follow-ws20.jsonl, follow-winbox-beta4.json, follow-winbox-beta4.jsonl]
+    caveat: "firewall-family shapes (chains, service-ports) are E3-R's family: recorded here as census rows only, no E3 mapping claim, no fragment proposed there"
+  - id: e2w-strings-pass-offline-explain
+    claim: "E2-W leg command strings pass offline `centrs explain` (pass, write flags as expected): /ip/vrf print|add|remove, /ip/address/add with comment; set/remove with selectors need live re-validation in E2-W"
+    evidence: []  # offline only; E2-W re-validates live per the leg sheet
+
+disproven:
+  - id: not-v6-drift-ipv6
+    claim: "v6 [20,37] absence is NOT a v6-vs-v7 handler drift — it is package-disabled state (see proven/v6-ipv6-absence-is-package-state)"
+  - id: not-slot-drift-725-beta4
+    claim: "no [20,*] GETCOUNT reachability drift between 7.25 and 7.26beta4 — ok-sets identical across all 256 slots (only row-shape drift found is [20,37] f10/f11)"
+  - id: not-route-58
+    claim: "[20,58] is NOT the route table: count 2v0 across VMs while /ip/route is 2v2, and rows are {disabled,rowid} only"
+
+unknown:
+  - id: U1-f6-semantics
+    status: unknown; hypotheses + legs in e2w_leg_sheet below
+    note: "prime: vrf identity (f6=0 with vrf=main; [20,101] 'main' registry rowid=0 is shape corroboration only, not proof)"
+  - id: U1-f11-semantics
+    status: unknown; hypotheses + legs in e2w_leg_sheet below
+    note: "prime by control-bool elimination: slave flag — OUTSIDE the frozen 10 (test allowed in E2-W, promotion needs coordinator unfreeze decision)"
+  - id: ipv6-wire-width
+    status: unknown (coordinator question, no claim)
+    note: "catalog ipv6-address f2/f3/f5/f7/f17/f19 say tcode u8; wire shows 0x9 (u32_compact family) on all; static candidate said u32 for f2/f3. Census records wire tcodes only."
+  - id: beta4-ipv6-f10-f11-semantics
+    status: unknown; fragment proposes OPEN unknown-* entries only (single-zero-sample precedent, no CLI guess)
+  - id: route-handler-location
+    status: unknown; recommend a read-only GETCOUNT sweep of [13,*] (+[11,*] if empty) as an E2 follow-up leg — do NOT widen inside E2-W
+  - id: slot-identities-57-58-102-121
+    status: unknown; shapes recorded, no mapping claims ([20,57] irq-like 16v13 rows; [20,58] {disabled,rowid 2,3} 2v0; [20,102] single row f12='internet'; [20,121] 8 flag/counter rows)
+
+blocked:
+  - id: v6-ipv6-row-shape
+    blocker: "needs /system/package/enable ipv6 + reboot on ws3c6 (write + reboot leg, unbudgeted in E2-W-proposed 8w+0r)"
+    next: "separate leg sheet + fresh yes + reboot budget, or a pre-enabled v6 VM"
+  - id: f11-slave-direct-test
+    blocker: "direct slave-prime test needs a bridge-enslave stimulus (~4-6 writes) beyond the 8w cap, and `slave` is outside the frozen 10"
+    next: "follow-up leg with new cap + coordinator freeze decision; E2-W leg A rules disabled in/out within cap"
+  - id: route-linkage-leg
+    blocker: "census MISS — no [20,*] route handler, so no linkage leg exists to budget"
+    next: "location sweep first (see unknown/route-handler-location)"
+
+mapping_claims: none  # all E2-R mapping stays inside the frozen 10: no promotion of any CLI<->field association is claimed here
+
+budgets:
+  E2-R-spent: { counted_writes: 0, reboots: 0 }
+  E2-W-proposed: { counted_writes: 8, reboots: 0, approved: false }
+
+vm_end_state:
+  ws20: { version: "7.25", state: stopped, removed: false, writes: 0, baseline_restored: n/a (pristine, never written) }
+  winbox-beta4: { version: "7.26beta4", state: stopped, removed: false, writes: 0, baseline_restored: n/a (pristine, never written) }
+  ws3c6: { version: "6.49.23", state: stopped, removed: false, writes: 0, baseline_restored: n/a (pristine, never written) }
+  others: "twin3, ws21, e3-beta4 never touched (verified still stopped; e3-beta4 exists but was not started/stopped/read by E2-R)"
+
+cleanup_state:
+  vms: "all three assigned VMs stopped via `quickchr stop` (not removed)"
+  tmp: "unsanitized raw envelopes (/tmp/v6-*.json/.err) + /tmp/e2r-zero removed; stray /tmp/v6-worker.txt + /tmp/v6-fixup.txt are NOT E2-R files and were left alone"
+  sanitization: "proof files carry no ts/hosts/ports/credentials (verified by grep; M2 reqid bytes in plaintextHex are not ports); package build-times redacted; lab IPs/MACs retained as synthetic lab data"
+
+evidence_files:
+  - census.ts  # E2-R census runner (GETALLx2+GETOBJ+GETCOUNT, optional sweep); v6 native-api-auth fallback inside
+  - follow.ts  # bounded follow-up prober (paged GETALL maxPages 5 + GETOBJ)
+  - sanitize.ts  # control-envelope sanitizer (stdin->stdout)
+  - shape-ws20.json  # [20,1]+[20,37] shapes + 256-slot sweep, 7.25
+  - shape-winbox-beta4.json  # ditto, 7.26beta4
+  - shape-ws3c6.json  # [20,1] shape + [20,37] BRKPATH, 6.49.23
+  - native-ws20.jsonl  # sanitized captures (ts stripped), 16 records
+  - native-winbox-beta4.jsonl  # ditto, 16 records
+  - native-ws3c6.jsonl  # ditto, 16 records
+  - sweep-ws20.jsonl  # 512 sanitized sweep captures
+  - sweep-winbox-beta4.jsonl  # ditto
+  - follow-ws20.json  # 21 unknown slots row-shapes, 7.25
+  - follow-ws20.jsonl  # 84 sanitized captures
+  - follow-winbox-beta4.json  # 7-slot version confirmation
+  - follow-winbox-beta4.jsonl  # 28 sanitized captures
+  - zero-check-ws20.json  # 6 ok+0 slots -> empty GETALL
+  - zero-check-ws20.jsonl  # 24 sanitized captures
+  - control-ws20-ip-address.json  # 1 row: vrf=main slave=false
+  - control-ws20-ip-route.json  # 2 rows: DHCP default + connected
+  - control-ws20-ipv6-address.json  # 3 rows
+  - control-winbox-beta4-ip-address.json  # 1 row
+  - control-winbox-beta4-ip-route.json  # 2 rows
+  - control-winbox-beta4-ipv6-address.json  # 3 rows minus ether2 = 2 rows
+  - control-ws3c6-ip-address.json  # 1 row via native-api
+  - control-ws3c6-ip-route.json  # 2 rows via native-api
+  - control-ws3c6-ipv6-address.json  # ok=false routeros/unknown-path (data)
+  - control-ws3c6-system-package.json  # ipv6 package disabled=true (build-times redacted)
+  - fragment.yaml  # proposed gui-handlers.yaml fragment (ipv6 beta4 f10/f11 only)
+
+# ── E2-W leg sheet (DESIGN ONLY — E2-R executed zero writes) ──
+e2w_leg_sheet:
+  needs: "fresh per-leg user yes in-session; NOT approved"
+  budget: { counted_writes: 8, reboots: 0 }
+  vm: ws20
+  vm_version: "7.25"
+  why_this_vm: "only assigned 7.x VM with an isolated second NIC (ether2, socket-link, no addresses): synthetic rows stay off the ether1/DHCP management path. beta4 has ether1 only; ws3c6 is v6."
+  ports: "resolved live per command via `quickchr inspect ws20 --json` (winbox + rest-api services); NO literal ports in this sheet or any proof file"
+  rowid_rule: "DHCP row (rowid 1, 10.0.2.15/24) is NEVER the target of any write: disabling/removing it kills the control plane. All legs use synthetic rows on ether2."
+  baseline_snapshot_per_leg:
+    - "native GETALL [20,1] x2 (volatility) + control retrieve /ip/address + control retrieve /ip/vrf"
+    - "record rowids present; leg passes only if the post-leg snapshot equals the pre-leg snapshot (rows + values)"
+  hypotheses:
+    f6_prime:
+      hypothesis: "f6 = vrf identity of the address row (0 = main)"
+      support: "vrf is the only frozen-10 candidate on this menu; f6=0 observed with control vrf=main; [20,101] 'main' registry rowid=0 (shape corroboration, follow-ws20.json)"
+      rules_out_if: "f6 stays 0 on a row whose control read shows vrf=m2ir-vrf"
+    f6_alt:
+      hypothesis: "f6 = creation-source/flags word (dynamic/DHCP-created vs static)"
+      support: "u32 zero on the single observed (dynamic) row; no second row exists to compare — E2-R could not discriminate"
+      rules_out_if: "f6 identical on static vs dynamic rows while vrf varies it (leg B), or f6 moves with vrf while static-vs-dynamic stays equal"
+    f11_prime:
+      hypothesis: "f11 = slave flag (control /ip/address slave)"
+      support: "only unmatched control bool on this menu (dynamic/fe0007, invalid/fe0008, disabled/fe000a all matched); f11=false with slave=false"
+      caveat: "`slave` is OUTSIDE the frozen 10 — E2-W may TEST it, but any mapping promotion needs a coordinator unfreeze decision"
+      rules_out_if: "control slave flips without f11, or f11 flips while slave stays false"
+    f11_alt:
+      hypothesis: "f11 = native-only derived flag (e.g. disabled-echo or DAD/duplicate state), no CLI counterpart"
+      support: "none yet — survives only if all CLI-bool stimuli (disabled, slave-via-follow-up) fail to move f11"
+      rules_out_if: "f11 tracks any CLI bool 1:1 across the legs"
+  legs:
+    - id: leg-A-static-unset-disable-delete
+      counted_writes: 4
+      steps:
+        - { op: baseline, writes: 0, detail: "snapshot per baseline_snapshot_per_leg" }
+        - { op: control-add, writes: 1, cmd: "/ip/address/add address=198.51.100.10/24 interface=ether2 comment=m2ir-e2w",
+            then: "native GETALL + control retrieve; f6-exp2 reads f6 on a STATIC main-vrf row (vs dynamic rowid 1); f11 baseline; comment-set state" }
+        - { op: control-unset, writes: 1, cmd: "/ip/address/set <new-id> comment=\"\"",
+            then: "read; unset-vs-default for f6/f11 (comment set-at-create vs unset)" }
+        - { op: control-disable, writes: 1, cmd: "/ip/address/set <new-id> disabled=yes",
+            then: "read; f11-exp1 disabled-vs-present (control slave + f11 + f6); row MUST still be listed" }
+        - { op: control-remove, writes: 1, cmd: "/ip/address/remove <new-id>",
+            then: "read; disabled-vs-deleted; post-leg snapshot MUST equal pre-leg snapshot" }
+      proves: "f6 static-vs-dynamic (f6-exp2); f11 disabled tracking (f11-exp1); comment unset-vs-default; delete-vs-disable"
+    - id: leg-B-vrf
+      counted_writes: 4
+      steps:
+        - { op: baseline, writes: 0, detail: "snapshot per baseline_snapshot_per_leg" }
+        - { op: control-vrf-add, writes: 1, cmd: "/ip/vrf/add name=m2ir-vrf interfaces=ether2",
+            then: "read [20,1] rows: VARY-VRF-WITHOUT-ADDRESS control — f6 on existing rows MUST NOT move (proves f6 tracks the ROW vrf, not vrf existence)" }
+        - { op: control-add, writes: 1, cmd: "/ip/address/add address=198.51.100.20/24 interface=ether2",
+            then: "native GETALL + control retrieve; STIMULUS GATE: control row MUST show vrf=m2ir-vrf or stop (stimulus invalid). f6-exp1 prime test: f6 nonzero? f11 under vrf?" }
+        - { op: control-remove, writes: 1, cmd: "/ip/address/remove <new-id>", then: "read" }
+        - { op: control-vrf-remove, writes: 1, cmd: "/ip/vrf/remove m2ir-vrf",
+            then: "read; post-leg snapshot MUST equal pre-leg snapshot; ether2 back in main" }
+      proves: "f6 vrf-identity prime (f6-exp1) with the without-address control; f11 under vrf change"
+  outcomes_table:
+    - { if: "f6 moves (nonzero/new value) ONLY on the leg-B vrf row", then: "f6 prime SUPPORTED; alt weakened (static leg-A row stayed 0)" }
+    - { if: "f6 stays 0 on the vrf=m2ir-vrf row", then: "f6 prime DISPROVEN (distinct vrfs need distinct ids); alt survives iff leg-A static row differs from dynamic" }
+    - { if: "f6 differs leg-A static row vs dynamic rowid 1 (same vrf=main)", then: "f6 alt SUPPORTED (creation-source/flags); prime needs the leg-B move to survive too" }
+    - { if: "f11 flips with disabled=yes AND control slave flips with it", then: "AMBIGUOUS (disabled vs slave confounded) — needs the bridge-enslave follow-up (blocked, over cap)" }
+    - { if: "f11 flips with disabled=yes while slave stays false", then: "f11 prime DISPROVEN; alt (disabled-derived) supported" }
+    - { if: "f11 stays false through both legs", then: "disabled ruled out as f11 driver; slave-prime SURVIVES untested -> bridge-enslave follow-up leg (blocked item)" }
+    - { if: "f6/f11 move on any baseline re-read (no stimulus)", then: "VOLATILE — stop, redesign; no leg conclusion valid" }
+  stop_conditions:
+    - "any post-step read fails or the VM is unreachable -> STOP, no reboot (0r cap), report; recovery needs a new yes"
+    - "leg-B stimulus gate fails (new row shows vrf=main) -> STOP leg B, restore (remove row + vrf), report stimulus invalid"
+    - "post-leg snapshot != pre-leg snapshot -> STOP, report restore failure; do NOT start the next leg"
+    - "any write targets rowid 1 (DHCP/management row) -> FORBIDDEN, stop immediately"
+    - "f6/f11 volatile on baselines -> STOP both legs, redesign"
+    - "route linkage: none — census MISS, no leg budgeted, do not improvise one"
+  prevalidation_offline:
+    - { cmd: "/ip/vrf print", verdict: pass, write: false }
+    - { cmd: "/ip/vrf/add name=m2ir-vrf interfaces=ether2", verdict: pass, write: true }
+    - { cmd: "/ip/address/add address=198.51.100.10/24 interface=ether2 comment=m2ir-e2w", verdict: pass, write: true }
+    - { cmd: "/ip/vrf/remove m2ir-vrf", verdict: pass, write: true }
+    - note: "offline only; E2-W MUST re-run `centrs explain` on EVERY string (incl. set/remove with live selectors) before sending, and treat a rejection as data"
+  restore_summary: "each leg removes its synthetic objects in reverse order (row before vrf) and verifies by snapshot equality; no reboot; ether2 ends addressless in main; DHCP row untouched throughout"

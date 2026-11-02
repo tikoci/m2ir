@@ -1,0 +1,76 @@
+# cspell:ignore rowid u32 be32 vrf pref dst src dad eui bfd num unsettable vms cliref
+# FROZEN E2 candidate list (S0, 2026-11-02). Coordinator-owned.
+# Slice: E2-R read-only IP/routing census + U1 f6/f11 discrimination design,
+# then E2-W write legs under a fresh per-leg yes (not yet approved).
+# Source: work/2026-11-winbox-attributes/candidates.yaml (Rosetta v0.12.0,
+# db eee45741..., manuals 7.24/7.25/7.26 + inspect 7.25/7.26beta4).
+# CLI names are experiment aliases, not protocol identity.
+slice: E2
+family: IP/routing (net-process tables)
+handlers:
+  known:
+    - route: [20, 1]
+      name: ip-address
+      role: U1 lives here (f6/f11); verbs proven 7.25-only
+    - route: [20, 37]
+      name: ipv6-address
+      role: census row-shape; linkage candidate below
+  discovery:
+    - target: route-table handler
+      method: read-only GETCOUNT/GETALL scan across [20,*] on 7.25 + 7.26beta4
+      note: no route handler in the catalog; census finds it or records the miss
+wire_unknowns_in_scope:
+  - id: U1-f6
+    route: [20, 1]
+    field: 6
+    tcode: u32
+    observed: v7-only (GETALL+GETOBJ), 0 on the observed row
+  - id: U1-f11
+    route: [20, 1]
+    field: 11
+    tcode: bool
+    observed: v7-only (GETALL+GETOBJ), false on the observed row
+  - id: census-ipv6-shape
+    route: [20, 37]
+    fields: [4, 5, 6, 7, 8, 9, 14, 15, 16, 17, 19]
+    note: census-shape only in E2-R; no E2-W write claims unless U1 closes early
+cli_candidates:
+  # 10 frozen (worker bound). Order is priority, not mapping order.
+  - { menu: ip/address, property: vrf, kind: Read-only Argument, raw_type: enum,
+      inspect_args: [], note: "prime U1-f6 hypothesis; empty inspect_args is a view boundary, not a negative" }
+  - { menu: ip/route, property: dst-address, kind: Argument, raw_type: "address (flags=4/)",
+      inspect_args: [/ip/route/add/dst-address, /ip/route/set/dst-address, /ip/route/reset/dst-address] }
+  - { menu: ip/route, property: gateway, kind: Argument, raw_type: "address (flags=46ivL)", unsettable: true,
+      inspect_args: [/ip/route/add/gateway, /ip/route/set/gateway, /ip/route/reset/gateway] }
+  - { menu: ip/route, property: distance, kind: Argument, raw_type: num, unsettable: true,
+      inspect_args: [/ip/route/add/distance, /ip/route/set/distance, /ip/route/reset/distance] }
+  - { menu: ip/route, property: routing-table, kind: Argument, raw_type: enum,
+      inspect_args: [/ip/route/add/routing-table, /ip/route/set/routing-table, /ip/route/reset/routing-table] }
+  - { menu: ip/route, property: pref-src, kind: Argument, raw_type: "address (flags=4)", unsettable: true,
+      inspect_args: [/ip/route/add/pref-src, /ip/route/set/pref-src, /ip/route/reset/pref-src] }
+  - { menu: ip/route, property: scope, kind: Argument, raw_type: num, unsettable: true,
+      inspect_args: [/ip/route/add/scope, /ip/route/set/scope, /ip/route/reset/scope] }
+  - { menu: ip/route, property: target-scope, kind: Argument, raw_type: num, unsettable: true,
+      inspect_args: [/ip/route/add/target-scope, /ip/route/set/target-scope, /ip/route/reset/target-scope] }
+  - { menu: ip/route, property: check-gateway, kind: Argument, raw_type: "enum (none | arp | ping | bfd)", unsettable: true,
+      inspect_args: [/ip/route/add/check-gateway, /ip/route/set/check-gateway, /ip/route/reset/check-gateway] }
+  - { menu: ipv6/address, property: interface, kind: Argument, raw_type: iface_enum, mandatory: true,
+      inspect_args: [/ipv6/address/add/interface, /ipv6/address/set/interface, /ipv6/address/reset/interface],
+      note: row-linkage control for [20,37] }
+private_verb: none
+experiment_cap: <=2 discriminating experiments per unresolved field (U1: 4 max)
+budgets:
+  E2-R: { counted_writes: 0, reboots: 0, note: read-only census + design; needs no yes }
+  E2-W-proposed: { counted_writes: 8, reboots: 0,
+    note: "cap only, NOT approved; U1 <=2 exps x 2 fields + route linkage if census finds the handler; needs fresh per-leg yes" }
+vm_assignment:
+  worker: E2-R
+  vms: [ws20, winbox-beta4, ws3c6]
+  versions: { ws20: "7.25", winbox-beta4: "7.26beta4", ws3c6: "6.49.23" }
+  note: ws3c6 is v6 boot-only (native-API reads, no REST); all three disjoint from E3-R
+owned_paths:
+  - work/2026-11-winbox-attributes/proof/E2-R-census/
+stop_conditions:
+  - any VM fails to boot within the bounded wait -> record, stop that version column, continue others
+  - any census write attempted (control or native) -> forbidden in E2-R; stop and report
+  - route-handler scan finds nothing new after the full [20,*] sweep -> record the miss, do not widen to other processes

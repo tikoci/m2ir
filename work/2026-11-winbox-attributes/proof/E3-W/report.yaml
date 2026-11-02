@@ -1,0 +1,309 @@
+# cspell:ignore rowid u32 reqid getall getcount getobj calea mangle moveobj dst notimpl subtable readback redacted e3same e3mv e3find notimp brkpath cliref vs NatApi vms
+proof: "E3-W write legs: same-matrix + filter-find + MOVEOBJ on ws21/7.25 (11w+0r of 12w+0r)"
+worker: E3-W
+date: 2026-11-02
+head: "7303e78 per brief + uncommitted S0/E3-R files (UNVERIFIED: worker ran no git commands per brief)"
+approval:
+  quoted_user_yes: "yes -- E2-W 8w+0r on ws20 (U1 f6/f11) · E3-W 12w+0r on ws21 (same-matrix + filter-find + MOVEOBJ) · E1-W2-rerun 9w+0r on twin3 (...) · E1-W5-retry 6w+0r on twin3 (...)"
+  scope_note: "E3-W slice only: 12 counted writes + 0 reboots on ws21 (7.25) ONLY. No beta4 repeat in this cap."
+  recorded_in: work/2026-11-winbox-attributes/handoff.yaml
+freeze:
+  - work/2026-11-winbox-attributes/proof/S0-replay-freeze/e3-candidates.yaml
+  - work/2026-11-winbox-attributes/proof/E3-R-census/report.yaml
+scope: "E3-W leg sheet verbatim: W-same-matrix 5w + W-filter-find 2w + W-moveobj 5w on ws21/7.25; f40-drop never re-probed (proven negative); jump-value mapping explicitly out of cap"
+budgets:
+  cap: { counted_writes: 12, reboots: 0 }
+  spent: { counted_writes: 11, reboots: 0 }
+  by_leg:
+    W-same-matrix: { spent: 5, budget: 5 }
+    W-filter-find: { spent: 2, budget: 2 }
+    W-moveobj: { spent: 4, budget: 5 }
+  counting_rule: "sheet rule verbatim: counted writes = control adds + native verbs + 1 per restore branch; per-leg cleanup removes bundled; rejected adds change no state and count 0 (matches 7.25-nat-action 11+1=12 precedent)"
+vms:
+  touched: [ws21]
+  versions: { ws21: "7.25" }
+  forbidden_touched: none (never touched twin3/ws20/winbox-beta4/e3-beta4 or any other VM; twin3 + ws20 seen running in quickchr list, left alone)
+  ports: "live-resolved via quickchr/centrs at runtime; never hardcoded, not recorded (sanitized)"
+  end_state: "ws21 STOPPED (not removed); all five firewall menus restored to 0 rows, native sweep back to baseline-identical"
+methods:
+  native: "harness modules capture.ts + correlate.ts + paging.ts + session.ts + target.ts via proof-local legs-e3w.ts (nat-read / move subcommands) + E3-R census-e3r.ts reused unmodified for all three sweeps"
+  control: "centrs execute --quickchr ws21 --yes (writes) + centrs retrieve --quickchr ws21 (reads), --format json throughout"
+  validation: "every RouterOS string passed `centrs explain` live BEFORE sending: 16/16 offline pass (5 adds + 1 filter add + 2 move adds + 7 removes + 1 base-shape add)"
+  baselines: "control retrieve of all five firewall menus (0 rows each) + census sweep re-run 162/162 legs identical to E3-R baseline (zero drift) + empty NAT GETALL"
+static-gate:
+  id: G-moveobj-static
+  outcome: negative
+  finding: "already-extracted material (net-bridge2-handler-tables.md + ws3c-prober-findings.md + winbox-client-re) yields NO field beyond 0xfe0001 for cmdMoveObj: v6 case 0x28685 reads obj-id only (slot 17, v6 vocabulary); v7 cmdMoveObj slot itself is undecoded (v7 slot 17 = cmdStopGetAll, map ends at slot 20); client-re holds only the name oracle (16646151 = CMD_MOVEOBJ). No flags-word suggestion exists anywhere in-repo."
+  consequence: "P-move-2 as {0xfe0001, 0xfe000c} did NOT run (sheet gates it on a static flags suggestion); {0xfe0001, 0xfe0004} forbidden as guessing; no static finding existed to spend probe 2 on. P-move-2 recorded as gated-out, not run."
+legs:
+  - id: W-same-matrix
+    budget: 5
+    spent: 5
+    steps:
+      - id: V1-base
+        control_add: "/ip/firewall/nat/add chain=srcnat action=same comment=e3same1"
+        outcome: rejected
+        rejection: "routeros/command-failed: 'failure: to-addresses must be specified' (device stage; offline explain passed)"
+        evidence: [control-same-v1-add.json, explain-same-v1.json]
+        counted: 0
+        note: "H-same-negative data: to-addresses is a REQUIRED arg for action=same, not optional"
+      - id: V1-varied
+        control_add: "/ip/firewall/nat/add chain=srcnat action=same to-addresses=192.0.2.1 comment=e3same1b"
+        outcome: ok
+        id_assigned: "*2"
+        native_readback: "1 row: f40/0x9=24 (V_same=24), f1000/0x8=f1001/0x8=16908480 (192.0.2.1 octet bytes C0 00 02 01), f1006/0x1=true, f39=srcnat, rowid 2"
+        cleanup: "remove *2 ok, verify 0 rows"
+        evidence: [control-same-v1b-add.json, control-same-v1b-read.json, step-same-v1b.jsonl, control-same-v1b-rm.json, control-same-v1b-verify.json, explain-same-v1b.json, explain-same-v1b-rm.json]
+        counted: 1
+        cumulative: 1
+      - id: V2-not-by-dst
+        control_add: "/ip/firewall/nat/add chain=srcnat action=same to-addresses=192.0.2.1 same-not-by-dst=yes comment=e3same2"
+        outcome: "ok (write applied, .id *3; exec response transport-timed-out, state resolved via independent retrieve per stop-rule intent - see transport-note)"
+        native_readback: "1 row: identical to V1 except ONE new field f1005/0x1=true; f40=24 UNMOVED by the adjunct (H-same-1 control holds)"
+        cleanup: "remove *3 ok, verify 0 rows"
+        evidence: [control-same-v2-add.json, control-same-v2-state.json, step-same-v2.jsonl, control-same-v2-rm.json, control-same-v2-verify.json, explain-same-v2.json, explain-same-v2-rm.json]
+        counted: 1
+        cumulative: 2
+      - id: V3-ports-proto
+        control_add: "/ip/firewall/nat/add chain=srcnat action=same to-addresses=192.0.2.1 protocol=tcp to-ports=8080 comment=e3same3"
+        outcome: "ok (write applied, .id *4; same transport-timeout-then-retrieve pattern as V2)"
+        native_readback: "1 row: f40=24, f11/0x9=6, f1002/0x8=f1003/0x8=8080 + presence cluster f22/0x0=false f404/0x1=true f1007/0x1=true - byte-identical adjunct cluster to the prior redirect row (f40=23, step-red.jsonl), so all three extra bools are proto/to-ports adjuncts, none same-specific"
+        cleanup: "remove *4 ok, verify 0 rows"
+        evidence: [control-same-v3-add.json, control-same-v3-state.json, step-same-v3.jsonl, control-same-v3-rm.json, control-same-v3-verify.json, explain-same-v3.json, explain-same-v3-rm.json]
+        counted: 1
+        cumulative: 3
+      - id: V4-range
+        control_add: "/ip/firewall/nat/add chain=srcnat action=same to-addresses=192.0.2.1-192.0.2.10 comment=e3same4"
+        outcome: "ok (write applied, .id *5; same transport-timeout-then-retrieve pattern)"
+        native_readback: "1 row: f1000=16908480 (start 192.0.2.1) f1001=167903424 (end 192.0.2.10, LE of octet bytes C0 00 02 0A) - start/end split proven; f1006=true retained"
+        cleanup: "remove *5 ok, verify 0 rows"
+        evidence: [control-same-v4-add.json, control-same-v4-state.json, step-same-v4.jsonl, control-same-v4-rm.json, control-same-v4-verify.json, explain-same-v4.json, explain-same-v4-rm.json]
+        counted: 1
+        cumulative: 4
+      - id: restore-verify
+        steps: "control verify 0 rows on all five menus + native NAT GETALL 0 rows"
+        restored: true
+        evidence: [control-same-restore-filter.json, control-same-restore-nat.json, control-same-restore-raw.json, control-same-restore-mangle.json, control-same-restore-calea.json, step-same-restored.jsonl]
+        counted: 1
+        cumulative: 5
+    transport_note: "V2/V3/V4 exec responses timed out on native-api after 10s while the writes applied (each confirmed by an independent retrieve before any further action; no step ever acted on incomplete output). V1b/filter/move legs on the same transport answered cleanly. Reads (retrieve + native) never timed out. Timeouts are recorded in the *-add.json error envelopes with endpoints redacted."
+    finding: "V_same=24 (f40 u32_compact); same-not-by-dst rides its own bool f1005 (0x3ed); to-addresses rides f1000/f1001 u32 pair with octet-ordered bytes, start/end split; to-ports rides f1002/f1003 with the redirect-identical presence cluster (f22/f404/f1007); f1006=true co-occurs with f1000/f1001 presence (see P-same-4)"
+  - id: W-filter-find
+    budget: 2
+    spent: 2
+    stop_fired: "sheet stop: more than one flip -> record all, STOP (ambiguous, coordinator review). No widening, no GETALL confirmation, no jump chase (jump mapping out of cap regardless)."
+    steps:
+      - id: find-add
+        control_add: "/ip/firewall/filter/add chain=forward action=accept comment=e3find"
+        outcome: ok
+        id_assigned: "*1"
+        evidence: [control-filter-find-add.json, control-filter-find-read.json, explain-filter-find.json]
+        counted: 1
+        cumulative: 6
+      - id: sweep-rerun
+        outcome: "TWO flips vs baseline (162 legs): [20,3] GETCOUNT 0->1 (exact single-row signature; U1 15-candidate member; GET->NOTIMP table-like) AND [20,32] GETCOUNT 0->8 (rule-co-extensive; GET->FAILED 0xfe0006 selector-gated, not table-shaped)"
+        evidence: [step-filter-sweep.jsonl, summary-filter.json]
+        counted: 0
+      - id: remove-verify
+        steps: "remove *1 ok + control verify 0 rows all five menus + full sweep re-run: BOTH flips reverted ([20,3] 1->0, [20,32] 8->0), zero residual diffs vs baseline"
+        restored: true
+        evidence: [control-filter-find-rm.json, control-filter-restore-filter.json, control-filter-restore-nat.json, control-filter-restore-raw.json, control-filter-restore-mangle.json, control-filter-restore-calea.json, step-filter-restored.jsonl, summary-filter-restored.json, explain-filter-find-rm.json]
+        counted: 1
+        cumulative: 7
+    finding: "filter hid NOT cleanly identified: [20,3] carries the exact 0->1->0 single-row round-trip but [20,32] co-flipped 0->8->0 with the same rule stimulus. No hid claimed; coordinator review required before any jump leg."
+  - id: W-moveobj
+    budget: 5
+    spent: 4
+    steps:
+      - id: setup-A
+        control_add: "/ip/firewall/nat/add chain=srcnat action=accept comment=e3mv-A"
+        outcome: ok
+        id_assigned: "*6"
+        evidence: [control-move-a-add.json, explain-move-a.json]
+        counted: 1
+        cumulative: 8
+      - id: setup-B
+        control_add: "/ip/firewall/nat/add chain=srcnat action=passthrough comment=e3mv-B"
+        outcome: ok
+        id_assigned: "*7"
+        evidence: [control-move-b-add.json, explain-move-b.json]
+        counted: 1
+        cumulative: 9
+      - id: P-move-1
+        shape: "MOVEOBJ {0xfe0001=7 (rowid-B), 0xfe0003=6 (rowid-A)} destination-as-start; wire tx 4d320500ff...0100fe09070300fe0906"
+        outcome: "ok ack, order UNCHANGED on both surfaces: native A#6,B#7 -> A#6,B#7; control *6=e3mv-A,*7=e3mv-B. No split-brain (no stop)."
+        verdict: "H-move-1 DISPROVEN for this shape: destination-as-start via 0xfe0003 is an ok-but-noop like rowid-only"
+        evidence: [step-move-before.jsonl, step-move-p1.jsonl, control-move-p1-read.json]
+        counted: 1
+        cumulative: 10
+      - id: P-move-2
+        outcome: "NOT RUN - gated out by the negative static gate (no flags suggestion; guessing forbidden; sheet literally followed)"
+        counted: 0
+      - id: restore-verify
+        steps: "remove *6 + *7 ok + control verify 0 rows all five menus + native NAT GETALL 0 rows"
+        restored: true
+        evidence: [control-move-rm6.json, control-move-rm7.json, control-move-restore-filter.json, control-move-restore-nat.json, control-move-restore-raw.json, control-move-restore-mangle.json, control-move-restore-calea.json, step-move-restored.jsonl, explain-move-rm6.json, explain-move-rm7.json]
+        counted: 1
+        cumulative: 11
+    finding: "MOVEOBJ reorder parameters still unknown: P-move-1 joins rowid-only as a proven ok-noop shape. No reorder observed on either surface in any E3-W probe."
+proven:
+  - id: P-same-1
+    claim: "action=same rides NAT f40 (0x28) u32_compact value 24"
+    detail: "4/4 same rows (V1b/V2/V3/V4) carry f40=24 with distinct adjuncts; fills the 23-redirect/25-netmap gap"
+    evidence: [step-same-v1b.jsonl, step-same-v2.jsonl, step-same-v3.jsonl, step-same-v4.jsonl]
+  - id: P-same-2
+    claim: "same-not-by-dst rides its own bool field f1005 (0x3ed), not f40"
+    detail: "V1->V2 single-delta: only 0x3ed/0x1=true added, f40 stays 24; f1005 absent from every prior in-repo row (grep-negative over 7.25-nat-action/followup/moveobj)"
+    evidence: [step-same-v1b.jsonl, step-same-v2.jsonl]
+  - id: P-same-3
+    claim: "to-addresses rides f1000/f1001 u32 pair (octet-ordered bytes), start/end split; to-ports rides f1002/f1003 u32 pair with the redirect-identical adjunct cluster"
+    detail: "V4 range: f1000=192.0.2.1 f1001=192.0.2.10; V3: f1002=f1003=8080 + f22=false/f404=true/f1007=true exactly as the prior redirect row (f40=23)"
+    evidence: [step-same-v3.jsonl, step-same-v4.jsonl]
+  - id: P-same-4
+    claim: "f1006 (0x3ee) bool true co-occurs with f1000/f1001 presence across actions (to-addresses-presence correlation)"
+    detail: "present on all 4 same rows + prior src-nat/dst-nat/netmap rows (f40=20/22/25); absent on accept/passthrough/redirect-without-to-addresses rows (f40=0/4/23). Correlation only - no semantic name proven."
+    evidence: [step-same-v1b.jsonl, step-same-v2.jsonl, step-same-v3.jsonl, step-same-v4.jsonl]
+  - id: P-same-5
+    claim: "to-addresses is a REQUIRED control-plane arg for action=same"
+    detail: "bare same add rejected device-stage: 'failure: to-addresses must be specified' (offline explain passed)"
+    evidence: [control-same-v1-add.json]
+  - id: P-move-1-neg
+    claim: "MOVEOBJ {0xfe0001=B, 0xfe0003=A} is ok-but-noop on BOTH surfaces (native + control orders unchanged)"
+    evidence: [step-move-before.jsonl, step-move-p1.jsonl, control-move-p1-read.json]
+disproven:
+  - id: D-same-adjunct-shared
+    claim: "same-not-by-dst does NOT share f40 (H-same-1 adjunct control: f40=24 with the adjunct on and off)"
+    evidence: [step-same-v1b.jsonl, step-same-v2.jsonl]
+  - id: D-move-dest-start
+    claim: "H-move-1 destination-as-start via 0xfe0003 does not reorder (P-move-1 negative)"
+    evidence: [step-move-p1.jsonl, control-move-p1-read.json]
+  - id: D-drop-reprobe
+    claim: "f40-drop NOT re-probed: the proven negative stands untouched (zero legs spent)"
+    evidence: []
+unknown:
+  - id: U-filter-hid
+    claim: "filter-table hid still unclaimed: [20,3] 0->1->0 vs [20,32] 0->8->0 co-flip needs coordinator review"
+    next: "coordinator decides: confirmatory GETALL on [20,3] (reads, unbudgeted) and/or [20,32] role work; jump legs stay blocked"
+  - id: U-32-role
+    claim: "[20,32] role unknown: GET->FAILED selector-gated, yet GETCOUNT moved 0->8->0 with a single forward/accept rule (zero packets matched)"
+    next: "coordinator follow-up outside E3-W"
+  - id: U-move-params
+    claim: "CMD_MOVEOBJ reorder parameters still unknown (P-move-2 gated out; static gate negative)"
+    next: "needs the v7 libumsg handleCmd disassembly pass (E3-R B2 blocker) or a fresh native design - not in this cap"
+  - id: U-f1006-name
+    claim: "f1006 semantic name unproven (presence correlation only)"
+    next: "a native SETOBJ clearing f1000/f1001 while watching f1006, or a to-addresses-less same row if the control plane ever permits one"
+blocked:
+  - id: B-jump-still
+    claim: "jump-value leg still BLOCKED: no clean filter hid (U-filter-hid) and jump mapping was never in this cap"
+    exact_next_step: "coordinator resolves U-filter-hid first; then a fresh ~3w jump cap per the E3-R contingent design"
+restore-verification:
+  - leg: W-same-matrix
+    restored: true
+    method: "per-variant control remove + 5-menu control verify (0 rows) + native NAT GETALL (0 rows)"
+  - leg: W-filter-find
+    restored: true
+    method: "control remove *1 + 5-menu control verify (0 rows) + full 162-leg sweep re-run (zero residual diffs vs baseline)"
+  - leg: W-moveobj
+    restored: true
+    method: "control remove *6/*7 + 5-menu control verify (0 rows) + native NAT GETALL (0 rows)"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/E3-W/legs-e3w.ts
+  - work/2026-11-winbox-attributes/proof/E3-W/sanitize.ts
+  - work/2026-11-winbox-attributes/proof/E3-W/step-base-sweep.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/summary-base.json
+  - work/2026-11-winbox-attributes/proof/E3-W/step-base-nat.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/step-same-v1b.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/step-same-v2.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/step-same-v3.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/step-same-v4.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/step-same-restored.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/step-filter-sweep.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/summary-filter.json
+  - work/2026-11-winbox-attributes/proof/E3-W/step-filter-restored.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/summary-filter-restored.json
+  - work/2026-11-winbox-attributes/proof/E3-W/step-move-before.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/step-move-p1.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/step-move-restored.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/control-base-firewall-filter.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-base-firewall-nat.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-base-firewall-raw.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-base-firewall-mangle.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-base-firewall-calea.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v1-add.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v1b-add.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v1b-read.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v1b-rm.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v1b-verify.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v2-add.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v2-state.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v2-rm.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v2-verify.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v3-add.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v3-state.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v3-rm.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v3-verify.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v4-add.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v4-state.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-v4-rm.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-restore-filter.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-restore-nat.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-restore-raw.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-restore-mangle.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-same-restore-calea.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-find-add.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-find-read.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-find-rm.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-restore-filter.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-restore-nat.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-restore-filter.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-restore-raw.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-restore-mangle.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-restore-calea.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-move-a-add.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-move-b-add.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-move-p1-read.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-move-rm6.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-move-rm7.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-move-restore-filter.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-move-restore-nat.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-move-restore-raw.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-move-restore-mangle.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-move-restore-calea.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-same-v1.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-same-v1b.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-same-v1b-rm.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-same-v2.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-same-v2-rm.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-same-v3.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-same-v3-rm.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-same-v4.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-same-v4-rm.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-filter-find.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-filter-find-rm.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-move-a.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-move-b.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-move-rm6.json
+  - work/2026-11-winbox-attributes/proof/E3-W/explain-move-rm7.json
+  - work/2026-11-winbox-attributes/proof/E3-W/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/E3-W/report.yaml
+sanitization:
+  derived_artifacts: true
+  native_manifests: "ts wall-clock redacted at write (seq preserves order); plaintextHex + decode lossless; no auth material captured (captures start after login)"
+  controls: "E2-R sanitize.ts shape (data + via/operation proof only; target/settings dropped); native-api timeout error text redacted api://127.0.0.1:9193 -> api://redacted; VM identity + row counts + config values kept (synthetic lab data)"
+  explains: "offline analyzer output only; no router contact, no endpoints"
+  raw_copies: "none retained (/tmp raws deleted after sanitized write)"
+  verified: "grep for 127.x/ports-as-values/MACs/timestamps returns no hits (plaintextHex hex-substring false positives only)"
+verification:
+  biome: "clean on owned path (legs-e3w.ts + sanitize.ts; jsonl unknown-extension verbose note only)"
+  yaml_lint: "repo lint-yaml green (canonical profiles/physical/concepts scope only - does not cover work/); report.yaml + fragment.yaml additionally parse-checked with bun/yaml"
+  cspell: "0 issues on owned path"
+  secretlint: "no findings on owned path"
+  tsc: "0 errors in E3-W files; repo-wide tsc has 1 error in work/2026-11-winbox-attributes/proof/E1-W5r/scan-w5r.ts (concurrent worker's file, outside E3-W scope, not touched)"
+cleanup:
+  vms_stopped: [ws21]
+  vms_removed: []
+  baselines_restored: "all three legs restored=true (5-menu control verify + native re-read each)"
+  owned_path: work/2026-11-winbox-attributes/proof/E3-W/
+  forbidden_paths_edited: none
+  git_commands_run: 0

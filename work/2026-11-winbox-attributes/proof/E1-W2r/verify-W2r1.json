@@ -1,0 +1,117 @@
+{
+  "data": [
+    {
+      ".id": "*3",
+      "actual-mtu": "1500",
+      "ageing-time": "5m",
+      "arp": "enabled",
+      "arp-timeout": "auto",
+      "auto-mac": "true",
+      "dhcp-snooping": "false",
+      "dhcpv6-snooping": "false",
+      "disabled": "false",
+      "dynamic": "false",
+      "fast-forward": "true",
+      "forward-delay": "15s",
+      "igmp-snooping": "false",
+      "l2mtu": "65535",
+      "mac-address": "B6:C8:6C:85:A5:ED",
+      "managed": "false",
+      "max-learned-entries": "auto",
+      "max-message-age": "20s",
+      "mlag-heartbeat": "5s",
+      "mlag-init-delay": "1m",
+      "mlag-lacp-fallback": "true",
+      "mlag-peer-port": "none",
+      "mlag-priority": "128",
+      "mtu": "auto",
+      "name": "e1br",
+      "port-cost-mode": "long",
+      "priority": "0x8000",
+      "protocol-mode": "rstp",
+      "ra-guard": "false",
+      "running": "true",
+      "transmit-hold-count": "6",
+      "vlan-filtering": "false"
+    }
+  ],
+  "meta": {
+    "operation": {
+      "auth": {
+        "passwordProvided": true,
+        "username": "admin"
+      },
+      "kind": "data",
+      "objectCount": 1,
+      "request": {
+        "allAttributes": false,
+        "attributes": [],
+        "format": "json",
+        "listAttributes": false,
+        "path": "/interface/bridge",
+        "timeoutMs": 10000,
+        "validate": true,
+        "verbose": false
+      }
+    },
+    "settings": {
+      "format": {
+        "key": "format",
+        "kind": "cli"
+      },
+      "host": "[redacted]",
+      "password": {
+        "key": "quickchr:twin3:password",
+        "kind": "provider"
+      },
+      "port": "[redacted]",
+      "timeoutMs": {
+        "key": "timeout",
+        "kind": "default"
+      },
+      "username": {
+        "key": "quickchr:twin3:username",
+        "kind": "provider"
+      },
+      "validate": {
+        "key": "validate",
+        "kind": "default"
+      },
+      "via": {
+        "key": "via",
+        "kind": "default"
+      }
+    },
+    "target": {
+      "baseUrl": "[redacted]",
+      "host": "[redacted]",
+      "identity": "twin3",
+      "input": "twin3",
+      "port": "[redacted]",
+      "source": {
+        "key": "quickchr:twin3",
+        "kind": "provider"
+      },
+      "sources": {
+        "host": "[redacted]",
+        "port": "[redacted]"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "result": "passed",
+      "source": "live /console/inspect request=child",
+      "stages": [
+        {
+          "result": "passed",
+          "source": "live /console/inspect request=child",
+          "stage": "device"
+        }
+      ]
+    },
+    "via": "rest-api"
+  },
+  "ok": true,
+  "tips": [],
+  "warnings": []
+}

@@ -1,0 +1,25 @@
+{
+  "ok": false,
+  "data": null,
+  "warnings": [],
+  "tips": [],
+  "error": {
+    "code": "routeros/command-failed",
+    "summary": "RouterOS command failed: to-addresses must be specified",
+    "message": "RouterOS command failed: to-addresses must be specified",
+    "remediation": "Inspect the RouterOS failure message, then adjust the path, attributes, or request shape accordingly.",
+    "cause": "failure: to-addresses must be specified",
+    "context": {
+      "command": "/ip/firewall/nat/add",
+      "message": "failure: to-addresses must be specified"
+    }
+  },
+  "meta": {
+    "via": "native-api",
+    "operation": {
+      "kind": "execute",
+      "objectCount": 0,
+      "path": null
+    }
+  }
+}
