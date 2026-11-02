@@ -1,0 +1,9 @@
+# cspell:ignore vrf rowid
+# H2 promotion fragment (coordinator integrates after execution).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> ip-address fields.namespace-user.6
+    op: evolve-role
+    role: "VRF identity of the address row: the containing VRF's .id — 0 on main (dynamic DHCP, static, comment-unset, disabled states), 1 on h2vrf1 (*1), 2 on h2vrf2 (*2): ROWID PROVEN, flag dead (H2 two-VRF leg, 3/3 zero-offset). Interface-rowid excluded (mismatched on all rows). Open finer point: address-own-rowid-minus-1 fits the same 3 points numerically (ungrounded, needs a +2w second-address-in-VRF decider); native VRF-rowid equivalence untested (no native VRF-table read in the catalog)."
+    evidence_add: 1
+no_promotion_for:
+  - "bridge-carrier lab technique (methodology, lives in the H2 report)"

@@ -1,0 +1,85 @@
+# cspell:ignore mproxy,winbox,jsonl,tcode,reqid,getcount,ctr,hid,pid,looper,zombification,rodata,unroutable,novasock,legid,subnano,ws3c,chr
+# R1 blind reconstruction: [20,32] GETCOUNT decay timing audit + 0xfe0014 announce-target disambiguation.
+# Written from RAW evidence only, BEFORE any read of proof/H0a-2032-decay-design/ or proof/H0b-fd002a-owner-static/.
+reviewer: H-reviewer
+reconstruction: R1
+written: 2026-11-02T16:40:02Z
+write-order: first (R1 before R2; both before any proposer read)
+head: 1ddbc20
+sources:
+  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1.jsonl
+  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1-confirm.jsonl
+  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1-confirm2.jsonl
+  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/control-M1-read.json
+  - fixtures/winbox-ipc/7.25-getcount-20-32-decay.json
+  - profiles/winbox-ipc/std-commands.yaml (0xfe0014 entry)
+  - profiles/winbox-ipc/std-keys.yaml (0xfe0014 entry)
+  - work/2026-10-chr-extraction/ws3c-prober-findings.md (§§38/42/45)
+  - work/2026-11-winbox-attributes/harness/capture.ts (ts origin)
+  - work/2026-11-winbox-attributes/proof/{E3-R-census/census-e3r.ts,E3-W/legs-e3w.ts,F1-hex-verify/hex-verify.ts,F-jump/leg-jump.ts,G4-beta5-populated/leg-g4.ts} (redaction pattern)
+  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/sanitize.ts (excluded as controls-only)
+
+timing-audit:
+  record-counts:
+    step-M1.jsonl: { total: 8, ts-real: 0, ts-redacted: 8 }
+    step-M1-confirm.jsonl: { total: 8, ts-real: 0, ts-redacted: 8 }
+    step-M1-confirm2.jsonl: { total: 8, ts-real: 0, ts-redacted: 8 }
+    all-three: { total: 24, ts-real: 0, ts-redacted: 24 }
+    control-M1-read.json: { note: "no ts field at all (REST envelope: ok/data/warnings/tips/meta)" }
+  method: "grep -c '\"ts\":\"redacted\"' per file (8/8/8); full-file reads confirm no other ts spelling"
+  decay-table:
+    # rx reqId 3 FROM [20,32], jsonl line 4 (seq 3) of each file; 0xfe0019 tcode 0x9
+    - { leg: M1, file: step-M1.jsonl, line: 4, value-0xfe0019: 1, wire-tail: "1900fe09010600ff0903" }
+    - { leg: confirm, file: step-M1-confirm.jsonl, line: 4, value-0xfe0019: 0, wire-tail: "1900fe09000600ff0903" }
+    - { leg: confirm2, file: step-M1-confirm2.jsonl, line: 4, value-0xfe0019: 0, wire-tail: "1900fe09000600ff0903" }
+    sequence: "1 -> 0 -> 0"
+  fixture-crosscheck:
+    - { fixture-id: getcount-20-32-M1-rx, hex-tail: "1900fe09010600ff0903", step-files-containing: 1, verdict: match-M1-only }
+    - { fixture-id: getcount-20-32-confirm-rx, hex-tail: "1900fe09000600ff0903", step-files-containing: 2, verdict: match-confirm-and-confirm2 }
+    - { fixture-id: getcount-20-32-confirm2-rx, hex-tail: "1900fe09000600ff0903", step-files-containing: 2, verdict: match-confirm-and-confirm2 }
+    provenance-claim: verified
+  control-ground-truth:
+    file: control-M1-read.json
+    finding: "exactly 1 row: chain=forward action=accept comment=g3-m1 bytes=0 packets=0 dynamic=false invalid=false; via=rest-api path=/ip/firewall/filter"
+    implication: "the accept rule was present for all three GETCOUNT reads, so the 1->0->0 is not row absence"
+  claims-supported:
+    order: "SUPPORTED — in-file seq 0..7 (tx/rx alternating, reqId-paired); cross-file M1->confirm->confirm2 from filenames + fixture provenance narrative + the 1/0/0 value sequence itself"
+    durations: "NOT measurable from artifacts — 24/24 ts redacted. Only prose: fixture note 'Delays are wall-clock between leg steps (~1 min, +20s), not capture timestamps'. No machine timestamp anchors any duration."
+    curve-shape: "NOT supported — 3 samples (1,0,0) with zero timestamps and no intermediate values. Artifacts support only 'step 1->0 between M1 and confirm, then stable at 0'. No rate, no transition time, no curve."
+  redaction-point:
+    capture-origin: "harness/capture.ts:102 — captureMessage stamps real ts via new Date().toISOString()"
+    redaction-site: "leg scripts overwrite at write: appendCapture(out, { ...rec, ts: \"redacted\" }) — E3-R-census/census-e3r.ts:299, E3-W/legs-e3w.ts:172, F1-hex-verify/hex-verify.ts:271, F-jump/leg-jump.ts:167, G4-beta5-populated/leg-g4.ts:106 (same pattern, 'timestamp-redacted at write' comments)"
+    g3-note: "G3-2032-matrix/ commits NO leg script, so the M1 redaction came from an uncommitted/ad-hoc leg run of the same pattern; G3 sanitize.ts is controls-only (REST envelopes: hosts/ports/credentials dropped) and never touches step-file ts"
+    recoverability: "zero — committed artifacts carry no timing; wall-clock delays exist only as fixture prose"
+  auxiliary-in-scope:
+    - finding: "[20,17] rx (line 6, seq 5) keys 0x00000f and 0x0000ce read 2 in M1, 1 in confirm, 1 in confirm2 — parallel drift on the same legs, same direction as the [20,32] decay"
+    - finding: "[20,3] GETCOUNT rx (line 2, seq 1) 0xfe0019=1 in all three legs (stable); [20,3] row rx (line 8, seq 7) 0xfe0019=1 with identical 1-row 0xfe0002 payload (forward/g3-m1) in all three legs (stable)"
+    - finding: "12/12 rx records carry cmd:null; tx cmd values across 24 records are exactly {16646165 x6, 16646157 x3, 16646148 x3}"
+
+announce-target:
+  question: "could a 0xfe0014 COMMAND (SYS_CMD verb) or a 0xfe0014 FIELD (TLV key) temporally correlate with the [20,32] 0xfe0019 decay on 7.25?"
+  command-reading:
+    canonical: "std-commands.yaml:220 — 0xfe0014 CMD_DISCONNECTED: mproxy unroutable-pid retry notify / loader REMOVE announce (SYS_CMD verb on fabric pairs FROM [0xff0003,slot] / [2,slot]; §§38/42/45)"
+    occurrences-as-cmd:
+      cmd-16646164: 0
+      rx-cmd-null: 12
+      tx-cmd-values: "16646165 (0xfe0015) x6, 16646157 (0xfe000d) x3, 16646148 (0xfe0004) x3 — 0xfe0014 absent"
+    verdict: "NO — zero occurrences as a command verb in 24 records; correlation requires co-occurrence. All 12 rx are addressed replies (FROM [20,3]/[20,32]/[20,17], cmd null), never the §42/§45 fabric-pair shape."
+  field-reading:
+    canonical: "std-keys.yaml:314 — 0xfe0014 STD_COUNT: CMD_GETCOUNT answer payload on v6 ONLY (v7 answers in 0xfe0019); version-divided slot"
+    occurrences-as-key:
+      decoded-key-0xfe0014: 0
+      wire-bytes-1400fe: 0
+      per-file: "step-M1.jsonl 0, step-M1-confirm.jsonl 0, step-M1-confirm2.jsonl 0 (both levels)"
+    verdict: "NO — zero occurrences as a decoded key AND zero wire-byte hits in 24 records. Doubly excluded on 7.25: the canonical schema assigns the v7 GETCOUNT answer slot to 0xfe0019, and the decay under test lives in 0xfe0019."
+  fixture-and-control:
+    fixture-7.25-getcount-20-32-decay.json: "0 occurrences of 0xfe0014 or 16646164 (3 records)"
+    control-M1-read.json: "0 occurrences (REST row data, no M2 keys)"
+  overall-verdict: "NEITHER reading can temporally correlate with the decay on this route/version: 0xfe0014 is absent in every form (verb, key, wire bytes) across all 24 step records plus the 3 fixture records and the control. The decay is a [20,32]-local 0xfe0019 1->0->0 against a demonstrably present rule."
+
+reproduce:
+  - 'grep -c ''"ts":"redacted"'' work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1*.jsonl'
+  - 'grep -c ''0xfe0014'' work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1.jsonl work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1-confirm.jsonl work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1-confirm2.jsonl'
+  - 'grep -c ''1400fe'' work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1.jsonl work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1-confirm.jsonl work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1-confirm2.jsonl'
+  - 'grep -ho ''"cmd":[0-9]*'' work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1.jsonl work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1-confirm.jsonl work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1-confirm2.jsonl | sort | uniq -c'
+  - 'grep -n ''ts: "redacted"'' work/2026-11-winbox-attributes/proof/*/leg-*.ts work/2026-11-winbox-attributes/proof/*/*.ts'

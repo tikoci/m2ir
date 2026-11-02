@@ -1,0 +1,107 @@
+# cspell:ignore libumsg,novabin,winbox,nova,looper,addhandler,vtable,ctor,dtor,relocs,dynsym,dynstr,objdump,readelf,cplusplusfilt,rodata,gotcha,uclibc,getall,getobj,getcount,setobj,addhandler,hid,reloc,ebtables,ipt,aoomap,amap,asecmap,jiffies,amm,lsb,dyn,omap,xfd,findall
+# R2 blind reconstruction: [20,3] owner binary + 0xfd002a tag search in the owner.
+# Written from prior-phase method refs + local static reads only, BEFORE any read of
+# proof/H0a-2032-decay-design/ or proof/H0b-fd002a-owner-static/. Second file (after R1).
+reviewer: H-reviewer
+reconstruction: R2
+written: 2026-11-02T16:43:39Z
+write-order: second (R1 then R2; both before any proposer read)
+head: 1ddbc20
+sources:
+  - work/2026-11-winbox-attributes/proof/G0b-fd002a-static/report.yaml (method section only)
+  - work/2026-11-winbox-attributes/proof/F0b-slot19/report.yaml (binary table only)
+  - work/2026-10-chr-extraction/novabin-7.25.sha256 (pin cross-check)
+  - work/2026-10-chr-extraction/net-bridge2-handler-tables.md (§8 v7 [20,0] anchor only)
+  - ~/.local/share/m2ir/extractions/root-7.25/nova/bin/net (static reads: objdump/readelf/strings/python3; no execution)
+lab-contact: NONE — static only. No VM booted, no router/CHR contact, no quickchr, no centrs, no probes, no re-extraction.
+
+owner-identity:
+  binary: nova/bin/net (RouterOS 7.25 x86)
+  resolved: /home/amm0bot/.local/share/m2ir/extractions/root-7.25/nova/bin/net
+  elf: "ELF 32-bit LSB executable, Intel i386, dynamically linked, interpreter /lib/libc.so, stripped; 1603960 bytes"
+  sections: ".text 0x080557d0-0x08194f07 (file 0xd7d0, size 0x13f737); .rodata 0x08195000-0x081cd2e0 (file 0x14d000, size 0x382e0); .rel.dyn/.rel.plt, .dynsym/.dynstr intact"
+  sha256: 4dfdc32ac9979b8ab86478dab601b79444875f936f7ff1b6b132553a565f6e7c
+  sha256-verified: true
+  sha256-crosschecks:
+    - "F0b report binary table: 4dfdc32a...65f6e7c — EXACT match"
+    - "novabin-7.25.sha256 pin line '4dfdc32a...65f6e7c  net' — EXACT match"
+  verdict: "nova/bin/net OWNS the [20,3] filter handler (registration + dedicated ctor + store literals + vtable overrides below)"
+
+registration:
+  call: "nv::Looper::addHandler(unsigned int, nv::Handler*) @plt 0x8054b50 (dynsym import)"
+  hid3-site: "0x805e5ef-0x805e5f3: push %ebx; push $0x3; push %esi; call 0x8054b50"
+  hid3-uniqueness: "exactly 1 of 102 addHandler call sites pushes hid 3; audit: 102/102 sites pass hid by push-immediate (0 register-passed), so no hid-3 site hides behind a register"
+  hid3-alloc: "malloc(0x15c) @0x805e5d3; ctor call 0x80e5a2a @0x805e5e1; object stashed 0x630(%esi) @0x805e5e9"
+  pid-loop: "the same master function registers hid 0 via ctor 0x80712ec (@0x805c882/0x805c894); that ctor stamps vtable 0x81b2f18 whose slot 7 = 0x80682ec, the documented [20,0] dispatch shape (verified: cmp 0xfe0016/0xfe0006/0xfe0004/0xfe0003/0xfe0002 + flags==5 get<u32>(0xfe000c) + cmd-0xe fast path + 0x10001 alias). net therefore hosts pid-20 handlers, and hid 3 in net = [20,3]."
+
+ctor-literals:
+  ctor: "0x80e5a2a (dedicated; NOT the shared generic ctor)"
+  store-strings:
+    - { addr: "0x819e1f1", value: "filter" }
+    - { addr: "0x81a8c0a", value: "ipt" }
+    - { addr: "0x819c978", value: "/nova/store/net/" }
+    - { addr: "0x8195527", value: "-" }
+    - { addr: "0x81a1283", value: "(empty: interior NUL in string table; else-branch suffix)" }
+  store-call: "pieces concatenated (helpers 0x806098f/0x80609d7) into AOmap::C2(string,j,j) @0x805e5ae5 — the /nova/store/net/ filter-family store name"
+  self-hid: "movl $0x3,0x140(%ebx) @0x80e5b90 (object stamps its own hid 3; siblings $0xe @+0x144, $0x10 @+0x148)"
+  vtables: "base 0x81bd6f0 @0x80e5aed, final 0x81bd808 @0x80e5b29"
+
+vtable-overrides:
+  vtable: "0x81bd808 (function array from stamped base; slot 7 = 0x08053e00 = PLT = BASE handleCmd, NOT overridden — unlike [20,0])"
+  overrides:
+    - { slot: 12, target: "0x080e0ce0", role: "cmdGetObj(u32) per F0b map" }
+    - { slot: 16, target: "0x080e0c94", role: "cmdGetAll per F0b map" }
+    - { slot: 24, target: "0x080e2f12", role: "cmdUnknown/private-cmd switch per F0b map; head: cmp $0x1 -> 0x80e2f33, cmp $0x2 -> 0x80e2f80, else 0x80e2fd6" }
+
+sibling-discrimination:
+  - hid: "0x2a (42)"
+    ctor: "0x80e5d20 (adjacent dedicated ctor, malloc 0x15c — same family size)"
+    store-strings: "'filter' (same 0x819e1f1) + '6' @0x819932c + 'ipt' (same 0x81a8c0a) + '/nova/store/net/' (same 0x819c978) => filter6-family store; DISCRIMINATES by the extra '6' piece"
+    vtable: "0x81bd20c; parallel overrides slot12->0x080e0bee, slot16->0x080e0c3a, slot24->0x080e2e34 (same shape, different targets)"
+    addHandler-site: "push $0x2a @0x805e615, call @0x805e618"
+  - hid: "0x2 (2), 0x4 (4), 0x6 (6), 0x29 (41), 0x2b (43)"
+    ctor: "0x8056792 SHARED generic ctor (malloc 0xec each); final vtable 0x81b2224 — no dedicated store strings, no dedicated dispatch"
+    addHandler-sites: "push $0x2 @0x805e5a6 / $0x29 @0x805e5cb / $0x6 @0x805e63a / $0x2b @0x805e65f / $0x4 @0x805e6f3"
+  - hid: "0x0 (0) = [20,0]"
+    ctor: "0x80712ec; vtable 0x81b2f18; slot7 = 0x80682ec handleCmd OVERRIDE (verified dispatch shape)"
+    addHandler-site: "push $0x0 @0x805c891, call @0x805c894"
+  - hid: "0xa (10), 0x5a (90), 0x5b (91)"
+    note: "further registrations in the same master function (AMap/vtable-0x81abf74, ctor 0x8070eb4, ASecMap-based) — same idiom, different hids"
+    addHandler-sites: "push $0xa call @0x805c86f; push $0x5a call @0x805c8b9; push $0x5b call @0x805c97f"
+
+tag-search-0xfd002a:
+  scope: "nova/bin/net whole file (1603960 bytes) + full .text disassembly + relocs + strings + dynsym (G0b-parallel coverage)"
+  whole-file-bytes:
+    le-u32-0x00fd002a: 0
+    be-u32-0x00fd002a: 0
+    three-byte-le-2a00fd: 0
+  disassembly:
+    text-lines-scanned: "full objdump -d of .text (/tmp/r2-net-dis.txt)"
+    fd002a-case-insensitive: 0
+    control-0xfe00-immediates: 897
+    control-push-cmp-mov-dollar-0xfe00: 875
+    control-reading: "tag immediates ARE detectable in this binary (897 envelope-tag hits); the fd002a zero is a true negative, not an idiom blind spot"
+  relocs: "readelf -r -W scanned, 'fd002a' = 0"
+  strings: "full strings output scanned, 'fd002a' = 0"
+  dynsym: "no st_value in [0xfd0000, 0xfe0000)"
+  fd-immediate-triage:
+    total-dollar-0xfd-sites: 16
+    classification:
+      - { sites: ["0x8054fc6 push $0xfd0", "0x8054fd6 push $0xfd8"], role: "PLT slot pushes (linker metadata)" }
+      - { sites: ["0x80f33f3-area push $0xfd0", "0x80f340d push $0xfd1", "0x80f6094 push $0xfd0", "0x80f60a8 push $0xfd1"], role: "12-bit field ids to nv::message::get/insert<u32_id> (0xfcf/0xfd0/0xfd1 sequence = user-namespace row fields, NOT 24-bit tags)" }
+      - { sites: ["0x8062ee2 and $0xfd,%ah", "0x80738f7 cmp $0xfd,%dl", "0x8106d01 test $0xfd,%al", "0x8116772 test $0xfd,%al", "0x8128ee1 cmp $0xfd,%dl", "0x813c985 movl $0xfd,(%eax)"], role: "8-bit char-class idioms (same class as G0b H8)" }
+      - { sites: ["0x8095220", "0x8095411", "0x80b1c3a"], role: "and $0xfdffffff,%edx — 32-bit flag bitmask (clears bits 24-25), not a tag" }
+      - { sites: ["0x80ad3a9"], role: "and $0xfddf,%dx — 16-bit mask, not tag-shaped" }
+    tag-shaped-24bit-0xfdXXXX-immediates: 0
+  verdict: "NEGATIVE: zero 0xfd002a references in nova/bin/net 7.25 x86 at full stated coverage — no LE/BE u32, no 3-byte tag, no disassembly immediate, no reloc, no string, no dynsym value; the 16 $0xfd* sites are all sub-24-bit lookalikes with classified non-tag roles"
+
+reproduce:
+  - "sha256sum ~/.local/share/m2ir/extractions/root-7.25/nova/bin/net  # expect 4dfdc32a...65f6e7c"
+  - "grep novabin-7.25.sha256 -e ' net$'  # same hash pinned"
+  - "objdump -d --no-show-raw-insn net | grep -c 'addHandler'  # 103 incl. PLT line = 102 call sites"
+  - "objdump -d --no-show-raw-insn net | grep -B6 'call.*addHandler' | grep -c 'push   $0x3$'  # exactly the 0x805e5f0 site"
+  - "objdump -d --start-address=0x80682ec --stop-address=0x8068347 --no-show-raw-insn net  # [20,0] dispatch shape"
+  - "objdump -d --no-show-raw-insn net | grep -ci 'fd002a'  # expect 0"
+  - "objdump -d --no-show-raw-insn net | grep -c '0xfe00'  # expect 897 (control)"
+  - "python3 whole-file findall for struct.pack('<I',0x00fd002a), ('>I',...), bytes([0x2a,0x00,0xfd])  # expect 0/0/0"
+  - "readelf -r -W net | grep -ci 'fd002a'; strings -a net | grep -ci 'fd002a'  # expect 0/0"

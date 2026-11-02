@@ -1,0 +1,14 @@
+# cspell:ignore rowid getcount getall reqid oneshot unacked rungs
+# H1 promotion fragment (coordinator integrates after execution).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> unknown-20-32 role
+    op: evolve-role
+    role: "unknown holder: GETCOUNT under filter rules is a PER-ADD TRANSIENT with variable magnitude and lifetime (H1 ws21 7.25: 1st add reads 1 stable across 6 reads/+354s with zero decay; 2nd in-session add re-spikes and graded-decays with a dip, plateauing at 2 without converging in-window; G3 decay-to-0 is one of three observed lifetimes, not the curve) — not a function of the rule-set alone, not a fixed curve, and not consumed by reads (6 consecutive nonzero). Magnitude-incompatible with row counting, so NOT a filter row-count slot. GET is selector-gated/FAILED, not table-shaped."
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> unknown-20-32 notes
+    op: add-notes
+    notes: "H1 decay leg (ws21 7.25, 2026-11-02, 3w+0r): re-add re-spikes (TIER 1 fact; peak-4 magnitude + graded 4->3->2 TIER 2 console-observed — ladder rx bytes lost to idle-session death, rung times ledger-committed); spike1 flat-1 kills read-disturbance (H-decay-2 DEAD) and any fixed-curve reading; churn-count readings dead (6 fresh sessions stable, re-spike same-boot). f15/f206 decoupled both directions (aux decays while main holds; main moves while aux holds) — the G3 co-decay was context, not law. Surviving: variable-gauge (H-decay-1), multi-step one-shot (H-decay-4, single-step dead), history-gating (magnitude unexplained); announce-backlog (H-decay-3) UNTESTED (ladder async lost; 11 drains + 15s watch all async=0). Transport bound: idle sessions die ~24-30s (2 samples), bounding persistent designs."
+    evidence_add: 1
+no_promotion_for:
+  - "Q1-dip mechanism (single committed point, unexplained)"
+  - "f15/f206's own mechanism (only the non-tracking result is claimed)"
+  - "leg-h1.ts tooling lessons (live in the H1 report, not schema content)"

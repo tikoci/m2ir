@@ -1,0 +1,12 @@
+# cspell:ignore libumsg getobj setobj novabin
+# H0b promotion fragment (coordinator integrates).
+# EMPTY BY RESULT, not by omission: the static slice is NEGATIVE on 0xfd002a
+# itself (zero references in nova/bin/net 7.25 x86, the confirmed [20,3]
+# owner), and a pure absence grounds no name/role/tcode/content for the
+# 0xfd002a entry. The owner identification (report.yaml O1-O6) is
+# HANDLER-level evidence, out of the entry-only fragment condition.
+fragment: []
+empty_reason: "NEGATIVE static result: zero 0xfd002a references at full G0b-equivalent coverage in the confirmed owner binary, so no promotable entry content; owner-identification evidence is handler-level, not entry-level"
+no_promotion_for:
+  - "0xfd002a name/role/semantics (static slice silent; observational U-jump-0xfd002a still open)"
+note_for_coordinator: "If an 0xfd002a entry is ever created from live variation, attach this slice as investigation-trail: '[20,3] owner CONFIRMED as nova/bin/net 7.25 x86 (sha256 4dfdc32a...565f6e7c, handler id 3 = ipt filter, addHandler @805e5f0, ctor @80e5a2a); net searched 2026-11-02, zero 0xfd002a refs; see proof/H0b-fd002a-owner-static/report.yaml'. Do not create an entry solely to hold the trail."

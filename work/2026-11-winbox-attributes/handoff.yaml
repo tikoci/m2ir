@@ -1,209 +1,109 @@
-# cspell:ignore rowid getcount getall getobj subtable reqid mvrp tarpit fasttrack gcd unmapped addrlist addsrc adddst addshape grev idstr movzwl vaddr capsman undercount oneline llms unblinding resid unsheeted
-# Phase G coordinator handoff (durable handoff rule, attribute-discovery-plan.md).
-# Written 2026-11-02 at read-only integration completion, before write-leg approval.
-head: 45c09de20076f81927ac314fdcf27a64729f84de
-git_status: "PHASE G COMPLETE 2026-11-02, COMMITTED 45c09de + PUSHED to origin/main on user instruction; all VMs stopped; gates 352/0 + lint:ci green"
+# cspell:ignore rowid getcount getall getobj subtable reqid mvrp tarpit fasttrack gcd unmapped addrlist addsrc adddst addshape h0a h0b vrf oneshot newflag unacked untimed oneline amm lsb dyn omap xfd findall unblind jbe vaddr unthreatened sed bitfield bitfields bswap jmp imm fini binutils ctor aoomap hid jcc vtable looper ebtables ebtable iptable novabin libumsg mproxy zombification churn backoff subnano legid novasock unroutable rodata ws3c scanw unblinding unaffecting fraw worktree agentlint foldin unpromoted respike nodecay undersampled rowidgap ladder rungs trel msback h2br h2vrf1 h2vrf2
+# Phase H coordinator handoff (durable handoff rule, attribute-discovery-plan.md).
+# Written 2026-11-02 at FULL completion (read-only + all 3 write legs executed,
+# integrated, green). Uncommitted by design; do not commit or push without instruction.
+head: 1ddbc2065f727ffbc8957daad053c5ee4ba10860
+git_status: "PHASE H COMPLETE, UNCOMMITTED by design; gates 372/0 + lint:ci green; all VMs stopped, all baselines restored"
 dirty_files:
-  - GLOSSARY.txt (M: +tarpit/+fasttrack/+gcd)
-  - profiles/winbox-ipc/README.md (M: evidence count 570->572, see count_correction)
-  - profiles/winbox-ipc/gui-handlers.yaml (M: unknown-20-32 notes+evidence, filter-20-3 notes)
-  - fixtures/winbox-ipc/7.25-getcount-20-32-matrix.json (new: 5 records)
-  - test/profiles/winbox-ipc/2032-dataset.test.ts (new: 6 tests)
-  - work/2026-11-winbox-attributes/proof/G0a-2032-model/{report,fragment,scores.yaml,score-models.ts,explain-m*.txt} (new)
-  - work/2026-11-winbox-attributes/proof/G0b-fd002a-static/{report,fragment,sites-disassembly.txt} (new)
-  - work/2026-11-winbox-attributes/proof/G0c-f40-design/{report,fragment,explain-*.json} (new)
-  - work/2026-11-winbox-attributes/proof/G-reviewer/{report,reconstruction-r1,r2,r3.yaml} (new)
-  - work/2026-11-winbox-attributes/proof/G1-f40-matrix/ (new: report+fragment+sanitize.ts, 27 step JSONL, 60+ control/explain JSON)
-  - fixtures/winbox-ipc/7.25-filter-f40-matrix.json (new: 9 records)
-  - test/profiles/winbox-ipc/filter-f40-matrix.test.ts (new: 5) + filter-jump-20-3.test.ts (M: 11-value enum)
-  - work/2026-11-winbox-attributes/proof/G2-vlan-f7/ (new: report+fragment+sanitize.ts, 6 step JSONL, 20+ control/explain JSON)
-  - fixtures/winbox-ipc/7.25-bridge-vlan-f7.json (new: 3 records)
-  - test/profiles/winbox-ipc/bridge-vlan-f7.test.ts (new: 4) + bridge-vlan-f4.test.ts (M: f7 name)
-  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/ (new: report+fragment+sanitize.ts, 5 step JSONL, 15 control/explain JSON)
-  - fixtures/winbox-ipc/7.25-getcount-20-32-decay.json (new: 3 records)
-  - test/profiles/winbox-ipc/2032-dataset.test.ts (M: +4 decay tests)
-  - work/2026-11-winbox-attributes/proof/G4-beta5-populated/ (new: report+fragment+sanitize.ts+leg-g4.ts, 4 step JSONL, 25+ control/explain JSON)
-  - fixtures/winbox-ipc/7.26beta5-populated-shapes.json (new: 3 records)
-  - test/profiles/winbox-ipc/beta5-populated.test.ts (new: 7)
-  - work/2026-11-winbox-attributes/handoff.yaml (ONLY dirty file: this post-commit head/status/next_action update; all entries above committed at 45c09de)
+  - profiles/winbox-ipc/gui-handlers.yaml (M: unknown-20-32 H0a notes + H1 role/notes/evidence; filter-20-3 H0b notes/evidence + H3 notes/evidence; ip-address f6 role/evidence)
+  - profiles/winbox-ipc/README.md (M: evidence count 580->584, raw-count verified)
+  - work/2026-11-winbox-attributes/proof/E1-W5r/scan-w5r.ts (M: pre-existing biome/tsc fix, see scanw5r_fix in prior handoff revision)
+  - test/profiles/winbox-ipc/2032-timing-audit.test.ts (new: 12 tests)
+  - test/profiles/winbox-ipc/f6-rowid.test.ts (new: 4 tests)
+  - test/profiles/winbox-ipc/rowid-gap.test.ts (new: 4 tests)
+  - fixtures/winbox-ipc/7.25-getcount-20-32-h1.json (new: 10 records)
+  - fixtures/winbox-ipc/7.26beta5-f6-rowid.json (new: 3 records)
+  - work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/{report,fragment,explain-*.txt} (new)
+  - work/2026-11-winbox-attributes/proof/H0b-fd002a-owner-static/{report,fragment,sites-disassembly.txt} (new)
+  - work/2026-11-winbox-attributes/proof/H-reviewer/{report,reconstruction-r1,r2.yaml} (new)
+  - work/2026-11-winbox-attributes/proof/H1-decay/{report,fragment,leg-h1.ts,sanitize.ts,step-*.jsonl,timing-*.jsonl,control-*.json,explain-*.json} (new)
+  - work/2026-11-winbox-attributes/proof/H2-f6/{report,fragment,sanitize.ts,step-*.jsonl,control-*.json,explain-*.json,baseline_*,restored_*} (new)
+  - work/2026-11-winbox-attributes/proof/H3-rowid-gap/{report,fragment,sanitize.ts,step-*.jsonl,control-*.json,explain-*.json} (new)
+  - work/2026-11-winbox-attributes/handoff.yaml (this file)
 slices:
-  done: [G0a, G0b, G0c, G-reviewer, integrate-readonly, G1-execute, G1-integrate, G2-execute, G2-integrate, G3-execute, G3-integrate, G4-sheet, G4-execute, G4-integrate]
+  done: [H0a, H0b, H-reviewer, integrate-readonly, H1-tooling, H1-execute, H1-integrate, H2-execute, H2-integrate, H3-execute, H3-integrate]
   in_progress: []
   queued: []
-g0a_record:
+h0a_record:
   complete: true
-  verdict: "AMBIGUOUS (offline, zero router contact) — 5/5 transcription verified, 17/17 models fail, exhaustive search 0 fits"
-  evidence_root: work/2026-11-winbox-attributes/proof/G0a-2032-model/
-  proven:
-    - "brief transcription ({}->0, {A}->8, {J}->2, {J,A}->1, {A,A}->1) VERIFIED 5/5 against raw rx, zero discrepancy"
-    - "J1->J2 jump-target vary leaves value at 2: [20,32] insensitive to the jump-target string (bonus point, not in the 5-set)"
-    - "no affine-modular model fits: exhaustive 2264031-combo search finds zero (analytic m>8 vs m|6 contradiction)"
-    - "all 9 proposed stimulus commands pass offline centrs explain (runtime acceptance not proven)"
-  disproven:
-    - "counting/presence/per-action-counts/distinct-count families (maxAbs 7-8)"
-    - "singleton-forced linear sum (residuals +9/+15 on the 2-rule points)"
-    - "OR/XOR/AND accumulation (OR additionally violates monotonicity: 2->1 on add)"
-    - "min/max/gcd/difference/product/gated-pow2 (maxAbs 4-63)"
-    - "first/last-added-wins (P4 alone kills both)"
-    - "full-row-content-hash models (structural: J2 varies f41 bytes, value unchanged)"
-  unresolved:
-    - U-g0a-32-role ([20,32] exact semantics; stimulus sheet M1-M7 designed, unexecuted)
-    - U-g0a-history-sensitivity (rule-set-only vs session-history; M1 decides)
-    - U-g0a-singleton-map (drop/log singletons unmapped; M2/M3)
+  verdict: "DESIGN-COMPLETE (offline, zero router contact) — executed via H1"
+  evidence_root: work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/
+  proven: [P-h0a-timing-order-only, P-h0a-disambiguation, P-h0a-session-per-read, P-h0a-explain-4-pass]
+  disproven: [D-h0a-artifact-durations]
+  unresolved: [U-g3-32-mechanism (narrowed by H1, see h1_record), U-h0a-tooling-timestamp (CLOSED: leg-h1.ts --t0-ms built), U-h0a-tooling-persistent (CLOSED: ladder mode built; idle death bounds it)]
   writes: 0
-g0b_record:
+h0b_record:
   complete: true
-  verdict: "NEGATIVE (static, zero router contact) — zero 0xfd002a references in verified libumsg.so 7.25 x86"
-  evidence_root: work/2026-11-winbox-attributes/proof/G0b-fd002a-static/
-  proven:
-    - "0xfd002a has ZERO references (LE/BE u32, 3-byte tag, disassembly immediate, reloc, string, dynsym, aligned data word)"
-    - "fd namespace IS known at namespace granularity only, in-library name 'local' (idstr arm @0x28415, getErrorDescr arm @0x32550) — agrees with canonical processes.yaml 0xfd=local"
-    - "0xfd1000/0xfd17ff immediates are the Looper handler-ID allocator arena, not tag refs; 0xfd002a lies outside it"
-    - "binary identity verified first: sha256 1d471df0...b1c46c80 exact match to F0b-pinned value"
-  disproven:
-    - "0xfd002a referenced anywhere in libumsg.so 7.25 x86 (at full stated coverage)"
-    - "$0xfd.. lookalikes as fd-namespace tag refs (H3-H9 each resolved to a non-tag role)"
-  unresolved:
-    - U-G0b-fd002a-identity (static slice silent; next: handler-owner binary slice or live vary/clear leg)
-  writes: 0
-g0c_record:
-  complete: true
-  verdict: "DESIGN COMPLETE (zero router contact, 0 executed) — 9-candidate survey + 25w+0r matrix/lifecycle/retention design, 23/23 offline explain pass"
-  evidence_root: work/2026-11-winbox-attributes/proof/G0c-f40-design/
-  proven:
-    - "SURVEY FACT: Rosetta CLI ref documents an 11-member /ip/firewall/filter action enum (names only, ordinals withheld)"
-    - "SURVEY FACT: filter action=drop EXISTS per CLI + manual (NAT drop-negative does NOT transfer)"
-    - "SURVEY FACT: NAT-analog f40 values available for transfer tests (return=2, log=3, passthrough=4, add-src=5, add-dst=6)"
-    - "SURVEY FACT: CLI ref chain property grounds the chain=forward-only design (custom chains self-create)"
-    - "DESIGN FACT: all 23 proposed commands pass centrs explain offline, 0 diagnostics"
-  unresolved:
-    - U-g0c-f40-rest (9 wire values; M1-M9 designed)
-    - U-g0c-0xfd002a (trigger + transient-vs-sticky; L1/L2 designed)
-    - U-g0c-f41-lifecycle (retention generality + re-entry; R1/R2 designed)
-    - U-g0c-tarpit-addshape / U-g0c-fasttrack-addshape / U-g0c-addrlist-autocreate (ladders designed)
+  verdict: "OWNER CONFIRMED + 0xfd002a NEGATIVE (static, zero router contact)"
+  evidence_root: work/2026-11-winbox-attributes/proof/H0b-fd002a-owner-static/
+  proven: [P-H0b-1 owner net, P-H0b-2 zero refs, P-H0b-3 no fd switch, P-H0b-4 16 sites resolved]
+  disproven: [D-H0b-1 ownership unverified, D-H0b-2 referenced in net]
+  unresolved: [U-H0b-fd002a-identity, U-H0b-dynamic-construction]
+  correction: "F-raw accounting: 31 OFFSETS / 22 distinct values (reviewer-confirmed, coordinator re-verified); H0b report unedited, correction lives in handoff history"
   writes: 0
 reviewer_record:
   complete: true
-  evidence: [work/2026-11-winbox-attributes/proof/G-reviewer/report.yaml]
-  blindness_verified: "coordinator session-log audit: spawn brief (line 11) + dir-name listings + 3 'Written BEFORE reading' reconstruction writes (496/1001/1087) + ls unblinding marker (1116) all precede the FIRST proposer-content read_file (line 1147, G0a report); zero proposer-content reads before all reconstructions"
-  R1: "AGREE (dataset 5/5 identical rx lines, linear |resid| 9/15, OR |resid| 9/7, AMBIGUOUS; note only: residual sign convention differs, magnitudes identical). G0a blind-corroborated."
-  R2: "AGREE (sha256 match, byte scans 0/0/0 + extra reverse scan 0, disasm grep 0 vs 302 control, both fd-arm functions + arm strings exact incl. suffix-merge, NEGATIVE). G0b blind-corroborated."
-  R3: "AGREE (same Rosetta high-confidence row, 11 members identical names+order, drop EXISTS; reviewer recorded ordinals, G0c withholds by design — not a discrepancy). G0c blind-corroborated."
-  counting_rule_finding: "F-jump bundling CONFIRMED AS CITED (removes rode inside the 1w restore-verify branch; report.yaml lines 12-13, 64-69). Scope caveat: F-jump executed NO mid-leg remove, so G0a/G0c 'per-cell removes bundled (0w)' is an EXTRAPOLATION. F-vlan counts EVERY remove 1w (R1-R3) — Phase F holds TWO precedents. Coordinator normalizes per leg (see leg_sheets_proposed counting_rule entries)."
+  verdict: "R1 AGREE all claims; R2 AGREE + 1 exact verdict-unaffecting discrepancy (F-raw); blindness session-log-verified"
+  evidence: [work/2026-11-winbox-attributes/proof/H-reviewer/report.yaml]
+h1_record:
+  complete: true
+  verdict: "COMPLETE 3w+0r of 3w+0r — per-add transient PROVEN (re-spike), read-disturbance DEAD, fixed-curve DEAD, f15/f206 decoupled, idle-death bound, mechanism narrowed-not-closed"
+  evidence_root: work/2026-11-winbox-attributes/proof/H1-decay/
+  tooling_built: "leg-h1.ts (timestamped capture + persistent ladder + bounded drain + watch; read-only); sanitize.ts (control envelopes)"
+  proven: [P-h1-respike, P-h1-nodecay-spike1, P-h1-graded-decay, P-h1-f15f206-decoupled, P-h1-idle-death, P-h1-async-silence]
+  disproven: [D-h1-read-disturbance, D-h1-fixed-curve, D-h1-churn-only]
+  unresolved: [U-h1-32-mechanism (variable-gauge / multi-step-one-shot / history-gating survive; announce-backlog UNTESTED), U-h1-q1-dip, U-h1-f15f206-role]
+  tooling_lessons: "flush captures incrementally (lost R0a-R2 rx bytes); console-report async counts per rung; keep persistent gaps <20s (idle death ~24-30s)"
+  spend: { approved: "3w+0r", spent: "3w+0r", vm: ws21 }
+  integration: "unknown-20-32 role evolved (TIME-VARYING PER-ADD TRANSIENT) + H1 notes + 1 evidence; fixture 7.25-getcount-20-32-h1.json (10); 2032-timing-audit.test.ts +6 (12 total)"
+h2_record:
+  complete: true
+  verdict: "COMPLETE 10w+0r of 10w+0r — f6=ROWID PROVEN (VRF .id 0/1/2 exact), flag DEAD, interface-rowid excluded, restore exact"
+  evidence_root: work/2026-11-winbox-attributes/proof/H2-f6/
+  proven: [P-h2-f6-rowid, P-h2-iface-excluded, P-h2-bridge-carrier]
+  disproven: [D-h2-f6-flag]
+  unresolved: [U-h2-self-offset (+2w decider designed: 2nd address in VRF1), U-h2-vrf-native-rowid]
+  spend: { approved: "10w+0r", spent: "10w+0r", vm: g4beta5 }
+  integration: "ip-address f6 role evolved (ROWID PROVEN) + 1 evidence; fixture 7.26beta5-f6-rowid.json (3); f6-rowid.test.ts (4)"
+h3_record:
+  complete: true
+  verdict: "COMPLETE 2w+0r of 3w+0r (1w returned) — rejected add consumes EXACTLY ONE rowid; G1 4-gap explained; restore clean"
+  evidence_root: work/2026-11-winbox-attributes/proof/H3-rowid-gap/
+  proven: [P-h3-reject-consumes, P-h3-g1-gap-explained, P-h3-count-vs-id]
+  disproven: [D-h3-no-consume]
   unresolved: []
-reconcile_record:
-  decisions:
-    - "ACCEPT G0a fragment (unknown-20-32 notes + 1 evidence): blind-corroborated dataset + residuals + verdict"
-    - "ACCEPT G0b empty fragment: NEGATIVE static result grounds no entry content; negative trail stays in report.yaml; fd-'local' corroboration already canonical in processes.yaml (no promotion); no 0xfd002a entry created solely for the trail"
-    - "ACCEPT G0c fragment (filter-20-3 f40 candidate-list note, evidence_add 0): blind-corroborated 11-member enum + drop-EXISTS; concise CLI-sourced facts with inline citation, directly scopes G1"
-    - "No GLOSSARY protocol terms beyond tarpit/fasttrack/gcd (RouterOS action vocab + model-list term)"
-    - "Evidence count CORRECTED, not just bumped (see count_correction)"
-count_correction:
-  method: "raw `- source:` lines under profiles/ (corroborated: Phase F deltas +18+3+2+2 = +25 exactly bridge the true counts)"
-  at_33a956e: "TRUE 546 (recorded 545 — inherited off-by-one, Phase E or earlier)"
-  at_da5f8bb: "TRUE 571 (recorded 570; Phase F deltas were exact)"
-  now: "572 = 571 + 1 (G0a evidence)"
-  action: "profile README shows 572; this correction recorded here, not silently absorbed"
-integration_readonly_record:
-  date: 2026-11-02
-  g0a: "unknown-20-32 notes (ruled-out model classes + bonus) + 1 evidence; fixture 7.25-getcount-20-32-matrix.json (5 records, coordinator-extracted from committed F-jump step JSONLs, re-read independently); 2032-dataset.test.ts (6)"
-  g0b: "no canonical edit (accepted empty fragment); negative trail in proof/G0b-fd002a-static/report.yaml"
-  g0c: "filter-20-3 notes (11-name survey + drop-EXISTS prime candidacy); no test (design-only, 0 executed)"
-  counts: "handlers 48, fields 333 (172/161), handlers-with-fields 29 of 48, confidence 288 (150/135/3), evidence 571->572 (with base correction noted above), revision-history 72, envelope keys 51; profile README only (root README coverage line unchanged); GLOSSARY +tarpit/+fasttrack/+gcd"
-  gates: "tests 332/0 across 51 files (326 + 6 new); lint:ci green (coordinator fixed 1 biome JSON-format + 47 cspell hits, all Phase G: glossary for tarpit/fasttrack/gcd, file-local ignores for worker proof files)"
-  commit_state: uncommitted by design; do not commit or push
-leg_sheets_proposed:
-  # Full sheets; NOTHING approved. Each needs its own explicit per-leg yes
-  # in-session; a general go-ahead approves nothing. Coordinator executes
-  # sequentially. Ports resolve live from `quickchr list` at execution
-  # (numeric values redacted per sanitization rule).
-  legs:
-    - leg: G1-f40-matrix-lifecycle-retention
-      budget: 25w+0r
-      counting_rule: "F-jump rule, adopted EXPLICITLY for this sheet: control adds/sets + native verbs + 1 per restore branch; per-cell removes bundled 0w; rejected adds 0w (reviewer-verified precedent + stated extrapolation)"
-      vm: ws21 (7.25 x86, same line as F-jump/F0a evidence; STOPPED now)
-      design: work/2026-11-winbox-attributes/proof/G0c-f40-design/report.yaml
-      baseline: "control: all 5 firewall menus 0 rows; native: GETCOUNT [20,3]/[20,32] + [20,17] GET + paged GETALL [20,3] x2 (0 rows)"
-      steps: "C1 accept control (1w) + C2 jump host kept (1w) + M1-M9 matrix cells (2w each: add + reversal set) + L1/L2 lifecycle (1w each) + R1/R2 retention (1w each) + restore branch (1w)"
-      split_option: "Leg A = baseline + C1 + C2 + M1-M9 + restore (21w+0r); Leg B = fresh baseline + new jump host + L1 + L2 + R1 + R2 + restore (6w+0r). Combined 25w preferred (one baseline, host reuse)."
-      restore: "control remove of every created row + 5-menu verify (0 rows) + native zeros + GETALL 0 rows; ws21 stopped"
-      stops: "native incomplete -> stop+restore; cleanup fails -> stop; cap reached -> stop+restore+partial; rejection is 0w data (2 same-shape consecutive -> pause + recheck); C1/C2 deviation -> stop matrix, reconcile first"
-      closes: "U-jump-enum-rest (9 values) + U-jump-0xfd002a (L1/L2) + U-jump-f41-lifecycle (R1/R2)"
-      approved: none
-    - leg: G2-vlan-f7-set
-      budget: 8w+0r
-      counting_rule: "F-vlan rule (twin3-line precedent): EVERY control add/set/remove counts 1w; reads 0w"
-      vm: twin3 (7.25 x86, same as F-vlan; STOPPED now)
-      design: "coordinator sheet from F-vlan cell-A context (no worker; 1 family, 1 field, 0 verbs)"
-      hazard_note: "filtering stays NO for the whole leg (cell-A shape) — the F-vlan access hazard cannot arise by construction"
-      baseline: "control: bridge/vlan/port/host 0 rows; native: GETALL [16,13]/[16,2] 0 rows + [20,0] rowids live-resolved"
-      steps: "V1 bridge add (1) + V2 vlan add (1) + V3 port add (1) + cell-A re-verify reads incl. f7=[] + V4 set mvrp-forbidden=ether1 (1) + reads (f7==[etherRowId]? full row enum) + V5 reversal set mvrp-forbidden='' (1) + reads (f7 back to []?) + R1/R2/R3 removes (3) + restore-verify reads"
-      explains_offline: "3/3 pass, 0 diagnostics (set ether1 / set quoted-empty / add-with-mvrp-forbidden; coordinator-verified 2026-11-02; runtime acceptance not proven)"
-      restore: "R1-R3 + control+native 0-row verify; twin3 stopped"
-      stops: "any remove fails -> stop; f7 moves on non-mvrp stimulus -> stop + report confound; V4 rejected -> 0w data, leg converts to a negative finding (still restore + report); any filtering change is out-of-sheet -> stop"
-      closes: "U-vlan-f7 (f7=mvrp-forbidden PROVEN with false->set->cleared symmetry, or DISPROVEN)"
-      approved: none
-    - leg: G3-2032-matrix
-      budget: 8w+0r core (+1 optional M6 = 9w+0r)
-      counting_rule: "F-jump rule, adopted EXPLICITLY for this sheet (same as G1)"
-      vm: ws21 (7.25 x86, same line; SEQUENTIAL with G1, never concurrent; STOPPED now)
-      design: work/2026-11-winbox-attributes/proof/G0a-2032-model/report.yaml stimulus_sheet
-      baseline: "M0: 5-menu control 0 rows + native [20,3]=0 [20,32]=0 + GETALL 0 rows"
-      steps: "M1 accept-replicate (1) + M2 drop singleton (1) + M3 log singleton (1) + M4 jump-pair (2) + M5 order-swap (2) + M6 input-chain OPTIONAL (1) + M7 restore-verify branch (1)"
-      restore: "remove every added rule (bundled) + M7 verify branch; ws21 stopped"
-      stops: "M1 != 8 -> STOP, keep VM for coordinator inspection (history-dependence proven, re-plans all later cells); control read-back mandatory every add (disagreement -> STOP); [20,3] != N -> STOP; packets/bytes nonzero -> STOP; restore-verify fails -> non-sheet recovery, recorded honestly"
-      closes: "U-g0a-32-role (model or history-dependence) + U-g0a-history-sensitivity (M1) + U-g0a-singleton-map (M2/M3)"
-      approved: none
-    - leg: G4-beta5-populated
-      budget: 10w+0r
-      counting_rule: "F-vlan rule, adopted EXPLICITLY for this sheet: EVERY control add/set/remove counts 1w; reads 0w"
-      version_swap: "sheeted 7.26beta4 (g4beta, booted, 0w) then user noted beta5 is current; development channel verified 7.26beta5; user approved the switch AND the identical sheet on beta5 in-session (this answer is the per-leg yes). g4beta stopped unused (kept, not removed)."
-      vm: "g4beta5 — NEW 7.26beta5 x86 VM (user + socket::g4b5-link for a spare ether2; E2-W's ether2 design). Created at execution: `quickchr add --name g4beta5 --version 7.26beta5 --arch x86 --add-network user --add-network socket::g4b5-link`. If the image were unresolvable -> BLOCKED at 0w (resolved OK). Build recorded at execution; note F1 empty-shape baseline is beta4 (cross-beta comparison where shapes differ)."
-      design: "coordinator sheet from F1 unresolved + E2-W leg-B-vrf mirror (commands below)"
-      baseline_B0: "control: bridge/vlan/port/host/address/vrf row counts AND rows RECORDED AS-IS (/ip/vrf and /ip/address may carry pre-existing rows — E2-W precedent; restore = return to THESE, not to zero); native: GETALL [16,2]/[16,13]/[20,1] empty-shape re-verify. Cost 0w."
-      steps: "B1 bridge add e1br (1) + B2 port add bridge=e1br interface=ether1 (1) -> native [16,2] PORT-ROW shape (40-key beta4 row, key-by-key vs 7.25) + B3 vlan add bridge=e1br vlan-ids=10 tagged=e1br untagged=ether1 (1) -> native [16,13] VLAN-CELL shape (12-key beta4 cell; filtering stays NO, no hazard) + B4 /ip/vrf/add name=g4vrf interfaces=ether2 (1) + B5 /ip/address/add address=198.51.100.20/24 interface=ether2 (1) -> STIMULUS GATE (control read MUST show vrf=g4vrf, E2-W mirror) -> native [20,1] f6 (expect nonzero) + R1 addr remove (1) + R2 vrf remove (1) + R3 vlan remove (1) + R4 port remove (1) + R5 bridge remove (1)"
-      selector_lesson: "E2-W: bare-name remove is device-rejected over native-api — resolve .ids live from read-backs, prefer .id selectors (explained before sending)"
-      vrf_branch: "if B4 is device-rejected (beta4 path drift) -> 0w data: f6-nonzero converts to BLOCKED-with-evidence, bridge shapes (B1-B3) continue independently, bridge-only restore"
-      restore: "R1-R5 + control+native verify EQUALITY-WITH-BASELINE (not emptiness); g4beta5 stopped (not removed)"
-      stops: "any remove fails -> stop; stimulus gate fails (no vrf=g4vrf) -> STOP (stimulus invalid) + restore; native incomplete -> stop + restore; cap reached -> stop + restore + partial; any filtering change is out-of-sheet -> stop"
-      closes: "port-row-shape + vlan-cell-shape + f6-nonzero (or precisely-blocked variants with device evidence)"
-      approved: "G4 yes on beta4 sheet + switch-to-beta5 approval (identical sheet, version+VM swapped) — explicit per-leg yes, this session"
-  proposed_execution_order: [G1-f40-matrix-lifecycle-retention, G2-vlan-f7-set, G3-2032-matrix]
-  execution_agent: coordinator, sequential
+  spend: { approved: "3w+0r", spent: "2w+0r", vm: ws21 }
+  integration: "filter-20-3 H3 notes + 1 evidence; rowid-gap.test.ts (4, control-plane pins, no fixture)"
 budgets_approved_vs_spent:
-  G0a: { approved: "0w+0r", spent: "0w+0r" }
-  G0b: { approved: "0w+0r", spent: "0w+0r" }
-  G0c: { approved: "0w+0r", spent: "0w+0r" }
-  G-reviewer: { approved: "0w+0r", spent: "0w+0r" }
+  H0a: { approved: "0w+0r", spent: "0w+0r" }
+  H0b: { approved: "0w+0r", spent: "0w+0r" }
+  H-reviewer: { approved: "0w+0r", spent: "0w+0r" }
   integrate-readonly: { approved: "0w+0r", spent: "0w+0r" }
-  G1-f40-matrix-lifecycle-retention: { approved: "25w+0r", spent: "25w+0r", vm: ws21, result: "complete=true, 11-value f40 + fd002a lifecycle + f41 general retention + f91 bycatch; restore PARTIAL (5 builtin dummies); integrated, gates 337/0 + lint green" }
-  G2-vlan-f7-set: { approved: "8w+0r", spent: "8w+0r", vm: twin3, result: "complete=true, f7=mvrp-forbidden PROVEN []->[2]->[]; restore clean; integrated, gates 341/0 + lint green" }
-  G3-2032-matrix: { approved: "8w+0r core (+1 optional)", spent: "2w+0r", vm: ws21, result: "AMBIGUITY STOP at M1 (M1=1 not 8) + 1->0->0 decay proven TIME-VARYING; 6w unspent/returned; restore clean; integrated, gates 345/0 + lint green" }
-g3_integration_record:
-  integrated: "unknown-20-32 role evolved (TIME-VARYING) + decay notes + 1 evidence; fixture 7.25-getcount-20-32-decay.json (3); 2032-dataset.test.ts +4 decay tests"
-  counts: "fields 334 (174/160) unchanged, evidence 576->577, tests 345/0, lint:ci green"
-  commit_state: uncommitted by design; do not commit or push
-g2_integration_record:
-  integrated: "bridge-vlan f7 unknown-7->mvrp-forbidden (PROVEN + cli-alias) + notes + 2 evidence; fixture 7.25-bridge-vlan-f7.json (3); bridge-vlan-f7.test.ts (4); bridge-vlan-f4.test.ts evolved (f7 name)"
-  counts: "fields 334 unchanged total (rename 173/161 -> 174/160), evidence 574->576, tests 341/0, lint:ci green"
-  commit_state: uncommitted by design; do not commit or push
-  G4-beta5-populated: { approved: "10w+0r", spent: "10w+0r", vm: g4beta5, result: "complete=true, port-row 40-key + vlan-cell 12-key + f6=1 zero-drift + f5/f10 + slave cross-confirmed; restore exact; integrated, gates 352/0 + lint green" }
-g4_integration_record:
-  integrated: "bridge-port + bridge-vlan beta5 shape notes + 1 evidence each; ip-address f6 role evolved (TWO samples) + notes + 1 evidence; fixture 7.26beta5-populated-shapes.json (3); beta5-populated.test.ts (7)"
-  counts: "fields 334 (174/160) unchanged, evidence 577->580, tests 352/0, lint:ci green"
-  commit_state: uncommitted by design; do not commit or push
-g1_integration_record:
-  integrated: "filter-20-3 f40 11-value enum + f91 address-list field + f41 role evolution (general retention) + lifecycle/dummy notes + 1 evidence; unknown-20-32 bycatch notes + 1 evidence; fixture 7.25-filter-f40-matrix.json (9); filter-f40-matrix.test.ts (5); filter-jump-20-3.test.ts evolved (11-value); GLOSSARY +bycatch/+addsrc/+adddst/+covary"
-  counts: "fields 333->334 (172/161 -> 173/161), evidence 572->574, tests 337/0, lint:ci green"
-  commit_state: uncommitted by design; do not commit or push
+  H1-tooling: { approved: "0w+0r", spent: "0w+0r" }
+  H1-decay-mechanism: { approved: "3w+0r", spent: "3w+0r", vm: ws21, result: "complete=true, per-add transient + read-disturbance dead + decoupling + idle bound; restore clean; integrated" }
+  H2-f6-rowid-flag: { approved: "10w+0r", spent: "10w+0r", vm: g4beta5, result: "complete=true, f6=rowid PROVEN flag dead; restore exact; integrated" }
+  H3-rowid-gap: { approved: "3w+0r", spent: "2w+0r", vm: ws21, result: "complete=true, reject-consume-1 + G1 gap explained; 1w returned; restore clean; integrated" }
+counts_now:
+  handlers: 48
+  fields: "334 (174/160) unchanged"
+  confidence: "288 (150/135/3) unchanged"
+  evidence: "580->584 (H0b +1, H1 +1, H2 +1, H3 +1; raw-count verified)"
+  tests: "352/0 -> 372/0 across 57 files (+6 timing-audit, +4 f6-rowid, +4 rowid-gap, +6 H1-curve... i.e. +20 total)"
+  lint: "lint:ci green (exit 0)"
 vm_state:
   all_stopped: true
-  checked: "quickchr list at G4 close: 15 machines (13 + g4beta + g4beta5), all STOPPED"
-  baselines_restored: "G1 PARTIAL (5 boot-local builtin dummies, proven non-persistent at G3 baseline); G2 clean; G3 clean; G4 exact-equality clean"
+  checked: "quickchr list at H3 close: 15 machines, all STOPPED"
+  baselines_restored: "H1 clean (5-menu zero + native zeros); H2 exact-equality clean (3/3 EQUAL); H3 clean (5-menu zero + native zeros)"
   assignments_next: {}
-phase_f_history:
-  closed: "2026-11-02, committed at da5f8bb"
-  spent: "jump 5w+0r (f40 jump=1/accept=0 + f41 jump-target + inverse SETOBJ + N=2), vlan 9w+0r (f5/f6 CLOSED, quoted move, V5 alive), f11 6w+0r (f11=slave SUPPORTED, `slave` unfrozen)"
-  counts_at_close: "handlers 48, fields 333 (172/161), confidence 288 (150/135/3), evidence RECORDED 570 / TRUE 571 (see count_correction), tests 326/0, lint:ci green"
-  prior_handoff: "superseded by this Phase G handoff; full Phase F record in git history (da5f8bb:work/2026-11-winbox-attributes/handoff.yaml)"
-next_action: "PHASE G COMPLETE + COMMITTED (45c09de, pushed to origin/main on user instruction 2026-11-02). Follow-up prompt for the next orchestrator was suggested in chat (see session): H-phase ([20,32] decay mechanism: re-add spike + timing ladder + announce correlation; f6 rowid-vs-flag via 2nd VRF; rowid-gap; 0xfd002a handler-owner static slice) with a continuation-decision rule (continue to the phase after only if context is healthy, else hand off). All 15 VMs stopped. Counts: 48 handlers, 334 fields (174/160), confidence 288 (150/135/3), evidence 580, tests 352/0, lint:ci green."
+phase_g_history:
+  closed: "2026-11-02, committed at 45c09de + pushed; handoff-record commit 1ddbc20"
+  counts_at_close: "handlers 48, fields 334 (174/160), confidence 288 (150/135/3), evidence 580, tests 352/0, lint:ci green"
+  prior_handoff: "full Phase G + Phase H read-only records in git history (1ddbc20:work/2026-11-winbox-attributes/handoff.yaml and session handoffs)"
+continuation_decision:
+  decision: "FRESH agent for the next phase (handler-field tail)"
+  clause_a_no_compaction: "HELD (no compaction or summarization this session)"
+  clause_b_citable: "HELD (all H budgets/VM-state/evidence-paths/counts directly citable from working notes)"
+  clause_c_green: "HELD (gates 372/0 + lint:ci green, handoff written)"
+  doubt_invoked: "YES — session is long (3 workers + reviewer + 3 leg executions + integrations); the next program (17/43 zero-field handlers, 19 unknown-*, 296 bindings) is unscoped and needs fresh per-leg approvals regardless; clean handoff makes a fresh coordinator strictly better. Per the brief: in any doubt, STOP + recommend fresh."
+  resume_commit: "1ddbc20 + uncommitted Phase H work (commit first or resume dirty; handoff.yaml names every file)"
+next_action: "PHASE H COMPLETE. Commit decision belongs to the user (all work uncommitted by design). Fresh coordinator for the handler-field tail starts at the resume commit: read this handoff + attribute-discovery-plan.md + triage state, scope batch 1 (suggested: H2-style single-question legs first — U-h2-self-offset +2w decider is the cheapest open item — then handler-family census workers per the Phase E pattern), and STOP for fresh per-leg yes before any writes."

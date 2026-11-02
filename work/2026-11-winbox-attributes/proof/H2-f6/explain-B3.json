@@ -1,0 +1,237 @@
+{
+  "ok": true,
+  "data": {
+    "input": {
+      "bytes": 39,
+      "normalized": false,
+      "truncated": false,
+      "positionMap": [
+        {
+          "analyzed": {
+            "start": 0,
+            "end": 39
+          },
+          "originalUtf16": {
+            "start": 0,
+            "end": 39
+          }
+        }
+      ]
+    },
+    "verdict": "pass",
+    "canonical": {
+      "mode": "structured",
+      "path": "/ip/vrf",
+      "verb": "add",
+      "args": {
+        "name": "h2vrf2",
+        "interfaces": "h2br"
+      },
+      "queries": [],
+      "writeShaped": true
+    },
+    "structure": {
+      "statementCount": 1,
+      "statements": [
+        {
+          "id": "s0",
+          "span": {
+            "start": 0,
+            "end": 39
+          },
+          "resolution": "resolved",
+          "kind": "command",
+          "command": {
+            "path": "/ip/vrf",
+            "verb": "add",
+            "args": {
+              "name": "h2vrf2",
+              "interfaces": "h2br"
+            }
+          },
+          "arguments": {
+            "read": true,
+            "tokens": [
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 12,
+                  "end": 23
+                },
+                "name": "name",
+                "value": "h2vrf2",
+                "valueSpan": {
+                  "start": 17,
+                  "end": 23
+                },
+                "text": "name=h2vrf2"
+              },
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 24,
+                  "end": 39
+                },
+                "name": "interfaces",
+                "value": "h2br",
+                "valueSpan": {
+                  "start": 35,
+                  "end": 39
+                },
+                "text": "interfaces=h2br"
+              }
+            ],
+            "queries": [],
+            "positional": []
+          },
+          "contextCertain": true,
+          "ev": "e4",
+          "transport": {
+            "classification": "api-candidate",
+            "basis": "Q8 tested add as PUT on CHR 7.23.2 and 7.24rc2",
+            "rest": {
+              "method": "PUT",
+              "path": "/rest/ip/vrf",
+              "body": {
+                "name": "h2vrf2",
+                "interfaces": "h2br"
+              }
+            },
+            "centrs": "centrs api '<router>' '/ip/vrf' -X PUT -f 'name=h2vrf2' -f 'interfaces=h2br'",
+            "ev": "e8"
+          }
+        }
+      ],
+      "blocks": [],
+      "containsWrite": true,
+      "subcommands": [],
+      "ev": "e6"
+    },
+    "symbols": {
+      "occurrences": []
+    },
+    "values": {
+      "occurrences": [
+        {
+          "id": "v0",
+          "span": {
+            "start": 17,
+            "end": 23
+          },
+          "tokenSpan": {
+            "start": 12,
+            "end": 23
+          },
+          "kind": "attribute",
+          "name": "name",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        },
+        {
+          "id": "v1",
+          "span": {
+            "start": 35,
+            "end": 39
+          },
+          "tokenSpan": {
+            "start": 24,
+            "end": 39
+          },
+          "kind": "attribute",
+          "name": "interfaces",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        }
+      ]
+    },
+    "spans": [],
+    "diagnostics": [],
+    "evidence": [
+      {
+        "id": "e0",
+        "source": "canonicalizer",
+        "probe": "canonicalizeExecuteCommand",
+        "basis": "direct",
+        "outcome": "ok"
+      },
+      {
+        "id": "e1",
+        "source": "canonicalizer",
+        "probe": "analyzeCoordinates",
+        "basis": "direct",
+        "outcome": "ok"
+      },
+      {
+        "id": "e4",
+        "source": "canonicalizer",
+        "probe": "resolveVerbs",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e6",
+        "source": "canonicalizer",
+        "probe": "containsWrite",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e8",
+        "source": "canonicalizer",
+        "probe": "classifyExplainTransport",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e9",
+        "source": "canonicalizer",
+        "probe": "valueShapeHints",
+        "basis": "heuristic",
+        "outcome": "ok"
+      }
+    ],
+    "runtimeAcceptance": "not-proven"
+  },
+  "warnings": [],
+  "tips": [
+    {
+      "code": "tip/explain-offline-only",
+      "message": "No router was given, so this is the canonicalizer's reading alone.",
+      "fix": "Add a router (`centrs explain <router> '<input>'`) for read-only parse, highlight and argument-name evidence; `--schema` and `--complete` then describe paths and complete at the cursor.",
+      "detailsUrl": "https://tikoci.github.io/centrs/tips/tip/explain-offline-only"
+    }
+  ],
+  "meta": {
+    "target": {},
+    "via": null,
+    "settings": {
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      }
+    },
+    "validation": {
+      "enabled": false
+    },
+    "operation": {
+      "command": "explain",
+      "mode": "offline",
+      "statementCount": 1,
+      "verdict": "pass"
+    }
+  }
+}

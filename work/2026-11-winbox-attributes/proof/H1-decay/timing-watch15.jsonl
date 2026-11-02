@@ -1,0 +1,3 @@
+{"event":"session-open","tRelMs":1656}
+{"event":"watch-start","tRelMs":1656,"detail":"duration 15000ms"}
+{"event":"session-close","tRelMs":16660}

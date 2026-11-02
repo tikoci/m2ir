@@ -1,0 +1,178 @@
+# cspell:ignore novabin dynsym dynstr syms relocs vtable gotcha idstr looper getall getobj setobj objdump readelf nmangle mangle iptable ip6table ebtable dstnat srcnat masquerade conntrack jcc rel32 SIB modrm dword AOmap ASecMap cplusplusfilt Jiffies ThinRunner jiffies unaligned amm dyn binutils fini jmp imm findall jbe bitfield bitfields bswap oneline
+proof: "H0b [20,3] owner-binary identification + static 0xfd002a search in nova/bin/net 7.25 x86 (OWNER CONFIRMED, 0xfd002a NEGATIVE)"
+worker: H0b
+date: 2026-11-02
+head: "1ddbc20 (read-only worker; no commits)"
+complete: true
+verdict: "OWNER CONFIRMED: nova/bin/net IS the [20,3] filter handler owner (addHandler($0x3) + 'filter'/'ipt' ctor + store binding, sibling-discriminated). 0xfd002a NEGATIVE in net at full G0b-equivalent coverage: zero refs (no LE/BE u32, no 3-byte tag, no immediate, no reloc, no string, no dynsym, no aligned data word); all 16 $0xfd* immediates and all 31 raw 0x00fdXXXX words resolved to non-tag mechanisms"
+scope: "TWO linked static items: (1) [20,3] filter handler-owner binary identification; (2) G0b-equivalent 0xfd002a coverage search in the identified binary only. 1 field (0xfd002a); 0 private verbs; 0 experiments; filter [20,3] family bounds. No other binary searched."
+lab_contact: "NONE - static only. No VM booted, no router/CHR contact, no quickchr, no centrs, no probes. All evidence from local disassembly/relocation/byte reads (objdump/readelf/strings/python3) of the pinned 7.25 extraction, which executes no RouterOS code. No re-extraction performed."
+binary-identity:
+  path: "~/.local/share/m2ir/extractions/root-7.25/nova/bin/net"
+  resolved: "/home/amm0bot/.local/share/m2ir/extractions/root-7.25/nova/bin/net"
+  file: "nova/bin/net (RouterOS 7.25 x86)"
+  sha256: 4dfdc32ac9979b8ab86478dab601b79444875f936f7ff1b6b132553a565f6e7c
+  sha256_verified: true
+  sha256_how: "sha256sum BEFORE any search; exact match to BOTH the F0b report.yaml pinned value AND line 43 of work/2026-10-chr-extraction/novabin-7.25.sha256"
+  elf: "32-bit i386 EXEC (non-PIE), stripped, dynsym import-only (662 entries); 1603960 bytes (0x187978)"
+  sections: ".text 0x80557d0-0x8194f07 (R+E), .rodata 0x8195000-0x81cd2e0 (R), .data.rel.ro/.dynamic/.got.plt/.data (RW)"
+owner:
+  verdict: "CONFIRMED: nova/bin/net owns the [20,3] filter handler (ipt filter table)"
+  evidence:
+    - id: O1-registration
+      fact: "net registers handler id 3: malloc 0x15c + ctor @80e5a2a (@805e5e1), then push $0x3 / call nv::Looper::addHandler @805e5f0-805e5f3"
+      evidence: [sites-disassembly.txt]
+    - id: O2-ctor-literals
+      fact: "handler-3 ctor @80e5a2a binds literals 'filter' (@0x819e1f1, pushed @80e5a4e) and 'ipt' (@0x81a8c0a, pushed @80e5a5e), then builds a store path from prefix '/nova/store/net/' (@0x819c978, pushed @80e5a87) + the 'filter' suffix c_str"
+      evidence: [sites-disassembly.txt]
+    - id: O3-vtable
+      fact: "same ctor calls AOmap C2 (@80e5ae5) and installs base vtable 0x81bd6f0 (@80e5aed) then final handler vtable 0x81bd808 (@80e5b29); both resident in .rodata with .text fn pointers"
+      evidence: [sites-disassembly.txt]
+    - id: O4-sibling-discrimination
+      fact: "sibling table ctors prove the literals discriminate: h0x2a='filter'+'6' (v6), h0x7/h0x2c='mangle'(+'6'), h0x1f='filter'+'ebt', h0x2d=AMap('/nova/store/net/layer7protos'); 'filter' has exactly 3 xrefs (h3/h0x2a/h0x1f ctors)"
+      evidence: [sites-disassembly.txt]
+    - id: O5-rule-logic
+      fact: "net carries the firewall-rule validation corpus ('jumps to builtin chains not allowed', chain/action constraint strings, iptable/ebtable .ko loads) - the filter table's rule semantics live in this binary"
+      evidence: [sites-disassembly.txt]
+    - id: O6-context
+      fact: "0x806885c (F0b-cited [20,0] local switch addr) is a function entry in net with a private-cmd switch prologue; net=process-20 context per handler-table notes + commands.yaml:67 (cited, not re-proved)"
+      evidence: [sites-disassembly.txt]
+method:
+  tools:
+    - "GNU objdump 2.47 (disassembly: objdump -d --no-show-raw-insn; symbols: objdump -T | c++filt)"
+    - "GNU readelf 2.47 (sections: readelf -S -W; relocs: readelf -r -W; symbols: readelf --dyn-syms -W)"
+    - "GNU strings (binutils 2.47)"
+    - "python3 3.14.8 (whole-file byte scans, LE/BE word decode, address math, disassembly windowing)"
+  coverage:
+    - "whole-file raw scan (all 1603960 bytes, every offset): LE u32 0x00fd002a = 0 hits; BE u32 = 0 hits; 3-byte LE 2a 00 fd = 0 hits"
+    - "full .text disassembly text scan (435735 lines): case-insensitive 'fd002a' = 0 hits (control: 681 '0xfe000*' envelope-tag immediates, so the idiom is detectable)"
+    - "full .text immediate scan: every '$0xfd*' operand enumerated (16 sites, all classified below); every '0xfd' disassembly line triaged (22 non-immediate lines: 16 objdump <sym+off> label artifacts + 6 struct-displacement 0xfd(%reg) operands)"
+    - "relocations: readelf -r -W full output scanned, 'fd002a' = 0 hits"
+    - "strings: full output (13473 lines) scanned, 'fd002a' = 0 hits"
+    - "dynsym: no st_value in [0xfd0000, 0xfe0000) (import-only table)"
+    - "aligned-4 scan for 0x00fdXXXX words: NONE in any data section (.rodata/.eh_frame/.data.rel.ro/.data/.got.plt/.dynamic/init/fini); the 3 aligned raw hits are all .text jcc opcodes"
+    - "every raw-word hit (31 distinct 0x00fdXXXX LE words at 31 offsets) classified by section + alignment + enclosing instruction (jcc/call/jmp-rel windows, disp-0xfd windows, SIB byte, imm windows, dynsym/reloc field-spans, jump-table entry-span)"
+    - "idiom note: net passes FULL-u32 tags to message get/insert/has (681 control hits; id-type vocabulary is type-only, no namespace-specific id types, so an fd-namespace referent would render as $0xfd002a); $0xfd0000 has 0 hits (no fd-namespace base compare); the 5 true $0xff0000 sites are stores/tag-builds with no compare chain, so no split (0xfd0000 | 0x2a) construction site exists"
+  reproduce:
+    - "sha256sum ~/.local/share/m2ir/extractions/root-7.25/nova/bin/net  # expect 4dfdc32a...565f6e7c"
+    - "grep -c '^.*  net$' work/2026-10-chr-extraction/novabin-7.25.sha256  # pinned cross-check"
+    - "objdump -d --no-show-raw-insn net | grep -ci 'fd002a'  # expect 0"
+    - "objdump -d --no-show-raw-insn net | grep -c '0xfe000'  # expect 681 (method control)"
+    - "python3 whole-file findall for struct.pack('<I',0x00fd002a), ('>I',...), bytes([0x2a,0x00,0xfd])  # expect 0/0/0"
+    - "readelf -r -W net | grep -ci 'fd002a'; strings net | grep -ci 'fd002a'  # expect 0/0"
+    - "objdump -d --no-show-raw-insn net | grep -n 'push   $0x3$'  # 805e5f0 handler-3 registration (verify neighbor addHandler call)"
+hits:
+  - id: F1-F2-plt-indices
+    address: "0x8054fc6 (push $0xfd0) + 0x8054fd6 (push $0xfd8)"
+    function: "rename@plt (.plt slot @0x8054fc0) + nv::ASecMap::getDefaultCfg@plt (.plt slot @0x8054fd0)"
+    role-assessment: "EXCLUDED lookalike: linker-generated PLT relocation indices (rename slot matches .rel.plt sym 0xfd0 at the 0x9c53 field-span), not value constants. G0b-H7 analog."
+    grounding-vs-F-jump: "SILENT (linker metadata)"
+  - id: F3-flag-bit-clear
+    address: "0x8062ee2 (and $0xfd,%ah)"
+    function: "stripped state-flags code (paired set-path 'or $0x2,%dh' @0x8062ed6)"
+    role-assessment: "EXCLUDED lookalike: 8-bit flag-bit clear (bit 1), paired with the set arm two branches above. Single-byte mask, not tag-shaped."
+    grounding-vs-F-jump: "SILENT (flag arithmetic)"
+  - id: F4-range-bound-1
+    address: "0x80738f7 (cmp $0xfd,%dl; jbe)"
+    function: "stripped numeric-scale code (after lea -1 + imul $0x64; alt path imul $0x3e8)"
+    role-assessment: "EXCLUDED lookalike: range bound check (value <= 253) on a scaled byte. Small-int bound, not tag-shaped."
+    grounding-vs-F-jump: "SILENT (range check)"
+  - id: F5-F6-F8-bit25-clear
+    address: "0x8095220 + 0x8095411 + 0x80b1c3a (and $0xfdffffff,%edx)"
+    function: "three packed-flags words (0x13c/0x168/0x54(%ebx)) in stripped message-codec code"
+    role-assessment: "EXCLUDED lookalike: clears bit 25 (0xfdffffff = ~0x02000000) after a shl/shr bit-extract feeding message::get<bool_id>. Bitmask, not tag-shaped."
+    grounding-vs-F-jump: "SILENT (bitfield packing)"
+  - id: F7-mask-16bit
+    address: "0x80ad3a9 (and $0xfddf,%dx)"
+    function: "stripped flags code (paired 'or $0x2,%ah' @0x80ad3b1)"
+    role-assessment: "EXCLUDED lookalike: 16-bit flag mask (clears 0x220). Not tag-shaped."
+    grounding-vs-F-jump: "SILENT (flag arithmetic)"
+  - id: F9-F12-ns0-field-ids
+    address: "0x80f33f3/0x80f340d (get<u32_id> 0xfd0/0xfd1) + 0x80f6094/0x80f60a8 (insert<u32_id> 0xfd0/0xfd1)"
+    function: "stripped row-codec pair @80f30ae (get side) / @80f5ce4 (insert side); insert side carries ipv6-restart strings + 0xfe0012/0xfe001c (IPv6-settings row builder, NOT the filter codec)"
+    role-assessment: "EXCLUDED lookalike: namespace-0x00 bare u32 field ids 4048/4049 in the small-int id form shared with ~100 sibling ids (0x1-0x1d, 0x5a-0x5c, 0x190, ...) in the same codecs. Not fd-namespace-shaped (no 0xfd0000 base) and not filter-table code."
+    grounding-vs-F-jump: "SILENT (different namespace + different table)"
+  - id: F13-range-bound-2
+    address: "0x8128ee1 (cmp $0xfd,%dl; jbe)"
+    function: "stripped code (after bswap + lea -1)"
+    role-assessment: "EXCLUDED lookalike: range bound check (value <= 253). Small-int bound, not tag-shaped."
+    grounding-vs-F-jump: "SILENT (range check)"
+  - id: F14-F15-char-mask
+    address: "0x8106d01 (test $0xfd,%al, after sub $0x2b) + 0x8116772 (test $0xfd,%al in a 6-insn predicate)"
+    function: "char-class digit-parsing code (F14 matches the G0b-H8 idiom byte-for-byte incl. sub $0x2b)"
+    role-assessment: "EXCLUDED lookalike: 8-bit char-class bitmasks. Not tag-shaped."
+    grounding-vs-F-jump: "SILENT (char parsing)"
+  - id: F16-value-store
+    address: "0x813c985 (movl $0xfd,(%eax))"
+    function: "stripped code (stores to 0x10(%ebp)-deref'd pointer after string teardown)"
+    role-assessment: "EXCLUDED lookalike: u32 store of small-int 253. Not tag-shaped (no 0xfd0000 base)."
+    grounding-vs-F-jump: "SILENT (value store)"
+  - id: F9-raw-word-windows
+    address: "31 offsets (see sites-disassembly.txt F-raw list)"
+    function: "various (each attributed to enclosing instruction)"
+    role-assessment: "EXCLUDED byte-pattern coincidences: (a) 8 jcc-rel windows (0f 84/85/87 + rel32 0xfd byte); (b) 7 call/jmp-rel windows (e8/e9 spans); (c) 7 disp-0xfd struct-offset windows; (d) 1 SIB-0xfd lea (G0b-H9a analog); (e) 4 imm-operand windows incl. push $0x100fd low byte and the F16 site itself; (f) 1 .dynsym field-span (st_name 0xfd + UNDEF value, G0b-H9e analog); (g) 1 .rel.plt field-span (rename@plt sym-0xfd0 slot); (h) 1 .rodata jump-table entry-span across valid targets 0x0818091a/0x081800fd"
+    grounding-vs-F-jump: "SILENT (no referent; mechanisms documented so a re-search does not re-triage them)"
+proven:
+  - id: P-H0b-1
+    claim: "nova/bin/net 7.25 x86 (sha256 4dfdc32a...565f6e7c) IS the [20,3] filter handler owner: handler id 3 registered from net code with a ctor binding 'filter'+'ipt'+'/nova/store/net/' and an AOmap/handler vtable pair"
+    evidence: [sites-disassembly.txt]
+  - id: P-H0b-2
+    claim: "0xfd002a has ZERO references in nova/bin/net 7.25 x86: no LE/BE u32, no 3-byte tag, no disassembly immediate, no reloc, no string, no dynsym value, no aligned data word"
+    evidence: [sites-disassembly.txt]
+  - id: P-H0b-3
+    claim: "net has no fd-namespace switch at all: $0xfd0000 = 0 hits; the 5 true $0xff0000 sites are stores/tag-builds with no compare chain; the message id-type vocabulary is type-only so an fd referent would render as full-u32 $0xfd002a (0 hits)"
+    evidence: [sites-disassembly.txt]
+  - id: P-H0b-4
+    claim: "'$0xfd..' lookalikes in net are non-tag: F1-F16 each resolved to a non-tag role with function-level mechanism (PLT/flags/bounds/bitfields/ns0-ids/char-mask/store)"
+    evidence: [sites-disassembly.txt]
+  - id: P-H0b-5
+    claim: "binary identity verified before any search: sha256 exact match to BOTH the F0b-pinned value and novabin-7.25.sha256 line 43"
+    evidence: []
+disproven:
+  - id: D-H0b-1
+    claim: "nova/bin/net's [20,3] ownership is unverified (F0b 'hash cross-check only' role) - DISPROVEN: ownership now established at registration + ctor-literal + store-binding + sibling-discrimination level"
+    evidence: [sites-disassembly.txt]
+  - id: D-H0b-2
+    claim: "0xfd002a is referenced anywhere (immediate, table, reloc, string, symbol) in nova/bin/net 7.25 x86 - DISPROVEN at full G0b-equivalent coverage"
+    evidence: [sites-disassembly.txt]
+unresolved:
+  - id: U-H0b-fd002a-identity
+    claim: "0xfd002a field identity/semantics: this static slice is SILENT on the field itself (absence of evidence in the owner binary's code/rodata, not evidence of absence at runtime - the adjunct may be constructed dynamically, e.g. composed tag or server-side join)"
+    next: "coordinator: live leg that varies/clears 0xfd002a (F-jump U-jump-0xfd002a next step), or a wider-binary static sweep if a second owner candidate ever emerges"
+  - id: U-H0b-dynamic-construction
+    claim: "whether net composes 0xfd002a at runtime (tag arithmetic, computed store-join): NOT examined beyond the no-split-construction-site finding (no $0xfd0000 base, no fd compare chain)"
+    next: "only if live work shows the adjunct is net-computed rather than stored"
+  - id: U-H0b-stripped-starts
+    claim: "exact function starts for stripped codecs holding F9-F16 (instruction-level roles unambiguous from data flow/idiom; attribution is to code region + enclosing function)"
+    next: "none needed for this verdict"
+blocked: []
+bonus-thread5-scouting:
+  note: "OPTIONAL BONUS per brief: zero verdict weight, raw counts only, NO semantics claimed"
+  counts:
+    - tag: "0x16"
+      rendering: "$0x16"
+      count: 120
+      context: "top form mov $0x16,%edx x47, push $0x16 x27 - mixed operand forms"
+    - tag: "0x194"
+      rendering: "$0x194"
+      count: 4
+      context: "all 4 are push $0x194"
+    - tag: "0x0b"
+      rendering: "$0xb"
+      count: 216
+      context: "top form push $0xb x58, mov $0xb,%ecx x39 - mixed operand forms"
+    - tag: "0x1c6"
+      rendering: "$0x1c6"
+      count: 3
+      context: "all 3 are push $0x1c6"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/H0b-fd002a-owner-static/report.yaml
+  - work/2026-11-winbox-attributes/proof/H0b-fd002a-owner-static/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/H0b-fd002a-owner-static/sites-disassembly.txt
+context_for_coordinator:
+  - "owner question CLOSED with positive evidence: net registers [20,3]=ipt-filter (h3) alongside h0x2a=filter-v6, h0x7/h0x2c=mangle(+v6), h0x1f=ebt-filter, h0x2d=layer7protos. No ambiguity stop needed."
+  - "0xfd002a is now NEGATIVE in BOTH libumsg.so (G0b) and its owner binary net (H0b) at full static coverage; the adjunct's static referent, if any, is neither generic message code nor the filter handler's own image - live variation (F-jump U-jump-0xfd002a) is the remaining path"
+  - "full 435735-line disassembly kept at /tmp/h0b-net-dis.txt + strings at /tmp/h0b-net-strings.txt (session-local, NOT committed - no bulk dumps in repo); reproduce via the method/reproduce commands"
+owned_path: work/2026-11-winbox-attributes/proof/H0b-fd002a-owner-static/
+forbidden_paths_edited: none
+git_commands_run: "git log --oneline -1 + git status --short (mandated HEAD 1ddbc20 / clean-tree verify only; no other git commands)"

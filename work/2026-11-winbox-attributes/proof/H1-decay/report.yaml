@@ -1,0 +1,175 @@
+# cspell:ignore rowid getcount getall getobj reqid mangle calea unacked ladder rungs oneshot newflag churn ws3c subnano trel msback respike nodecay undersampled
+# H1 execution report (coordinator). ws21 ONLY. No commit, no push.
+proof: "H1 [20,32] decay mechanism on ws21 7.25: COMPLETE 3w+0r of 3w+0r; spike1 = 1 stable 6 reads/+354s (NO DECAY, kills read-disturbance); spike2 re-spikes to 4 then graded-decays 4->3->2 with a 1-dip, plateau at 2; f15/f206 decoupled; idle-session death ~24-30s bounds persistent designs; ladder rx bytes lost (console-observed values, see tiers)"
+date: 2026-11-02
+worker: coordinator
+leg: H1-decay-mechanism
+sheet: "coordinator sheet 2026-11-02 (H0a designs (a)+(b piggyback on spike2)+(c rider); F-jump counting rule; combined 3w+0r)"
+approval_quoted: "h1 yes — explicit per-leg yes, this session"
+vm:
+  name: ws21
+  routeros: "7.25"
+  arch: x86
+  network: user, socket::ws21-a, socket::ws21-b
+  ports: "resolved live from `quickchr list` at execution (http:9190 block, winbox:9195); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute --quickchr ws21 --yes (writes) / centrs retrieve (reads)"
+  native_via: "proof/H1-decay/leg-h1.ts (NEW this leg: timestamped capture + persistent-session ladder + bounded async drain + watch mode; read-only, no native write verb exists)"
+  tooling_preconditions_built: "timestamped-capture mode (--t0-ms, relative +ms ts, --timing-out churn ledger) + persistent-session ladder mode + 15s/300s watch mode; biome + typecheck green before boot"
+counting_rule: "F-jump rule per sheet: control adds/sets + 1 per restore branch; per-cell removes bundled 0w; rejected adds 0w; all native reads 0w"
+evidence_tiers: "TIER 1 (committed rx bytes + timestamps): S1/P1-P5/Q1-Q4/S1zero/M0/restored step files + timing ledgers + 15s watch. TIER 2 (console-observed values + committed ledger): ladder R0a-R2 values 4/4/3/2 (rx bytes lost when the idle session died before the end-of-run flush; rung-start times in timing-ladder.jsonl). Values below are tier-tagged."
+baseline_snapshot:
+  verdict: PASS
+  control:
+    - { route: /ip/firewall/filter, objectCount: 0 }
+    - { route: /ip/firewall/nat, objectCount: 0 }
+    - { route: /ip/firewall/raw, objectCount: 0 }
+    - { route: /ip/firewall/mangle, objectCount: 0 }
+    - { route: /ip/firewall/calea, objectCount: 0 }
+  native: "[20,3]=0 [20,32]=0, GETALL [20,3] 0 rows complete"
+  files: [control-base-firewall-filter.json, control-base-firewall-nat.json, control-base-firewall-raw.json, control-base-firewall-mangle.json, control-base-firewall-calea.json, step-M0.jsonl, timing-M0.jsonl]
+steps:
+  - tag: spike1-add
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=h1-spike1"
+    outcome: "ok, ret *1; MANDATORY read-back: exactly 1 row forward/accept 0/0 (all guards hold)"
+    evidence: [control-S1-add.json, control-S1-read.json, explain-add1.json]
+    writes: 1
+    cumulative: 1
+  - tag: S1
+    stimulus: "NONE (0w immediate read, +10.1s post-add, timestamped)"
+    outcome: "[TIER 1] [20,32]=1 ([20,3]=1); f15/f206=2; drain async=0"
+    evidence: [step-S1.jsonl, timing-S1.jsonl]
+    writes: 0
+    cumulative: 1
+  - tag: P1-P5-polls
+    stimulus: "NONE (0w polls at +77s/+148s/+217s/+287s/+354s post-add, timestamped)"
+    outcome: "[TIER 1] [20,32]=1 ALL FIVE (6 consecutive nonzero reads incl S1); f15/f206=1 all five (DECOUPLED from [20,32]: aux 2->1 between S1 and P1 while main held 1); every drain async=0"
+    poll_cap: "5 reads reached with NO decay -> no-decay branch per sheet (still run add2)"
+    evidence: [step-P1.jsonl, step-P2.jsonl, step-P3.jsonl, step-P4.jsonl, step-P5.jsonl, timing-P1.jsonl, timing-P2.jsonl, timing-P3.jsonl, timing-P4.jsonl, timing-P5.jsonl]
+    writes: 0
+    cumulative: 1
+  - tag: spike1-remove-zero-verify
+    stimulus: "remove *1 (bundled 0w)"
+    outcome: "control 0 rows + native [20,3]=0 [20,32]=0 (f15/f206=1 at zero state)"
+    evidence: [control-S1-rm.json, control-S1-zero.json, step-S1zero.jsonl, explain-rm1.json]
+    writes: 0
+    cumulative: 1
+  - tag: spike2-add
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=h1-spike2"
+    outcome: "ok, ret *2 (rowid advanced); MANDATORY read-back: exactly 1 row forward/accept 0/0"
+    evidence: [control-S2-add.json, control-S2-read.json, explain-add2.json]
+    writes: 1
+    cumulative: 2
+  - tag: ladder-R0a-R0b-R1-R2
+    stimulus: "NONE (0w persistent session, one login)"
+    outcome: "[TIER 2] R0a(+5.4s)=4 R0b(back-to-back)=4 R1(+10s)=3 R2(+30s)=2 — RE-SPIKE to 4 (not 1) + graded in-session decay; rung starts in the committed ledger, values console-observed (rx bytes lost, see idle-death)"
+    evidence: [timing-ladder.jsonl]
+    writes: 0
+    cumulative: 2
+  - tag: idle-death-1
+    stimulus: "NONE (transport behavior, not a stimulus)"
+    outcome: "persistent session died during the 30s R2->R3 gap (last traffic ~+30s, death detected at the +60s R3 attempt); step-ladder.jsonl never flushed (end-of-run write skipped on throw) — R0a-R2 rx bytes + ladder-window async LOST; values survive in console output only"
+    evidence: [timing-ladder.jsonl]
+    writes: 0
+    cumulative: 2
+  - tag: Q1-Q4-polls
+    stimulus: "NONE (0w session-per-read polls, in-sheet adaptation after the ladder transport failure: same reads, same scale, fresh sessions)"
+    outcome: "[TIER 1] Q1(+84.7s)=1 Q2(+152.4s)=2 Q3=2 Q4=2 — DIP (1 between 2s) then PLATEAU at 2, no convergence to 0 in-window; f15/f206=2 throughout (main 1->2 while aux held: 2nd decoupling direction); every drain async=0"
+    evidence: [step-Q1.jsonl, step-Q2.jsonl, step-Q3.jsonl, step-Q4.jsonl, timing-Q1.jsonl, timing-Q2.jsonl, timing-Q3.jsonl, timing-Q4.jsonl]
+    writes: 0
+    cumulative: 2
+  - tag: spike2-remove-restore-verify
+    steps: "remove *2 (bundled 0w) + 5-menu control verify (0 rows each) + native read ([20,3]=0 [20,32]=0, GETALL 0 rows complete)"
+    outcome: "restored=true"
+    evidence: [control-S2-rm.json, explain-rm2.json, control-restored-filter.json, control-restored-nat.json, control-restored-raw.json, control-restored-mangle.json, control-restored-calea.json, step-restored.jsonl]
+    writes: 1
+    cumulative: 3
+  - tag: watch-negative-control
+    stimulus: "NONE (0w, empty table, no rule add)"
+    outcome: "300s watch DIED at +25.5s (idle-death-2, 24s no-traffic); salvaged 15s bounded watch completed clean: async=0, 0 records — negative control PARTIAL (15s silence, committed)"
+    evidence: [timing-watch.jsonl, step-watch15.jsonl, timing-watch15.jsonl]
+    writes: 0
+    cumulative: 3
+spend:
+  counted_writes: 3
+  reboots: 0
+  cap: "3w+0r"
+  itemized: "add1 (1) + add2 (1) + restore-verify branch (1); removes bundled; rejections 0; 19 native sessions, all 0w"
+  within_cap: true
+proven:
+  - id: P-h1-respike
+    tier: "TIER 1 (re-spike fact: S1zero=0 -> Q1=1 with the rule present) + TIER 2 (magnitude 4)"
+    claim: "the 2nd in-session add RE-SPIKES (0->nonzero after spike1's removal+zero-verify): the spike is a per-add transient, not one-per-session/boot; magnitude VARIES per add (spike1 peak 1 TIER 1 vs spike2 peak 4 TIER 2)"
+    evidence: [step-S1zero.jsonl, step-Q1.jsonl, timing-ladder.jsonl]
+  - id: P-h1-nodecay-spike1
+    tier: TIER 1
+    claim: "spike1 held [20,32]=1 across 6 reads / +10s..+354s with zero decay: G3's 1->0->0 is NOT a fixed per-add curve; decay presence itself varies per add"
+    evidence: [step-S1.jsonl, step-P1.jsonl, step-P2.jsonl, step-P3.jsonl, step-P4.jsonl, step-P5.jsonl]
+  - id: P-h1-graded-decay
+    tier: "TIER 2 (4/4/3/2) + TIER 1 (1/2/2/2 dip+plateau, no convergence to 0 in-window)"
+    claim: "spike2 decayed GRADED (4->3->2 across +5s..+30s in one session) with a committed 1-dip and a 2-plateau: decay shape is graded-with-dip, not a single step and not converging in-window"
+    evidence: [timing-ladder.jsonl, step-Q1.jsonl, step-Q2.jsonl, step-Q3.jsonl, step-Q4.jsonl]
+  - id: P-h1-f15f206-decoupled
+    tier: TIER 1
+    claim: "f15/f206 do NOT track [20,32] (3rd+ independent break, both directions): aux 2->1 while main held 1 (S1->P1); main 1->2 while aux held 2 (Q1->Q2). The G3 co-decay was context, not law."
+    evidence: [step-S1.jsonl, step-P1.jsonl, step-Q1.jsonl, step-Q2.jsonl]
+  - id: P-h1-idle-death
+    tier: "TIER 1 (ledgers)"
+    claim: "an idle WinBox session dies after ~24-30s with no traffic (2 samples: ladder gap death in (+30s,+60s]; watch death at +25.5s/24s-idle). Persistent-session designs must keep gaps <20s or accept session-per-read."
+    evidence: [timing-ladder.jsonl, timing-watch.jsonl, timing-watch15.jsonl]
+  - id: P-h1-async-silence
+    tier: TIER 1
+    claim: "ZERO async observed in every persisted window: 11 drains (2s each, S1/P1-P5/Q1-Q4) + 15s watch, all async=0, all step files exactly 8 records (tx/rx only). Stability-period silence; decay-correlation untested (ladder-window async lost)."
+    evidence: [step-S1.jsonl, step-P1.jsonl, step-P2.jsonl, step-P3.jsonl, step-P4.jsonl, step-P5.jsonl, step-Q1.jsonl, step-Q2.jsonl, step-Q3.jsonl, step-Q4.jsonl, step-watch15.jsonl]
+disproven:
+  - id: D-h1-read-disturbance
+    tier: TIER 1
+    claim: "H-decay-2 (read-disturbance/observer-effect) DEAD: 6 consecutive nonzero reads (spike1) plus back-to-back R0a=R0b=4 (TIER 2) — reads do not consume the value"
+    evidence: [step-S1.jsonl, step-P1.jsonl, step-P2.jsonl, step-P3.jsonl, step-P4.jsonl, step-P5.jsonl]
+  - id: D-h1-fixed-curve
+    claim: "any fixed per-add decay curve (fixed delay, fixed rate, magnitude-determined lifetime) DEAD: mag-1 stable 6min vs mag-4 graded-decaying in 30s vs G3 mag-1 decay-to-0 — magnitude and lifetime both vary per add"
+    evidence: [step-P5.jsonl, step-Q4.jsonl]
+  - id: D-h1-churn-only
+    claim: "H-decay-5 in its churn-ONLY form (value tracks session open/close count) DEAD as the spike driver: spike2 re-spiked in the SAME boot session with no new boot history; 6 fresh sessions held spike1 rock-stable"
+    evidence: [timing-ladder.jsonl, step-P5.jsonl]
+unknown:
+  - id: U-h1-32-mechanism
+    claim: "mechanism STILL unclaimed but narrowed: per-add transient, variable magnitude (1, 4), variable lifetime (stable-6min / graded-to-plateau / G3 decay-to-0). H-decay-1 (gauge) survives as variable-gauge; H-decay-4 (one-shot) survives only in multi-step form (graded kills single-step); H-decay-3 (announce-backlog) UNTESTED (ladder async lost); H-decay-5 churn-count dead but history-gating OPEN (magnitude 1-vs-4 unexplained)."
+    next: "follow-up: timestamped session-per-read curve on a FRESH spike (no ladder: idle death bounds it) + incremental-flush tooling + per-rung async console counts; test whether plateau-2 eventually converges (longer window)"
+  - id: U-h1-q1-dip
+    claim: "the Q1=1 dip (single committed point between 2s) unexplained: dip-anomaly vs oscillation undersampled — one point cannot decide"
+    next: "denser polls around +60..+120s on a future spike"
+  - id: U-h1-f15f206-role
+    claim: "f15/f206's own mechanism (values 0/1/2 across M0/reads/zero-state) out of H1 scope; only the non-tracking result is claimed"
+    next: "none sheeted"
+restore_verification:
+  verdict: PASS
+  control:
+    - { route: /ip/firewall/filter, objectCount: 0 }
+    - { route: /ip/firewall/nat, objectCount: 0 }
+    - { route: /ip/firewall/raw, objectCount: 0 }
+    - { route: /ip/firewall/mangle, objectCount: 0 }
+    - { route: /ip/firewall/calea, objectCount: 0 }
+  native:
+    - { op: "GETCOUNT [20,3]", value: 0 }
+    - { op: "GETCOUNT [20,32]", value: 0 }
+    - { op: "GETALL [20,3]", rows: 0, pages: 1 }
+  files: [control-restored-filter.json, control-restored-nat.json, control-restored-raw.json, control-restored-mangle.json, control-restored-calea.json, step-restored.jsonl]
+cleanup_state:
+  tables: "all five firewall menus empty on both surfaces"
+  vm: "ws21 STOPPED via `quickchr stop ws21` (not removed)"
+  writes_on_other_machines: 0
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/H1-decay/report.yaml
+  - work/2026-11-winbox-attributes/proof/H1-decay/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/H1-decay/leg-h1.ts
+  - work/2026-11-winbox-attributes/proof/H1-decay/sanitize.ts
+  - fixtures/winbox-ipc/7.25-getcount-20-32-h1.json
+gates_observed:
+  - "ws21 ONLY: no other VM touched"
+  - "every control string validated with `centrs explain` before sending (4/4 pass: add1 + rm *1 + add2 + rm *2; outputs saved as explain-*.json)"
+  - "stop conditions honored: no-decay branch taken at the poll cap (still ran add2 per sheet); flapping clause noted (1->2, not the sheeted 0->nonzero) + curve extension capped at Q4 + restore; cap reached exactly (3w), no re-spike improvised"
+  - "in-sheet adaptation recorded honestly: Q-series session-per-read after the ladder transport failure (same reads, same timestamped scale); ladder values tier-flagged, never presented as rx-committed"
+  - "no edits to canonical files during execution (coordinator integrates separately)"
+  - "no commit, no push"

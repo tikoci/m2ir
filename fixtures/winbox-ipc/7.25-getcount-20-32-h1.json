@@ -1,0 +1,430 @@
+{
+	"provenance": {
+		"report": "H1 write leg, 2026-11-02 (ws21 7.25 x86, 3w+0r of 3)",
+		"routeros_version": "7.25",
+		"route": "spike1: [20,32]=1 stable 6 reads/+354s; spike2: 1,2,2,2 committed (ladder 4,4,3,2 console-observed, rx bytes lost to idle-session death)",
+		"note": "Sanitized M2 hex plus decoded entries only: no hosts, ports, or credentials. ts values are RELATIVE t-t0 offsets (host ms post-add), absolutes redacted. Control ground truth: proof/H1-decay/control-S1-read.json + control-S2-read.json (exactly 1 forward/accept row, 0/0)."
+	},
+	"records": [
+		{
+			"id": "getcount-20-32-h1-s1-rx",
+			"role": "H1 S1 ([20,32]=1 at +10140ms post-add)",
+			"source": "proof/H1-decay/step-S1.jsonl rx (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h1-p1-rx",
+			"role": "H1 P1 ([20,32]=1 at +77243ms post-add)",
+			"source": "proof/H1-decay/step-P1.jsonl rx (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h1-p2-rx",
+			"role": "H1 P2 ([20,32]=1 at +147896ms post-add)",
+			"source": "proof/H1-decay/step-P2.jsonl rx (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h1-p3-rx",
+			"role": "H1 P3 ([20,32]=1 at +217389ms post-add)",
+			"source": "proof/H1-decay/step-P3.jsonl rx (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h1-p4-rx",
+			"role": "H1 P4 ([20,32]=1 at +286678ms post-add)",
+			"source": "proof/H1-decay/step-P4.jsonl rx (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h1-p5-rx",
+			"role": "H1 P5 ([20,32]=1 at +354059ms post-add)",
+			"source": "proof/H1-decay/step-P5.jsonl rx (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h1-q1-rx",
+			"role": "H1 Q1 ([20,32]=1 at +84700ms post-add)",
+			"source": "proof/H1-decay/step-Q1.jsonl rx (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h1-q2-rx",
+			"role": "H1 Q2 ([20,32]=2 at +152372ms post-add)",
+			"source": "proof/H1-decay/step-Q2.jsonl rx (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09020600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h1-q3-rx",
+			"role": "H1 Q3 ([20,32]=2 at +258127ms post-add)",
+			"source": "proof/H1-decay/step-Q3.jsonl rx (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09020600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h1-q4-rx",
+			"role": "H1 Q4 ([20,32]=2 at +328250ms post-add)",
+			"source": "proof/H1-decay/step-Q4.jsonl rx (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09020600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		}
+	]
+}

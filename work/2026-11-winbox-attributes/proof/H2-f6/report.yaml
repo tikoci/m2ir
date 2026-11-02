@@ -1,0 +1,118 @@
+# cspell:ignore rowid getcount getall getobj vrf enslavement ether1 ether2 h2br h2vrf1 h2vrf2
+# H2 execution report (coordinator). g4beta5 ONLY. No commit, no push.
+proof: "H2 f6 rowid-vs-flag on g4beta5 7.26beta5: COMPLETE 10w+0r of 10w+0r; f6=ROWID PROVEN (VRF .id 0/1/2 exact, 3/3 zero-offset) — flag DEAD; interface-rowid triply excluded; restore exact"
+date: 2026-11-02
+worker: coordinator
+leg: H2-f6-rowid-flag
+sheet: "coordinator sheet 2026-11-02 (2 custom VRFs, 2nd .id *2, address in each; F-vlan counting rule; 10w+0r)"
+approval_quoted: "h2 yes — explicit per-leg yes, this session"
+vm:
+  name: g4beta5
+  routeros: "7.26beta5"
+  arch: x86
+  network: user, socket::g4b5-link
+  ports: "resolved live from `quickchr list` at execution (http:9240 block, winbox:9245); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute --quickchr g4beta5 --yes (writes) / centrs retrieve (reads)"
+  native_via: "proof/G4-beta5-populated/leg-g4.ts read (paged GETALL [16,2]/[16,13]/[20,1]/[20,0]; reused unmodified)"
+counting_rule: "F-vlan rule per sheet: EVERY control add/set/remove counts 1w; reads 0w"
+baseline_snapshot:
+  verdict: PASS
+  control:
+    - { route: /ip/vrf, objectCount: 1, rows: ["*0:main"] }
+    - { route: /ip/address, objectCount: 1, rows: ["*1:10.0.2.15/24 DHCP ether1"] }
+    - { route: /interface/bridge, objectCount: 0, rows: [] }
+  native: "[20,1]=1 row (13 keys, f6=0) [20,0]=3 rows (ether1=2 ether2=3 lo=1)"
+  note: "B0 IDENTICAL to the G4 baseline (same .ids, same shape)"
+  files: [baseline_ip_vrf.json, baseline_ip_address.json, baseline_interface_bridge.json, step-B0.jsonl]
+steps:
+  - tag: B1-vrf1
+    stimulus: "/ip/vrf/add name=h2vrf1 interfaces=ether2"
+    outcome: "ok, ret *1"
+    evidence: [control-B1-add.json, explain-B1.json]
+    writes: 1
+    cumulative: 1
+  - tag: B2-bridge
+    stimulus: "/interface/bridge/add name=h2br"
+    outcome: "ok, ret *5"
+    evidence: [control-B2-add.json, explain-B2.json]
+    writes: 1
+    cumulative: 2
+  - tag: B3-vrf2
+    stimulus: "/ip/vrf/add name=h2vrf2 interfaces=h2br"
+    outcome: "ok, ret *2 (2nd custom VRF .id *2 as designed)"
+    evidence: [control-B3-add.json, explain-B3.json]
+    writes: 1
+    cumulative: 3
+  - tag: B4-addr-vrf1
+    stimulus: "/ip/address/add address=198.51.100.21/24 interface=ether2 comment=h2vrf1"
+    outcome: "ok, ret *2; STIMULUS GATE 1 PASS (control read shows vrf=h2vrf1)"
+    native: "[20,1] rowid 2 (13 keys): f6=1 (cross-check: consistent with both readings)"
+    evidence: [control-B4-add.json, control-B4-read.json, step-B4.jsonl, explain-B4.json]
+    writes: 1
+    cumulative: 4
+  - tag: B5-addr-vrf2
+    stimulus: "/ip/address/add address=198.51.100.22/24 interface=h2br comment=h2vrf2"
+    outcome: "ok, ret *3; STIMULUS GATE 2 PASS (control read shows vrf=h2vrf2 — the bridge-carrier design works)"
+    native: "[20,1] rowid 3 (13 keys): f6=2 — DECIDES rowid (VRF .id *2); flag (==1) DEAD"
+    evidence: [control-B5-add.json, control-B5-read.json, step-B5.jsonl, explain-B5.json]
+    writes: 1
+    cumulative: 5
+  - tag: R1-R5-removes
+    steps: "addr *3 (1) + addr *2 (1) + vrf *2 (1) + bridge *5 (1) + vrf *1 (1), all .id selectors, all ok"
+    outcome: "all 5 ok"
+    evidence: [control-R1-rm.json, control-R2-rm.json, control-R3-rm.json, control-R4-rm.json, control-R5-rm.json, explain-R1.json, explain-R2.json, explain-R3.json, explain-R4.json, explain-R5.json]
+    writes: 5
+    cumulative: 10
+spend:
+  counted_writes: 10
+  reboots: 0
+  cap: "10w+0r"
+  itemized: "B1+B2+B3+B4+B5 (5) + R1-R5 (5); rejections 0"
+  within_cap: true
+proven:
+  - id: P-h2-f6-rowid
+    claim: "f6 is ROWID: carries the containing VRF's .id exactly — main *0->0, h2vrf1 *1->1, h2vrf2 *2->2 (3/3, zero-offset, 13-key shape stable). Flag reading DEAD (f6 varies 0/1/2)."
+    evidence: [step-B0.jsonl, step-B4.jsonl, step-B5.jsonl, control-B4-read.json, control-B5-read.json]
+  - id: P-h2-iface-excluded
+    claim: "interface-rowid triply excluded: VRF1 row (iface ether2=[20,0] rowid 3) reads f6=1; VRF2 row (iface h2br, rowid 4/5/6) reads f6=2; main row (iface ether1=2) reads f6=0 with no rowid-0 interface."
+    evidence: [step-B5.jsonl]
+  - id: P-h2-bridge-carrier
+    claim: "a bridge with no ports enslaved in a VRF carries addresses into that VRF (control vrf=h2vrf2 via interface=h2br) — lab technique for multi-VRF designs without extra NICs"
+    evidence: [control-B5-read.json]
+disproven:
+  - id: D-h2-f6-flag
+    claim: "f6 is a non-main-VRF flag (==1 on every custom-VRF row) — DEAD (f6=2 on the VRF2 row)"
+    evidence: [step-B5.jsonl]
+unknown:
+  - id: U-h2-self-offset
+    claim: "NOT discriminated within cap: f6 == address-own-rowid-minus-1 fits the same 3 points numerically (addr *1/*2/*3 -> 0/1/2) — semantically ungrounded (no self-minus-N field exists in the catalog; VRF-key needs zero offset and matches the f5/f10 foreign-key idiom) but empirically open"
+    next: "follow-up micro-cell (+2w: 2nd address in VRF1 + remove): VRF-key predicts f6=1, self-offset predicts f6=3"
+  - id: U-h2-vrf-native-rowid
+    claim: "whether control VRF .id equals the VRF table's NATIVE rowid (no native VRF-table read exists in the catalog to compare against)"
+    next: "none sheeted"
+restore_verification:
+  verdict: PASS
+  control:
+    - { route: /ip/vrf, objectCount: 1, rows: ["*0:main (same .id)"] }
+    - { route: /ip/address, objectCount: 1, rows: ["*1:10.0.2.15/24 (DHCP, same .id)"] }
+    - { route: /interface/bridge, objectCount: 0, rows: [] }
+  native: "[20,1]=1 row [20,0]=3 rows"
+  equality: "3/3 control files byte-equal data+count vs B0 (EQUAL)"
+  files: [restored_ip_vrf.json, restored_ip_address.json, restored_interface_bridge.json, step-restored.jsonl]
+cleanup_state:
+  tables: "vrf/address/bridge back to the exact B0 rows on both surfaces"
+  vm: "g4beta5 STOPPED via `quickchr stop g4beta5` (not removed)"
+  writes_on_other_machines: 0
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/H2-f6/report.yaml
+  - work/2026-11-winbox-attributes/proof/H2-f6/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/H2-f6/sanitize.ts
+  - fixtures/winbox-ipc/7.26beta5-f6-rowid.json
+gates_observed:
+  - "g4beta5 ONLY: no other VM touched"
+  - "every control string validated with `centrs explain` before sending (10/10 pass: B1-B5 + R1-R5; outputs saved as explain-*.json)"
+  - "both stimulus gates passed (vrf=h2vrf1, vrf=h2vrf2); no stop fired; cap reached exactly (10w)"
+  - "no edits to canonical files during execution (coordinator integrates separately)"
+  - "no commit, no push"

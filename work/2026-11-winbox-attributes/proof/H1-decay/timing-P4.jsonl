@@ -1,0 +1,5 @@
+{"event":"session-open","tRelMs":286674}
+{"event":"read-start","tRelMs":286674}
+{"event":"drain-start","tRelMs":286681,"detail":"budget 2000ms"}
+{"event":"drain-end","tRelMs":288685,"detail":"picked up 0"}
+{"event":"session-close","tRelMs":288686}

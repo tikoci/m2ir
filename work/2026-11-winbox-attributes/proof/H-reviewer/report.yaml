@@ -1,0 +1,90 @@
+# cspell:ignore mproxy,winbox,jsonl,tcode,reqid,getcount,libumsg,novabin,looper,vtable,ctor,objdump,readelf,relocs,dynsym,hid,aoomap,amap,jcc,reloc,ebtables,ipt,unblinding,unblind,omap,jbe,vaddr,unthreatened,sed
+# Phase H blind-review report: R1/R2 reconstructions vs H0a/H0b proposer slices.
+reviewer: H-reviewer
+report: H-reviewer-comparison
+written: 2026-11-02T16:46:06Z
+head: 1ddbc20
+verdict-summary:
+  H0a-2032-decay-design: "AGREE on all reconstructed claims (timing audit counts, order-only bound, field exclusion, zero-async). One REFINEMENT credited to H0a: leg-jump.ts script attribution (reviewer-verified post-unblinding; supersedes R1's uncommitted-run hedge). Hypotheses/designs/explains out of R1 scope: no verdict."
+  H0b-fd002a-owner-static: "AGREE on owner identity (all addresses), hash, and all core search counts (0/0/0 bytes, 0 disassembly, 681 control, 16-site set, 0/0/0 reloc/strings/dynsym). One EXACT DISCREPANCY: F-raw accounting (30 offsets enumerated vs 31 claimed; '31 distinct' is 22 distinct values at 31 offsets; missing 0x59885 = 9th jcc window of an already-documented mechanism). Verdict unaffected: none of the 31 is 0x00fd002a. Bonus counts out of R2 scope: no verdict."
+
+blindness-trail:
+  protocol: "strict: both reconstructions written BEFORE any read of the two proposer dirs (no read_file/grep/ls of their contents; directory listings forbidden until both reconstructions written)"
+  reconstruction-r1-written: 2026-11-02T16:40:02Z
+  reconstruction-r2-written: 2026-11-02T16:43:39Z
+  first-proposer-dir-listing: 2026-11-02T16:44:07Z
+  first-proposer-file-reads: "after 16:44:07Z (H0a report.yaml + fragment.yaml, then H0b report.yaml + fragment.yaml + sites-disassembly.txt)"
+  order: "R1 -> R2 -> unblind(list) -> H0a read -> H0b read -> cross-checks -> this report"
+  prior-phase-reads-before-unblinding: "G3 step files + control + fixture + std-commands/std-keys 0xfe0014 entries + ws3c §§38/42/45 + harness capture.ts + leg-script redaction pattern + G0b method + F0b binary table + net-bridge2 §8 anchor + local static reads of nova/bin/net (all explicitly allowed; none is H proposer content)"
+  audit-note: "coordinator can verify order from session tool-call sequence: write_file R1, write_file R2 precede the first ls of either proposer dir"
+
+H0a-comparison:
+  slice: H0a-2032-decay-design
+  timing-audit:
+    ts-counts: "AGREE — H0a '8/8 redacted each, zero capture timestamps' == R1 24/24 redacted, 0 real"
+    decay-values: "AGREE — H0a 1/0/0 order == R1 decay table (M1=1, confirm=0, confirm2=0, wire tails match)"
+    rule-present: "AGREE — H0a control + seq-7 row + [20,3]=1 == R1 (control-M1-read.json 1 forward/accept 0/0; seq-7 identical 1-row payload all legs; seq-1 stable 1)"
+    co-decay: "AGREE — H0a f15/f206 2->1->1 == R1 auxiliary 0x00000f/0x0000ce 2 (M1) -> 1/1 (confirms)"
+    zero-async: "AGREE — H0a 'zero async records committed' == R1 12/12 rx cmd:null, all addressed FROM [20,x] replies"
+    order-only-bound: "AGREE — H0a 'no duration/rate/curve/monotonicity/first-decay-time' == R1 'durations unmeasurable (fixture prose only), curve unsupported (3 samples, 0 timestamps)'"
+    fixture-prose: "AGREE — both cite the decay-fixture provenance note as the sole delay source ('~1 min, +20s', explicitly not capture timestamps)"
+  redaction-point:
+    mechanism: "AGREE — H0a 'at capture: leg-jump.ts:167 { ...rec, ts: redacted }; capture.ts:102 stamps ISO in memory, discarded at write; no flag' == R1 (same two sites; R1 additionally cites the 5-script pattern census)"
+    script-attribution: "REFINEMENT credited to H0a — R1 hedged 'uncommitted/ad-hoc leg run' (G3 dir commits no leg script). H0a attributes G3's M1 files to committed F-jump/leg-jump.ts. REVIEWER-VERIFIED post-unblinding: leg-jump.ts header documents exactly the M1 4-leg shape (GETCOUNT [20,3] + GETCOUNT [20,32] + GET [20,17] + paged GETALL [20,3]), line 164 session.close(), line 167 the redact. H0a's attribution is shape-matched and supersedes R1's hedge. No contradiction: same mechanism, more precise script."
+    session-per-read: "AGREE (verified post-unblinding, was out of R1 scope) — H0a P-h0a-session-per-read: leg-jump.ts:164 close confirmed; harness/session.ts openSession->login confirmed (login call in openSession body). Each leg-jump.ts read is one session open+close."
+  disambiguation:
+    field-excluded: "AGREE — H0a 'FIELD (STD_COUNT, v6 GETCOUNT slot) absent from every 7.25 [20,32] rx, cannot be the correlation target' == R1 (0 decoded-key hits + 0 wire-byte hits across all 24 records + fixture + control; v6-only per std-keys.yaml:314)"
+    command-framing: "AGREE with scope note — H0a answers 'the COMMAND' as the correlation TARGET for future design (c) (CMD_DISCONNECTED pairs per §§38/42/45), explicitly noting G3 files hold zero async ('churn channel unobserved, not absent'). R1's 'NEITHER can correlate' verdict is scoped to the committed artifacts (zero COMMAND occurrences: cmd=16646164 x0, rx cmd null x12). No contradiction: both agree no COMMAND-decay co-occurrence exists in G3 evidence; H0a additionally (correctly) frames COMMAND-side async as the only future-measurable candidate."
+    canonical-entries: "AGREE — both derive COMMAND from std-commands.yaml:220 (CMD_DISCONNECTED) and FIELD from std-keys.yaml:314 (STD_COUNT), incl. the cross-namespace distinctness notes"
+  out-of-R1-scope-no-verdict:
+    - "5 ranked hypotheses H-decay-1..5 (mechanism speculation; R1 brief covered timing audit + announce target only)"
+    - "3 experiment designs (a)/(b)/(c), budgets, stop conditions, combined 3w+0r sheet"
+    - "offline centrs explain 4/4 pass + the 4 explain-*.txt artifacts"
+    - "harness-variant requirements (timestamped capture, persistent-session reads)"
+
+H0b-comparison:
+  slice: H0b-fd002a-owner-static
+  owner-identity: "AGREE — all addresses identical to R2, independently derived:"
+  owner-address-checks:
+    - "registration: malloc 0x15c @805e5d3, ctor 0x80e5a2a @805e5e1, push $0x3 + addHandler @805e5f0-3 — AGREE (R2: sole hid-3 site of 102, all immediate-passing)"
+    - "ctor literals: 'filter' @0x819e1f1 (pushed @80e5a4e), 'ipt' @0x81a8c0a (pushed @80e5a5e), '/nova/store/net/' @0x819c978 (pushed @80e5a87) — AGREE (R2 additionally: '-' @0x8195527, empty @0x81a1283, self-hid movl $0x3 @80e5b90)"
+    - "AOmap C2 @80e5ae5; vtables 0x81bd6f0 @80e5aed then 0x81bd808 @80e5b29 — AGREE"
+    - "R2-only extras (no H0b counterpart, no conflict): hid-3 vtable overrides slot12->0x80e0ce0 / slot16->0x80e0c94 / slot24->0x80e2f12 (private-cmd switch head cmp $0x1/$0x2); slot 7 = PLT base handleCmd (not overridden); pid-20 loop closed via independently verified [20,0] dispatch @0x80682ec + hid-0 registration (H0b O6 cites 0x806885c as recorded context instead — different evidence, same net=process-20 conclusion)"
+  sibling-discrimination:
+    h0x2a: "AGREE — 'filter'+'6'+'ipt' (R2: ctor 0x80e5d20, vtable 0x81bd20c, parallel slot12/16/24 overrides 0x80e0bee/0x80e0c3a/0x80e2e34; H0b: same ctor + literals)"
+    h0x7-h0x2c-mangle: "AGREE (verified post-unblinding) — 0x8195651 = 'mangle' confirmed; h0x7 ctor @0x80edd22 pushes mangle/ipt/prefix in the h3 idiom; registration addresses match R2's census (hid 7 @805e6a9, hid 0x2c @805e6ce)"
+    h0x1f-ebt: "AGREE (verified post-unblinding) — 'filter'-literal xref #3 lands @0x80d6451 inside H0b's h0x1f ctor @0x80d6432 region"
+    h0x2d-layer7: "AGREE (verified post-unblinding) — 0x81955cc = '/nova/store/net/layer7protos' (len 0x1c incl NUL matches the AMap string_view at the hid-0x2d registration R2 recorded)"
+    filter-3-xrefs: "AGREE (verified post-unblinding) — exactly 3 'push $0x819e1f1' sites: 0x80d6451 (h0x1f), 0x80e5a4e (h3), 0x80e5d39 (h0x2a)"
+    shared-ctor-family: "AGREE — hids {2,4,6,0x29,0x2b} share generic ctor 0x8056792 (R2: malloc 0xec each, final vtable 0x81b2224; H0b: vtable 0x81b13e0 noted at an intermediate stamp — different stamp in the same ctor chain, no conflict: R2 traced base 0x81b2444 -> 0x81b13e0 -> final 0x81b2224)"
+  rule-corpus-O5: "AGREE (spot-verified post-unblinding) — 'jumps to builtin chains not allowed' present (1 hit); full O5 string census out of R2 scope"
+  hash-values: "AGREE — H0b sha256 4dfdc32a...65f6e7c == R2; both cross-checks identical (F0b value + novabin-7.25.sha256 pin; H0b pins it to line 43)"
+  search-counts:
+    whole-file-bytes: "AGREE — LE/BE/3-byte 0/0/0 on all 1603960 bytes (both)"
+    disassembly-fd002a: "AGREE — 0 hits case-insensitive (both); disassembly line count 435735 verified identical"
+    control-count: "AGREE — H0b-pattern '0xfe000' replicated at EXACTLY 681 on R2's disassembly. (R2's filed control was broader-pattern '0xfe00' = 897 / 875 push-cmp-mov; same underlying data, consistent readings — tag immediates detectable, zero is a true negative)"
+    fd-immediate-set: "AGREE — 16 sites, identical address set (0x8054fc6/0x8054fd6 PLT; 0x8062ee2; 0x80738f7; 0x8095220/0x8095411/0x80b1c3a; 0x80ad3a9; 0x80f33f3/0x80f340d/0x80f6094/0x80f60a8; 0x8106d01/0x8116772; 0x8128ee1; 0x813c985); all non-tag in both"
+    fd-mechanism-attribution: "REFINEMENT credited to H0b — non-tag verdict agreed on all 16; H0b's per-site mechanisms are more precise on 3 groupings R2 coarsely bucketed as '8-bit char idioms': 0x8062ee2 = flag-bit clear (paired or $0x2), 0x80738f7/0x8128ee1 = range bounds (<=253, jbe), 0x813c985 = u32 store of 253. R2's grouping was correct-but-coarse; no verdict difference."
+    relocs-strings-dynsym: "AGREE — 0/0/0 (both); strings total 13473 lines verified identical"
+    fd-namespace-absence: "AGREE (verified post-unblinding) — '$0xfd0000' = 0 hits replicated (supports H0b P-H0b-3)"
+  discrepancy-F-raw-accounting:
+    status: "EXACT DISCREPANCY (accounting/wording; verdict unaffected)"
+    h0b-claim: "'31 distinct 0x00fdXXXX LE words at 31 offsets' (report) / '31 at 31 offsets' (sites header)"
+    r2-replication: "31 OFFSETS (exact match — all 30 H0b-enumerated offsets reproduce, superset direction R2+H0b==R2) but 22 DISTINCT VALUES (repeats: 0xfd840f x4, 0xfd870f x3, 0xfd8388/0xfd83b6/0xfd850f/0xfde9ff x2 each)"
+    missing-from-h0b-list: "file offset 0x59885 (value 0x00fd840f, vaddr 0x80a1885: 'je 80a1988') — a 9th jcc-rel (0f 84 + rel32) window of H0b's own category-(a) mechanism. H0b's printed category counts sum to 30 (8+7+7+1+4+1+1+1), i.e. the list itself shows 30 while the header claims 31."
+    likely-cause: "H0b counted distinct OFFSETS (31, correct) but wrote 'distinct WORDS'; and dropped one jcc offset when transcribing the list. Independent re-scan command in reproduce below."
+    verdict-impact: "NONE — none of the 31 offsets holds 0x00fd002a (R2 exact-word LE scan = 0; the 22-value list contains no 0xfd002a). H0b D-H0b-2 / P-H0b-2 NEGATIVE stands unthreatened."
+  out-of-R2-scope-no-verdict:
+    - "bonus thread-5 scouting counts ($0x16=120, $0x194=4, $0xb=216, $0x1c6=3; zero verdict weight per H0b)"
+    - "'$0xff0000' 5-site triage detail (stores/tag-builds, no compare chain)"
+    - "22 non-immediate '0xfd' line triage (16 label + 6 displacement artifacts)"
+    - "O6 0x806885c prologue beyond function-entry shape (H0b cites as recorded context; R2 proved [20,0] context independently instead)"
+
+reproduce:
+  - 'grep -c ''"ts":"redacted"'' work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1.jsonl  # 8 (x3 files)'
+  - 'sed -n ''1,4p;164p;167p'' work/2026-11-winbox-attributes/proof/F-jump/leg-jump.ts  # 4-leg shape + close + redact'
+  - 'sha256sum ~/.local/share/m2ir/extractions/root-7.25/nova/bin/net  # 4dfdc32a...65f6e7c'
+  - 'objdump -d --no-show-raw-insn net | grep -c ''0xfe000''  # 681 (H0b control, replicated)'
+  - 'objdump -d --no-show-raw-insn net | grep -ci ''fd002a''  # 0'
+  - 'python3 -c "import struct; d=open(net,''rb'').read(); print([(hex(i),hex(struct.unpack_from(''<I'',d,i)[0])) for i in range(len(d)-3) if struct.unpack_from(''<I'',d,i)[0]&0xffff0000==0x00fd0000])"  # 31 offsets, 22 distinct values, no 0xfd002a; note 0x59885'
+  - 'objdump -d --start-address=0x80a1885 --stop-address=0x80a188b --no-show-raw-insn net  # je 80a1988: the 9th jcc window'

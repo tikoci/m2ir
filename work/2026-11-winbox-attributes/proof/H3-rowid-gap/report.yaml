@@ -1,0 +1,96 @@
+# cspell:ignore rowid getcount getall tarpit mangle calea
+# H3 execution report (coordinator). ws21 ONLY. No commit, no push.
+proof: "H3 rowid-gap micro-leg on ws21 7.25: COMPLETE 2w+0r of 3w+0r (1w contingency returned); rejected bare-tarpit consumes EXACTLY ONE rowid (accept lands *2/rowid 2 on an empty table); G1 4-gap explained as 4 attempts; restore clean"
+date: 2026-11-02
+worker: coordinator
+leg: H3-rowid-gap
+sheet: "coordinator sheet 2026-11-02 (single clean rejection + accepted add; F-jump counting rule; 3w+0r = 2 core + 1 tarpit-accepted contingency; standalone, fold-in rejected)"
+approval_quoted: "h3 yes — explicit per-leg yes, this session"
+vm:
+  name: ws21
+  routeros: "7.25"
+  arch: x86
+  network: user, socket::ws21-a, socket::ws21-b
+  ports: "resolved live from `quickchr list` at execution (http:9190 block, winbox:9195); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute --quickchr ws21 --yes (writes) / centrs retrieve (reads)"
+  native_via: "proof/H1-decay/leg-h1.ts read (GETCOUNT [20,3] + [20,32] + GET [20,17] + paged GETALL [20,3]; reused unmodified)"
+counting_rule: "F-jump rule per sheet: control adds + 1 per restore branch; removes bundled 0w; rejected adds 0w; reads 0w"
+baseline_snapshot:
+  verdict: PASS
+  control:
+    - { route: /ip/firewall/filter, objectCount: 0 }
+    - { route: /ip/firewall/nat, objectCount: 0 }
+    - { route: /ip/firewall/raw, objectCount: 0 }
+    - { route: /ip/firewall/mangle, objectCount: 0 }
+    - { route: /ip/firewall/calea, objectCount: 0 }
+  native: "[20,3]=0 [20,32]=0, GETALL [20,3] 0 rows complete"
+  files: [control-base-firewall-filter.json, control-base-firewall-nat.json, control-base-firewall-raw.json, control-base-firewall-mangle.json, control-base-firewall-calea.json, step-M0.jsonl]
+steps:
+  - tag: reject-tarpit
+    stimulus: "/ip/firewall/filter/add chain=forward action=tarpit (bare: no protocol matcher)"
+    outcome: "DEVICE-REJECTED (0w): 'failure: tarpit valid only for tcp' (ok:false envelope on stderr, sanitized)"
+    evidence: [control-reject.json, explain-reject.json]
+    writes: 0
+    cumulative: 0
+  - tag: accept-gap
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=h3-gap"
+    outcome: "ok, ret *2 — SKIPPED *1: the single rejected add consumed EXACTLY ONE rowid. Native: rowid 2, [20,3]=1 (counter correct; the gap is in IDs, not counts)."
+    evidence: [control-accept-add.json, step-gap.jsonl, explain-accept.json]
+    writes: 1
+    cumulative: 1
+  - tag: restore-verify
+    steps: "remove *2 (bundled 0w) + 5-menu control verify (0 rows each) + native read ([20,3]=0 [20,32]=0, GETALL 0 rows complete)"
+    outcome: "restored=true"
+    evidence: [control-rm.json, explain-rm.json, control-restored-filter.json, control-restored-nat.json, control-restored-raw.json, control-restored-mangle.json, control-restored-calea.json, step-restored.jsonl]
+    writes: 1
+    cumulative: 2
+spend:
+  counted_writes: 2
+  reboots: 0
+  cap: "3w+0r (2 core + 1 tarpit-accepted contingency, unneeded)"
+  itemized: "accept add (1) + restore-verify branch (1); reject 0w; remove bundled; 1w UNSPENT (returned: bare tarpit rejected as designed)"
+  within_cap: true
+proven:
+  - id: P-h3-reject-consumes
+    claim: "a rejected bare-tarpit add consumes EXACTLY ONE rowid: on a verified-empty table, one rejection then one accept lands *2/rowid 2 (control + native agree). First-add-after-boot lands *1 (H1 add1), so the skip is attributable to the rejection alone."
+    evidence: [control-reject.json, control-accept-add.json, step-gap.jsonl]
+  - id: P-h3-g1-gap-explained
+    claim: "G1's 4-gap (*A-*D around 3 recorded rejections) is EXPLAINED as 4 consumed rowids over 4 attempts (3 recorded + the crashed-pipe M8bare attempt, which evidently reached the device): 1:1 consume rate, no residual."
+    evidence: [control-accept-add.json]
+  - id: P-h3-count-vs-id
+    claim: "[20,3] counts ROWS (1), not id-space: the gap affects .id/rowid allocation only, counter semantics untouched"
+    evidence: [step-gap.jsonl]
+disproven:
+  - id: D-h3-no-consume
+    claim: "rejected adds consume no rowid (accept-after-reject lands *1) — DEAD"
+    evidence: [control-accept-add.json]
+unknown: []
+restore_verification:
+  verdict: PASS
+  control:
+    - { route: /ip/firewall/filter, objectCount: 0 }
+    - { route: /ip/firewall/nat, objectCount: 0 }
+    - { route: /ip/firewall/raw, objectCount: 0 }
+    - { route: /ip/firewall/mangle, objectCount: 0 }
+    - { route: /ip/firewall/calea, objectCount: 0 }
+  native:
+    - { op: "GETCOUNT [20,3]", value: 0 }
+    - { op: "GETCOUNT [20,32]", value: 0 }
+    - { op: "GETALL [20,3]", rows: 0, pages: 1 }
+  files: [control-restored-filter.json, control-restored-nat.json, control-restored-raw.json, control-restored-mangle.json, control-restored-calea.json, step-restored.jsonl]
+cleanup_state:
+  tables: "all five firewall menus empty on both surfaces"
+  vm: "ws21 STOPPED via `quickchr stop ws21` (not removed)"
+  writes_on_other_machines: 0
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/H3-rowid-gap/report.yaml
+  - work/2026-11-winbox-attributes/proof/H3-rowid-gap/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/H3-rowid-gap/sanitize.ts
+gates_observed:
+  - "ws21 ONLY (sequential after H1): no other VM touched"
+  - "every control string validated with `centrs explain` before sending (3/3 pass: reject + accept + remove; outputs saved as explain-*.json)"
+  - "no stop fired; contingency unneeded (bare tarpit rejected as designed); 1w returned"
+  - "no edits to canonical files during execution (coordinator integrates separately)"
+  - "no commit, no push"

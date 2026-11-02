@@ -1,0 +1,8 @@
+# cspell:ignore rowid tarpit
+# H3 promotion fragment (coordinator integrates after execution).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> filter-20-3 notes
+    op: add-notes
+    notes: "H3 rowid-gap micro-leg (ws21 7.25, 2026-11-02, 2w+0r): a rejected bare-tarpit add consumes EXACTLY ONE rowid — one rejection then one accept on a verified-empty table lands *2/rowid 2 (control + native agree; first-add-after-boot lands *1, so the skip is the rejection's). G1's 4-gap (*A-*D) explained as 4 attempts at 1:1 (3 recorded + the crashed-pipe M8bare). [20,3] counts rows, not id-space."
+    evidence_add: 1
+no_promotion_for: []

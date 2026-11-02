@@ -161,7 +161,8 @@ async function main(): Promise<void> {
 			const okCount = cells.filter(
 				(c) => (c as { status: string }).status === "ok",
 			).length;
-			summary["census_16_0_32"] = { total_slots: 33, ok_slots: okCount, cells };
+			const censusKey = "census_16_0_32";
+			summary[censusKey] = { total_slots: 33, ok_slots: okCount, cells };
 			console.log(`scan[${tag}]: census [16,0..32] ok=${okCount}/33`);
 		}
 		for (const route of routes) {

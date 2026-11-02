@@ -1,0 +1,15 @@
+# cspell:ignore getcount rowid reqid mproxy
+# H0a promotion fragment (coordinator integrates). Near-minimal: one
+# timing-evidence qualification fact; all hypotheses and designs stay
+# in the proof dir (report.yaml).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> unknown-20-32 notes
+    op: add-notes
+    notes: "H0a timing-evidence audit (2026-11-02, offline): the G3 decay artifacts support ORDER (1->0->0) only — every record in step-M1/confirm/confirm2.jsonl carries ts:redacted (redaction at capture, leg-jump.ts:167); the ~1min/+20s delays are coordinator wall-clock prose per the decay fixture provenance, not capture timestamps. Decay rate/curve shape await a timestamped-capture re-run."
+    evidence_add: 0
+no_promotion_for:
+  - "[20,32] decay mechanism (unclaimed; 5 ranked hypotheses are speculation in report.yaml)"
+  - "0xfe0014 command-vs-field disambiguation (already canonical in std-commands.yaml notes)"
+  - "the three experiment designs (unexecuted paper, lives in the proof dir)"
+  - "session-per-read churn confound (harness methodology, not schema content)"
+  - "offline explain 4/4 pass (design artifact, not promotable)"

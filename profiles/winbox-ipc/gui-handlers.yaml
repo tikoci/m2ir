@@ -699,7 +699,7 @@ handlers:
         3: { name: netmask, tcode: be32, cli-alias: "/ip/address address", role: "expressed on the wire as a bitmask (/24 -> 0x00FFFFFF); CLI shows /popcount; composite with field 1 under CLI `address` (same proof)" }
         4: { name: broadcast, tcode: be32, role: "broadcast address, big-endian" }
         5: { name: actual-interface, tcode: u32, role: "references the ACTUAL interface row id (discriminated: bridge-port enslavement splits it from field 10)" }
-        6: { name: vrf, tcode: u32, cli-alias: "/ip/address vrf", role: "VRF identity of the address row: 0 on main (dynamic DHCP, static, comment-unset, disabled states), 1 on a custom-VRF row (7.25 m2ir-vrf + beta5 g4vrf: TWO non-main-VRF samples); VRF creation without an address row moves no existing row (VRF-membership is per-row, not per-table). Numeric identity beyond row-VRF tracking (e.g. registry rowid) still open — both custom VRFs carried .id *1, so rowid-vs-flag is unresolved." }
+        6: { name: vrf, tcode: u32, cli-alias: "/ip/address vrf", role: "VRF identity of the address row: the containing VRF's .id — 0 on main (dynamic DHCP, static, comment-unset, disabled states), 1 on h2vrf1 (*1), 2 on h2vrf2 (*2): ROWID PROVEN, flag dead (H2 two-VRF leg, 3/3 zero-offset). Interface-rowid excluded (mismatched on all rows). Open finer point: address-own-rowid-minus-1 fits the same 3 points numerically (ungrounded, needs a +2w second-address-in-VRF decider); native VRF-rowid equivalence untested (no native VRF-table read in the catalog)." }
         10: { name: interface, tcode: u32, role: "references the CONFIGURED interface row id; equals field 5 whenever interface==actual (disabled/VRRP do NOT split them)" }
         11: { name: slave, tcode: bool, cli-alias: "/ip/address slave", role: "PROVEN bridge-enslaved flag: false->true->false across enslave/deenslave, exactly with control slave (DHCP control row unmoved, byte-identical). Disabled ruled out (E2-W), vrf ruled out (f6=0 throughout), dynamic/invalid false on the flipped row. Confound: enslavement also splits f5/f10 on the test row (4/3 vs 3/3); no split-without-slave state observed." }
       namespace-session:
@@ -755,6 +755,8 @@ handlers:
         ref: "live CHR interrogation (F-f11 write leg, ws20 7.25, 2026-11-02): enslaved/deenslaved GETALL rows — fixtures/winbox-ipc/7.25-f11-slave-20-1.json"
       - source: sample
         ref: "live CHR interrogation (G4 write leg, g4beta5 7.26beta5, 2026-11-02, 10w+0r): f6=1 on the g4vrf row + f5/f10 split + f11 slave reproduction — work/2026-11-winbox-attributes/proof/G4-beta5-populated/{report.yaml,step-B0.jsonl,step-B5.jsonl,control-B5-read.json}; rows fixtures/winbox-ipc/7.26beta5-populated-shapes.json"
+      - source: sample
+        ref: "live CHR interrogation (H2 write leg, g4beta5 7.26beta5, 2026-11-02, 10w+0r): f6=rowid PROVEN (VRF .id 0/1/2 exact, flag dead, interface-rowid excluded) — work/2026-11-winbox-attributes/proof/H2-f6/{report.yaml,step-B0.jsonl,step-B4.jsonl,step-B5.jsonl,control-B4-read.json,control-B5-read.json}; rows fixtures/winbox-ipc/7.26beta5-f6-rowid.json"
     notes: |
       Controlled-change + inverse-write proof (7.25, disposable
       CHR): prefix-only control (198.51.100.10/24 -> /25) moves
@@ -1826,6 +1828,10 @@ handlers:
         ref: "live CHR interrogation (F-jump write leg, ws21 7.25, 2026-11-02): GETALL rows + SETOBJ tx/ack — fixtures/winbox-ipc/7.25-filter-jump-20-3.json"
       - source: sample
         ref: "live CHR interrogation (G1 write leg, ws21 7.25, 2026-11-02, 25w+0r): 9-value f40 matrix + symmetric reversals + 0xfd002a lifecycle (L1/L2) + f41 retention (R1/R2); restore PARTIAL (5 builtin fasttrack dummies) — work/2026-11-winbox-attributes/proof/G1-f40-matrix/report.yaml; cell rows fixtures/winbox-ipc/7.25-filter-f40-matrix.json"
+      - source: code
+        ref: "static analysis (H0b, nova/bin/net 7.25 x86, sha256 4dfdc32ac9979b8ab86478dab601b79444875f936f7ff1b6b132553a565f6e7c, 2026-11-02, blind-corroborated by H-reviewer R2): [20,3] owner CONFIRMED (handler id 3 = ipt filter); 0xfd002a zero refs at full coverage — work/2026-11-winbox-attributes/proof/H0b-fd002a-owner-static/{report.yaml,sites-disassembly.txt} + work/2026-11-winbox-attributes/proof/H-reviewer/{report.yaml,reconstruction-r2.yaml}"
+      - source: sample
+        ref: "live CHR interrogation (H3 micro-leg, ws21 7.25, 2026-11-02, 2w+0r of 3): rejected bare-tarpit consumes one rowid (accept lands *2/rowid 2) — work/2026-11-winbox-attributes/proof/H3-rowid-gap/{report.yaml,control-reject.json,control-accept-add.json,step-gap.jsonl}"
     notes: |
       F0a offline discrimination (E3-W captures, ws21 7.25, 2026-11-02,
       zero new router contact): exhaustive record-level diff over all
@@ -1882,13 +1888,31 @@ handlers:
       removal — restore PARTIAL by device design; dummies are
       invisible to [20,32] (=0) and the f34/f46 presence bools
       (empty pattern) while [20,3] counts them (=1).
+      H0b static slice (2026-11-02, blind-corroborated): the
+      [20,3] handler owner is CONFIRMED as nova/bin/net 7.25 x86
+      (handler id 3 registered from net code with a constructor
+      binding 'filter'+'ipt'+'/nova/store/net/',
+      sibling-discriminated against the filter-v6, mangle,
+      bridge-table-filter, and layer7 handlers). 0xfd002a has
+      zero references in net at full G0b-equivalent coverage —
+      jointly with the G0b libumsg.so negative, the adjunct has
+      no static referent in generic message code or the filter
+      handler's own image; live variation is the remaining path.
+      H3 rowid-gap micro-leg (ws21 7.25, 2026-11-02, 2w+0r):
+      a rejected bare-tarpit add consumes EXACTLY ONE rowid —
+      one rejection then one accept on a verified-empty table
+      lands *2/rowid 2 (control + native agree;
+      first-add-after-boot lands *1, so the skip is the
+      rejection's). G1's 4-gap (*A-*D) explained as 4 attempts
+      at 1:1 (3 recorded + the crashed-pipe M8bare). [20,3]
+      counts rows, not id-space.
 
   unknown-20-32:
     sys-to: [20, 32]
     status: role-open
     process-id: 0x14
     cmd: GET_ONE
-    role: "unknown holder: GETCOUNT under filter rules is TIME-VARYING within a session (G3-M1: 1 immediately after the add, 0 a minute later with the rule still present, stable) — not a function of the rule-set alone ({A} reads 8/2/1 across three sessions); all prior [20,32] dataset values are time-samples, not static mappings. Magnitude-incompatible with row counting, so NOT a filter row-count slot. GET is selector-gated/FAILED, not table-shaped."
+    role: "unknown holder: GETCOUNT under filter rules is a TIME-VARYING PER-ADD TRANSIENT with variable magnitude and lifetime (H1 ws21 7.25: 1st add reads 1 stable across 6 reads/+354s with zero decay; 2nd in-session add re-spikes and graded-decays with a dip, plateauing at 2 without converging in-window; G3 decay-to-0 is one of three observed lifetimes, not the curve) — not a function of the rule-set alone ({A} reads 8/2/1 across three sessions), not a fixed curve, and not consumed by reads (6 consecutive nonzero). Magnitude-incompatible with row counting, so NOT a filter row-count slot. GET is selector-gated/FAILED, not table-shaped."
     confidence: observed-only
     evidence:
       - source: sample
@@ -1905,6 +1929,8 @@ handlers:
         ref: "live CHR interrogation (G1 write leg, ws21 7.25, 2026-11-02, 25w+0r): [20,32] bycatch table across the matrix cells (values only, no model; {A}->2 non-replication, {J,A} mirror 3-vs-1) — work/2026-11-winbox-attributes/proof/G1-f40-matrix/{report.yaml,step-C1.jsonl,step-C2.jsonl,step-M1.jsonl,step-M1rev.jsonl,step-M2.jsonl,step-M2rev.jsonl,step-M3.jsonl,step-M3rev.jsonl,step-M4.jsonl,step-M4rev.jsonl,step-M5.jsonl,step-M5rev.jsonl,step-M6.jsonl,step-M6rev.jsonl,step-M7.jsonl,step-M7rev.jsonl,step-M8.jsonl,step-M8rev.jsonl,step-M9.jsonl,step-M9rev.jsonl,step-L1.jsonl,step-L2.jsonl,step-R1.jsonl,step-R2.jsonl,step-restored.jsonl}"
       - source: sample
         ref: "live CHR interrogation (G3 write leg, ws21 7.25, 2026-11-02, 2w+0r of 8, ambiguity stop at M1): M1=1 (not 8) + 1->0->0 decay with the rule present — work/2026-11-winbox-attributes/proof/G3-2032-matrix/{report.yaml,step-M0.jsonl,step-M1.jsonl,step-M1-confirm.jsonl,step-M1-confirm2.jsonl,step-M7.jsonl,control-M1-read.json}; decay rows fixtures/winbox-ipc/7.25-getcount-20-32-decay.json"
+      - source: sample
+        ref: "live CHR interrogation (H1 decay leg, ws21 7.25, 2026-11-02, 3w+0r): spike1 flat-1 (6 reads/+354s, timestamped) + spike2 re-spike with graded 4->3->2 (TIER 2) + committed 1-dip/2-plateau + f15/f206 decoupling + idle-session death bound — work/2026-11-winbox-attributes/proof/H1-decay/{report.yaml,step-S1.jsonl,step-P1.jsonl,step-P2.jsonl,step-P3.jsonl,step-P4.jsonl,step-P5.jsonl,step-Q1.jsonl,step-Q2.jsonl,step-Q3.jsonl,step-Q4.jsonl,timing-ladder.jsonl}; curve rows fixtures/winbox-ipc/7.25-getcount-20-32-h1.json"
     notes: |
       5-point dataset (values only, NO model): {}->0, {accept}->8
       (E3-W), {jump}->2, {jump,accept}->1, {accept,accept}->1 —
@@ -1940,6 +1966,29 @@ handlers:
       dataset values are time-samples. Bycatch: the 5 G1 builtin
       fasttrack dummies do not survive a power-cut restart
       (boot-local).
+      H0a timing-evidence audit (2026-11-02, offline,
+      blind-corroborated): the G3 decay artifacts support ORDER
+      (1->0->0) only — every record in
+      step-M1/confirm/confirm2.jsonl carries ts:redacted (redaction
+      at capture, leg-jump.ts:167); the ~1min/+20s delays are
+      coordinator wall-clock prose per the decay fixture
+      provenance, not capture timestamps. Decay rate/curve shape
+      await a timestamped-capture re-run.
+      H1 decay leg (ws21 7.25, 2026-11-02, 3w+0r): re-add
+      re-spikes (TIER 1 fact; peak-4 magnitude + graded 4->3->2
+      TIER 2 console-observed — ladder rx bytes lost to
+      idle-session death, rung times ledger-committed); spike1
+      flat-1 kills read-disturbance (H-decay-2 DEAD) and any
+      fixed-curve reading; churn-count readings dead (6 fresh
+      sessions stable, re-spike same-boot). f15/f206 decoupled
+      both directions (aux decays while main holds; main moves
+      while aux holds) — the G3 co-decay was context, not law.
+      Surviving: variable-gauge (H-decay-1), multi-step one-shot
+      (H-decay-4, single-step dead), history-gating (magnitude
+      unexplained); announce-backlog (H-decay-3) UNTESTED
+      (ladder async lost; 11 drains + 15s watch all async=0).
+      Transport bound: idle sessions die ~24-30s (2 samples),
+      bounding persistent designs.
 
   nat-20-5:
     sys-to: [20, 5]

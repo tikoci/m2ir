@@ -1,0 +1,215 @@
+# cspell:ignore rowid getcount getall reqid mproxy zombification looper backoff oneshot newflag unacked untimed oneline
+# H0a offline [20,32] decay-mechanism design (coordinator integrates designs only).
+proof: "H0a offline [20,32] decay-mechanism design: disambiguation + 5 ranked hypotheses + 3 discriminating designs (2 active, 1 passive rider); 4/4 offline explains pass; 0 executed"
+worker: H0a
+date: 2026-11-02
+head: "1ddbc20"
+complete: true
+verdict: "DESIGN-COMPLETE: mechanism still unclaimed (nothing proven offline); timing-evidence audit bounds G3's decay claim to ORDER-only; session-per-read churn confound identified as a first-class alternative the designs must control"
+scope: "filter family; [20,32] + announce channel; 1 unresolved field; 0 private verbs; 2 active discriminating designs + 1 passive 0w rider (bounds-compliant); G3 M2-M6 cells MOOT by design (not revisited)"
+lab_contact: "ZERO. No VM boot, no quickchr, no centrs sends, no probes, 0 executed, budget spent 0w+0r. `centrs explain` used OFFLINE (no router argument) on 4 proposed commands only; 4/4 pass, 0 rejections."
+budgets: { counted_writes: 0, reboots: 0, note: "offline design slice: zero router contact, nothing to restore; execution budgets below are ESTIMATES for coordinator sheeting" }
+
+timing_evidence_audit:
+  claim_under_test: "G3 report prose: M1-confirm read '~1 min after M1', M1-confirm2 '+20s later'"
+  raw_artifacts: [step-M1.jsonl, step-M1-confirm.jsonl, step-M1-confirm2.jsonl]
+  finding: "EVERY record in all three step files carries ts:redacted (8/8 records each) — zero capture timestamps survive. Durations are coordinator wall-clock prose, not artifact-supported."
+  redaction_source: "leg-jump.ts:167 writes { ...rec, ts: redacted } — redaction happens AT CAPTURE, not at publish. capture.ts:102 does stamp new Date().toISOString() in memory; the value is discarded at write. No flag preserves it."
+  fixture_agrees: "fixtures/winbox-ipc/7.25-getcount-20-32-decay.json provenance note states explicitly: Delays are wall-clock between leg steps (~1 min, +20s), not capture timestamps."
+  artifacts_support:
+    - "ORDER: [20,32] reads 1 (M1) then 0 (confirm) then 0 (confirm2) — three committed rx records, 0xfe0019 values 1/0/0"
+    - "rule present at all three reads: control-M1-read.json (1 forward/accept row 0/0) + native GETALL g3-m1 row in seq-7 rx of EVERY step file + [20,3]=1 in all three"
+    - "f15/f206 co-decay 2->1->1 (0x00000f and 0x0000ce read 2 in M1, 1 in both confirms)"
+    - "zero async records committed in any step file (all lines are tx/rx pairs; asyncSeen either empty or unpersisted — absence of evidence either way)"
+  artifacts_do_not_support:
+    - "any duration, rate, or decay curve shape (no timestamps exist to fit)"
+    - "monotonicity between samples (unobserved intervals)"
+    - "first-decay time (decay could have completed seconds after M1)"
+  design_consequence: "design (b) REQUIRES a timestamped-capture harness variant (relative t-t0 offsets preserved through sanitize); a ladder run on current leg-jump.ts reproduces the G3 gap"
+
+disambiguation:
+  question: "what does announce-channel correlation mean: the 0xfe0014 COMMAND or the 0xfe0014 FIELD?"
+  answer: "the COMMAND (CMD_DISCONNECTED async fabric pairs). The FIELD is a different namespace and never appears on this route at 7.25."
+  command_0xfe0014:
+    name: CMD_DISCONNECTED
+    namespace: SYS_CMD verb value
+    shape: "finite PAIR per trigger, never an answer: leg A TO=[] FROM=[0xff0003,slot] + leg B TO=[] FROM=[2,slot] policy-1, both SYS_CMD=0xfe0014, slot=(ctr<<8)|6"
+    citations:
+      - "profiles/winbox-ipc/std-commands.yaml 0xfe0014 entry (CMD_DISCONNECTED, pair shape, SYS_REQID matching rule)"
+      - "work/2026-10-chr-extraction/ws3c-prober-findings.md §38 (pair discovery; endless-flow reading)"
+      - "work/2026-10-chr-extraction/ws3c-prober-findings.md §42 (finite-pair correction, zombie trigger, ping-pong refuted, 1.42s unprovenanced)"
+      - "work/2026-10-chr-extraction/ws3c-prober-findings.md §45 (REMOVE always announces: both REMOVE posters build policy-1 + CMD 0xfe0014 first)"
+  field_0xfe0014:
+    name: STD_COUNT
+    namespace: TLV field key inside message bodies
+    role: "CMD_GETCOUNT answer payload slot on v6 ONLY; v7 answers in 0xfe0019 (version-divided answer slot)"
+    absent_here: "every G3 [20,32] rx carries 0xfe0019 with NO 0xfe0014 (step-M1*.jsonl seq-3 rx) — the field is unobservable on this route at 7.25 and cannot be the correlation target"
+    citations:
+      - "profiles/winbox-ipc/std-keys.yaml 0xfe0014 entry (STD_COUNT, v6 GETCOUNT slot)"
+      - "profiles/winbox-ipc/std-commands.yaml 0xfe0014 notes: Distinct from the 0xfe0014 FIELD in std-keys.yaml (GETCOUNT answer, other namespace)"
+  why_command: "the decay lives in 0xfe0019 values on a v7 transport; the only 0xfe0014-bearing traffic that can temporally correlate with it is COMMAND-side async (SYS_CMD=0xfe0014 pairs). Design (c) matches exactly those pairs on SYS_REQID."
+
+hypotheses_ranked_note: "ranked by prior support x cheap falsifiability. Each carries DISTINCT predictions; the three designs kill at least one each. Speculation lives HERE (report), never in fragment.yaml."
+hypotheses_ranked:
+  - id: H-decay-1-draining-gauge
+    rank: 1
+    name: "draining gauge / pending-work backlog"
+    mechanism: "the add enqueues pending work (rule-compile/propagation/notify backlog); [20,32] reads the live backlog depth, which drains to zero as the device converges"
+    prior: "G3's stated consistency (U-g3-32-mechanism); only hypothesis with any prior note"
+    predicts:
+      - "re-add re-spikes to ~same magnitude (each add enqueues ~same work) — design (a) confirms"
+      - "decay is delay-dependent: ladder shows graded or step decay over tens of seconds, NOT instant — design (b) confirms"
+      - "back-to-back t0 double-read stays nonzero (reads do not drain it) — design (b) R0a/R0b"
+      - "no necessary coincidence with CMD_DISCONNECTED async (gauge is internal, not the notify fabric) — design (c) negative"
+    killed_if: "re-add reads 0 with the rule present (a), or t0 double-read already 0 (b)"
+  - id: H-decay-2-read-disturbance
+    rank: 2
+    name: "read-disturbance / observer effect"
+    mechanism: "the GETCOUNT read itself consumes the value (first-reader-wins latch, counter-reset-on-read); decay is read-count-dependent, not time-dependent"
+    prior: "none; cheapest to kill (one back-to-back read)"
+    predicts:
+      - "the SECOND native read after an add is already 0 no matter how fast it follows — design (b) R0a/R0b double-read decides"
+      - "ladder shape is degenerate: nonzero exactly once per spike, all later rungs 0"
+      - "G3's confirm reads were 0 because they were reads 2-3, not because a minute passed"
+    killed_if: "any two consecutive reads both nonzero (b R0a+R0b), or re-read nonzero after a zero (flapping)"
+  - id: H-decay-3-announce-backlog
+    rank: 3
+    name: "announcement-backlog counter"
+    mechanism: "[20,32] counts queued-but-undelivered change announcements for the filter table; decay tracks the notify fabric draining"
+    prior: "§45 REMOVE-always-announces proves a notify fabric exists; §42 pairs prove it is observable on-transport"
+    predicts:
+      - "CMD_DISCONNECTED pair traffic (or other async) is coincident with the decay window and QUIET after convergence — design (c) confirms"
+      - "pair count / slot-ctr advance across the window scales with spike magnitude"
+      - "decay on a churn-free persistent session is SLOWER or absent vs the session-per-read ladder"
+    killed_if: "decay completes with zero async on a churn-free persistent session (c)"
+  - id: H-decay-4-oneshot-newflag
+    rank: 4
+    name: "per-row one-shot new-flag"
+    mechanism: "the value is a per-rowid new/unacked flag summed over recently added rows; each flag clears exactly once on the first post-add advertisement cycle"
+    prior: "consistent with decay-to-zero and with dummy-invisibility (P-g1-dummy-invisible: device rows never flagged)"
+    predicts:
+      - "ladder shows a STEP function (1 then 0, no graded middle) regardless of rung density"
+      - "re-add at a NEW rowid re-spikes; magnitude independent of session history"
+      - "decay delay is roughly constant per add (one advertisement period), not proportional to magnitude"
+    killed_if: "graded intermediate values on a dense ladder (b), or re-add at new rowid reads 0 (a)"
+  - id: H-decay-5-session-churn
+    rank: 5
+    name: "session-churn artifact"
+    mechanism: "the value reflects stale loader peer / zombie state created by WinBox session open/close churn — and EVERY leg-jump.ts read IS one open+close (openSession->login per harness/session.ts:30-42, close per leg-jump.ts:164). G3's three reads were three churn events; the decay may track churn count, not wall-clock"
+    prior: "queue-3 trigger data: each fresh-session close -> exactly one CMD_DISCONNECTED pair on the survivor (std-commands.yaml 0xfe0014 notes); G3 step files contain zero async records so the churn channel is unobserved, not absent"
+    predicts:
+      - "ladder decay tracks READ COUNT (churn events), not rung delays: compressing the schedule does not compress the decay"
+      - "a persistent-session multi-read (one login, N reads, one close) shows NO decay or a different curve than N session-per-read reads"
+      - "spike magnitude varies with boot churn history (cf. {A} reads 8/2/1 across three sessions with different histories)"
+    killed_if: "decay completes across rung delays inside ONE persistent session with zero intermediate churn (c-controlled b), or re-add re-spikes identically under matched churn (a)"
+
+designs_bounds_note: "2 ACTIVE discriminating experiments (a, b) + 1 PASSIVE 0w rider (c) — bounds-compliant (<=2 active per unresolved field). (c) has no standalone stimulus; it rides (a)/(b) decay windows."
+designs_shared_tooling:
+  native_read: "leg-jump.ts read (GETCOUNT [20,3] + GETCOUNT [20,32] + GET [20,17] + paged GETALL [20,3]), reused unmodified where noted"
+  control_via: "centrs execute/retrieve --quickchr <vm> (writes via native-api, per G1/G3)"
+  required_variants: "(i) timestamped-capture mode preserving relative t-t0 offsets through sanitize (ladder scale; current leg-jump.ts:167 redacts); (ii) persistent-session multi-read mode, one login + N reads + one close (churn control; does not exist yet). Coordinator schedules tooling or accepts the confound explicitly."
+  global_guards: ["control read-back after EVERY add (mandatory; closes the F-jump J2/J2b gap class)", "[20,3] must equal N at every read (linearity guard)", "packets/bytes must read 0 at every read (zero-traffic guard)", "restore-verify fail -> non-sheet recovery, recorded honestly, never silently re-run"]
+designs:
+  - id: H0a-a-readd-spike
+    kind: active
+    title: "re-add spike test — 2nd add in-session at N=1 after decay, does it re-spike?"
+    control_commands:
+      - { cmd: "/ip/firewall/filter/add chain=forward action=accept comment=h0a-spike1", explain: "explain-add-spike1.txt", offline_verdict: pass }
+      - { cmd: "/ip/firewall/filter/remove numbers=*N (.id from the add ret; *1 shape validated)", explain: "explain-rm.txt", offline_verdict: pass }
+      - { cmd: "/ip/firewall/filter/add chain=forward action=accept comment=h0a-spike2", explain: "explain-add-spike2.txt", offline_verdict: pass }
+    native_sequence: "leg-jump.ts read after add1 (S1, immediate) -> 0w poll re-reads at ~60s intervals until 0 twice consecutively (decay confirmed, cap 5 reads / ~5min) -> remove -> control+native zero-verify -> add2 -> leg-jump.ts read immediately (S2) -> remove"
+    baseline_restore: "M0-style baseline (5-menu control 0 rows + native zeros) before add1; M7-style restore-verify branch (5-menu control + native zeros) after final remove"
+    budget_estimate: { counted_writes: 3, reboots: 0, itemized: "add1 (1) + rm (0 bundled) + add2 (1) + rm (0 bundled) + restore-verify branch (1); all native reads 0w" }
+    stop_conditions: ["control read-back disagrees with intended rule-set (stimulus invalid)", "[20,3] != N at any read (counter guard)", "packets/bytes nonzero (traffic confound)", "S1 = 0 at first read (no spike to re-test: STOP, convert remaining budget to ladder-only, report spike-absent)", "decay never confirms within poll cap (report no-decay, still run add2: S2-vs-S1 decides under no-decay)"]
+    proves_if: "S2 ~= S1 > 0 with the rule present: spike is per-add transient — H-decay-1 (gauge) and H-decay-4 (one-shot) SURVIVE; H-decay-5 (churn-only) weakened (same session, second spike without new boot history)"
+    proves_if_not: "S2 = 0 with the rule present: spike is one-per-session/boot — H-decay-1 DEAD as a per-add gauge; H-decay-5 (churn/boot-state gating) becomes the lead; H-decay-4 survives only if flag-clear is session-scoped (narrowed, needs a rowid-freshness follow-up)"
+  - id: H0a-b-decay-ladder
+    kind: active
+    title: "decay-timing ladder — GETCOUNT reads at fixed delays, all 0w, timestamped capture"
+    control_commands:
+      - { cmd: "/ip/firewall/filter/add chain=forward action=accept comment=h0a-ladder", explain: "explain-add-ladder.txt", offline_verdict: pass }
+      - { cmd: "/ip/firewall/filter/remove numbers=*N (.id from the add ret; shared form)", explain: "explain-rm.txt (shared with (a))", offline_verdict: pass }
+    native_sequence: "leg-jump.ts read per rung with TIMESTAMPED capture (t-t0 offsets); rung R0a immediate post-add, rung R0b back-to-back (no delay, H-decay-2 decider)"
+    sampling_schedule:
+      - { rung: R0a, delay: "t0 immediate (<5s post-add)", purpose: "spike magnitude S0" }
+      - { rung: R0b, delay: "back-to-back after R0a", purpose: "H-decay-2 read-disturbance decider: 0 here = observer effect" }
+      - { rung: R1, delay: "+10s", purpose: "early-decay shape" }
+      - { rung: R2, delay: "+30s", purpose: "mid-decay shape" }
+      - { rung: R3, delay: "+60s", purpose: "G3-confirm analog with a real timestamp" }
+      - { rung: R4, delay: "+120s", purpose: "late-decay / stability" }
+      - { rung: R5, delay: "+300s", purpose: "convergence witness (expect stable 0)" }
+    capture_requirement: "host wall-clock (unix ms) per read in a timing sidecar + relative t-t0 offsets preserved through sanitize (absolute redaction allowed). WITHOUT timestamps the ladder is data without a scale — timestamp-capture failure is a STOP condition."
+    baseline_restore: "M0-style baseline before the add; remove + M7-style restore-verify after R5. PIGGYBACK OPTION: ride (a) spike2 as t0 (ladder reads between add2 and its remove) — marginal 0w."
+    budget_estimate: { counted_writes: 2, reboots: 0, itemized: "standalone: add (1) + rm (0 bundled) + restore-verify branch (1); all 7 rung reads 0w; piggyback on (a): 0w marginal" }
+    stop_conditions: ["global guards (as (a))", "S0 = 0 at R0a (no spike: STOP ladder, report spike-absent)", "timestamp capture failure at any rung (STOP: scale lost, fix tooling, do not publish untimed rungs as timed)", "flapping (0 then nonzero): STOP ladder, report non-monotonic — kills H-decay-1/4 step readings, triggers re-plan"]
+    proves_if: "graded or delayed step decay over the rungs with R0b nonzero: decay is TIME-dependent — H-decay-2 DEAD; curve shape splits H-decay-1 (graded drain) from H-decay-4 (single step)"
+    proves_if_not: "R0b already 0 (degenerate ladder, nonzero exactly once): H-decay-2 (read-disturbance) SUPPORTED as the whole decay; time-decay readings of G3 DEAD; G3's ~1min/+20s become read-count artifacts"
+  - id: H0a-c-announce-correlation
+    kind: passive-rider
+    title: "announce-channel correlation — PASSIVE async capture around the decay window"
+    control_commands: []
+    control_note: "no control commands: strictly passive (0w). Rides the (a) and/or (b) decay windows. Standalone-with-own-spike would cost 2w+0r (one add + restore branch) — not recommended; rider form is the design."
+    native_sequence: "PASSIVE listener on the main transport spanning add->decay->converged: persist EVERY async record with host timestamps (correlate.ts asyncSeen exists per-request but G3 committed zero async records — persist the stash + listen BETWEEN reads, where session-per-read gaps hide traffic)"
+    match_what: "SYS_CMD=0xfe0014 pairs matched on SYS_REQID (mandatory per std-commands.yaml: unmatched reads misattribute): leg A TO=[] FROM=[0xff0003,slot] + leg B TO=[] FROM=[2,slot] policy-1, slot=(ctr<<8)|6. Record per pair: arrival t-t0, slot/ctr advance, leg sizes (expect A~30B B~38B per queue-3), and any non-pair async (handler-related async would be novel — queue-3 saw none on [13,7] legs)."
+    churn_confound_control: "CANONICAL: async seen are CMD_DISCONNECTED pairs drawn by session churn (gui-handlers.yaml [13,7] notes; std-commands.yaml 0xfe0014 trigger characterization: 4/4 fresh-session closes -> exactly one pair on the survivor at request ids 13/15/17/19, 9 pre-churn + 1 no-close requests silent). CONTROL: (i) run the decay window inside ONE persistent session (one login, N reads, one close) so intermediate reads add ZERO churn — any pairs then implicate the RULE stimulus, not session cycling; (ii) log every session open/close with timestamps as the churn ledger; (iii) negative control: an equal-duration persistent session with NO rule add must draw zero pairs (queue-3 request-id-20 analog). If persistent-session tooling is unavailable, (c) degrades to documenting pairs-per-read under session-per-read — report as confounded, not as correlation."
+    baseline_restore: "none of its own (rider); host leg owns baseline/restore"
+    budget_estimate: { counted_writes: 0, reboots: 0, itemized: "rider: 0w+0r marginal. RECOMMENDED COMBINED SHEET: (a) + (b piggyback on spike2) + (c rider on both windows) = 3w+0r total" }
+    stop_conditions: ["host leg stops (rider stops with it)", "async capture gap (listener drop or unpersisted asyncSeen: STOP correlation claims, report gap honestly)", "negative control draws pairs (churn model incomplete: STOP, re-plan — the confound control itself failed)"]
+    proves_if: "pairs arrive coincident with decay steps (value drops when pairs arrive; pair count or ctr advance scales with spike magnitude) on a churn-free persistent session: H-decay-3 (announce-backlog) SUPPORTED; H-decay-1 internal-gauge weakened (gauge would not need fabric traffic)"
+    proves_if_not: "decay completes with ZERO async on a churn-free persistent session with a clean negative control: H-decay-3 DEAD and H-decay-5 (churn artifact) DEAD as the decay driver; H-decay-1/H-decay-4 remain (internal mechanism)"
+
+proven:
+  - id: P-h0a-timing-order-only
+    claim: "G3's decay artifacts support ORDER (1->0->0) only: every record in step-M1/confirm/confirm2.jsonl carries ts:redacted; redaction is at capture (leg-jump.ts:167), and the decay fixture provenance states delays are wall-clock prose, not capture timestamps"
+    evidence: [step-M1.jsonl, step-M1-confirm.jsonl, step-M1-confirm2.jsonl, fixtures/winbox-ipc/7.25-getcount-20-32-decay.json]
+  - id: P-h0a-disambiguation
+    claim: "announce-channel correlation means the 0xfe0014 COMMAND (CMD_DISCONNECTED async pairs), not the 0xfe0014 FIELD (STD_COUNT v6 GETCOUNT slot, absent from every 7.25 [20,32] rx)"
+    evidence: [profiles/winbox-ipc/std-commands.yaml, profiles/winbox-ipc/std-keys.yaml]
+  - id: P-h0a-session-per-read
+    claim: "each leg-jump.ts read is one WinBox session open+close (openSession->login per harness/session.ts:30-42, close per leg-jump.ts:164) — G3's three decay reads were three churn events, so session churn is a live confound, not a controlled variable"
+    evidence: [leg-jump.ts, harness/session.ts]
+  - id: P-h0a-explain-4-pass
+    claim: "all 4 proposed control commands pass offline `centrs explain` (0 rejections); runtime acceptance not proven (offline canonicalizer only)"
+    evidence: [explain-add-spike1.txt, explain-rm.txt, explain-add-spike2.txt, explain-add-ladder.txt]
+disproven:
+  - id: D-h0a-artifact-durations
+    claim: "no duration, rate, or curve-shape reading of the G3 decay is artifact-supported — any ladder re-run on unmodified leg-jump.ts reproduces the gap (ts redacted at capture)"
+    evidence: [step-M1.jsonl, step-M1-confirm.jsonl, step-M1-confirm2.jsonl]
+unresolved:
+  - id: U-g3-32-mechanism
+    claim: "CARRIED FORWARD unchanged: [20,32] decay-to-zero mechanism unclaimed; 5 ranked hypotheses + 3 discriminating designs now sheeted"
+    next: "coordinator sheets the recommended combined leg (3w+0r); needs per-leg yes + VM scheduling + 2 harness variants (timestamped capture, persistent-session reads)"
+  - id: U-h0a-tooling-timestamp
+    claim: "timestamped-capture harness variant does not exist (leg-jump.ts:167 redacts unconditionally)"
+    next: "coordinator schedules a flags/sidecar change before design (b), or explicitly accepts untimed rungs"
+  - id: U-h0a-tooling-persistent
+    claim: "persistent-session multi-read mode does not exist (one login+close per leg-jump.ts invocation)"
+    next: "coordinator schedules before design (c), or (c) runs confounded (pairs-per-read documentation only)"
+blocked:
+  - id: B-h0a-needs-leg-yes
+    claim: "all three designs are unexecuted paper; execution needs the user's explicit per-leg yes in-session plus coordinator VM scheduling (proposed: ws21 7.25, same line as G3 evidence)"
+    next: "coordinator presents the sheet; this worker executed nothing"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/report.yaml
+  - work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/explain-add-spike1.txt
+  - work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/explain-rm.txt
+  - work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/explain-add-spike2.txt
+  - work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/explain-add-ladder.txt
+  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/report.yaml
+  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1.jsonl
+  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1-confirm.jsonl
+  - work/2026-11-winbox-attributes/proof/G3-2032-matrix/step-M1-confirm2.jsonl
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/report.yaml
+  - work/2026-11-winbox-attributes/proof/G0a-2032-model/scores.yaml
+  - work/2026-11-winbox-attributes/proof/G1-f40-matrix/report.yaml
+  - fixtures/winbox-ipc/7.25-getcount-20-32-decay.json
+  - fixtures/winbox-ipc/7.25-getcount-20-32-matrix.json
+  - work/2026-10-chr-extraction/ws3c-prober-findings.md
+  - profiles/winbox-ipc/std-commands.yaml (0xfe0014 entry, READ-ONLY reference)
+  - profiles/winbox-ipc/std-keys.yaml (0xfe0014 entry, READ-ONLY reference)
+  - profiles/winbox-ipc/processes.yaml (announce notes, READ-ONLY reference)
+  - profiles/winbox-ipc/gui-handlers.yaml (unknown-20-32 + [13,7] notes, READ-ONLY reference)
+owned_path: work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/
+forbidden_paths_edited: none
+git_commands_run: ["git log --oneline -1", "git status --short"]

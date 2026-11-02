@@ -187,7 +187,7 @@ How to read this:
   (80 of 80) actually appears in the live transcripts. The gap is
   handlers and fields never probed, not keys invented on paper.
 - Quality counts: 288 confidence-tagged entries (150 documented,
-  135 observed-only, 3 inferred), 580 evidence references, and 72
+  135 observed-only, 3 inferred), 584 evidence references, and 72
   kept revision-history entries recording beliefs live work corrected.
 
 The CLI-reference total includes repeated records across three manual
