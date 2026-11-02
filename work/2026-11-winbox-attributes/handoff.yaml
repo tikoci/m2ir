@@ -2,8 +2,8 @@
 # Phase H coordinator handoff (durable handoff rule, attribute-discovery-plan.md).
 # Written 2026-11-02 at FULL completion (read-only + all 3 write legs executed,
 # integrated, green). Uncommitted by design; do not commit or push without instruction.
-head: 1ddbc2065f727ffbc8957daad053c5ee4ba10860
-git_status: "PHASE H COMPLETE, UNCOMMITTED by design; gates 372/0 + lint:ci green; all VMs stopped, all baselines restored"
+head: 5ecfb0dda882baf59ee160cc29f1fadab7e83752
+git_status: "PHASE H COMPLETE + COMMITTED 5ecfb0d on user instruction (NOT pushed); gates 372/0 + lint:ci green; all VMs stopped, all baselines restored"
 dirty_files:
   - profiles/winbox-ipc/gui-handlers.yaml (M: unknown-20-32 H0a notes + H1 role/notes/evidence; filter-20-3 H0b notes/evidence + H3 notes/evidence; ip-address f6 role/evidence)
   - profiles/winbox-ipc/README.md (M: evidence count 580->584, raw-count verified)
@@ -105,5 +105,5 @@ continuation_decision:
   clause_b_citable: "HELD (all H budgets/VM-state/evidence-paths/counts directly citable from working notes)"
   clause_c_green: "HELD (gates 372/0 + lint:ci green, handoff written)"
   doubt_invoked: "YES — session is long (3 workers + reviewer + 3 leg executions + integrations); the next program (17/43 zero-field handlers, 19 unknown-*, 296 bindings) is unscoped and needs fresh per-leg approvals regardless; clean handoff makes a fresh coordinator strictly better. Per the brief: in any doubt, STOP + recommend fresh."
-  resume_commit: "1ddbc20 + uncommitted Phase H work (commit first or resume dirty; handoff.yaml names every file)"
+  resume_commit: "5ecfb0d (Phase H committed; tree clean)"
 next_action: "PHASE H COMPLETE. Commit decision belongs to the user (all work uncommitted by design). Fresh coordinator for the handler-field tail starts at the resume commit: read this handoff + attribute-discovery-plan.md + triage state, scope batch 1 (suggested: H2-style single-question legs first — U-h2-self-offset +2w decider is the cheapest open item — then handler-family census workers per the Phase E pattern), and STOP for fresh per-leg yes before any writes."
