@@ -3,7 +3,7 @@
 # Written 2026-11-02 at FULL completion (read-only + all approved legs executed,
 # integrated, green). Uncommitted by design; do not commit or push without instruction.
 head: 67089238c1805b10ace5b8462ab346af37cb8592
-git_status: "PHASE I COMPLETE, UNCOMMITTED; gates 390/0 + lint:ci green; all VMs stopped (15 machines, 7.25-x86-1 gone — not removed by this session); all baselines restored"
+git_status: "PHASE I COMPLETE + COMMITTED 1f392ac on user instruction (NOT pushed at handoff write); gates 390/0 + lint:ci green; all VMs stopped, all baselines restored"
 dirty_files:
   - profiles/winbox-ipc/gui-handlers.yaml (M: read-only boot-flags f1/f2 + 20-134 row shape; I1-B f6 finer-point CLOSED; H-decay-3 A3 role/notes; census defconf/QoS notes + NEW unknown-20-120/121 entries)
   - profiles/winbox-ipc/README.md (M: 50 handlers, 33 with fields, 348 entries (177/171), 591 evidence)
@@ -92,5 +92,5 @@ continuation_decision:
   clause_b_citable: "HELD (all budgets/VM-state/evidence-paths/counts citable from proof dirs + this handoff)"
   clause_c_green: "HELD (gates 390/0 + lint:ci green, handoff written)"
   doubt_invoked: "YES — session is very long (3 workers + reviewer + read-only integration + 2 write legs + 3-VM census + full integration); remaining queue (1b, 5 future families, deferred thread-5, decaying-spike re-run) is unscoped execution needing fresh per-leg approvals regardless. Per the brief: in any doubt, STOP + recommend fresh."
-  resume_commit: "6708923 + uncommitted Phase I work (do not commit or push without instruction)"
+  resume_commit: "1f392ac (Phase I committed; tree clean apart from this handoff update)"
 next_action: "PHASE I COMPLETE. Commit decision belongs to the user (all work uncommitted by design). Fresh coordinator starts at 6708923 + this handoff: queue is thread-5-piggyback (sheet stands), tail-census-1b (qos-config/pfc plans in I3 report), future families, H-decay-3 re-run on a decaying spike (consider 2nd in-session add as decaying host), U1 custom-script-set leg. Fresh per-leg yes required before any writes."
