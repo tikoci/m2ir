@@ -1,0 +1,38 @@
+# cspell:ignore rowid getall getcount getobj reqid hexverify vms
+proof: "F1-hex-verify: coordinator read-only re-read of the F1 beta4 legs with wire hex (winbox-beta4/7.26beta4, 0w+0r)"
+worker: coordinator
+date: 2026-11-02
+head: "33a956e + Phase F F0a/F0b/F1 worker outputs (uncommitted)"
+approval: "none needed: read-only census (GETALL paged + GETOBJ only). Zero writes issued, none sought."
+scope: "7 read-only legs on ONE VM (winbox-beta4, 7.26beta4 x86, build 2026-10-27): paged GETALL [16,2]/[16,13]/[20,1] + GETOBJ [16,2]-999/[16,13]-999/[20,1]-1/[20,1]-999"
+purpose:
+  - "hex-backed committed fixtures for the F1 version-confirmation notes (F1 probe --json captures carry decoded entries only, and work/**/*.json is git-ignored)"
+  - "independent coordinator re-read of the [16,2]/[16,13] shapes the blind reviewer did not reconstruct (reviewer covered [20,1] GETALL only)"
+legs:
+  - { leg: getall-16-2, route: [16, 2], result: "ok, 0 rows, 1 page, complete" }
+  - { leg: getobj-16-2-999, route: [16, 2], result: "router-error UNKNOWNID (16646148), 7-key envelope" }
+  - { leg: getall-16-13, route: [16, 13], result: "ok, 0 rows, 1 page, complete" }
+  - { leg: getobj-16-13-999, route: [16, 13], result: "router-error UNKNOWNID (16646148), 7-key envelope" }
+  - { leg: getall-20-1, route: [20, 1], result: "ok, 1 row, 13-key row, complete" }
+  - { leg: getobj-20-1-1, route: [20, 1], result: "ok, flat row" }
+  - { leg: getobj-20-1-999, route: [20, 1], result: "router-error UNKNOWNID (16646148)" }
+cross_checks:
+  - "hex-verify [20,1] GETALL rx vs F1 raw-getall-20-1-r1.json reply: MATCH (modulo reqid echo + proxy banner)"
+  - "hex-verify [20,1] GETALL rx vs fixtures 7.25 bare-getall-reply: MATCH (same modulo) — zero drift"
+  - "hex-verify [16,2] + [16,13] GETALL rx vs F1 raw r1 captures: MATCH (same modulo)"
+  - "method: /tmp/f1-fixtures.ts normalized compare (request-driven 0xff0006 + version 0xff001c excluded)"
+fixtures_derived:
+  - fixtures/winbox-ipc/7.26beta4-bridge-port-16-2.json
+  - fixtures/winbox-ipc/7.26beta4-bridge-vlan-16-13.json
+  - fixtures/winbox-ipc/7.26beta4-getall-getobj-20-1.json
+writes: 0
+vms:
+  touched: [winbox-beta4]
+  forbidden_touched: none
+  end_state: "winbox-beta4 STOPPED (not removed); all 13 lab VMs stopped; baseline restore trivially satisfied (nothing written)"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/F1-hex-verify/hex-verify.ts
+  - work/2026-11-winbox-attributes/proof/F1-hex-verify/step-hex-verify.jsonl
+  - work/2026-11-winbox-attributes/proof/F1-hex-verify/summary-hex-verify.json
+  - work/2026-11-winbox-attributes/proof/F1-hex-verify/report.yaml
+forbidden_paths_edited: none

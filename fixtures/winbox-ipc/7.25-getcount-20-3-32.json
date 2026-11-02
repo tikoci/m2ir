@@ -1,0 +1,336 @@
+{
+	"provenance": {
+		"report": "F0a offline filter-hid discrimination from E3-W captures, 2026-11-02 (ws21 7.25 x86; zero new router contact)",
+		"routeros_version": "7.25",
+		"route": "[20,3] filter row-count tracker + [20,32] excluded co-flipper",
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. Source: proof/E3-W/step-{base,filter,filter-restored}-sweep.jsonl [20,3] GETCOUNT reqId=17 (lines 31-32) + [20,32] GETCOUNT reqId=46 (lines 89-90). Tx legs are byte-identical across all three sweeps (one copy kept). Control ground truth N=(0,1,0): proof/E3-W/control-filter-find-{add,read,rm}.json (exactly one filter row *1 during the filt sweep)."
+	},
+	"records": [
+		{
+			"id": "getcount-20-3-tx",
+			"role": "GETCOUNT bare [20,3] tx (identical all sweeps)",
+			"source": "ws21 7.25 reqId=17 tx",
+			"hex": "4d320500ff010600ff09110700ff081500fe000100ff88020014000000030000000200ff880200000000000b000000",
+			"cmd": 16646165,
+			"to": [20, 3],
+			"from": [0, 11],
+			"reqId": 17,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 17
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646165
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "getcount-20-3-base-rx",
+			"role": "GETCOUNT [20,3] rx pre-add (N=0)",
+			"source": "ws21 7.25 base sweep reqId=17 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09000600ff0911",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 17,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 17
+				}
+			]
+		},
+		{
+			"id": "getcount-20-3-filt-rx",
+			"role": "GETCOUNT [20,3] rx with 1 filter row (N=1)",
+			"source": "ws21 7.25 filt sweep reqId=17 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0911",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 17,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 17
+				}
+			]
+		},
+		{
+			"id": "getcount-20-3-rest-rx",
+			"role": "GETCOUNT [20,3] rx post-remove (N=0)",
+			"source": "ws21 7.25 restored sweep reqId=17 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09000600ff0911",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 17,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 17
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-tx",
+			"role": "GETCOUNT bare [20,32] tx (identical all sweeps)",
+			"source": "ws21 7.25 reqId=46 tx",
+			"hex": "4d320500ff010600ff092e0700ff081500fe000100ff88020014000000200000000200ff880200000000000b000000",
+			"cmd": 16646165,
+			"to": [20, 32],
+			"from": [0, 11],
+			"reqId": 46,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 46
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646165
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-base-rx",
+			"role": "GETCOUNT [20,32] rx pre-add (N=0)",
+			"source": "ws21 7.25 base sweep reqId=46 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09000600ff092e",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 46,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 46
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-filt-rx",
+			"role": "GETCOUNT [20,32] rx with 1 filter row (N=1)",
+			"source": "ws21 7.25 filt sweep reqId=46 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09080600ff092e",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 46,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 8
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 46
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-rest-rx",
+			"role": "GETCOUNT [20,32] rx post-remove (N=0)",
+			"source": "ws21 7.25 restored sweep reqId=46 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09000600ff092e",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 46,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 46
+				}
+			]
+		}
+	]
+}

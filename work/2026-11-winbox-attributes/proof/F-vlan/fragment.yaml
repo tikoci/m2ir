@@ -1,0 +1,15 @@
+# cspell:ignore rowid getall untagged e1br ether1 vlanids mvrp pvid
+# F-vlan promotion fragment (coordinator integrates).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> bridge-vlan f5
+    op: rename-proven
+    name: current-tagged
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> bridge-vlan f6
+    op: rename-proven
+    name: current-untagged
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> bridge-vlan notes
+    op: append
+    notes: "F-vlan 2x2 matrix (filtering x move) + quoted-form finding + dynamic PVID row + V5 session-alive"
+    evidence_add: 2
+no_promotion_for:
+  - "f7 mvrp-forbidden (still [] everywhere; needs a SETS leg)"

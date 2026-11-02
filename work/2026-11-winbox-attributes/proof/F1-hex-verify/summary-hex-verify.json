@@ -1,0 +1,210 @@
+{
+  "proof": "F1 hex-verify: coordinator read-only re-read (beta4 E1 legs)",
+  "target": "winbox-beta4",
+  "routeros_version": "7.26beta4",
+  "winbox_port": "redacted",
+  "legs": [
+    {
+      "leg": "getall-16-2",
+      "route": [
+        16,
+        2
+      ],
+      "cmd": "CMD_GETALL",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        16,
+        2
+      ],
+      "rowCount": 0,
+      "pages": 1,
+      "complete": true,
+      "fieldKeys": [],
+      "note": "empty table: 0 rows",
+      "seqStart": 0,
+      "seqEnd": 1
+    },
+    {
+      "leg": "getobj-16-2-999",
+      "route": [
+        16,
+        2
+      ],
+      "cmd": "CMD_GETOBJ",
+      "status": "router-error",
+      "errno": 16646148,
+      "errnoName": "ERROR_UNKNOWNID",
+      "errstr": null,
+      "from": [
+        16,
+        2
+      ],
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 2,
+      "seqEnd": 3
+    },
+    {
+      "leg": "getall-16-13",
+      "route": [
+        16,
+        13
+      ],
+      "cmd": "CMD_GETALL",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        16,
+        13
+      ],
+      "rowCount": 0,
+      "pages": 1,
+      "complete": true,
+      "fieldKeys": [],
+      "note": "empty table: 0 rows",
+      "seqStart": 4,
+      "seqEnd": 5
+    },
+    {
+      "leg": "getobj-16-13-999",
+      "route": [
+        16,
+        13
+      ],
+      "cmd": "CMD_GETOBJ",
+      "status": "router-error",
+      "errno": 16646148,
+      "errnoName": "ERROR_UNKNOWNID",
+      "errstr": null,
+      "from": [
+        16,
+        13
+      ],
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 6,
+      "seqEnd": 7
+    },
+    {
+      "leg": "getall-20-1",
+      "route": [
+        20,
+        1
+      ],
+      "cmd": "CMD_GETALL",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        1
+      ],
+      "rowCount": 1,
+      "pages": 1,
+      "complete": true,
+      "fieldKeys": [
+        "0x00000b/0x0",
+        "0xfe0007/0x1",
+        "0xfe0008/0x0",
+        "0xfe000a/0x0",
+        "0x000004/0x8",
+        "0x000005/0x9",
+        "0x000006/0x9",
+        "0x00000a/0x9",
+        "0xfe0001/0x9",
+        "0x000001/0x8",
+        "0x000002/0x8",
+        "0x000003/0x8",
+        "0xfe0009/0x21"
+      ],
+      "note": "first-row keys listed; rows=1",
+      "seqStart": 8,
+      "seqEnd": 9
+    },
+    {
+      "leg": "getobj-20-1-1",
+      "route": [
+        20,
+        1
+      ],
+      "cmd": "CMD_GETOBJ",
+      "status": "ok",
+      "errno": null,
+      "errnoName": null,
+      "errstr": null,
+      "from": [
+        20,
+        1
+      ],
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0x00000b/0x0",
+        "0xfe0007/0x1",
+        "0xfe0008/0x0",
+        "0xfe000a/0x0",
+        "0x000004/0x8",
+        "0x000005/0x9",
+        "0x000006/0x9",
+        "0x000003/0x8",
+        "0x00000a/0x9",
+        "0xfe0001/0x9",
+        "0xff0003/0x9",
+        "0x000001/0x8",
+        "0xff0006/0x9",
+        "0x000002/0x8",
+        "0xfe0009/0x21"
+      ],
+      "seqStart": 10,
+      "seqEnd": 11
+    },
+    {
+      "leg": "getobj-20-1-999",
+      "route": [
+        20,
+        1
+      ],
+      "cmd": "CMD_GETOBJ",
+      "status": "router-error",
+      "errno": 16646148,
+      "errnoName": "ERROR_UNKNOWNID",
+      "errstr": null,
+      "from": [
+        20,
+        1
+      ],
+      "fieldKeys": [
+        "0xff0001/0x88",
+        "0xff0002/0x88",
+        "0xff001c/0xa0",
+        "0xff0008/0x8",
+        "0xff0003/0x9",
+        "0xff0004/0x9",
+        "0xff0006/0x9"
+      ],
+      "seqStart": 12,
+      "seqEnd": 13
+    }
+  ]
+}

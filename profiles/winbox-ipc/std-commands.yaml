@@ -138,14 +138,16 @@ commands:
   0xfe0009:
     canonical-name: UNHANDLED_0x09
     confidence: observed-only
-    notes: "genuinely unhandled: nv::Handler::handleCmd routes 0xfe0009 to the DEFAULT case (slot 19 cmdUnknown). No named command."
+    notes: "genuinely unhandled: nv::Handler::handleCmd routes 0xfe0009 to the DEFAULT case (v6: slot 19 cmdUnknown; v7: slot 24 cmdUnknown — see dispatch-model). No named command."
     evidence:
       - source: code
         ref: "RouterOS libumsg.so nv::Handler::handleCmd jump table (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+      - source: code
+        ref: "RouterOS 7.25 x86 lib/libumsg.so handleCmd DEFAULT->*0x60 (slot 24 cmdUnknown) @0x377e8 — work/2026-11-winbox-attributes/proof/F0b-slot19/report.yaml"
   0xfe000a:
     canonical-name: UNHANDLED_0x0a
     confidence: observed-only
-    notes: "genuinely unhandled (same DEFAULT route as 0xfe0009). No named command."
+    notes: "genuinely unhandled (same version-split DEFAULT route as 0xfe0009). No named command."
     evidence:
       - source: code
         ref: "RouterOS libumsg.so nv::Handler::handleCmd jump table (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
@@ -153,10 +155,12 @@ commands:
   0xfe000c:
     canonical-name: CMD_SHUTDOWN
     confidence: observed-only
-    notes: "slot 20 = cmdShutdown (name from PLT symbols). WARNING: context-dependent — as a SYS_CMD value this is CMD_SHUTDOWN, but as a 0xfe-namespace FIELD (std-keys.yaml 0xfe000c) it is the GETALL flags word. Command/error/field namespaces overlap numerically."
+    notes: "v6 slot 20 = cmdShutdown (v7: slot 25 — see dispatch-model slot-map-v7; name from PLT symbols). WARNING: context-dependent — as a SYS_CMD value this is CMD_SHUTDOWN, but as a 0xfe-namespace FIELD (std-keys.yaml 0xfe000c) it is the GETALL flags word. Command/error/field namespaces overlap numerically."
     evidence:
       - source: code
         ref: "RouterOS libumsg.so nv::Handler::handleCmd case 0x28737 -> slot 20 (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+      - source: code
+        ref: "RouterOS 7.25 x86 lib/libumsg.so case 0x0c -> *0x64 (slot 25 cmdShutdown) @0x377bf — work/2026-11-winbox-attributes/proof/F0b-slot19/report.yaml"
   0xfe000d:
     canonical-name: CMD_GET
     confidence: documented
@@ -313,18 +317,38 @@ commands:
 # ── dispatch model (first-party) ──────────────────────────────────────────
 dispatch-model:
   role: |
-    nv::Handler::handleCmd subtracts 0xfe0000 and switches via a 23-entry
-    jump table; out-of-range SYS_CMD values (small integers, 0x100xx,
-    0x60001, 0x70001 — see commands.yaml handler-private) fall to
-    DEFAULT = slot 19 cmdUnknown(msg, cmd). Base cmdGet/cmdSet/
-    cmdGetAll/cmdUnknown all answer errorMsg(0xfe0003) = ERROR_NOTIMP;
-    a missing GETOBJ-family object id answers errorMsg(0xfe0004) =
-    ERROR_UNKNOWNID. Command, error, and field namespaces overlap
-    numerically (context-dependent) — e.g. 0xfe000c is CMD_SHUTDOWN as
-    a command but the GETALL flags word as a field. v7 note (§42):
-    7.25 handleCmd bounds the table at 0x1a (not 23 entries) and
-    case 0x14 calls slot 29 (cmdDisconnected) — the slot-24
-    cmdDisconnected mapping above is v6-based.
+    v6: nv::Handler::handleCmd subtracts 0xfe0000 and switches via a
+    23-entry jump table; out-of-range SYS_CMD values (small integers,
+    0x100xx, 0x60001, 0x70001 — see commands.yaml handler-private)
+    fall to DEFAULT = slot 19 cmdUnknown(msg, cmd). Base
+    cmdGet/cmdSet/cmdGetAll/cmdUnknown all answer errorMsg(0xfe0003)
+    = ERROR_NOTIMP; a missing GETOBJ-family object id answers
+    errorMsg(0xfe0004) = ERROR_UNKNOWNID. Command, error, and field
+    namespaces overlap numerically (context-dependent) — e.g.
+    0xfe000c is CMD_SHUTDOWN as a command but the GETALL flags word
+    as a field.
+    v7 (7.25 x86 lib/libumsg.so, sha256
+    1d471df0c39e81b9ef946f636615e352470bd0da3fbeaf98fb017869b1c46c80):
+    nv::Handler::handleCmd @0x374ec subtracts 0xfe0000 and bounds
+    the jump table at 0x1a (27 cases, 0xfe0000-0xfe001a; table
+    @0x735ec). The Handler vtable shifts past slot 12 (see
+    slot-map-v7): 13=cmdGetObj-overload, 14=cmdSetObj(u32),
+    15=cmdSetObj-overload, 16=cmdGetAll, 17=cmdStopGetAll,
+    18=cmdAddObj, 19=cmdRemoveObj(u32) @0x33fe0,
+    20=cmdRemoveObj-overload, 21=cmdMoveObj, 22=cmdGetCount,
+    23=cmdRemoveBundle, 25=cmdShutdown, 26=shouldNotify,
+    29=cmdDisconnected @0x3671a (slots 0-12 align with v6; slots
+    27/28/30/31+ are R_386_RELATIVE local entries with zeroed
+    addends = statically unresolvable). Case 0x14
+    (CMD_DISCONNECTED) calls slot 29 (*0x74 @0x377b4). DEFAULT
+    (out-of-range SYS_CMD incl. handler-private values, plus
+    in-range 0x01/08/09/0a/0b/0f/10/11/19) routes to slot 24 =
+    cmdUnknown @0x3406a (*0x60 @0x377e8) — the v6 "DEFAULT ->
+    slot 19" model does NOT transfer. New-vs-v6 cases:
+    0x17=cmdNotifyAck (direct), 0x18=cmdStopGetAll (slot 17),
+    0x1a=cmdRemoveBundle (slot 23); 0x19 falls to DEFAULT. Base
+    cmdRemoveObj/cmdUnknown answer errorMsg(0xfe0003) =
+    ERROR_NOTIMP.
   slot-map:
     9: cmdGet
     10: cmdSet
@@ -339,10 +363,36 @@ dispatch-model:
     19: cmdUnknown
     20: cmdShutdown
     24: cmdDisconnected
+  slot-map-v7:
+    9: cmdGet
+    10: cmdSet
+    11: cmdReset
+    12: cmdGetObj
+    13: cmdGetObj-overload
+    14: cmdSetObj
+    15: cmdSetObj-overload
+    16: cmdGetAll
+    17: cmdStopGetAll
+    18: cmdAddObj
+    19: cmdRemoveObj
+    20: cmdRemoveObj-overload
+    21: cmdMoveObj
+    22: cmdGetCount
+    23: cmdRemoveBundle
+    24: cmdUnknown
+    25: cmdShutdown
+    26: shouldNotify
+    29: cmdDisconnected
   confidence: observed-only
   evidence:
     - source: code
       ref: "RouterOS libumsg.so nv::Handler::handleCmd + ConfigHandler::cmdGetAll (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
+    - source: code
+      ref: "RouterOS 7.25 x86 lib/libumsg.so nv::Handler::handleCmd @0x374ec: prologue sub/cmp/ja (JT bound 0x1a, DEFAULT @0x377dd), table @0x735ec, case blocks (0x14->*0x74 @0x377b4, DEFAULT->*0x60 @0x377e8); R_386_32 vtable-slot relocs in three vtables (NotifyHandler @0x7d664, DeviceMirrorBase @0x7d5b0, ASecMap @0x7d368). Full per-link citations: work/2026-11-winbox-attributes/proof/F0b-slot19/report.yaml"
+    - source: code
+      ref: "libumsg.so sha256 1d471df0c39e81b9ef946f636615e352470bd0da3fbeaf98fb017869b1c46c80 (F0b-computed; extraction provenance per work/2026-10-chr-extraction/README.md); nova/bin/net hash verified against work/2026-10-chr-extraction/novabin-7.25.sha256"
+    - source: code
+      ref: "blind review (F-reviewer, 2026-11-02): independent vtable/JT decode corroborates slot-19=cmdRemoveObj, bound 0x1a, and DEFAULT->slot-24 cmdUnknown — work/2026-11-winbox-attributes/proof/F-reviewer/report.yaml"
 
 investigation-trail:
   - date: 2026-10-31

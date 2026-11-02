@@ -1,0 +1,236 @@
+# cspell:ignore rowid rowids vlan untagged e1br ether1 vlanids mvrp pvid
+# F-vlan execution report (coordinator). twin3 ONLY. No commit, no push.
+proof: "F-vlan quoted-untagged move on twin3 7.25: COMPLETE 9w+0r of 9w+0r; full 2x2 (filtering x move) recovered, f5/f6 assigned, restore verified clean"
+date: 2026-11-02
+worker: coordinator
+leg: vlan-move-quoted-untagged
+sheet: "coordinator sheet presented 2026-11-02 (W2r.1-6 + quoted W2r.4 + R1-R3; this report)"
+approval_quoted: "vlan-yes: Yes run it (9w+0r twin3, stop+clean+start recovery if W2r.5 strands access) — explicit per-leg yes via structured confirmation, this session"
+vm:
+  name: twin3
+  routeros: "7.25"
+  build: "2026-10-22 14:12:00"
+  arch: x86
+  network: user
+  ports: "resolved live from `quickchr list` at execution (http:9120 block, winbox:9125); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed; no clean — no access loss occurred)
+tooling:
+  control_via: "centrs execute/retrieve --quickchr twin3 (writes via native-api)"
+  native_via: "proof/E1-W2r/getall-w2r.ts (paged GETALL, read-only; reused unmodified)"
+baseline_snapshot:
+  verdict: PASS
+  control:
+    - { route: /interface/bridge, objectCount: 0 }
+    - { route: /interface/bridge/vlan, objectCount: 0 }
+    - { route: /interface/bridge/port, objectCount: 0 }
+    - { route: /interface/bridge/host, objectCount: 0 }
+  native:
+    - { op: "GETALL [16,13]", rows: 0 }
+    - { op: "GETALL [16,2]", rows: 0 }
+    - op: "GETALL [20,0]"
+      rows: 2
+      mapping_live: "ether1 rowid 2, lo rowid 1 (matches E1/W2r twin3 values; cited live, not assumed)"
+  files: [baseline_interface_bridge.json, baseline_interface_bridge-vlan.json, baseline_interface_bridge-port.json, baseline_interface_bridge-host.json, step-baseline.jsonl]
+steps:
+  - tag: V1
+    command: "/interface/bridge/add name=e1br"
+    outcome: ok
+    result: "e1br .id *3, vlan-filtering=false"
+    evidence: [control-v1-add.json, verify-v1.json, explain-v1.json]
+    writes: 1
+    cumulative: 1
+  - tag: V2
+    command: "/interface/bridge/vlan/add bridge=e1br vlan-ids=10 tagged=e1br untagged=ether1"
+    outcome: ok
+    result: "vlan .id *1"
+    evidence: [control-v2-add.json, verify-v2.json, explain-v2.json]
+    writes: 1
+    cumulative: 2
+  - tag: V3
+    command: "/interface/bridge/port/add bridge=e1br interface=ether1"
+    outcome: ok
+    result: "port .id *0"
+    evidence: [control-v3-add.json, verify-v3.json, explain-v3.json]
+    writes: 1
+    cumulative: 3
+  - tag: G-static-mac
+    read: "retrieve /interface/bridge/host"
+    file: gate-host.json
+    host_rows: 2
+    match_row: "*2 mac 02:91:A6:6C:44:D5 bridge e1br interface ether1 on-interface ether1 (local, dynamic)"
+    co_row: "*1 mac 52:55:0A:00:02:02 bridge e1br interface ether1 (dynamic)"
+    verdict: PASS
+    predicate: "as sheeted: >=1 host row attaches the lab ether1 MAC to e1br/ether1; dynamic co-rows allowed, count recorded (2)"
+    writes: 0
+    cumulative: 3
+  - tag: cell-A
+    verdict: REPRODUCED (3rd time: E1, W2r, now)
+    control: "tagged=e1br untagged=ether1 current-tagged='' current-untagged='' mvrp-forbidden=''"
+    native: "GETALL [16,13] 1 row, vlan rowid 1: f1=[10,10] f2=3 f3=[3] f4=[2] f5=[] f6=[] f7=[]"
+    rowids_live: "ether1=2 e1br=3 lo=1 (bridge rowid 3 this session, session-local)"
+    proves: "p-vlan-f4 premise HOLDS again: f4=[2]=etherRowId non-empty while both currents empty"
+    evidence: [cell-A-vlan.json, step-cell-A.jsonl]
+    writes: 0
+    cumulative: 3
+  - tag: V4-quoted
+    command: '/interface/bridge/vlan/set *1 tagged=e1br,ether1 untagged=""'
+    outcome: "ACCEPTED (ok) — the quoted empty-string form moves ether1 where the bare form was device-rejected"
+    evidence: [control-v4-set.json, explain-v4q.json]
+    writes: 1
+    cumulative: 4
+  - tag: cell-B
+    verdict: RECOVERED (filtering=no, moved)
+    control: "tagged=e1br,ether1 untagged='' current-tagged='' current-untagged=''"
+    native: "1 row rowid 1: f3=[3,2] f4=[] f5=[] f6=[]"
+    proves: "inverse corroboration of p-vlan-f4 (f4 tracks configured-untagged DOWN to empty); f5/f6 still empty consistent with current-side"
+    evidence: [cell-B-vlan.json, step-cell-B.jsonl]
+    writes: 0
+    cumulative: 4
+  - tag: V5
+    command: "/interface/bridge/set e1br vlan-filtering=yes"
+    outcome: "ok; session ALIVE (post-set retrieve confirms vlan-filtering=true) — access hazard did NOT materialize, no recovery needed"
+    evidence: [control-v5-set.json, verify-v5.json, explain-v5.json]
+    writes: 1
+    cumulative: 5
+  - tag: cell-C
+    verdict: RECOVERED (filtering=yes, moved)
+    control: "*1 vlan-10: tagged=e1br,ether1 untagged='' ct=e1br,ether1 cu=''; *2 vlan-1 DYNAMIC: tagged='' untagged=e1br,ether1 ct='' cu=e1br,ether1"
+    native: "2 rows. rowid 1: f3=[3,2] f4=[] f5=[3,2] f6=[]. rowid 2 (dynamic, 'added by pvid', f1=[1,1]): f3=[] f4=[3,2] f5=[] f6=[3,2]"
+    proves: "f5=CURRENT-TAGGED ([3,2] where ct=e1br,ether1); dynamic row cross-assigns f6=CURRENT-UNTAGGED ([3,2] where cu=e1br,ether1) with f4=[3,2] tracking configured-untagged on the dynamic row too"
+    evidence: [cell-C-vlan.json, step-cell-C.jsonl]
+    writes: 0
+    cumulative: 5
+  - tag: V6
+    command: "/interface/bridge/vlan/set *1 tagged=e1br untagged=ether1"
+    outcome: ok (reverse swap restores the previously-accepted config)
+    evidence: [control-v6-set.json, explain-v6.json]
+    writes: 1
+    cumulative: 6
+  - tag: cell-D
+    verdict: RECOVERED (filtering=yes, unmoved)
+    control: "*1 vlan-10: tagged=e1br untagged=ether1 ct=e1br cu=ether1; *2 vlan-1 dynamic unchanged"
+    native: "rowid 1: f3=[3] f4=[2] f5=[3] f6=[2] — PERFECT SPLIT on one row"
+    proves: "f5=CURRENT-TAGGED ([3]=e1br) and f6=CURRENT-UNTAGGED ([2]=ether1) on the same row; u-vlan-f5-f6 CLOSED"
+    evidence: [cell-D-vlan.json, step-cell-D.jsonl]
+    writes: 0
+    cumulative: 6
+  - tag: R1
+    command: "/interface/bridge/vlan/remove *1"
+    outcome: ok
+    evidence: [control-R1.json, explain-R1.json]
+    writes: 1
+    cumulative: 7
+  - tag: R2
+    command: "/interface/bridge/port/remove *0"
+    outcome: ok
+    evidence: [control-R2.json, explain-R2.json]
+    writes: 1
+    cumulative: 8
+  - tag: R3
+    command: "/interface/bridge/remove e1br"
+    outcome: ok (dynamic PVID row gone with the bridge)
+    evidence: [control-R3.json, explain-R3.json]
+    writes: 1
+    cumulative: 9
+spend:
+  counted_writes: 9
+  reboots: 0
+  cap: "9w+0r"
+  itemized: "V1 + V2 + V3 + V4-quoted + V5 + V6 + R1 + R2 + R3 = 9; all reads/gates = 0"
+  within_cap: true
+proven:
+  - id: P-vlan-f5
+    claim: "f5 = current-tagged [20,0] rowids: [3,2] in C row 1 (ct=e1br,ether1), [3] in D row 1 (ct=e1br), [] wherever ct empty (A, B, C row 2)"
+    evidence: [step-cell-A.jsonl, step-cell-B.jsonl, step-cell-C.jsonl, step-cell-D.jsonl, cell-C-vlan.json, cell-D-vlan.json]
+  - id: P-vlan-f6
+    claim: "f6 = current-untagged [20,0] rowids: [2] in D row 1 (cu=ether1), [3,2] in C/D row 2 (cu=e1br,ether1), [] wherever cu empty (A, B, C row 1)"
+    evidence: [step-cell-A.jsonl, step-cell-B.jsonl, step-cell-C.jsonl, step-cell-D.jsonl, cell-C-vlan.json, cell-D-vlan.json]
+  - id: P-vlan-f4-down
+    claim: "f4 tracks configured-untagged down to empty (B: f4=[] after the move) and back up (D: f4=[2]); dynamic-row f4=[3,2] tracks its configured-untagged too"
+    evidence: [step-cell-B.jsonl, step-cell-D.jsonl, step-cell-C.jsonl]
+  - id: P-vlan-quoted
+    claim: "quoted untagged=\"\" is ACCEPTED where bare untagged= was device-rejected with the overlap message: the device distinguishes empty-string from absent on this path"
+    evidence: [control-v4-set.json, explain-v4q.json, cell-B-vlan.json]
+  - id: P-vlan-pvid-row
+    claim: "dynamic PVID row shape (vlan 1, 'added by pvid', fe0007=true): f1=[1,1], f3=[], f4=[3,2], f6=[3,2]; appears under filtering=yes, gone with the bridge"
+    evidence: [step-cell-C.jsonl, step-cell-D.jsonl, cell-C-vlan.json]
+  - id: P-vlan-v5-alive
+    claim: "vlan-filtering=yes on the lab-path bridge did NOT strand this session (post-set retrieve ok); the hazard recovery path remains untested"
+    evidence: [control-v5-set.json, verify-v5.json]
+cells_vs_u_vlan_f5_f6:
+  target: "u-vlan-f5-f6 (f5/f6 = current tagged/untagged)"
+  A: "REPRODUCED — f5=f6=[] while currents empty"
+  B: "RECOVERED — f4=[] (inverse f4 proof); f5=f6=[] consistent with current-side"
+  C: "RECOVERED — f5=[3,2] assigns CURRENT-TAGGED; dynamic row cross-assigns f6"
+  D: "RECOVERED — f5=[3] + f6=[2] split on one row assigns both"
+  verdict: "u-vlan-f5-f6 CLOSED (4/4 cells; f5=current-tagged, f6=current-untagged)"
+unknown:
+  - id: U-vlan-f7
+    claim: "f7=[] throughout all 4 cells (mvrp-forbidden stayed empty) — still needs a leg that SETS mvrp-forbidden"
+    next: "unbudgeted follow-up"
+restore_verification:
+  verdict: PASS
+  control:
+    - { route: /interface/bridge, objectCount: 0 }
+    - { route: /interface/bridge/vlan, objectCount: 0 }
+    - { route: /interface/bridge/port, objectCount: 0 }
+    - { route: /interface/bridge/host, objectCount: 0 }
+  native:
+    - { op: "GETALL [16,13]", rows: 0, pages: 1 }
+    - { op: "GETALL [16,2]", rows: 0, pages: 1 }
+  files: [restored_interface_bridge.json, restored_interface_bridge-vlan.json, restored_interface_bridge-port.json, restored_interface_bridge-host.json, step-restored.jsonl]
+cleanup_state:
+  tables: "bridge/vlan/port/host all empty on both surfaces (control + native)"
+  vm: "twin3 STOPPED via `quickchr stop twin3` (not removed; no clean — no access loss occurred)"
+  writes_on_other_machines: 0
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/F-vlan/report.yaml
+  - work/2026-11-winbox-attributes/proof/F-vlan/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/F-vlan/sanitize.ts
+  - work/2026-11-winbox-attributes/proof/F-vlan/baseline_interface_bridge.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/baseline_interface_bridge-vlan.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/baseline_interface_bridge-port.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/baseline_interface_bridge_host.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/step-baseline.jsonl
+  - work/2026-11-winbox-attributes/proof/F-vlan/control-v1-add.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/verify-v1.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/control-v2-add.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/verify-v2.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/control-v3-add.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/verify-v3.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/gate-host.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/cell-A-vlan.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/step-cell-A.jsonl
+  - work/2026-11-winbox-attributes/proof/F-vlan/control-v4-set.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/cell-B-vlan.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/step-cell-B.jsonl
+  - work/2026-11-winbox-attributes/proof/F-vlan/control-v5-set.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/verify-v5.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/cell-C-vlan.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/step-cell-C.jsonl
+  - work/2026-11-winbox-attributes/proof/F-vlan/control-v6-set.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/cell-D-vlan.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/step-cell-D.jsonl
+  - work/2026-11-winbox-attributes/proof/F-vlan/control-R1.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/control-R2.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/control-R3.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/restored_interface_bridge.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/restored_interface_bridge-vlan.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/restored_interface_bridge-port.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/restored_interface_bridge-host.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/step-restored.jsonl
+  - work/2026-11-winbox-attributes/proof/F-vlan/explain-v1.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/explain-v2.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/explain-v3.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/explain-v4q.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/explain-v5.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/explain-v6.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/explain-R1.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/explain-R2.json
+  - work/2026-11-winbox-attributes/proof/F-vlan/explain-R3.json
+gates_observed:
+  - "twin3 ONLY: no other VM touched"
+  - "every write string validated with `centrs explain` before sending (9/9 pass, 0 rejections); *1/*0 selectors resolved from execution-time retrieves"
+  - "cumulative verified before every write (max reached 9 of 9)"
+  - "no edits to profiles/winbox-ipc/*.yaml, profiles/winbox-ipc/README.md, README.md, GLOSSARY.txt (coordinator integrates separately)"
+  - "no commit, no push"

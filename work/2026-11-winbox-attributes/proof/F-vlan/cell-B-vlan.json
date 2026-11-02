@@ -1,0 +1,29 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".about": "vlan-filtering is disabled",
+      ".id": "*1",
+      "bridge": "e1br",
+      "current-tagged": "",
+      "current-untagged": "",
+      "disabled": "false",
+      "dynamic": "false",
+      "managed": "false",
+      "mvrp-forbidden": "",
+      "tagged": "e1br,ether1",
+      "untagged": "",
+      "vlan-ids": "10"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 1,
+      "path": "/interface/bridge/vlan"
+    }
+  }
+}

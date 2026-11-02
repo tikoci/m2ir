@@ -1,0 +1,166 @@
+# cspell:ignore rowid getall getcount getobj e3jump reqid subtable readback redacted bycatch vms
+proof: "F-jump: filter action=jump value + jump-target identity on ws21/7.25 (5w+0r of 5w+0r)"
+worker: coordinator
+date: 2026-11-02
+head: "33a956e + Phase F read-only integration (uncommitted)"
+approval:
+  quoted_user_yes: "jump leg: Yes, run it (5w+0r on ws21/7.25) — explicit per-leg yes via structured confirmation, this session"
+  scope_note: "F-jump slice only: 5 counted writes + 0 reboots on ws21 (7.25) ONLY"
+budgets:
+  cap: { counted_writes: 5, reboots: 0 }
+  spent: { counted_writes: 5, reboots: 0 }
+  itemized: "J1 add (1) + J2 set (1) + J2b add (1) + J3 SETOBJ (1) + restore-verify branch (1); J0 conditional never needed (0); per-variant removes bundled"
+  counting_rule: "sheet rule: counted writes = control adds/sets + native verbs + 1 per restore branch; rejected adds count 0 (none occurred)"
+vms:
+  touched: [ws21]
+  versions: { ws21: "7.25" }
+  forbidden_touched: none
+  ports: "live-resolved via quickchr/centrs at runtime (winbox:9195 block); numeric values redacted per sanitization rule"
+  end_state: "ws21 STOPPED (not removed); all five firewall menus restored to 0 rows, native [20,3]/[20,32] back to baseline 0"
+methods:
+  native: "harness modules capture.ts + correlate.ts + paging.ts + session.ts + target.ts via proof-local leg-jump.ts (read: GETCOUNTx2 + GET + paged GETALL; setobj: one gated CMD_SETOBJ)"
+  control: "centrs execute --quickchr ws21 --yes (writes) + centrs retrieve --quickchr ws21 (reads), --format json throughout"
+  validation: "every RouterOS string passed `centrs explain` BEFORE sending: 6/6 offline pass (J1 + J0-unused + J2 + J2b + 2 removes); 0 rejections"
+  baselines: "control retrieve of all five firewall menus (0 rows each) + native read ([20,3]=0, [20,32]=0, [20,17] ok, GETALL [20,3] 0 rows complete)"
+baseline_snapshot:
+  control: "5 menus 0 rows (control-base-firewall-{filter,nat,raw,mangle,calea}.json)"
+  native: "[20,3]=0 [20,32]=0, [20,17] f34=T f46=F f15=f206=0, GETALL [20,3] 0 rows complete (step-baseline.jsonl)"
+steps:
+  - id: J1
+    control_add: "/ip/firewall/filter/add chain=forward action=jump jump-target=e3jump comment=e3jump1"
+    outcome: "ok, ret *1 — nonexistent jump-target chain accepted at add time (no seeding needed; J0 conditional skipped, 0w)"
+    native_readback: "[20,3]=1, GETALL 1 row rowid 1: f40/0x9=1, f41/0x21='e3jump', f39/0x21='forward', fe0007=F fe0008=F fe0009='e3jump1' fe001c=[] (8 keys)"
+    bycatch: "[20,32]=2; [20,17] f34=F f46=T f15=f206=2"
+    evidence: [control-j1-add.json, control-j1-read.json, step-j1.jsonl, explain-j1.json]
+    counted: 1
+    cumulative: 1
+  - id: J2
+    control_set: "/ip/firewall/filter/set *1 jump-target=e3jump2"
+    outcome: "ok — nonexistent target accepted at set time too"
+    native_readback: "rowid 1: ONLY f41 moved ('e3jump'->'e3jump2'); f40 stays 1; +1 NEW field 0xfd002a/0x21='' (empty string) and key-order churn (comment ahead of f41/f39)"
+    bycatch: "[20,3]=1 [20,32]=2 unchanged; [20,17] F/T/2/2 unchanged"
+    evidence: [control-j2-set.json, step-j2.jsonl, explain-j2.json]
+    gap: "no independent control read-back after J2 (procedural gap; the set ack + native f41 delta are the evidence)"
+    counted: 1
+    cumulative: 2
+  - id: J2b
+    note: "IN-CAP ADAPTATION beyond the presented sheet (which reserved accept-add as a J2-rejection fallback): J2 succeeded, but the inverse J3 needs a grounded accept value and the sheet promised N=2 linearity as bycatch — both served within the approved 5w cap"
+    control_add: "/ip/firewall/filter/add chain=forward action=accept comment=e3jumpA"
+    outcome: "ok, ret *2"
+    native_readback: "[20,3]=2 (LINEARITY: counter, not presence-flag); rowid 2 (accept): f40/0x9=0, NO f41, NO 0xfd002a (7 keys); rowid 1 unchanged (f40=1, f41='e3jump2', 0xfd002a='')"
+    bycatch: "[20,32]=1 (!!); [20,17] F/T/2/2 (f15/f206 do NOT track [20,32] here)"
+    evidence: [control-j2b-add.json, step-j2b.jsonl, explain-j2b.json]
+    gap: "no independent control read-back after J2b (same procedural gap; add ack ret *2 + native 2 rows are the evidence)"
+    counted: 1
+    cumulative: 3
+  - id: J3
+    shape: "SETOBJ {0xfe0001=1, f40=0} (jump value -> accept value)"
+    outcome: "ok ack; control read-back: *1 action=accept, jump-target GONE; *2 unchanged accept"
+    native_readback: "rowid 1: f40 1->0; f41='e3jump2' + 0xfd002a='' RETAINED natively while control dropped jump-target (adjunct-retention divergence, NOT full split-brain: action agrees both sides)"
+    bycatch: "[20,3]=2 [20,32]=1; [20,17] F/T/2/2"
+    evidence: [step-j3.jsonl, control-j3-read.json, step-j3read.jsonl]
+    counted: 1
+    cumulative: 4
+  - id: restore-verify
+    steps: "remove *1 + *2 (both validated, both ok) + 5-menu control verify (0 rows) + native read ([20,3]=0 [20,32]=0, GETALL 0 rows)"
+    restored: true
+    evidence: [control-restore-rm1.json, control-restore-rm2.json, control-restore-{filter,nat,raw,mangle,calea}.json, step-restored.jsonl, explain-rm1.json, explain-rm2.json]
+    counted: 1
+    cumulative: 5
+proven:
+  - id: P-jump-1
+    claim: "filter action rides f40 (0x28) u32_compact: jump=1, accept=0 (single samples each; numbering consistent with NAT f39/f40/f41)"
+    evidence: [step-j1.jsonl, step-j2b.jsonl]
+  - id: P-jump-2
+    claim: "jump-target rides f41 (0x29) string: the ONLY J1->J2 row delta ('e3jump'->'e3jump2') while f40 stays 1; absent on the accept row"
+    evidence: [step-j1.jsonl, step-j2.jsonl, step-j2b.jsonl]
+  - id: P-jump-3
+    claim: "inverse native SETOBJ f40 1->0 takes effect: control *1 flips jump->accept and drops jump-target"
+    evidence: [step-j3.jsonl, control-j3-read.json]
+  - id: P-jump-4
+    claim: "[20,3] GETCOUNT is a counter, not a presence flag: reads 2 with 2 rules (closes U-f0a-linearity)"
+    evidence: [step-j2b.jsonl]
+  - id: P-jump-5
+    claim: "[20,3] GETALL row-shape first observation (closes U-f0a-table-identity): 7-9 keys, rowid 0xfe0001, session fe0007/fe0008/fe0009/fe001c"
+    evidence: [step-j1.jsonl, step-j2.jsonl, step-j2b.jsonl, step-j3read.jsonl]
+  - id: P-jump-6
+    claim: "[20,32] 5-point dataset (values only, NO model): {}->0, {A}->8 (E3-W), {J}->2, {J,A}->1, {A,A}->1 — anti-monotonic in every direction"
+    evidence: [step-baseline.jsonl, step-j1.jsonl, step-j2b.jsonl, step-j3read.jsonl, step-restored.jsonl]
+  - id: P-jump-7
+    claim: "[20,17] f34/f46 are rule-presence bools (T/F iff table empty, both N=1 and N=2); f15/f206 are volatile (rest 5 != base 0, and 2 while [20,32]=1 at J2b kills the shared-driver reading)"
+    evidence: [step-baseline.jsonl, step-j1.jsonl, step-j2b.jsonl, step-restored.jsonl]
+disproven:
+  - id: D-jump-chain-required
+    claim: "jump-target does NOT need a pre-existing chain: nonexistent 'e3jump'/'e3jump2' accepted at add AND set time (J0 seeding correctly skipped)"
+    evidence: [control-j1-add.json, control-j2-set.json]
+unknown:
+  - id: U-jump-0xfd002a
+    claim: "0xfd002a/0x21 empty-string adjunct: absent on the J1 jump row, present from J2 on (only stimulus between reads was the jump-target set), retained post-SETOBJ, absent on accept rows — semantics unknown, never varied"
+    next: "a leg that varies or clears it (e.g. set jump-target back, or remove/re-add the jump rule and watch)"
+  - id: U-jump-32-model
+    claim: "[20,32] role still unclaimed; 5-point dataset recorded, no model fits"
+    next: "action-varied matrix (log/passthrough/drop?) if ever needed — currently no requester"
+  - id: U-jump-enum-rest
+    claim: "filter f40 values beyond accept=0/jump=1 unmapped (single samples each for the two known)"
+    next: "rule-matrix legs per value (unbudgeted)"
+  - id: U-jump-f41-lifecycle
+    claim: "f41 native-retention vs control-drop after action leaves jump: single-sample observation, no lifecycle model"
+    next: "re-observe on any future filter SET leg"
+  - id: U-jump-f39-chain
+    claim: "f39=chain proven only for 'forward' (single value); other chains untested"
+    next: "none budgeted"
+restore-verification:
+  restored: true
+  method: "control remove *1/*2 + 5-menu control verify (0 rows) + native read ([20,3]=0 [20,32]=0, GETALL 0 rows complete)"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/F-jump/leg-jump.ts
+  - work/2026-11-winbox-attributes/proof/F-jump/sanitize.ts
+  - work/2026-11-winbox-attributes/proof/F-jump/step-baseline.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-j1.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-j2.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-j2b.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-j3.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-j3read.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/step-restored.jsonl
+  - work/2026-11-winbox-attributes/proof/F-jump/control-base-firewall-filter.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-base-firewall-nat.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-base-firewall-raw.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-base-firewall-mangle.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-base-firewall-calea.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-j1-add.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-j1-read.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-j2-set.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-j2b-add.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-j3-read.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-restore-rm1.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-restore-rm2.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-restore-filter.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-restore-nat.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-restore-raw.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-restore-mangle.json
+  - work/2026-11-winbox-attributes/proof/F-jump/control-restore-calea.json
+  - work/2026-11-winbox-attributes/proof/F-jump/explain-j1.json
+  - work/2026-11-winbox-attributes/proof/F-jump/explain-j0-unused.json
+  - work/2026-11-winbox-attributes/proof/F-jump/explain-j2.json
+  - work/2026-11-winbox-attributes/proof/F-jump/explain-j2b.json
+  - work/2026-11-winbox-attributes/proof/F-jump/explain-rm1.json
+  - work/2026-11-winbox-attributes/proof/F-jump/explain-rm2.json
+  - work/2026-11-winbox-attributes/proof/F-jump/report.yaml
+  - work/2026-11-winbox-attributes/proof/F-jump/fragment.yaml
+sanitization:
+  derived_artifacts: true
+  native_manifests: "ts wall-clock redacted at write (seq preserves order); plaintextHex + decode lossless; no auth material captured (captures start after login)"
+  controls: "E2-R sanitize.ts shape (data + via/operation proof only; target/settings dropped); /tmp raw deleted after sanitized write"
+  explains: "offline analyzer output only; no router contact, no endpoints"
+  verified: "no 127.x/host/port/credential values in proof files (sanitize.ts drops target block; captures carry no endpoints)"
+verification:
+  biome: "pending (coordinator runs gates at integration)"
+  yaml_lint: "pending (coordinator runs gates at integration)"
+  cspell: "pending (coordinator runs gates at integration)"
+cleanup:
+  vms_stopped: [ws21]
+  vms_removed: []
+  baselines_restored: "jump leg restored=true (5-menu control verify + native re-read)"
+  owned_path: work/2026-11-winbox-attributes/proof/F-jump/
+  forbidden_paths_edited: none
+  git_commands_run: 0

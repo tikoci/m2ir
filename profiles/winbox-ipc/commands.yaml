@@ -3,9 +3,9 @@
 # When SYS_CMD (0xFF0007) is NOT in the 0xFE0000-0xFE0016 range, it is
 # either:
 #   * a handler-private u32 dispatched via slot 19 cmdUnknown(msg, cmd)
-#     on v6 (see std-commands.yaml dispatch-model; "slot 19" is v6-only
-#     vocabulary — v7 shifts the Handler vtable past slot 12, see
-#     net-bridge2-handler-tables.md §8): process_id-prefixed values
+#     on v6 (v7: slot 24 cmdUnknown; see std-commands.yaml
+#     dispatch-model slot-map-v7 — "slot 19" is v6-only vocabulary,
+#     v7 shifts the Handler vtable past slot 12): process_id-prefixed values
 #     (top byte = process_id, low 16 bits the handler-local opcode,
 #     e.g. 0x0A0065 = mepty login), small integers, 0x100xx values, or
 #     0x60001/0x70001-style codes — opaque per handler, no global
@@ -64,7 +64,6 @@ slot-19-private:
   open-questions:
     - "Which (process,handler) consumes rbbios's SYS_CMD=5 notify, and what does it carry?"
     - "Decode net-0 slot 19's private cmds 2-12 (roles unknown; the old 'sibling slot-14 override' hypothesis for the [20,0] GETALL cursor is REFUTED — no slot-14 override exists, GETALL lives in the slot-7 handleCmd dispatch; see net-bridge2-handler-tables.md §8)."
-    - "Map v7's private-cmd dispatch: the Handler vtable shifts past slot 12 on v7 (v7 [20,0] slot 19 = base cmdRemoveObj; the private-cmd switch sits at v7 slot 24) — v7 libumsg DEFAULT routing is still open."
 
 # ── documented handler-scoped u8 command spaces ──────────────────────────
 handler-scoped-u8:
@@ -209,3 +208,14 @@ investigation-trail:
       sub-command space (small integers, 0x100xx, 0x60001/0x70001 — no
       global scheme), correcting the header's process_id-prefixed-only
       reading of out-of-range SYS_CMD values.
+  - date: 2026-11-02
+    finding: |
+      F0b static libumsg7 pass closed the v7 private-cmd dispatch
+      open question (removed from slot-19-private open-questions):
+      7.25 handleCmd @0x374ec bounds the jump table at 0x1a, the
+      vtable shifts past slot 12 (19=cmdRemoveObj, 24=cmdUnknown),
+      and DEFAULT routes to slot 24 — the v6 "DEFAULT -> slot 19"
+      model does not transfer. Full map in std-commands.yaml
+      dispatch-model slot-map-v7; per-link citations in
+      work/2026-11-winbox-attributes/proof/F0b-slot19/report.yaml,
+      blind-corroborated by proof/F-reviewer/report.yaml.

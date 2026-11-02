@@ -1,0 +1,108 @@
+# cspell:ignore novabin libumsg dynsym dyn readelf relocs vtable cmdset objdump getall getcount getobj moveobj removeobj unknownid notimp brkpath uclibc gotcha img cplusplusfilt
+proof: "F0b static libumsg7 handleCmd dispatch pass (slot-19 identity + JT bound + case-0x14 chain)"
+worker: F0b
+date: 2026-11-02
+head: "33a956e (read-only; no commits by worker)"
+scope: "ONE handler family: v7 private-command dispatch (nv::Handler::handleCmd + Handler vtable); 1 private verb (slot-19/cmdRemoveObj)"
+lab_contact: "NONE — static only. No VM booted, no router/CHR contact, no quickchr, no centrs, no probes. All evidence from repo-recorded static notes + local disassembly/relocation reads (objdump/readelf/python) of the pinned 7.25 extraction, which executes no RouterOS code."
+budget_compliance:
+  candidate_slots_examined: [19, 24, 29]
+  candidate_slots_count: 3
+  jt_items_examined: ["bound 0x1a", "case 0x14", "DEFAULT branch"]
+  private_verbs: ["slot-19/cmdRemoveObj"]
+  checks_per_link: "<=2 (vtable-reloc resolution + JT/case-block disassembly)"
+  map_context_note: "Slots 9-18/20-23/25/26 corroborated from the SAME two relocation dumps (not separate examinations); full 27-entry JT decoded from ONE table read."
+binaries:
+  - file: "lib/libumsg.so (RouterOS 7.25 x86)"
+    path: "~/.local/share/m2ir/extractions/root-7.25/lib/libumsg.so"
+    sha256: 1d471df0c39e81b9ef946f636615e352470bd0da3fbeaf98fb017869b1c46c80
+    sha256_status: "F0b-computed (NEW: fills the E3-R gap 'NO recorded hash for libumsg7'); extraction provenance chain per work/2026-10-chr-extraction/README.md (quickchr chr-7.25.img -> part2.ext3 -> /var/pdb/system/image -> squashfs@4096)"
+    elf: "32-bit i386 shared object, stripped, dynsym intact"
+    role: "handleCmd body (JT + case blocks), Handler-subclass vtables, R_386_32 slot relocs"
+  - file: "nova/bin/net (RouterOS 7.25 x86)"
+    path: "~/.local/share/m2ir/extractions/root-7.25/nova/bin/net"
+    sha256: 4dfdc32ac9979b8ab86478dab601b79444875f936f7ff1b6b132553a565f6e7c
+    sha256_status: "VERIFIED against pinned work/2026-10-chr-extraction/novabin-7.25.sha256"
+    role: "hash cross-check only (no vtable needed from net: libumsg's own subclass vtables resolve every slot)"
+links:
+  - id: L1-slot19-identity
+    claim: "v7 Handler vtable slot 19 = nv::Handler::cmdRemoveObj(msg, u32)"
+    status: proven
+    checks:
+      - check: "R_386_32 vtable-slot reloc resolution (function-level, named symbols)"
+        result: "slot 19 -> cmdRemoveObj(u32) in THREE independent vtables: NotifyHandler reloc @0x7d6b8 -> nv::Handler::cmdRemoveObj @0x33fe0 (BASE method, no override); DeviceMirrorBase reloc @0x7d604 -> same base @0x33fe0; ASecMap reloc @0x7d3bc -> nv::ASecMap::cmdRemoveObj override @0x51c16 (same name/signature at the same slot)"
+      - check: "dispatch-corroboration from case-block disassembly"
+        result: "case 0x06 (CMD_REMOVEOBJ) block @0x3768d reads slot 19 (mov 0x4c(%eax) @0x376a3) when msg has u32 0xfe0001, else slot 20; slot 20 = cmdRemoveObj(flat_message) @0x3400e in all three vtables (NotifyHandler @0x7d6bc, DeviceMirrorBase @0x7d608, ASecMap @0x7d3c0). Base body @0x33fe0 pushes 0xfe0003 -> errorMsg (NOTIMP), matching every other base cmd."
+    evidence:
+      - "libumsg.so dynsym: nv::Handler::cmdRemoveObj(msg,u32) @0x33fe0; cmdRemoveObj(msg,flat) @0x3400e (objdump -T | c++filt)"
+      - "libumsg.so .rel.dyn: 0x7d6b8/0x7d604/0x7d3bc R_386_32 (readelf -r -W | c++filt); vtable bases: NotifyHandler 0x7d664, DeviceMirrorBase 0x7d5b0, ASecMap 0x7d368 (function array = base+8)"
+      - "libumsg.so .text: case-0x06 block 0x3768d, slot-19 read @0x376a3, base NOTIMP push @0x33ff7 (objdump -d)"
+  - id: L2-jt-bound
+    claim: "v7 libumsg handleCmd jump-table bound is 0x1a (27 cases, cmds 0xfe0000-0xfe001a)"
+    status: proven
+    checks:
+      - check: "handleCmd prologue disassembly (function-level)"
+        result: "nv::Handler::handleCmd @0x374ec (dynsym, size 0x340): sub $0xfe0000,%eax @0x37515; cmp $0x1a,%eax @0x3751a; ja 0x377dd (DEFAULT) @0x3751d. Indirect dispatch via mov -0xaa08(%ebx,%eax,4),%ecx @0x37523 with ebx=GOT=0x7dff4 -> table @0x735ec (.rodata)."
+      - check: "jump-table entry decode (all 27)"
+        result: "27/27 entries land on case-block starts (0x00->0x3780a, 0x01->DEFAULT, 0x02->0x37561, 0x03->0x375a1, 0x04->0x375e1, 0x05->0x3767c, 0x06->0x3768d, 0x07->0x37741, 0x08/09/0a/0b->DEFAULT, 0x0c->0x377b9, 0x0d->0x3752e, 0x0e->0x3753f, 0x0f/10/11->DEFAULT, 0x12->0x3778d, 0x13->0x37798, 0x14->0x377ae, 0x15->0x377c4, 0x16->0x37550, 0x17->0x377a3, 0x18->0x37661, 0x19->DEFAULT, 0x1a->0x377d2)"
+    evidence:
+      - "libumsg.so dynsym: nv::Handler::handleCmd @0x374ec (objdump -T)"
+      - "libumsg.so .text 0x37515-0x3752c (objdump -d --start-address=0x374ec)"
+      - "libumsg.so .rodata 0x735ec-0x73657, ebx-relative decode (objdump -s -j .rodata + GOT=0x7dff4 from .got.plt)"
+  - id: L3-case14-slot29
+    claim: "JT case 0x14 (CMD_DISCONNECTED) calls slot 29 = nv::Handler::cmdDisconnected"
+    status: proven
+    checks:
+      - check: "case-block disassembly (function-level)"
+        result: "JT[0x14] -> block @0x377ae which does call *0x74(%eax) @0x377b4; 0x74/4 = slot 29."
+      - check: "slot-29 reloc resolution in three vtables"
+        result: "slot 29 -> nv::Handler::cmdDisconnected @0x3671a in ALL three vtables (ASecMap @0x7d3e4, NotifyHandler @0x7d6e0, DeviceMirrorBase @0x7d62c); no subclass overrides it."
+    evidence:
+      - "libumsg.so .text 0x377ae-0x377b7 (objdump -d)"
+      - "libumsg.so dynsym: nv::Handler::cmdDisconnected @0x3671a (objdump -T | c++filt)"
+      - "libumsg.so .rel.dyn: 0x7d3e4/0x7d6e0/0x7d62c R_386_32 (readelf -r -W | c++filt)"
+  - id: L4-default-target
+    claim: "v7 handleCmd DEFAULT (incl. out-of-range private SYS_CMD) routes to slot 24 = nv::Handler::cmdUnknown — the v6 'DEFAULT -> slot 19' model does NOT transfer"
+    status: proven
+    checks:
+      - check: "DEFAULT-block disassembly (function-level; closes the E3-R exact-blocker component 'DEFAULT-branch target slot undecoded')"
+        result: "DEFAULT @0x377dd (ja target from @0x3751d; also JT[0x01/08/09/0a/0b/0f/10/11/19]) does call *0x60(%eax) @0x377e8; 0x60/4 = slot 24."
+      - check: "slot-24 reloc resolution"
+        result: "ASecMap slot 24 @0x7d3d0 -> BASE nv::Handler::cmdUnknown @0x3406a; DeviceMirrorBase slot 24 @0x7d618 -> nv::DeviceMirrorBase::cmdUnknown override @0x48fe0 (override of the SAME name at the SAME slot); NotifyHandler slot 24 @0x7d6cc is a local RELATIVE override (name unresolvable, positionally consistent). Base body @0x3406a pushes 0xfe0003 -> errorMsg (NOTIMP)."
+    evidence:
+      - "libumsg.so .text 0x377dd-0x377e8 (objdump -d)"
+      - "libumsg.so dynsym: nv::Handler::cmdUnknown @0x3406a; nv::DeviceMirrorBase::cmdUnknown @0x48fe0 (objdump -T | c++filt)"
+      - "libumsg.so .rel.dyn: 0x7d3d0/0x7d618 R_386_32 (readelf -r -W | c++filt)"
+map_context:
+  note: "Corroborating slots from the SAME dumps (single-read context, each cross-checked against its JT case block):"
+  slots:
+    - "9=cmdGet (case 0x0d -> *0x24 @0x37537), 10=cmdSet (0x0e -> *0x28 @0x37548), 11=cmdReset (0x16 -> *0x2c @0x37559)"
+    - "12=cmdGetObj(u32) (case 0x02 reads *0x30 @0x37577), 13=cmdGetObj-overload (*0x34 @0x37599)"
+    - "14=cmdSetObj(u32) (case 0x03 reads *0x38 @0x375b7), 15=cmdSetObj-overload (*0x3c @0x375d9)"
+    - "16=cmdGetAll (case 0x04 reads *0x40 @0x375e3), 17=cmdStopGetAll (case 0x18 reads *0x44 @0x37663)"
+    - "18=cmdAddObj (case 0x05 -> *0x48 @0x37685), 21=cmdMoveObj (case 0x07 reads *0x54 @0x37757)"
+    - "22=cmdGetCount (case 0x15 -> *0x58 @0x377cd), 23=cmdRemoveBundle (case 0x1a -> *0x5c @0x377d8)"
+    - "25=cmdShutdown (case 0x0c -> *0x64 @0x377bf), 26=shouldNotify, 7=handleCmd, 8=cmdGetPolicies"
+    - "cases 0x12/0x13/0x17 call cmdSubscribe/cmdUnsubscribe/cmdNotifyAck directly (non-virtual)"
+  agreement: "v7 slots 0-12 align with the v6 map (E3-R narrowing point confirmed); slots 27/28/30/31+ are R_386_RELATIVE local entries with zeroed addends = statically unresolvable, left UNKNOWN (not needed for any link)"
+prior_claims_checked:
+  - claim: "net-bridge2-handler-tables.md §8 'v7 Handler vtable shift' (13=cmdGetObj-overload, 14=cmdSetObj(u32), 15=cmdSetObj-overload, 16=cmdGetAll, 17=cmdStopGetAll, 18=cmdAddObj, 19=cmdRemoveObj(u32), 20=cmdRemoveObj-overload)"
+    verdict: "CONFIRMED at function level (triple-vtable reloc agreement + case-block cross-checks)"
+  - claim: "ws3c-prober-findings.md §42 'libumsg handleCmd JT bound 0x1a, case 0x14 -> call *0x74 (slot 29 = cmdDisconnected)'"
+    verdict: "CONFIRMED at function level (prologue + full JT decode + slot-29 relocs)"
+  - claim: "std-commands.yaml dispatch-model v7 note (bound 0x1a, case 0x14 -> slot 29, slot-24 mapping v6-based)"
+    verdict: "CONFIRMED; extended: DEFAULT -> slot 24 cmdUnknown now decoded (was open)"
+  - claim: "commands.yaml:67 'v7 [20,0] slot 19 = base cmdRemoveObj; private-cmd switch sits at v7 slot 24'"
+    verdict: "CONSISTENT: base slot-19/cmdRemoveObj and DEFAULT->slot-24 proven here; the [20,0]-specific local switch @0x806885c is net-binary evidence, not re-verified in this pass (out of scope, cited as recorded)"
+  - claim: "E3-R static-analysis exact_blocker ('DEFAULT-branch target slot + cases 0x17-0x1a meanings undecoded')"
+    verdict: "PARTLY CLOSED: DEFAULT->slot-24/cmdUnknown PROVEN; case 0x17=cmdNotifyAck + 0x18=cmdStopGetAll + 0x1a=cmdRemoveBundle decoded as map context; case 0x19->DEFAULT (no new verb). Remaining: none for dispatch routing — all 27 JT targets now have a named meaning"
+unresolved: []
+blockers: []
+methods:
+  - "objdump -T lib/libumsg.so | c++filt (dynsym: function addresses + vtable symbols)"
+  - "objdump -d --start-address (handleCmd 0x374ec-0x3782c, base cmd bodies)"
+  - "objdump -s -j .rodata (JT @0x735ec) + python ebx-relative decode (GOT=0x7dff4 from .got.plt)"
+  - "readelf -r -W | c++filt (R_386_32 vtable-slot relocs = exact slot->symbol mapping; R_386_RELATIVE zeroed-addend slots recorded UNKNOWN)"
+  - "sha256sum (libumsg.so new hash; net hash verified against pinned novabin-7.25.sha256)"
+owned_path: work/2026-11-winbox-attributes/proof/F0b-slot19/
+forbidden_paths_edited: none

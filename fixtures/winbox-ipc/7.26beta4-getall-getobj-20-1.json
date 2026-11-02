@@ -1,0 +1,395 @@
+{
+	"provenance": {
+		"report": "F1-hex-verify coordinator read-only re-read, 2026-11-02 (winbox-beta4 7.26beta4 x86; zero writes)",
+		"routeros_version": "7.26beta4",
+		"route": "[20,1] ip-address GETALL + GETOBJ row/UNKNOWNID",
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. Source: proof/F1-hex-verify/step-hex-verify.jsonl. Cross-checked against proof/F1-beta4-repeat/raw-*.json (decoded-entries captures from the same VM state)."
+	},
+	"records": [
+		{
+			"id": "getall-20-1-tx",
+			"role": "GETALL bare [20,1] tx",
+			"source": "winbox-beta4 7.26beta4 hex-verify tx",
+			"hex": "4d320500ff010600ff09060700ff080400fe000100ff88020014000000010000000200ff880200000000000b000000",
+			"cmd": 16646148,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 6,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 6
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				}
+			]
+		},
+		{
+			"id": "getall-20-1-rx",
+			"role": "GETALL bare [20,1] rx (1 row, f6=0)",
+			"source": "winbox-beta4 7.26beta4 hex-verify rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa0010013006d73672d70726f78792d372e323662657461340200fea801004b004d320b0000000700fe010800fe000a00fe00040000080a0002ff050000090206000009000a000009020100fe0901010000080a00020f020000080a00020003000008ffffff000900fe21000300ff09021900fe09010600ff0906",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 6,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4278321162
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 251789322
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 131082
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 6
+				}
+			]
+		},
+		{
+			"id": "getobj-20-1-1-tx",
+			"role": "GETOBJ [20,1] obj=1 tx",
+			"source": "winbox-beta4 7.26beta4 hex-verify tx",
+			"hex": "4d320500ff010600ff09070700ff080200fe000100ff88020014000000010000000200ff880200000000000b0000000100fe0901",
+			"cmd": 16646146,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 1
+				}
+			]
+		},
+		{
+			"id": "getobj-20-1-1-rx",
+			"role": "GETOBJ [20,1] obj=1 rx (flat row)",
+			"source": "winbox-beta4 7.26beta4 hex-verify rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa0010013006d73672d70726f78792d372e323662657461340b0000000700fe010800fe000a00fe00040000080a0002ff0500000902060000090003000008ffffff000a000009020100fe09010300ff0902010000080a00020f0600ff0907020000080a0002000900fe2100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x00000b",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe0007",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xfe0008",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe000a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000004",
+					"tcode": "0x8",
+					"value": 4278321162
+				},
+				{
+					"key": "0x000005",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000006",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x8",
+					"value": 16777215
+				},
+				{
+					"key": "0x00000a",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x8",
+					"value": 251789322
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x8",
+					"value": 131082
+				},
+				{
+					"key": "0xfe0009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "getobj-20-1-999-tx",
+			"role": "GETOBJ [20,1] obj=999 tx",
+			"source": "winbox-beta4 7.26beta4 hex-verify tx",
+			"hex": "4d320500ff010600ff09080700ff080200fe000100ff88020014000000010000000200ff880200000000000b0000000100fe08e7030000",
+			"cmd": 16646146,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 8,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 8
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646146
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x8",
+					"value": 999
+				}
+			]
+		},
+		{
+			"id": "getobj-20-1-999-rx",
+			"role": "GETOBJ [20,1] obj=999 rx (UNKNOWNID)",
+			"source": "winbox-beta4 7.26beta4 hex-verify rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa0010013006d73672d70726f78792d372e323662657461340800ff080400fe000300ff09020400ff09020600ff0908",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 8,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646148
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 8
+				}
+			]
+		}
+	]
+}

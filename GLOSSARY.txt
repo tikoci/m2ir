@@ -609,3 +609,7 @@ BRIDGEMAC # verbatim bridge-MAC template variable in bridge-row strings '$(BRIDG
 INTERFACE_IDS # verbatim RouterOS errstr in the first-sighted [20,124] GETCOUNT FAILED reply (E3-R census, gui-handlers.yaml/std-commands.yaml/fixtures)
 same # NAT same action, f40 value 24 (E3-W same-matrix, gui-handlers.yaml/fixtures)
 same-not-by-dst # NAT same-action adjunct property, f1005 bool (E3-W same-matrix, gui-handlers.yaml/fixtures)
+novabin # pinned RouterOS net-binary hash file work/2026-10-chr-extraction/novabin-7.25.sha256 (F0b dispatch evidence, std-commands.yaml)
+slave # address-row bridge-enslaved flag, [20,1] f11 bool (F-f11 enslave symmetry, gui-handlers.yaml/fixtures)
+deenslave # remove an interface from bridge enslavement (F-f11 leg, gui-handlers.yaml/fixtures)
+deenslaved # removed from bridge enslavement (F-f11 leg, gui-handlers.yaml/fixtures)

@@ -1,0 +1,31 @@
+# cspell:ignore libumsg dynsym novabin getall getcount getobj moveobj removeobj notimp
+# F0b proposed fragment — v7 private-command dispatch (static, libumsg7 handleCmd pass).
+# Target: profiles/winbox-ipc/std-commands.yaml dispatch-model + profiles/winbox-ipc/commands.yaml
+# slot-19-private notes (coordinator/integrator applies; F0b edits NOTHING outside its proof dir).
+fragment:
+  dispatch-model-v7-note: |
+    v7 (7.25 x86 lib/libumsg.so, sha256
+    1d471df0c39e81b9ef946f636615e352470bd0da3fbeaf98fb017869b1c46c80):
+    nv::Handler::handleCmd @0x374ec subtracts 0xfe0000 and bounds the
+    jump table at 0x1a (27 cases, 0xfe0000-0xfe001a; table @0x735ec).
+    The Handler vtable shifts past slot 12: 13=cmdGetObj-overload,
+    14=cmdSetObj(u32), 15=cmdSetObj-overload, 16=cmdGetAll,
+    17=cmdStopGetAll, 18=cmdAddObj, 19=cmdRemoveObj(u32) @0x33fe0,
+    20=cmdRemoveObj-overload, 21=cmdMoveObj, 22=cmdGetCount,
+    23=cmdRemoveBundle, 25=cmdShutdown, 26=shouldNotify,
+    29=cmdDisconnected @0x3671a (slots 0-12 align with v6).
+    Case 0x14 (CMD_DISCONNECTED) calls slot 29 (*0x74 @0x377b4).
+    DEFAULT (out-of-range SYS_CMD incl. handler-private values, plus
+    in-range 0x01/08/09/0a/0b/0f/10/11/19) routes to slot 24 =
+    cmdUnknown @0x3406a (*0x60 @0x377e8) — the v6 "DEFAULT -> slot 19"
+    model does NOT transfer. New-vs-v6 cases: 0x17=cmdNotifyAck
+    (direct), 0x18=cmdStopGetAll (slot 17), 0x1a=cmdRemoveBundle
+    (slot 23); 0x19 falls to DEFAULT. Base cmdRemoveObj/cmdUnknown
+    answer errorMsg(0xfe0003) = ERROR_NOTIMP.
+  evidence:
+    - source: code
+      ref: "RouterOS 7.25 x86 lib/libumsg.so nv::Handler::handleCmd @0x374ec: prologue sub/cmp/ja (JT bound 0x1a, DEFAULT @0x377dd), table @0x735ec, case blocks (0x14->*0x74 @0x377b4, DEFAULT->*0x60 @0x377e8); R_386_32 vtable-slot relocs in three vtables (NotifyHandler @0x7d664, DeviceMirrorBase @0x7d5b0, ASecMap @0x7d368). Full per-link citations: work/2026-11-winbox-attributes/proof/F0b-slot19/report.yaml"
+    - source: code
+      ref: "libumsg.so sha256 1d471df0c39e81b9ef946f636615e352470bd0da3fbeaf98fb017869b1c46c80 (F0b-computed; extraction provenance per work/2026-10-chr-extraction/README.md); nova/bin/net hash verified against work/2026-10-chr-extraction/novabin-7.25.sha256"
+status: proposed
+lab_contact: none

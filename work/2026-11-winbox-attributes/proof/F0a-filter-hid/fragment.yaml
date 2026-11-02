@@ -1,0 +1,37 @@
+# cspell:ignore rowid u32 getall getcount getobj e3find redacted
+# F0a proposed gui-handlers.yaml fragment (coordinator integrates; worker edits nothing canonical).
+# Verdict NAMED hid [20,3] as the filter row-count tracker, from the E3-W
+# raw sweep alone (offline; zero router contact). Only the row-count claim
+# is proposed. [20,32] semantics, N>=2 linearity, and [20,3] GETALL
+# row-shape propose NOTHING (see unresolved in report.yaml).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> filter-20-3 (new handler)
+    op: new-handler
+    confidence: observed-only
+    entry:
+      name: filter-20-3
+      route: [20, 3]
+      role: "filter-table row-count tracker: GETCOUNT 0->1->0 across one control /ip/firewall/filter/add (chain=forward action=accept, id *1) plus remove, matching control-known cardinality at all three points with exact post-restore baseline match. Full table identity (GETALL row-shape) NOT yet observed."
+      access: read-only
+      notes: |
+        F0a offline discrimination (E3-W captures, ws21 7.25, 2026-11-02):
+        exhaustive record-level diff over all 324 JSONL records x 3 sweeps
+        (base/filt/restored) shows exactly two GETCOUNT slots move: [20,3]
+        0->1->0 (rx line 32, seq 31, 0xfe0019/0x9) and [20,32] 0->8->0
+        (rx line 90, seq 89). [20,32] is excluded as a row-count slot by
+        the control (8 != 1 under control-known N=1; rule-co-extensive
+        with unresolved exact semantics). The only other moving record is
+        [20,17] CMD_GET (rx line 316, seq 315): f34/f46 symmetric bools of
+        unknown semantics, f15/f206 volatile (rest 7 != base 0); its
+        GETCOUNT is 0xFFFFFFFF (non-table) in all three sweeps, so no
+        field there qualifies as a row-count slot. N>=2 linearity and
+        GETALL row-shape remain open; see proof/F0a-filter-hid/report.yaml
+        unresolved[] (U-f0a-linearity, U-f0a-table-identity).
+    evidence_add:
+      - source: sample
+        ref: "E3-W filter-find captures re-analyzed offline (F0a, ws21 7.25, 2026-11-02): [20,3] GETCOUNT 0->1->0 vs control N=(0,1,0); [20,32] excluded by magnitude; [20,17] analyzed as third mover — work/2026-11-winbox-attributes/proof/E3-W/{step-base-sweep.jsonl,step-filter-sweep.jsonl,step-filter-restored.jsonl,control-filter-find-add.json,control-filter-find-read.json,control-filter-find-rm.json}"
+no_promotion_for:
+  - "[20,32] role: rule-co-extensive 0->8->0 with magnitude incompatible with row counting; bitmask/other-table/derived hypotheses all ungrounded from the single-stimulus data (U-f0a-32-role)"
+  - "[20,3] N>=2 linearity: presence-flag vs counter indistinguishable at N<=1; needs one future write leg (U-f0a-linearity)"
+  - "[20,3] GETALL row-shape / full table identity: never observed; read-only GETOBJ-then-GETALL confirmation still open (U-f0a-table-identity)"
+  - "[20,17] GET f34/f46/f15/f206: symmetric bools + volatile u32s, semantics unknown, outside the filter-handler slice (U-f0a-17-fields)"

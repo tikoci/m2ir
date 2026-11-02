@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*1",
+      "bridge": "e1br",
+      "current-tagged": "e1br",
+      "current-untagged": "ether1",
+      "disabled": "false",
+      "dynamic": "false",
+      "managed": "false",
+      "mvrp-forbidden": "",
+      "tagged": "e1br",
+      "untagged": "ether1",
+      "vlan-ids": "10"
+    },
+    {
+      ".id": "*2",
+      "bridge": "e1br",
+      "comment": "added by pvid",
+      "current-tagged": "",
+      "current-untagged": "e1br,ether1",
+      "disabled": "false",
+      "dynamic": "true",
+      "managed": "false",
+      "mvrp-forbidden": "",
+      "tagged": "",
+      "untagged": "e1br,ether1",
+      "vlan-ids": "1"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 2,
+      "path": "/interface/bridge/vlan"
+    }
+  }
+}

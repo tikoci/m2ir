@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*1",
+      "action": "accept",
+      "bytes": "0",
+      "chain": "forward",
+      "comment": "e3jump1",
+      "dynamic": "false",
+      "invalid": "false",
+      "packets": "0"
+    },
+    {
+      ".id": "*2",
+      "action": "accept",
+      "bytes": "0",
+      "chain": "forward",
+      "comment": "e3jumpA",
+      "dynamic": "false",
+      "invalid": "false",
+      "packets": "0"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 2,
+      "path": "/ip/firewall/filter"
+    }
+  }
+}

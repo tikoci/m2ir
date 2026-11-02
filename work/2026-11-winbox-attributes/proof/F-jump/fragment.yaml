@@ -1,0 +1,30 @@
+# cspell:ignore rowid getall getcount getobj e3jump
+# F-jump promotion fragment (coordinator integrates).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> filter-20-3
+    op: add-fields
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-user:
+        39: { name: chain, tcode: string }
+        40: { name: action, tcode: u32, semantic: enum-u32, values: { 0: accept, 1: jump } }
+        41: { name: jump-target, tcode: string }
+      namespace-session:
+        7: { name: unknown-7, tcode: bool }
+        8: { name: unknown-8, tcode: bool }
+        9: { name: comment, tcode: string }
+        28: { name: unknown-28, tcode: string_array }
+    set_proven: "SETOBJ {0xfe0001, f40} effective (jump->accept flip read back on both surfaces)"
+    evidence_add: 2
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> unknown-20-32
+    op: add-notes
+    notes: "[20,32] 5-point dataset: {}->0, {A}->8, {J}->2, {J,A}->1, {A,A}->1; no model"
+    evidence_add: 1
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> nat-20-5 f40
+    op: update-notes
+    notes: "jump=1 proven on FILTER f40 (single sample); NAT f40 enum unchanged (NAT cannot jump)"
+no_promotion_for:
+  - "0xfd002a empty-string adjunct (notes only; never varied)"
+  - "filter f40 values beyond 0/1 (unmapped)"
+  - "[20,32] role (dataset only, no model)"
+  - "f41 lifecycle (single-sample retention observation)"

@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "data": {
+    "ret": ""
+  },
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "native-api",
+    "operation": {
+      "kind": "execute",
+      "objectCount": 1,
+      "path": null
+    }
+  }
+}

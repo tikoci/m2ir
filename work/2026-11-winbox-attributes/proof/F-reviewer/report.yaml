@@ -1,0 +1,251 @@
+# cspell:ignore rowid getall getcount getobj hid dynsym objdump readelf vtable vtables cmdUnknown cmdRemoveObj cmdStopGetAll cmdGetCount cmdMoveObj cmdAddObj cmdGetObj cmdSetObj cmdGetAll cmdGetPolicies cmdShutdown cmdDisconnected cmdNotifyAck cmdSubscribe cmdUnsubscribe cmdRemoveBundle u32 reqid subtable calea mangle NOTIMP BRKPATH UNKNOWNID msgid prober seqs LSB vptr vaddr vaddrs ERKNS handlecmd jmp
+proof: "Phase F blind review: independent R1/R2/R3 reconstructions from raw evidence"
+worker: F-reviewer
+date: 2026-11-02
+role: "REVIEWER (read-only; no router contact; no VM booted; proposes nothing)"
+blindness:
+  statement: "I never read, opened, grepped, or listed the contents of any proposer label/fragment file."
+  forbidden_paths:
+    - work/2026-11-winbox-attributes/proof/F0a-filter-hid/report.yaml
+    - work/2026-11-winbox-attributes/proof/F0a-filter-hid/fragment.yaml
+    - work/2026-11-winbox-attributes/proof/F0b-slot19/report.yaml
+    - work/2026-11-winbox-attributes/proof/F0b-slot19/fragment.yaml
+    - work/2026-11-winbox-attributes/proof/F1-beta4-repeat/report.yaml
+    - work/2026-11-winbox-attributes/proof/F1-beta4-repeat/fragment.yaml
+  verdict_basis: "AGREE/DISCREPANCY below is judged against the ALLOWED references only (E3-W report.yaml for R1, the Phase E narrowing quoted in the task brief for R2, the committed 7.25 fixture for R3). Direct comparison against the F0a/F0b/F1 proposer files is the coordinator's job; my independently derived values + exact quotes are the comparison input."
+bounds: "R1/R2 zero router contact (static files + local binary reads). R3 used F1 raw captures on disk only (raw-getall-20-1-r1/r2.json); no VM booted. objdump/readelf/python only on the pinned binary; no RouterOS code executed."
+r1_filter_hid:
+  question: "After one control /ip/firewall/filter/add plus remove, which [20,*] GETCOUNT slots move, with what exact sequences, and which (if either) tracks filter-row count given the control-known cardinality?"
+  method: >-
+    Seq-aligned diff of raw rx plaintextHex across step-base-sweep.jsonl,
+    step-filter-sweep.jsonl, step-filter-restored.jsonl (324 lines = 162 tx/rx
+    legs each; JSONL line N carries seq N-1); tx-side diff as a control;
+    per-leg 0xfe0019 extraction over all 147 GETCOUNT (cmd 0xfe0015) legs;
+    summary-JSON equality check; one discriminating check against
+    E3-R-census/step-7.25-census.jsonl for the [20,17] GET leg.
+  control_cardinality:
+    base: 0
+    filter_phase: 1
+    restored: 0
+    evidence:
+      - "control-filter-find-add.json: ret '.id' *1 (ok, native-api execute)"
+      - "control-filter-find-read.json: exactly 1 row (.id *1, chain forward, action accept, comment e3find, packets 0, bytes 0)"
+      - "control-filter-find-rm.json: ok (native-api execute, objectCount 0)"
+  derived_getcount_movers:
+    - route: [20, 3]
+      cmd: 16646165
+      cmd_hex: 0xfe0015
+      cmd_name: CMD_GETCOUNT
+      tx_seq: 30
+      rx_seq: 31
+      rx_line: 32
+      reqId: 17
+      slot: 0xfe0019/0x9
+      base: 0
+      filter: 1
+      restored: 0
+      sequence: "0->1->0"
+      tracks_cardinality: true
+    - route: [20, 32]
+      cmd: 16646165
+      cmd_hex: 0xfe0015
+      cmd_name: CMD_GETCOUNT
+      tx_seq: 88
+      rx_seq: 89
+      rx_line: 90
+      reqId: 46
+      slot: 0xfe0019/0x9
+      base: 0
+      filter: 8
+      restored: 0
+      sequence: "0->8->0"
+      tracks_cardinality: false
+  full_sweep_other_movers:
+    - route: [20, 17]
+      cmd: 16646157
+      cmd_hex: 0xfe000d
+      cmd_name: CMD_GET
+      note: "NOT a GETCOUNT leg; the census 'get-20-17' leg (summary leg name 'get-20-17', seqStart 314, seqEnd 315)"
+      tx_seq: 314
+      rx_seq: 315
+      rx_line: 316
+      reqId: 159
+      fields:
+        - { key: 0x000022, base: "true (0x1)", filter: "false (0x0)", restored: "true (0x1)" }
+        - { key: 0x00002e, base: "false (0x0)", filter: "true (0x1)", restored: "false (0x0)" }
+        - { key: "0x00000f/0x9", base: 0, filter: 8, restored: 7 }
+        - { key: "0x0000ce/0x9", base: 0, filter: 8, restored: 7 }
+      residual: "0x00000f and 0x0000ce read 7 in step-filter-restored.jsonl vs 0 in step-base-sweep.jsonl (raw rx plaintextHex differs base-vs-restored at seq 315)"
+      e3r_check: "E3-R-census/step-7.25-census.jsonl seq 315 agrees with E3-W base (0x22 true, 0x2e false, 0x0f 0, 0xce 0), so the 0->8->7 drift arose inside the E3-W filter-find window, not earlier"
+  sweep_totals:
+    tx_diffs_base_vs_filter: 0
+    tx_diffs_filter_vs_restored: 0
+    rx_diffs_base_vs_filter: 3
+    rx_diffs_base_vs_filter_seqs: [31, 89, 315]
+    rx_diffs_filter_vs_restored_seqs: [31, 89, 315]
+    rx_diffs_base_vs_restored_seqs: [315]
+    getcount_legs_checked: 147
+    getcount_movers: 2
+  summary_level_crosscheck:
+    base_eq_restored: true
+    note: "summary-base.json == summary-filter-restored.json (exact JSON equality); the seq-315 value residual (0x0f/0xce tcode stays 0x9) is invisible at summary level"
+    filter_vs_base_leg_diffs: 3
+    filter_vs_base_leg_names: ["sweep-getcount-20-3 (countValue 0->1)", "sweep-getcount-20-32 (countValue 0->8)", "get-20-17 (fieldKeys tcode flips 0x22/0x1->0x0, 0x2e/0x0->0x1)"]
+  claims:
+    - claim: "[20,3] GETCOUNT 0->1->0"
+      reference: "E3-W report.yaml W-filter-find sweep-rerun/remove-verify"
+      verdict: AGREE
+    - claim: "[20,32] GETCOUNT 0->8->0"
+      reference: "E3-W report.yaml W-filter-find sweep-rerun/remove-verify"
+      verdict: AGREE
+    - claim: "[20,3] is the only GETCOUNT slot tracking the control-known 0->1->0 filter-row cardinality"
+      reference: "derived (147 GETCOUNT legs enumerated; all others bit-identical incl. tcode)"
+      verdict: AGREE
+    - claim: "'TWO flips vs baseline (162 legs)'"
+      reference: "E3-W report.yaml W-filter-find sweep-rerun outcome"
+      verdict: DISCREPANCY
+      theirs: "TWO flips: [20,3] GETCOUNT 0->1 AND [20,32] GETCOUNT 0->8"
+      mine: "THREE rx movers: seq 31 ([20,3] GETCOUNT), seq 89 ([20,32] GETCOUNT), seq 315 ([20,17] CMD_GET: 0x22/0x2e bool flips + 0x0f/0xce 0->8). The third is visible even in their own summary-filter.json (leg 'get-20-17' fieldKeys differ from summary-base.json)."
+    - claim: "'zero residual diffs vs baseline' after restore"
+      reference: "E3-W report.yaml W-filter-find remove-verify + restore-verification"
+      verdict: DISCREPANCY
+      theirs: "zero residual diffs vs baseline"
+      mine: "TRUE at summary-JSON level (verified: summary-base.json == summary-filter-restored.json); FALSE at raw-rx level: seq 315 ([20,17] GET) 0x00000f/0x9 and 0x0000ce/0x9 read 7 in step-filter-restored.jsonl vs 0 in step-base-sweep.jsonl"
+  verdict: DISCREPANCY
+  verdict_basis: "GETCOUNT mover claims all AGREE; the flip-count ('TWO') and zero-residual claims do not survive a raw-rx full-sweep diff, with exact quotes on both sides above."
+r2_v7_dispatch:
+  question: "Resolve vtable slot 19's target symbol independently via R_386_32 relocs in the Handler-subclass vtables, and decode the handleCmd jump-table bound from the prologue. Check the Phase E narrowing (slot-19=cmdRemoveObj, bound 0x1a)."
+  method: >-
+    sha256-gated static read of the pinned 7.25 x86 libumsg.so
+    (objdump/readelf/python only; nothing executed, no VM). Found
+    Handler-family vtables from dynsym (nm -D | c++filt), resolved every
+    vtable word via readelf -rW R_386_32/R_386_RELATIVE entries, and
+    disassembled nv::Handler::handleCmd to read the bound, the PIC jump
+    table, and every per-case virtual-call offset (which fixes the slot
+    numbering ground truth).
+  binary:
+    path: "~/.local/share/m2ir/extractions/root-7.25/lib/libumsg.so"
+    file: "ELF 32-bit LSB shared object, Intel i386"
+    sha256: 1d471df0c39e81b9ef946f636615e352470bd0da3fbeaf98fb017869b1c46c80
+    sha256_match: true
+  slot_convention:
+    definition: "slot N = *(vptr + N*4), vptr = object's first word = D1 entry (project convention; v6-continuous: slot 7 = handleCmd, slots 9/10/11 = cmdGet/cmdSet/cmdReset, slot 12 = cmdGetObj, exactly as net-bridge2-handler-tables.md v6 map)"
+    binary_layout: "In THIS binary each exported 'vtable for' symbol points 8 bytes BELOW the vptr: two zero words (raw 0x00000000, NO reloc) sit at sym+0/+4 on all four vtables dumped, and dispatch never addresses below vptr+0x24. So slot N = (vtable symbol)+8+N*4 as file vaddrs."
+    vtables_dumped:
+      - "vtable for nv::Handler @ 0x7d710 (sym+0/+4 zero, no reloc)"
+      - "vtable for nv::NotifyHandler @ 0x7d664 (sym+0/+4 zero, no reloc)"
+      - "vtable for nv::DeviceMirrorBase @ 0x7d5b0 (sym+0/+4 zero, no reloc)"
+      - "vtable for nv::ASecMap @ 0x7d368 (sym+0/+4 zero, no reloc)"
+  slot19_resolution:
+    vptr_offset: 0x4c
+    file_vaddr_formula: "vtable_symbol + 0x54"
+    entries:
+      - vtable: "nv::Handler @ 0x7d710"
+        entry_vaddr: 0x7d764
+        reloc: "R_386_32 -> _ZN2nv7Handler12cmdRemoveObjERKNS_7messageEj"
+        symbol: "nv::Handler::cmdRemoveObj(nv::message const&, unsigned int)"
+        target_addr: 0x33fe0
+      - vtable: "nv::NotifyHandler @ 0x7d664"
+        entry_vaddr: 0x7d6b8
+        reloc: "R_386_32 -> nv::Handler::cmdRemoveObj(msg const&, uint) (inherited, not overridden)"
+        target_addr: 0x33fe0
+      - vtable: "nv::DeviceMirrorBase @ 0x7d5b0"
+        entry_vaddr: 0x7d604
+        reloc: "R_386_32 -> nv::Handler::cmdRemoveObj(msg const&, uint) (inherited, not overridden)"
+        target_addr: 0x33fe0
+      - vtable: "nv::ASecMap @ 0x7d368"
+        entry_vaddr: 0x7d3bc
+        reloc: "R_386_32 -> _ZN2nv7ASecMap12cmdRemoveObjERKNS_7messageEj"
+        symbol: "nv::ASecMap::cmdRemoveObj(nv::message const&, unsigned int)"
+        target_addr: 0x51c16
+    dispatch_use: "REMOVEOBJ case JT[6] -> block @ 0x3768d: has(0xfe0001) path does 'mov 0x4c(%eax),%ecx' @ 0x376a3 (%eax = vptr), then the shared obj-id tail @ 0x3775a. The 0xfe0026-message path loads 0x50 (slot 20 = cmdRemoveObj flat overload @ 0x3400e)."
+  handlecmd_prologue:
+    symbol: "nv::Handler::handleCmd(nv::message const&, unsigned int)"
+    addr: 0x374ec
+    sub: "0x37515: sub $0xfe0000,%eax"
+    bound: "0x3751a: cmp $0x1a,%eax"
+    bound_value: 0x1a
+    default_jump: "0x3751d: ja 0x377dd"
+    jt_lookup: "0x37523: mov -0xaa08(%ebx,%eax,4),%ecx; 0x3752a: add %ebx,%ecx; 0x3752c: jmp *%ecx (ebx = GOT 0x7DFF4)"
+    jt_vaddr: 0x735EC
+    jt_section: .rodata
+    jt_entries: 27
+    jt_range: "cmd 0x00..0x1a"
+    jt_targets:
+      - "JT[0] 0xfe0000 -> 0x3780a (NOOP empty-reply epilogue)"
+      - "JT[1] 0xfe0001 -> 0x377dd DEFAULT"
+      - "JT[2] 0xfe0002 -> 0x37561 (GETOBJ: *0x30 slot12 u32 / *0x34 slot13 flat)"
+      - "JT[3] 0xfe0003 -> 0x375a1 (SETOBJ: *0x38 slot14 u32 / *0x3c slot15 flat)"
+      - "JT[4] 0xfe0004 -> 0x375e1 (GETALL: *0x40 slot16 + *0x90 post-hook + 0xfe0019 total insert @ 0x37651)"
+      - "JT[5] 0xfe0005 -> 0x3767c (ADDOBJ: call *0x48 slot18)"
+      - "JT[6] 0xfe0006 -> 0x3768d (REMOVEOBJ: 0x4c slot19 u32 / 0x50 slot20 flat)"
+      - "JT[7] 0xfe0007 -> 0x37741 (MOVEOBJ: 0x54 slot21)"
+      - "JT[8,9,10,11,15,16,17,25] -> 0x377dd DEFAULT"
+      - "JT[12] 0xfe000c -> 0x377b9 (call *0x64 slot25 = cmdShutdown)"
+      - "JT[13] 0xfe000d -> 0x3752e (call *0x24 slot9 = cmdGet)"
+      - "JT[14] 0xfe000e -> 0x3753f (call *0x28 slot10 = cmdSet)"
+      - "JT[18] 0xfe0012 -> 0x3778d (direct cmdSubscribe)"
+      - "JT[19] 0xfe0013 -> 0x37798 (direct cmdUnsubscribe)"
+      - "JT[20] 0xfe0014 -> 0x377ae (call *0x74 slot29 = cmdDisconnected)"
+      - "JT[21] 0xfe0015 -> 0x377c4 (call *0x58 slot22 = cmdGetCount)"
+      - "JT[22] 0xfe0016 -> 0x37550 (call *0x2c slot11 = cmdReset)"
+      - "JT[23] 0xfe0017 -> 0x377a3 (direct cmdNotifyAck)"
+      - "JT[24] 0xfe0018 -> 0x37661 (0x44 slot17 = cmdStopGetAll)"
+      - "JT[26] 0xfe001a -> 0x377d2 (call *0x5c slot23 = cmdRemoveBundle)"
+    default_block: "0x377dd: call *0x60(%eax) @ 0x377e8 = vptr slot 24 = cmdUnknown (base @ 0x3406a; overridden in DeviceMirrorBase @ 0x48fe0 and NotifyHandler raw RELATIVE 0x3e2f4)"
+  claims:
+    - claim: "v7 slot 19 = cmdRemoveObj"
+      reference: "Phase E narrowing (task brief)"
+      verdict: AGREE
+      detail: "slot 19 = vptr+0x4c = base nv::Handler::cmdRemoveObj(msg const&, uint) @ 0x33fe0 (vtable entry file vaddr 0x7d764, R_386_32); subclass override nv::ASecMap::cmdRemoveObj @ 0x51c16 (entry 0x7d3bc). Dispatch-confirmed: REMOVEOBJ u32-id path loads 0x4c @ 0x376a3."
+    - claim: "handleCmd jump-table bound 0x1a"
+      reference: "Phase E narrowing (task brief)"
+      verdict: AGREE
+      detail: "cmp $0x1a,%eax @ 0x3751a after sub $0xfe0000 @ 0x37515; ja DEFAULT(0x377dd) @ 0x3751d; 27-entry PIC jump table @ rodata 0x735EC covering cmd 0x00..0x1a."
+  verdict: AGREE
+r3_beta4_repeat:
+  question: "Does the beta4 [20,1] GETALL row reproduce the 7.25 bare-getall shape (key order, tcodes, values incl. f6)?"
+  method: "sha256 + cmp of the two F1 raw captures (byte level), then key-by-key ordered comparison of the reply entries and the 0xfe0002 row fields against fixtures/winbox-ipc/7.25-getall-20-1.json record 'bare-getall-reply'."
+  r1_vs_r2:
+    r1_sha256: ef51d21f7906b1c5119e3019a528504ba6abdb31632bb71d0c2557e5b34ac215
+    r2_sha256: ef51d21f7906b1c5119e3019a528504ba6abdb31632bb71d0c2557e5b34ac215
+    cmp: "byte-identical (cmp silent)"
+    verdict: PASS
+  row_comparison:
+    envelope_order_beta4: ["0xff0001/0x88", "0xff0002/0x88", "0xff001c/0xa0", "0xfe0002/0xa8", "0xff0003/0x9", "0xfe0019/0x9", "0xff0006/0x9"]
+    envelope_order_725: ["0xff0001/0x88", "0xff0002/0x88", "0xff001c/0xa0", "0xfe0002/0xa8", "0xff0003/0x9", "0xfe0019/0x9", "0xff0006/0x9"]
+    envelope_order_match: true
+    row_field_order_both: ["0x0b/0x0", "0xfe0007/0x1", "0xfe0008/0x0", "0xfe000a/0x0", "0x04/0x8", "0x05/0x9", "0x06/0x9", "0x0a/0x9", "0xfe0001/0x9", "0x01/0x8", "0x02/0x8", "0x03/0x8", "0xfe0009/0x21"]
+    row_values_both:
+      - { key: "0x00000b", tcode: "0x0", value: false }
+      - { key: "0xfe0007", tcode: "0x1", value: true }
+      - { key: "0xfe0008", tcode: "0x0", value: false }
+      - { key: "0xfe000a", tcode: "0x0", value: false }
+      - { key: "0x000004", tcode: "0x8", value: 4278321162 }
+      - { key: "0x000005", tcode: "0x9", value: 2 }
+      - { key: "0x000006 (f6)", tcode: "0x9", value: 0 }
+      - { key: "0x00000a", tcode: "0x9", value: 2 }
+      - { key: "0xfe0001", tcode: "0x9", value: 1 }
+      - { key: "0x000001", tcode: "0x8", value: 251789322 }
+      - { key: "0x000002", tcode: "0x8", value: 131082 }
+      - { key: "0x000003", tcode: "0x8", value: 16777215 }
+      - { key: "0xfe0009", tcode: "0x21", value: "" }
+    row_match: "13/13 fields identical (order, tcodes, values)"
+    envelope_values:
+      "0xff0001": "[0,11] both"
+      "0xff0002": "[20,1] both"
+      "0xff0003": "2 both"
+      "0xfe0019": "1 both"
+      "0xff0006": "2 both"
+      "0xff001c": "SOLE DELTA (quoted): beta4 ['msg-proxy-7.26beta4'] vs 7.25 ['msg-proxy-7.25'] (fixture line 32)"
+  claims:
+    - claim: "beta4 [20,1] GETALL row reproduces the 7.25 bare-getall shape"
+      reference: "fixtures/winbox-ipc/7.25-getall-20-1.json record bare-getall-reply (entries lines 18-122, row lines 38-104)"
+      verdict: AGREE
+      detail: "PASS on the row: 13/13 fields identical in order, tcode, and value (f6 = 0x000006/0x9 = 0 both). Envelope identical except the self-identifying 0xff001c version banner: beta4 'msg-proxy-7.26beta4' vs 7.25 'msg-proxy-7.25' — an expected cross-version delta, not shape drift. r1 vs r2 byte-identical (sha256 ef51d21f...)."
+  verdict: AGREE
+verdicts:
+  R1: DISCREPANCY
+  R2: AGREE
+  R3: AGREE
+unresolved: []

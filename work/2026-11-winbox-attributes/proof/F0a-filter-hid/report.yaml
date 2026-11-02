@@ -1,0 +1,119 @@
+# cspell:ignore rowid u32 reqid getall getcount getobj calea notimp subtable readback redacted e3find notimpl cliref coflip
+proof: "F0a offline filter-hid analysis: E3-W co-flip resolved from the raw sweep alone (ws21/7.25 captures, 2026-11-02)"
+worker: F0a
+date: 2026-11-02
+inputs_commit: "33a956e (read-only; no input file modified)"
+router_contact: "ZERO. No VM started, no quickchr, no centrs send, no probe run, no network contact with any lab device. Static file analysis only (JSONL/JSON/YAML reads + local bun parsing)."
+scope: "filter-handler candidate slots only: [20,3], [20,32] GETCOUNT + the third mover [20,17] GET. Zero private verbs. No other Phase E result re-proven."
+verdict: "NAMED hid [20,3]"
+
+method:
+  approach: "record-level diff of decode.entries over all 324 JSONL records x 3 sweeps (step-base-sweep.jsonl, step-filter-sweep.jsonl, step-filter-restored.jsonl), plus summary leg metadata and the control add/read/remove files for ground-truth cardinality"
+  alignment: "line N maps to seq N-1 identically in all three files; every tx record is byte-identical across sweeps (the harness re-ran the same 162 legs: 147 GETCOUNT + 5 GETALL + 6 GETOBJ + 4 GET), so every observed delta is a router rx value, not a request difference"
+  criteria:
+    - "(a) add/remove symmetry: a row-count slot must return to its exact pre-add baseline after the control remove"
+    - "(b) restored control: post-restore values must equal the pre-experiment baseline for every slot reasoned about"
+    - "(c) value-shape vs control cardinality: the control plane fixes ground truth N (0 rows pre-add, exactly 1 row during the filt sweep, 0 rows post-remove); a row-count slot must read N at every control point"
+  control_ground_truth:
+    add: "control-filter-find-add.json: ret *1 (/ip/firewall/filter/add chain=forward action=accept comment=e3find)"
+    during: "control-filter-find-read.json: objectCount 1, .id *1, chain forward, action accept, packets 0, bytes 0 (zero traffic matched)"
+    remove: "control-filter-find-rm.json ok + 5-menu control verify 0 rows (per E3-W report.yaml remove-verify)"
+
+exhaustiveness:
+  claim: "exactly 3 of 324 rx records move between the filt sweep and either baseline; no GETCOUNT slot other than [20,3] and [20,32] moves"
+  filt_vs_rest_diffs: "3 records: line 32 (seq 31, [20,3] GETCOUNT), line 90 (seq 89, [20,32] GETCOUNT), line 316 (seq 315, [20,17] GET)"
+  filt_vs_base_diffs: "3 records: same lines 32, 90, 316"
+  rest_vs_base_diffs: "1 record: line 316 only ([20,17] GET f15/f206 rest=7 vs base=0) - see the scoped correction below"
+  correction_to_E3W: "E3-W report.yaml claims 'zero residual diffs vs baseline' for the restored sweep. That holds at GETCOUNT/status level (all 147 GETCOUNT legs restore exactly, including both candidates) but is FALSE at full value level: [20,17] GET f15/f206 read 7 post-restore vs 0 pre-experiment. E3-W's diff compared count values + status only, so it also missed the [20,17] filt co-flip (two bools + two u32s). Neither miss affects the W-filter-find legs; both matter here, and both are sheeted below."
+
+slots:
+  - route: [20, 3]
+    verb: CMD_GETCOUNT
+    leg: sweep-getcount-20-3
+    records: "rx line 32 (seq 31) in each file; tx line 31 (seq 30) identical across all three"
+    sequence: "base 0 -> filt 1 -> rest 0 (0xfe0019/0x9; wire bytes fe0900 -> fe0901 -> fe0900 in plaintextHex)"
+    symmetry: "PASS: returns to exact pre-add baseline 0 after the control remove"
+    restored_control: "PASS: rest == base == 0"
+    shape_vs_control: "PASS: reads control cardinality N at every control point (N=0 -> 0 twice, N=1 -> 1)"
+    assessment: "sole surviving row-count candidate. Consistent with a count of the one added row in magnitude, symmetry, and restore behavior."
+  - route: [20, 32]
+    verb: CMD_GETCOUNT
+    leg: sweep-getcount-20-32
+    records: "rx line 90 (seq 89) in each file; tx line 89 (seq 88) identical across all three"
+    sequence: "base 0 -> filt 8 -> rest 0 (0xfe0019/0x9; wire bytes fe0900 -> fe0908 -> fe0900)"
+    symmetry: "PASS: returns to exact pre-add baseline 0 after the control remove"
+    restored_control: "PASS: rest == base == 0"
+    shape_vs_control: "FAIL: reads 8 under control-known N=1. A row-count slot of the filter table must read 1 when the table holds exactly 1 row; 8 contradicts the control. EXCLUDED as a row-count slot by the control, not by correlation."
+    coflip_account: "rule-co-extensive (0 while the table is empty, nonzero while 1 rule is present) but magnitude-incompatible with row counting. No control-visible quantity equals 8 (N=1, packets=0, bytes=0), and the single stimulus (one forward/accept rule) cannot identify the stimulus->8 mapping, so its exact semantics are UNRESOLVED (see U-f0a-32-role). E3-R-derived context (E3-W report.yaml sweep-rerun: [20,32] GET is selector-gated/FAILED, not table-shaped) corroborates a derived/selector value rather than a table count, but that characterization is not in these sweep files and is not used as primary evidence."
+  - route: [20, 17]
+    verb: CMD_GET
+    leg: get-20-17
+    records: "rx line 316 (seq 315) in each file; tx line 315 (seq 314) identical across all three. Third mover: the ONLY other record that differs anywhere in the 324-line sweep."
+    fields_moved:
+      - "f34 (0x22/bool): base true -> filt false -> rest true (symmetric, rule-co-extensive)"
+      - "f46 (0x2e/bool): base false -> filt true -> rest false (symmetric, rule-co-extensive)"
+      - "f15 (0x0f/u32_compact): base 0 -> filt 8 -> rest 7 (RESTORE FAILURE: 7 != 0)"
+      - "f206 (0xce/u32_compact): base 0 -> filt 8 -> rest 7 (RESTORE FAILURE: 7 != 0)"
+    exclusion:
+      - "not a GETCOUNT slot: CMD_GETCOUNT on [20,17] answers 0xfe0019/0x8=4294967295 (non-table marker) identically in all three sweeps (rx line 60, seq 59)"
+      - "f15/f206 fail criterion (b): rest=7 vs base=0 while filter rows are 0 in both states, so they cannot track filter rows; they are volatile/ambient (and non-monotonic: filt 8 > rest 7), driver unknown"
+      - "f34/f46 pass symmetry but fail shape: bools on a singleton GET, not counts; semantics unknown (see U-f0a-17-fields)"
+      - "the filt=8 co-occurrence (f15/f206 = 8 while [20,32] = 8) does not establish shared cause: divergent restore behavior (0 vs 7) disproves lockstep"
+    assessment: "analyzed, not ignored. No field on [20,17] qualifies as a filter row-count slot."
+
+verdict_reasoning:
+  - "The control fixes ground-truth filter cardinality at three points (0, 1, 0). Exactly one GETCOUNT slot reads N at every point: [20,3] (0->1->0)."
+  - "The sole rival [20,32] is excluded by the control (8 != 1 under known N=1), with a grounded co-flip account (rule-co-extensive, magnitude-incompatible with counting) and its exact semantics honestly unresolved."
+  - "All other 145 GETCOUNT slots are excluded by non-movement (exhaustive record-level diff, not summary sampling)."
+  - "The third mover [20,17] GET is excluded by verb-shape (GET, not GETCOUNT), non-table marker (GETCOUNT=0xFFFFFFFF), restore failure (f15/f206), and value-shape (f34/f46 are bools)."
+  - "This is discrimination by symmetry/control: elimination down to a single survivor via control-known cardinality, not selection by 'it moved' correlation. Naming is scoped to row-count tracking; full table-handler identity (GETALL row-shape) is still open (see U-f0a-table-identity)."
+
+proven:
+  - id: P-f0a-exhaustive-sweep-diff
+    claim: "exactly 3 of 324 rx records move between the filt sweep and baseline: [20,3] GETCOUNT, [20,32] GETCOUNT, [20,17] GET; nothing else in the sweep moves at decode-value level"
+    evidence: [step-base-sweep.jsonl, step-filter-sweep.jsonl, step-filter-restored.jsonl]
+  - id: P-f0a-20-3-tracks-filter-count
+    claim: "[20,3] GETCOUNT tracks filter-row count: 0->1->0 across the add/remove cycle, matching control-known cardinality at all three points with exact restore"
+    evidence: [step-filter-sweep.jsonl, step-base-sweep.jsonl, step-filter-restored.jsonl, control-filter-find-add.json, control-filter-find-read.json, control-filter-find-rm.json]
+  - id: P-f0a-20-32-not-a-row-count
+    claim: "[20,32] GETCOUNT is not a filter row-count slot: symmetric 0->8->0 but 8 contradicts control-known N=1; rule-co-extensive with unresolved exact semantics"
+    evidence: [step-filter-sweep.jsonl, step-base-sweep.jsonl, step-filter-restored.jsonl, control-filter-find-read.json]
+  - id: P-f0a-17-fields-excluded
+    claim: "[20,17] GET f15/f206 are volatile, not rule-gated (rest 7 != base 0); f34/f46 are symmetric bools of unknown semantics; the handler is non-table-shaped (GETCOUNT 0xFFFFFFFF)"
+    evidence: [step-filter-sweep.jsonl, step-base-sweep.jsonl, step-filter-restored.jsonl]
+
+disproven:
+  - id: D-f0a-two-flip-account
+    claim: "the E3-W 'TWO flips' / 'zero residual diffs' summary-level account is incomplete at value level: [20,17] GET co-flipped (4 fields) and carries a rest-vs-base residual (f15/f206 = 7 vs 0)"
+    evidence: [step-filter-sweep.jsonl, step-base-sweep.jsonl, step-filter-restored.jsonl]
+
+unknown:
+  - id: U-f0a-32-role
+    claim: "[20,32] GETCOUNT exact semantics unknown: bitmask over chains/rules, a different table's count, or a derived selector value are all ungrounded from this single-stimulus data (no control-visible quantity equals 8)"
+    next: "chain-varied or N=2 control under a future write cap; until then no claim"
+  - id: U-f0a-linearity
+    claim: "[20,3] N>=2 linearity untested: presence-flag vs counter are indistinguishable at N<=1"
+    next: "one future write leg (second filter rule, expect GETCOUNT 2); out of this offline slice"
+  - id: U-f0a-table-identity
+    claim: "[20,3] full table-handler identity open: GETALL row-shape never observed (E3-W stop rule correctly skipped it)"
+    next: "read-only confirmation, zero writes: GETOBJ [20,3] id 1 on the empty table (expect table-shaped ERROR_UNKNOWNID per the NAT precedent); then GETALL [20,3] under a future 1-row control (expect the *1 row)"
+  - id: U-f0a-17-fields
+    claim: "[20,17] GET f34/f46 symmetric rule-co-extensive bools and f15/f206 volatile u32s: semantics and driver unknown; outside the filter-handler slice"
+    next: "none in this slice; flag for services-census follow-up if ever needed"
+
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/E3-W/step-filter-sweep.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/summary-filter.json
+  - work/2026-11-winbox-attributes/proof/E3-W/step-filter-restored.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/summary-filter-restored.json
+  - work/2026-11-winbox-attributes/proof/E3-W/step-base-sweep.jsonl
+  - work/2026-11-winbox-attributes/proof/E3-W/summary-base.json
+  - work/2026-11-winbox-attributes/proof/E3-W/report.yaml
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-find-add.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-find-read.json
+  - work/2026-11-winbox-attributes/proof/E3-W/control-filter-find-rm.json
+  - work/2026-11-winbox-attributes/proof/F0a-filter-hid/report.yaml
+  - work/2026-11-winbox-attributes/proof/F0a-filter-hid/fragment.yaml
+
+budgets: { counted_writes: 0, reboots: 0, note: "offline slice: zero router contact, nothing to restore" }
+forbidden_paths_edited: none

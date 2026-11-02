@@ -1,0 +1,134 @@
+# cspell:ignore rowid vrfs msghdr reqid vms
+proof: "F1: read-only 7.26beta4 repeat of Phase E E1 legs (bridge-port [16,2], bridge-vlan [16,13], ip-address vrf [20,1])"
+worker: F1-beta4-repeat
+head: 33a956e231f0c4fe3d767b996053d881800d3597
+date: 2026-11-02
+scope: "3 fixture families on ONE VM (winbox-beta4, 7.26beta4 x86); native GETALL+GETOBJ only; ZERO writes"
+vms_used: [winbox-beta4]
+vms_never_touched: [twin1, twin2, twin3, twin4, twin-app, twin-zt, ws19-2nic, ws20, ws21, ws3c6, e3-beta4, centrs-btest-client-1793164337485]
+
+vm_record:
+  start: "quickchr start winbox-beta4 -> started, 7.26beta4 x86 user, http:9200 https:9201 ssh:9202 api:9203 api-ssl:9204 winbox:9205"
+  build: "7.26beta4 build-time 2026-10-27 09:25:44 (via centrs retrieve /system/resource)"
+  stop: "quickchr stop winbox-beta4 -> stopped (exit 0); quickchr list shows winbox-beta4 stopped, all other VMs still stopped"
+  end_state: { vm: winbox-beta4, version: "7.26beta4", state: stopped, removed: false }
+
+writes: 0
+writes_statement: "ZERO writes: only native GETALL/GETOBJ (probe.ts getall/getobj) and centrs retrieve (REST reads) were issued. No add/set/remove/move/enable/disable, no reboot, no config change. Baseline restore trivially satisfied (nothing written). No write approval held or sought."
+
+population_control: # read-only REST pre-reads, explain the count differences below
+  interface_bridge: 0 rows
+  interface_bridge_port: 0 rows
+  ip_address: 1 row (.id=*1, 10.0.2.15/24 dynamic on ether1, vrf=main)
+  ip_vrf: 1 row (builtin main only; no custom VRF exists)
+
+verdicts:
+  - family: bridge-port [16,2]
+    fixtures: [fixtures/winbox-ipc/7.25-bridge-port-16-2.json]
+    getall: PASS-with-note
+    getall_detail: >-
+      beta4 GETALL bare returns 0 rows (raw-getall-16-2-r1.json, r2 byte-identical):
+      envelope keys {ff0001:0x88 [0,11], ff0002:0x88 [16,2], ff001c:0xa0 ['msg-proxy-7.26beta4'],
+      fe0002:0xa8 [], ff0003:0x9 2, fe0019:0x9 0, ff0006:0x9 2}.
+      7.25 fixture w3-add-verify-getall shows 1 row (40-key row, rowid 0, f3=2 f4=7) with the SAME
+      7-key envelope key/tcode set (ff03=2, fe19=1 there). Verdict is population-driven count
+      difference (0 vs 1; REST confirms /interface/bridge/port empty on this factory VM) with an
+      identical envelope shape. The 40-key row key set itself is UNREPEATABLE read-only (no rows
+      exist); see unresolved/port-row-shape.
+    getobj: PASS-with-note
+    getobj_detail: >-
+      No valid rowid exists (empty menu), so GETOBJ obj=999 was taken as the only available GETOBJ
+      shape (raw-getobj-16-2-obj999.json): {ff0001, ff0002:[16,2], ff001c, ff0008:0x8 16646148,
+      ff0003:0x9 2, ff0004:0x9 2, ff0006} — the 7-key UNKNOWNID envelope. No 7.25 [16,2] UNKNOWNID
+      baseline exists for a direct comparison; the shape is key/tcode/value-identical to the
+      [20,1] obj=999 UNKNOWNID envelope on BOTH 7.25 (fixture getobj-20-1-obj=999-reply) and beta4
+      (this run), modulo from-route and reqid echo. Valid-row GETOBJ (cf. 7.25 w3-getobj-pre/post)
+      is UNREPEATABLE read-only; see unresolved/port-row-shape.
+
+  - family: bridge-vlan [16,13]
+    fixtures: [fixtures/winbox-ipc/7.25-bridge-vlan-f4.json]
+    getall: PASS
+    getall_detail: >-
+      beta4 GETALL bare returns 0 rows (raw-getall-16-13-r1.json, r2 byte-identical):
+      {ff0001:0x88 [0,11], ff0002:0x88 [16,13], ff001c:0xa0 ['msg-proxy-7.26beta4'], fe0002:0xa8 [],
+      ff0003:0x9 2, fe0019:0x9 0, ff0006:0x9 2}.
+      7.25 fixture w2-proof-empty shows the SAME 7-key envelope with the same tcodes and values
+      (ff03=2, fe19=0); only ff001c differs ('msg-proxy-7.25' vs 'msg-proxy-7.26beta4', expected
+      version label) and from-route/reqid echo. The configured-cell row shape (w2-cell-getall:
+      12 keys incl. f4=[2] f3=[5] f1=[10,10]) is UNREPEATABLE read-only (no rows exist);
+      see unresolved/vlan-cell-shape.
+    getobj: PASS-with-note
+    getobj_detail: >-
+      No valid rowid exists (empty menu); GETOBJ obj=999 (raw-getobj-16-13-obj999.json) returns the
+      7-key UNKNOWNID envelope {ff0001, ff0002:[16,13], ff001c, ff0008:0x8 16646148, ff0003:0x9 2,
+      ff0004:0x9 2, ff0006}, key/tcode/value-identical to the [20,1] UNKNOWNID pattern on both
+      versions (no direct 7.25 [16,13] UNKNOWNID baseline exists). A configured-cell GETOBJ is
+      UNREPEATABLE read-only; see unresolved/vlan-cell-shape.
+
+  - family: ip-address [20,1] incl. vrf f6
+    fixtures: [fixtures/winbox-ipc/7.25-getall-20-1.json, fixtures/winbox-ipc/7.25-getobj-20-1.json,
+      fixtures/winbox-ipc/7.25-vrf-f6-20-1.json]
+    getall: PASS
+    getall_detail: >-
+      beta4 GETALL bare returns 1 row (raw-getall-20-1-r1.json, r2 byte-identical) with the 13-key
+      row {0b:0x0 F, fe0007:0x1 T, fe0008:0x0 F, fe000a:0x0 F, f4:0x8 4278321162, f5:0x9 2,
+      f6:0x9 0, f0a:0x9 2, fe0001:0x9 1, f1:0x8 251789322, f2:0x8 131082, f3:0x8 16777215,
+      fe0009:0x21 ''}, envelope {ff0001, ff0002:[20,1], ff001c, fe0002:[row], ff0003:0x9 2,
+      fe0019:0x9 1, ff0006}. Key ORDER, tcodes, and values are IDENTICAL to 7.25 fixture
+      bare-getall-reply (incl. f6=vrf 0 on the vrf=main row, fe19=1, ff03=2); only ff001c differs
+      ('msg-proxy-7.25' vs 'msg-proxy-7.26beta4'). Same DHCP population (10.0.2.15/24, rowid 1).
+    getobj: PASS
+    getobj_detail: >-
+      GETOBJ obj=1 (raw-getobj-20-1-obj1.json) flat row key order/tcodes/values IDENTICAL to 7.25
+      getobj-20-1-obj=1-reply ({0b F, fe0007 T, fe0008 F, fe000a F, f4 4278321162, f5 2, f6 0,
+      f3 16777215, f0a 2, fe0001 1, ff03 2, f1 251789322, ff06, f2 131082, fe0009 ''}; ff06 echo
+      2 vs 12 is request-driven). GETOBJ obj=999 (raw-getobj-20-1-obj999.json) UNKNOWNID envelope
+      {ff0001, ff0002, ff001c, ff0008:0x8 16646148, ff0003:0x9 2, ff0004:0x9 2, ff0006} IDENTICAL
+      to 7.25 getobj-20-1-obj=999-reply modulo ff001c version label and reqid echo.
+    vrf_f6: PASS-with-note
+    vrf_f6_detail: >-
+      f6 present as wire u8 (tcode 0x9) value 0 on the vrf=main row, matching 7.25 default rows
+      (bare-getall-reply f6=0; vrf-add-read-rx f6=0). The f6=1 custom-VRF-row leg (7.25 fixture
+      vrf-row-read-rx second row: f6=1 f5=3 f0a=3 fe01=3) is BLOCKED: this VM has only the builtin
+      main VRF (REST /ip/vrf = 1 row) and creating a VRF + address is a write. See blocked/f6-nonzero.
+
+drift_claims: none
+drift_statement: "No key/tcode/shape/semantic difference found on any repeated shape. All repeated envelopes and rows reproduce 7.25 exactly (modulo the expected msg-proxy version label and request-driven reqid echoes). Zero DRIFT verdicts; nothing merged into 7.25 claims."
+
+volatility_control: "GETALL r1 vs r2 byte-identical (cmp clean) for all three routes: [16,2], [16,13], [20,1]. No volatile-value question arose; no further re-queries needed. Query budget: 9 native reads total (3x GETALL x2 + 4x GETOBJ), 0 private verbs, 0 new properties."
+
+unresolved:
+  - id: port-row-shape
+    status: unresolved (read-only limit, not version drift)
+    note: "40-key [16,2] GETALL row shape + flat GETOBJ row shape (7.25 w1-row-getall / w3-getobj-pre) unrepeatable: factory beta4 VM has no bridge ports and creating one is a write. Needs a write leg (ADD bridge+port, GETALL/GETOBJ read-back, restore)."
+  - id: vlan-cell-shape
+    status: unresolved (read-only limit, not version drift)
+    note: "12-key [16,13] configured-cell shape incl. f4=[2] (7.25 w2-cell-getall) unrepeatable: no bridge-vlan rows exist and creating one is a write. Needs a write leg."
+  - id: getobj-valid-row-16-2-16-13
+    status: unresolved (same read-only limit)
+    note: "Covered by port-row-shape / vlan-cell-shape: no valid rowid to GETOBJ on either empty menu."
+
+blocked:
+  - id: f6-nonzero
+    blocker: "f6=1 custom-VRF row repeat needs /ip/vrf/add + /ip/address/add (writes) on winbox-beta4; F1 holds no write approval"
+    next: "write-leg worker: create VRF + address, GETALL read-back quoting f6, restore (remove address + VRF), re-verify"
+  - id: bridge-row-population
+    blocker: "same: bridge/port/vlan row creation is a write leg, out of F1 read-only scope"
+    next: "write-leg worker per unresolved/port-row-shape + unresolved/vlan-cell-shape"
+
+evidence_files:
+  - raw-getall-16-2-r1.json  # GETALL [16,2] bare, 0 rows (mode+reply envelope)
+  - raw-getall-16-2-r2.json  # second read, byte-identical
+  - raw-getall-16-13-r1.json  # GETALL [16,13] bare, 0 rows
+  - raw-getall-16-13-r2.json  # second read, byte-identical
+  - raw-getall-20-1-r1.json  # GETALL [20,1] bare, 1 row (f6=0)
+  - raw-getall-20-1-r2.json  # second read, byte-identical
+  - raw-getobj-20-1-obj1.json  # GETOBJ [20,1] obj=1 flat row
+  - raw-getobj-20-1-obj999.json  # GETOBJ [20,1] obj=999 UNKNOWNID
+  - raw-getobj-16-2-obj999.json  # GETOBJ [16,2] obj=999 UNKNOWNID (empty menu)
+  - raw-getobj-16-13-obj999.json  # GETOBJ [16,13] obj=999 UNKNOWNID (empty menu)
+  - report.yaml  # this file (committed evidence)
+  - fragment.yaml  # proposed version-scoped YAML notes (beta4 confirmations only, no drift)
+
+tooling: "work/2026-10-chr-extraction/ws3c/probe.ts (getall/getobj --json); centrs retrieve --quickchr winbox-beta4 (REST reads only)"
+sanitization: "proof files carry no hosts/ports/credentials/timestamps; probe --json emits decoded entries only (no M2 hex requested, no reqid bytes beyond the echoed ff0006 u8). Lab address 10.0.2.15/24 retained as synthetic QEMU state, matching 7.25 fixture precedent."

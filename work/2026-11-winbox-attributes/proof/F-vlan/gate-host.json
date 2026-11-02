@@ -1,0 +1,39 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*2",
+      "bridge": "e1br",
+      "disabled": "false",
+      "dynamic": "true",
+      "external": "false",
+      "interface": "ether1",
+      "invalid": "false",
+      "local": "true",
+      "mac-address": "02:91:A6:6C:44:D5",
+      "on-interface": "ether1"
+    },
+    {
+      ".id": "*1",
+      "bridge": "e1br",
+      "disabled": "false",
+      "dynamic": "true",
+      "external": "false",
+      "interface": "ether1",
+      "invalid": "false",
+      "local": "false",
+      "mac-address": "52:55:0A:00:02:02",
+      "on-interface": "ether1"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 2,
+      "path": "/interface/bridge/host"
+    }
+  }
+}

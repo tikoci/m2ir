@@ -1,0 +1,147 @@
+# cspell:ignore rowid getall vrf vrfs f11br e3f11
+# F-f11 execution report (coordinator). ws20 ONLY. No commit, no push.
+proof: "F-f11 slave-prime bridge-enslave leg on ws20 7.25: COMPLETE 6w+0r of 6w+0r; f11=slave SUPPORTED with full add/remove symmetry, restore verified clean"
+date: 2026-11-02
+worker: coordinator
+leg: f11-slave-prime
+sheet: "coordinator sheet presented 2026-11-02 (S1-S3 + reversal read + R1-R3; this report)"
+approval_quoted: "f11-yes: Yes + unfreeze (6w+0r ws20, `slave` unfrozen for promotion) — explicit per-leg yes via structured confirmation, this session"
+freeze_note: "user unfroze `slave` (outside the frozen 10) as part of the leg yes; f11<->slave promotion is authorized"
+vm:
+  name: ws20
+  routeros: "7.25"
+  arch: x86
+  network: "user + socket links (3 NICs; lab path is ether1)"
+  ports: "resolved live from `quickchr list` at execution (winbox:9185 block); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute/retrieve --quickchr ws20 (writes via native-api)"
+  native_via: "proof/E1-W2r/getall-w2r.ts (paged GETALL, read-only; reused unmodified)"
+baseline_snapshot:
+  verdict: PASS (matches E2-W end state)
+  control:
+    - { route: /ip/address, objectCount: 1, row: "*1 10.0.2.15/24 ether1 slave=false disabled=false" }
+    - { route: /ip/vrf, objectCount: 1, note: "main only" }
+  native:
+    - { op: "GETALL [20,1]", rows: 1, row: "rowid 1: f11=false f6=0" }
+  files: [baseline-ip-address.json, baseline-ip-vrf.json, step-baseline.jsonl]
+steps:
+  - tag: S1
+    command: "/ip/address/add address=198.51.100.10/24 interface=ether2 comment=e3f11"
+    outcome: ok
+    result: "static row .id *2 on ether2"
+    evidence: [control-s1-add.json, explain-s1.json]
+    writes: 1
+    cumulative: 1
+  - tag: S2
+    command: "/interface/bridge/add name=f11br"
+    outcome: ok
+    result: "bridge .id *4"
+    evidence: [control-s2-add.json, explain-s2.json]
+    writes: 1
+    cumulative: 2
+  - tag: S3
+    command: "/interface/bridge/port/add bridge=f11br interface=ether2"
+    outcome: ok
+    result: "port .id *0; ether2 enslaved (access-safe: lab path is ether1, never touched)"
+    evidence: [control-s3-add.json, explain-s3.json]
+    writes: 1
+    cumulative: 3
+  - tag: enslaved-read
+    verdict: "STIMULUS WORKED"
+    control: "*1 slave=false; *2 198.51.100.10/24 slave=TRUE disabled=false"
+    native: "2 rows. rowid 1 (DHCP): byte-identical to baseline (f11=false). rowid 2 (static): f11=TRUE, f6=0, f5=4/f10=3 (split), fe0007=false, fe0008=false, fe000a=false"
+    proves: "slave-prime SUPPORTED: f11 flips false->true exactly with control slave on the enslaved row; DHCP control row unmoved"
+    evidence: [control-enslaved-read.json, step-enslaved.jsonl]
+    writes: 0
+    cumulative: 3
+  - tag: R1
+    command: "/interface/bridge/port/remove *0"
+    outcome: ok (removes ether2 from the bridge)
+    evidence: [control-r1-port.json, explain-r1.json]
+    writes: 1
+    cumulative: 4
+  - tag: deenslaved-read
+    verdict: "REVERSAL CONFIRMED (0w symmetry check)"
+    control: "*1 slave=false; *2 slave=false again"
+    native: "2 rows. rowid 2: f11=false, f5=f10=3 rejoined"
+    proves: "f11 tracks the state DOWN: full false->true->false symmetry with slave"
+    evidence: [control-deenslaved-read.json, step-deenslaved.jsonl]
+    writes: 0
+    cumulative: 4
+  - tag: R2
+    command: "/interface/bridge/remove f11br"
+    outcome: ok
+    evidence: [control-r2-bridge.json, explain-r2.json]
+    writes: 1
+    cumulative: 5
+  - tag: R3
+    command: "/ip/address/remove *2"
+    outcome: ok
+    evidence: [control-r3-addr.json, explain-r3.json]
+    writes: 1
+    cumulative: 6
+spend:
+  counted_writes: 6
+  reboots: 0
+  cap: "6w+0r"
+  itemized: "S1 + S2 + S3 + R1 + R2 + R3 = 6; all reads = 0"
+  within_cap: true
+proven:
+  - id: P-f11-slave
+    claim: "f11 (0x0b) bool tracks the control `slave` flag: false->true->false across enslave/deenslave, exactly with slave; vrf=main (f6=0) throughout, disabled=false throughout, dynamic=false on the test row"
+    evidence: [step-baseline.jsonl, step-enslaved.jsonl, step-deenslaved.jsonl, control-enslaved-read.json, control-deenslaved-read.json]
+  - id: P-f11-elimination
+    claim: "control-bool elimination complete: dynamic/invalid/disabled all false on the f11=true row (E2-W already ruled out disabled=yes); slave is the sole surviving control-bool correlate"
+    evidence: [step-enslaved.jsonl, control-enslaved-read.json]
+  - id: P-f11-dhcp-control
+    claim: "not-enslaved DHCP row byte-identical baseline->enslaved (f11=false): the flip is row-local to the enslaved row, not table-wide"
+    evidence: [step-baseline.jsonl, step-enslaved.jsonl]
+confound_recorded:
+  - id: C-f11-f5f10-split
+    claim: "enslavement ALSO splits f5/f10 on the test row (4/3 enslaved, 3/3 otherwise); no split-without-slave state was observed, so a split-driven model is untested — bool-tracks-bool (slave) is the simpler model with all control-bool alternatives eliminated"
+    status: noted in schema role, not blocking (single stimulus, honestly scoped)
+restore_verification:
+  verdict: PASS
+  control:
+    - { route: /ip/address, objectCount: 1, note: "DHCP row only" }
+    - { route: /interface/bridge, objectCount: 0 }
+  native:
+    - { op: "GETALL [20,1]", rows: 1, row: "rowid 1 f11=false" }
+  files: [control-restored-address.json, control-restored-bridge.json, step-restored.jsonl]
+cleanup_state:
+  tables: "address back to DHCP-only, no bridges, on both surfaces"
+  vm: "ws20 STOPPED via `quickchr stop ws20` (not removed)"
+  writes_on_other_machines: 0
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/F-f11/report.yaml
+  - work/2026-11-winbox-attributes/proof/F-f11/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/F-f11/sanitize.ts
+  - work/2026-11-winbox-attributes/proof/F-f11/baseline-ip-address.json
+  - work/2026-11-winbox-attributes/proof/F-f11/baseline-ip-vrf.json
+  - work/2026-11-winbox-attributes/proof/F-f11/step-baseline.jsonl
+  - work/2026-11-winbox-attributes/proof/F-f11/control-s1-add.json
+  - work/2026-11-winbox-attributes/proof/F-f11/control-s2-add.json
+  - work/2026-11-winbox-attributes/proof/F-f11/control-s3-add.json
+  - work/2026-11-winbox-attributes/proof/F-f11/control-enslaved-read.json
+  - work/2026-11-winbox-attributes/proof/F-f11/step-enslaved.jsonl
+  - work/2026-11-winbox-attributes/proof/F-f11/control-r1-port.json
+  - work/2026-11-winbox-attributes/proof/F-f11/control-deenslaved-read.json
+  - work/2026-11-winbox-attributes/proof/F-f11/step-deenslaved.jsonl
+  - work/2026-11-winbox-attributes/proof/F-f11/control-r2-bridge.json
+  - work/2026-11-winbox-attributes/proof/F-f11/control-r3-addr.json
+  - work/2026-11-winbox-attributes/proof/F-f11/control-restored-address.json
+  - work/2026-11-winbox-attributes/proof/F-f11/control-restored-bridge.json
+  - work/2026-11-winbox-attributes/proof/F-f11/step-restored.jsonl
+  - work/2026-11-winbox-attributes/proof/F-f11/explain-s1.json
+  - work/2026-11-winbox-attributes/proof/F-f11/explain-s2.json
+  - work/2026-11-winbox-attributes/proof/F-f11/explain-s3.json
+  - work/2026-11-winbox-attributes/proof/F-f11/explain-r1.json
+  - work/2026-11-winbox-attributes/proof/F-f11/explain-r2.json
+  - work/2026-11-winbox-attributes/proof/F-f11/explain-r3.json
+gates_observed:
+  - "ws20 ONLY: no other VM touched"
+  - "every write string validated with `centrs explain` before sending (6/6 pass, 0 rejections)"
+  - "cumulative verified before every write (max reached 6 of 6)"
+  - "no edits to profiles/winbox-ipc/*.yaml, profiles/winbox-ipc/README.md, README.md, GLOSSARY.txt (coordinator integrates separately)"
+  - "no commit, no push"

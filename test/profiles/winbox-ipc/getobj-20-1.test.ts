@@ -79,10 +79,10 @@ describe("getobj [20,1] replay", () => {
 		const handler = required(gui.handlers["ip-address"], "handlers.ip-address");
 		expect(handler["sys-to"]).toEqual([20, 1]);
 		const fields = ipFields();
-		// v7-only extras: f6 promoted to vrf (E2-W), f11 still UNKNOWN.
+		// v7-only extras: f6 promoted to vrf (E2-W), f11 promoted to slave (F-f11).
 		expect(fields.get(6)?.name).toBe("vrf");
 		expect(fields.get(6)?.tcode).toBe("u32");
-		expect(fields.get(11)?.name).toBe("unknown-11");
+		expect(fields.get(11)?.name).toBe("slave");
 		expect(fields.get(11)?.tcode).toBe("bool");
 		expect(handler.notes).toContain("FLAT row");
 		expect(handler.notes).toContain("WITHOUT the 0xfe0019 total");
@@ -161,7 +161,7 @@ describe("getobj [20,1] replay", () => {
 		}
 	});
 
-	test("extras 0x06/0x0b ride v7 rows only (f6=vrf=main here, f11 unknown)", () => {
+	test("extras 0x06/0x0b ride v7 rows only (f6=vrf=main, f11=slave=false here)", () => {
 		const fields = ipFields();
 		const keyOf = (name: string): string => {
 			for (const [id, def] of fields) {
@@ -191,11 +191,12 @@ describe("getobj [20,1] replay", () => {
 						: rowsOf(requiredEntry(entries, "0xfe0002", "STD_OBJS"));
 				for (const row of rows) {
 					// f6 is the row VRF (0 = main on these single-VRF
-					// lab rows); f11 stays UNKNOWN (value check only).
+					// lab rows); f11 is the slave flag (false =
+					// not enslaved on these rows).
 					const f6 = requiredEntry(row, keyOf("vrf"), "0x06");
 					expect(f6.tcode).toBe("0x9");
 					expect(f6.value).toBe(0);
-					const f11 = requiredEntry(row, keyOf("unknown-11"), "0x0b");
+					const f11 = requiredEntry(row, keyOf("slave"), "0x0b");
 					expect(f11.tcode).toBe("0x0");
 					expect(f11.value).toBe(false);
 				}
@@ -217,7 +218,7 @@ describe("getobj [20,1] replay", () => {
 					: rowsOf(requiredEntry(entries, "0xfe0002", "STD_OBJS"));
 			for (const row of rows) {
 				expect(findEntry(row, keyOf("vrf"))).toBeUndefined();
-				expect(findEntry(row, keyOf("unknown-11"))).toBeUndefined();
+				expect(findEntry(row, keyOf("slave"))).toBeUndefined();
 			}
 		}
 	});

@@ -1,0 +1,49 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*3",
+      "actual-mtu": "1500",
+      "ageing-time": "5m",
+      "arp": "enabled",
+      "arp-timeout": "auto",
+      "auto-mac": "true",
+      "dhcp-snooping": "false",
+      "dhcpv6-snooping": "false",
+      "disabled": "false",
+      "dynamic": "false",
+      "fast-forward": "true",
+      "forward-delay": "15s",
+      "igmp-snooping": "false",
+      "l2mtu": "65535",
+      "mac-address": "36:97:59:4D:5E:94",
+      "managed": "false",
+      "max-learned-entries": "auto",
+      "max-message-age": "20s",
+      "mlag-heartbeat": "5s",
+      "mlag-init-delay": "1m",
+      "mlag-lacp-fallback": "true",
+      "mlag-peer-port": "none",
+      "mlag-priority": "128",
+      "mtu": "auto",
+      "name": "e1br",
+      "port-cost-mode": "long",
+      "priority": "0x8000",
+      "protocol-mode": "rstp",
+      "ra-guard": "false",
+      "running": "true",
+      "transmit-hold-count": "6",
+      "vlan-filtering": "false"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 1,
+      "path": "/interface/bridge"
+    }
+  }
+}

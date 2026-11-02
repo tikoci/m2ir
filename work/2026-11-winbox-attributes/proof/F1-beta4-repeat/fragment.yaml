@@ -1,0 +1,74 @@
+# F1-beta4-repeat: proposed version-scoped YAML notes (beta4 PASS confirmations; NO drift found).
+# Each entry is ADDITIVE to its 7.25 claim: a version-scoped confirmation note, never an edit.
+# Coordinator: promote into profiles/winbox-ipc/gui-handlers.yaml revision-history/notes per entry.
+fragments:
+  - target: gui-handlers.yaml [16,2] bridge-port GETALL envelope
+    type: version-confirmation
+    version: "7.26beta4"
+    note: >-
+      beta4 empty-menu GETALL envelope reproduces the 7.25 7-key shape exactly
+      ({ff0001, ff0002:[16,2], ff001c, fe0002:[], ff0003:2, fe0019:0, ff0006}; tcodes
+      0x88/0x88/0xa0/0xa8/0x9/0x9/0x9): 0 rows on a factory VM, two byte-identical reads.
+      ff001c='msg-proxy-7.26beta4' (expected version label).
+    evidence: work/2026-11-winbox-attributes/proof/F1-beta4-repeat/raw-getall-16-2-r1.json (+r2)
+    does_not_claim: "40-key populated-row shape on beta4 (no rows exist read-only; see F1 unresolved/port-row-shape)"
+
+  - target: gui-handlers.yaml [16,2] bridge-port GETOBJ UNKNOWNID
+    type: version-confirmation
+    version: "7.26beta4"
+    note: >-
+      beta4 GETOBJ obj=999 on the empty [16,2] menu returns the 7-key UNKNOWNID envelope
+      ({ff0001, ff0002, ff001c, ff0008:16646148, ff0003:2, ff0004:2, ff0006}), key/tcode/value
+      identical to the [20,1] UNKNOWNID pattern on 7.25 and beta4. First [16,2] UNKNOWNID sample
+      (no 7.25 [16,2]-route baseline exists; cross-route pattern match, not a version comparison).
+    evidence: work/2026-11-winbox-attributes/proof/F1-beta4-repeat/raw-getobj-16-2-obj999.json
+
+  - target: gui-handlers.yaml [16,13] bridge-vlan GETALL empty
+    type: version-confirmation
+    version: "7.26beta4"
+    note: >-
+      beta4 empty-menu GETALL reproduces 7.25 w2-proof-empty exactly (same 7 keys, tcodes, values
+      ff03=2 fe19=0; only ff001c version label differs): 0 rows, two byte-identical reads.
+    evidence: work/2026-11-winbox-attributes/proof/F1-beta4-repeat/raw-getall-16-13-r1.json (+r2)
+    does_not_claim: "configured-cell 12-key row shape incl. f4 on beta4 (see F1 unresolved/vlan-cell-shape)"
+
+  - target: gui-handlers.yaml [16,13] bridge-vlan GETOBJ UNKNOWNID
+    type: version-confirmation
+    version: "7.26beta4"
+    note: >-
+      beta4 GETOBJ obj=999 on the empty [16,13] menu returns the 7-key UNKNOWNID envelope
+      ({ff0001, ff0002, ff001c, ff0008:16646148, ff0003:2, ff0004:2, ff0006}), key/tcode/value
+      identical to the [20,1] UNKNOWNID pattern on 7.25 and beta4. First [16,13] UNKNOWNID sample
+      (no 7.25 [16,13]-route baseline exists; cross-route pattern match, not a version comparison).
+    evidence: work/2026-11-winbox-attributes/proof/F1-beta4-repeat/raw-getobj-16-13-obj999.json
+
+  - target: gui-handlers.yaml [20,1] ip-address GETALL row
+    type: version-confirmation
+    version: "7.26beta4"
+    note: >-
+      beta4 GETALL bare 1-row shape reproduces 7.25 bare-getall-reply EXACTLY: same 13-key row in
+      the same wire order ({0b:F, fe0007:T, fe0008:F, fe000a:F, f4:u32 4278321162, f5:2, f6:0,
+      f0a:2, fe0001:1, f1:251789322, f2:131082, f3:16777215, fe0009:''}), same tcodes, same values
+      (same DHCP population 10.0.2.15/24 rowid 1), envelope ff03=2 fe19=1; only ff001c version
+      label differs. Two byte-identical reads.
+    evidence: work/2026-11-winbox-attributes/proof/F1-beta4-repeat/raw-getall-20-1-r1.json (+r2)
+
+  - target: gui-handlers.yaml [20,1] ip-address GETOBJ row + UNKNOWNID
+    type: version-confirmation
+    version: "7.26beta4"
+    note: >-
+      beta4 GETOBJ obj=1 flat row reproduces 7.25 getobj-20-1-obj=1-reply EXACTLY (same key order,
+      tcodes, values incl. f6=0; ff06 echo 2 vs 12 is request-driven). GETOBJ obj=999 UNKNOWNID
+      envelope reproduces 7.25 (ff0008:16646148, ff0003:2, ff0004:2) modulo version label/reqid echo.
+    evidence: work/2026-11-winbox-attributes/proof/F1-beta4-repeat/raw-getobj-20-1-obj1.json
+    evidence2: work/2026-11-winbox-attributes/proof/F1-beta4-repeat/raw-getobj-20-1-obj999.json
+
+  - target: gui-handlers.yaml [20,1] f6 vrf default
+    type: version-confirmation
+    version: "7.26beta4"
+    note: >-
+      beta4 f6 present as wire u8 (tcode 0x9) value 0 on the vrf=main row (GETALL and GETOBJ),
+      matching 7.25 default-row f6=0. The f6=1 custom-VRF-row repeat is BLOCKED (write leg required;
+      VM carries only builtin main VRF) — no beta4 claim on nonzero f6.
+    evidence: work/2026-11-winbox-attributes/proof/F1-beta4-repeat/raw-getall-20-1-r1.json
+    does_not_claim: "f6 nonzero semantics on beta4 (see F1 blocked/f6-nonzero)"

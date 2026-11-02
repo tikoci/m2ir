@@ -1,0 +1,13 @@
+# cspell:ignore rowid getall vrf e3f11
+# F-f11 promotion fragment (coordinator integrates; `slave` unfrozen by user).
+fragment:
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> ip-address f11
+    op: rename-proven
+    name: slave
+    cli-alias: "/ip/address slave"
+  - target: profiles/winbox-ipc/gui-handlers.yaml -> ip-address notes
+    op: append
+    notes: "F-f11 enslave/deenslave symmetry (f11 false->true->false with slave) + f5/f10-split confound"
+    evidence_add: 2
+no_promotion_for:
+  - "split-driven f11 model (untested; confound recorded in role)"

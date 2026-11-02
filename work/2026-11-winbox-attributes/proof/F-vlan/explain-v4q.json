@@ -1,0 +1,271 @@
+{
+  "ok": true,
+  "data": {
+    "input": {
+      "bytes": 60,
+      "normalized": false,
+      "truncated": false,
+      "positionMap": [
+        {
+          "analyzed": {
+            "start": 0,
+            "end": 60
+          },
+          "originalUtf16": {
+            "start": 0,
+            "end": 60
+          }
+        }
+      ]
+    },
+    "verdict": "pass",
+    "canonical": {
+      "mode": "script",
+      "path": "",
+      "verb": "",
+      "args": {},
+      "queries": [],
+      "writeShaped": true
+    },
+    "structure": {
+      "statementCount": 1,
+      "statements": [
+        {
+          "id": "s0",
+          "span": {
+            "start": 0,
+            "end": 60
+          },
+          "resolution": "resolved",
+          "kind": "command",
+          "command": {
+            "path": "/interface/bridge/vlan",
+            "verb": "set",
+            "args": {
+              "tagged": "e1br,ether1",
+              "untagged": ""
+            }
+          },
+          "arguments": {
+            "read": true,
+            "tokens": [
+              {
+                "kind": "positional",
+                "span": {
+                  "start": 27,
+                  "end": 29
+                },
+                "value": "*1",
+                "valueSpan": {
+                  "start": 27,
+                  "end": 29
+                },
+                "text": "*1"
+              },
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 30,
+                  "end": 48
+                },
+                "name": "tagged",
+                "value": "e1br,ether1",
+                "valueSpan": {
+                  "start": 37,
+                  "end": 48
+                },
+                "text": "tagged=e1br,ether1"
+              },
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 49,
+                  "end": 60
+                },
+                "name": "untagged",
+                "value": "",
+                "valueSpan": {
+                  "start": 58,
+                  "end": 60
+                },
+                "text": "untagged=\"\""
+              }
+            ],
+            "queries": [],
+            "positional": [
+              "*1"
+            ]
+          },
+          "contextCertain": true,
+          "ev": "e4",
+          "transport": {
+            "classification": "api-candidate",
+            "basis": "Q8 tested set as PATCH on CHR 7.23.2 and 7.24rc2",
+            "rest": {
+              "method": "PATCH",
+              "path": "/rest/interface/bridge/vlan/*1",
+              "body": {
+                "tagged": "e1br,ether1",
+                "untagged": ""
+              }
+            },
+            "centrs": "centrs api '<router>' '/interface/bridge/vlan/*1' -X PATCH -f 'tagged=e1br,ether1' -f 'untagged='",
+            "ev": "e8"
+          }
+        }
+      ],
+      "blocks": [],
+      "containsWrite": true,
+      "subcommands": [],
+      "ev": "e6"
+    },
+    "symbols": {
+      "occurrences": []
+    },
+    "values": {
+      "occurrences": [
+        {
+          "id": "v0",
+          "span": {
+            "start": 27,
+            "end": 29
+          },
+          "tokenSpan": {
+            "start": 27,
+            "end": 29
+          },
+          "kind": "positional",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "id"
+              ],
+              "ev": "e9"
+            }
+          }
+        },
+        {
+          "id": "v1",
+          "span": {
+            "start": 37,
+            "end": 48
+          },
+          "tokenSpan": {
+            "start": 30,
+            "end": 48
+          },
+          "kind": "attribute",
+          "name": "tagged",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "array",
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        },
+        {
+          "id": "v2",
+          "span": {
+            "start": 58,
+            "end": 60
+          },
+          "tokenSpan": {
+            "start": 49,
+            "end": 60
+          },
+          "kind": "attribute",
+          "name": "untagged",
+          "quoted": true,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        }
+      ]
+    },
+    "spans": [],
+    "diagnostics": [],
+    "evidence": [
+      {
+        "id": "e0",
+        "source": "canonicalizer",
+        "probe": "canonicalizeExecuteCommand",
+        "basis": "direct",
+        "outcome": "ok"
+      },
+      {
+        "id": "e1",
+        "source": "canonicalizer",
+        "probe": "analyzeCoordinates",
+        "basis": "direct",
+        "outcome": "ok"
+      },
+      {
+        "id": "e4",
+        "source": "canonicalizer",
+        "probe": "resolveVerbs",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e6",
+        "source": "canonicalizer",
+        "probe": "containsWrite",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e8",
+        "source": "canonicalizer",
+        "probe": "classifyExplainTransport",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e9",
+        "source": "canonicalizer",
+        "probe": "valueShapeHints",
+        "basis": "heuristic",
+        "outcome": "ok"
+      }
+    ],
+    "runtimeAcceptance": "not-proven"
+  },
+  "warnings": [],
+  "tips": [
+    {
+      "code": "tip/explain-offline-only",
+      "message": "No router was given, so this is the canonicalizer's reading alone.",
+      "fix": "Add a router (`centrs explain <router> '<input>'`) for read-only parse, highlight and argument-name evidence; `--schema` and `--complete` then describe paths and complete at the cursor.",
+      "detailsUrl": "https://tikoci.github.io/centrs/tips/tip/explain-offline-only"
+    }
+  ],
+  "meta": {
+    "target": {},
+    "via": null,
+    "settings": {
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      }
+    },
+    "validation": {
+      "enabled": false
+    },
+    "operation": {
+      "command": "explain",
+      "mode": "offline",
+      "statementCount": 1,
+      "verdict": "pass"
+    }
+  }
+}
