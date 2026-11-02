@@ -1,8 +1,8 @@
 # cspell:ignore rowid getcount getall getobj subtable reqid mvrp tarpit fasttrack gcd unmapped addrlist addsrc adddst addshape grev idstr movzwl vaddr capsman undercount oneline llms unblinding resid unsheeted
 # Phase G coordinator handoff (durable handoff rule, attribute-discovery-plan.md).
 # Written 2026-11-02 at read-only integration completion, before write-leg approval.
-head: da5f8bb4729f2bb146e63903a5faa0a252c42d25
-git_status: "PHASE G COMPLETE 2026-11-02 (all slices + 4 legs done, integrated); UNCOMMITTED by design (do not commit or push); all VMs stopped; gates 352/0 + lint:ci green"
+head: 45c09de20076f81927ac314fdcf27a64729f84de
+git_status: "PHASE G COMPLETE 2026-11-02, COMMITTED 45c09de + PUSHED to origin/main on user instruction; all VMs stopped; gates 352/0 + lint:ci green"
 dirty_files:
   - GLOSSARY.txt (M: +tarpit/+fasttrack/+gcd)
   - profiles/winbox-ipc/README.md (M: evidence count 570->572, see count_correction)
@@ -25,7 +25,7 @@ dirty_files:
   - work/2026-11-winbox-attributes/proof/G4-beta5-populated/ (new: report+fragment+sanitize.ts+leg-g4.ts, 4 step JSONL, 25+ control/explain JSON)
   - fixtures/winbox-ipc/7.26beta5-populated-shapes.json (new: 3 records)
   - test/profiles/winbox-ipc/beta5-populated.test.ts (new: 7)
-  - work/2026-11-winbox-attributes/handoff.yaml (this file)
+  - work/2026-11-winbox-attributes/handoff.yaml (ONLY dirty file: this post-commit head/status/next_action update; all entries above committed at 45c09de)
 slices:
   done: [G0a, G0b, G0c, G-reviewer, integrate-readonly, G1-execute, G1-integrate, G2-execute, G2-integrate, G3-execute, G3-integrate, G4-sheet, G4-execute, G4-integrate]
   in_progress: []
@@ -206,4 +206,4 @@ phase_f_history:
   spent: "jump 5w+0r (f40 jump=1/accept=0 + f41 jump-target + inverse SETOBJ + N=2), vlan 9w+0r (f5/f6 CLOSED, quoted move, V5 alive), f11 6w+0r (f11=slave SUPPORTED, `slave` unfrozen)"
   counts_at_close: "handlers 48, fields 333 (172/161), confidence 288 (150/135/3), evidence RECORDED 570 / TRUE 571 (see count_correction), tests 326/0, lint:ci green"
   prior_handoff: "superseded by this Phase G handoff; full Phase F record in git history (da5f8bb:work/2026-11-winbox-attributes/handoff.yaml)"
-next_action: "PHASE G COMPLETE: all slices done, all legs spent (G1 25/25, G2 8/8, G3 2/8 with 6w returned on the ambiguity stop, G4 10/10), all restores verified (G1 PARTIAL by device design: 5 boot-local builtin dummies), all VMs stopped, gates 352/0 + lint:ci green. Counts: 48 handlers, 334 fields (174/160), confidence 288 (150/135/3), evidence 580, revision-history 72. Work UNCOMMITTED by design — awaiting user instruction (commit/push/next phase). Do not commit or push unasked; report and wait."
+next_action: "PHASE G COMPLETE + COMMITTED (45c09de, pushed to origin/main on user instruction 2026-11-02). Follow-up prompt for the next orchestrator was suggested in chat (see session): H-phase ([20,32] decay mechanism: re-add spike + timing ladder + announce correlation; f6 rowid-vs-flag via 2nd VRF; rowid-gap; 0xfd002a handler-owner static slice) with a continuation-decision rule (continue to the phase after only if context is healthy, else hand off). All 15 VMs stopped. Counts: 48 handlers, 334 fields (174/160), confidence 288 (150/135/3), evidence 580, tests 352/0, lint:ci green."
