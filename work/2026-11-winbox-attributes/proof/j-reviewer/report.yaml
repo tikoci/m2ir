@@ -1,0 +1,109 @@
+# cspell:ignore rowid getall getone getobj getcount jsonl reqid errstr brkpath notimp unmapped defconf cliref netinstall tr069 cwmp acs multis rsc unblinding getonly multiset overclaim wrt subdirs untier vms
+# Phase J reviewer report (blind reconstructions R1/R2/R3 + scoring).
+# Reviewer touched ONLY work/2026-11-winbox-attributes/proof/j-reviewer/.
+# No edits to profiles/, README.md, GLOSSARY.txt. Offline: no VMs, no RouterOS
+# contact; Rosetta read-only with hash re-verified.
+reviewer: j-reviewer
+phase: J
+written: 2026-11-02
+start_state:
+  git_log: "792f43d Record Phase I commit 1f392ac in handoff"
+  git_status: "three untracked proof dirs (j1-tail-census-7x, j2-v6-tail-census, j3-decay-u1-designs), no other changes"
+  deviation: none
+blind_protocol:
+  attestation: "reconstruction-r1.yaml written before any read of j1 report/fragment; r2 before j2 report/fragment; r3 before j3 report/fragment/leg-sheets (order auditable in session log)"
+  rosetta_hash: "eee457411defe95c7a8111c89866dd5066a790ce2ffda46a37664c459515aae3 (full-length, matches source-inventory.yaml) + db_meta release/schema/commit/built_at re-verified"
+scoring:
+  - slice: R1-vs-J1
+    file: work/2026-11-winbox-attributes/proof/j-reviewer/reconstruction-r1.yaml
+    verdict: FULL-AGREEMENT
+    detail:
+      - claim: "P-j1-122-getonly (report.yaml:24-26): 122 GET-only, GETALL/GETOBJ->NOTIMP, GETCOUNT=0xFFFFFFFF"
+        score: agree
+        basis: "independent matrix from step-725/beta4-122.jsonl matches on status/errno/total for all 4 verbs x both versions"
+      - claim: "P-j1-122-drift-free (report.yaml:21-23): 11 USER fields pinned"
+        score: agree
+        basis: "field values match my blind extraction exactly; PLUS independent payload-multiset diff vs ev/7.25-getone-20-122.json: IDENTICAL both versions (envelope excluded)"
+      - claim: "P-j1-126-wrap (report.yaml:30-32): 126 wrap family, row-id 0, GETOBJ->UNKNOWNID, GETCOUNT=1"
+        score: agree
+        basis: "independent matrix matches; row == GETONE + fe0001=0 verified programmatically"
+      - claim: "P-j1-126-drift-free (report.yaml:27-29)"
+        score: agree
+        basis: "independent payload-multiset diff vs ev/7.25-getone-20-126.json: IDENTICAL both versions"
+      - claim: "P-j1-u4b-rowid-zero (report.yaml:33-35): {0:hit, 1:miss, 2:miss, bare:miss}, 114 obj0 == GETALL row"
+        score: agree
+        basis: "selector matrix matches on all 4 J1 variants; 114/115 obj0 payload == GETALL row payload (keys+values, programmatic); I4 obj=1->0xfe0004 legs re-verified from I4 raw (step-beta4-qos.jsonl reqIds 4/8, step-725-gating.jsonl reqIds 6/9)"
+      - claim: "U-j1-126-selector unresolved (report.yaml:37-38): 126 obj=0 untested"
+        score: agree-honest-scope
+        basis: "matches my blind claims_not_verifiable note verbatim in substance; proposer did not overclaim by analogy"
+      - claim: "fragment.yaml:33,38 amend-quote clauses '(selector puzzle, not a missing id)' / '(same selector puzzle as 114)'"
+        score: agree-quotes-resolve
+        basis: "gui-handlers.yaml:1342 and :1377 contain the cited clauses"
+  - slice: R2-vs-J2
+    file: work/2026-11-winbox-attributes/proof/j-reviewer/reconstruction-r2.yaml
+    verdict: FULL-AGREEMENT-ON-EVIDENCE plus one coordinator-reconciliation flag (not a J2 evidence error)
+    detail:
+      - claim: "P-j2-1b-v7-only + P-j2-siblings-v6-absent (report.yaml:26-31): 24/24 legs 0xfe0002 from=[20], no total/banner/USER/errstr"
+        score: agree
+        basis: "independent per-leg reconstruction matches on all 24 rx records incl. exact reply key-set (1 distinct set) and from=[20] process-level on every leg"
+      - claim: "rx byte-identical to the I4 114/115 v6 precedent at equal request ids (report.yaml:27)"
+        score: agree
+        basis: "16/16 comparable legs (reqIds 2-9) plaintextHex-identical to step-649-qos.jsonl; reqIds 10-17 have no I4 equal-reqId precedent (I4 v6 ran 2-9 only) — correctly scoped by the claim's own 'at equal request ids'"
+      - claim: "fragment quotes: trailing 'v6 untested' sentences for 120/121 (fragment.yaml:34,44)"
+        score: agree-quotes-resolve
+        basis: "gui-handlers.yaml:1417 and :1449 match the quoted lead-in text exactly"
+      - claim: "text-bank '7.x GETONE self-reports no obj' for 116/117 (fragment.yaml:56)"
+        score: agree
+        basis: "I4 step-725-siblings.jsonl reqIds 2-3: GETONE 116/117 -> 0xfe0006 + errstr 'no obj' from full route"
+      - claim: "role text already claims v7-only from static evidence (fragment.yaml:66)"
+        score: agree
+        basis: "gui-handlers.yaml:1459 (qos-config-20-122 role: 'v7-only QoS config holder...')"
+      - claim: "fragment.yaml:13-14,27-28: '7.x verb gating (GETALL/GETOBJ/GETCOUNT) still untested'"
+        score: flag-stale-wrt-sibling-J1
+        basis: "true inside J2's v6-only brief (report.yaml:47 honestly scopes it out), but sibling J1 tested exactly that gating on both 7.x. Must NOT be integrated verbatim after J1 — coordinator must drop/merge those two sentences with J1's gating notes"
+  - slice: R3-vs-J3-rerun
+    file: work/2026-11-winbox-attributes/proof/j-reviewer/reconstruction-r3.yaml
+    verdict: AGREE-FAITHFUL plus one wording-precision note
+    detail:
+      - claim: "host = 2nd in-session filter add; H1 spike2 re-spiked (TIER 1) + graded-decayed 4/4/3/2 (TIER 2) + dip/plateau 1/2/2/2 (TIER 1); spike1 stable (leg sheet:14-21)"
+        score: agree
+        basis: "my independent H1 re-extraction confirms every value, offset (R0a 5373ms, R0b 5379ms, R1 10001ms, R2 30000ms; Q1 84697ms, Q2 152366ms), and tier; step-ladder.jsonl confirmed absent on disk (TIER 2 values honestly flagged); spike1 6x TIER-1 reads at 1 confirmed"
+      - claim: "H-decay-3 execution report names the 2nd add as next host (leg sheet:20)"
+        score: agree-quote-resolves
+        basis: "report-execution-h-decay-3.yaml:44 matches ('consider a second in-session add (H1 spike2 decayed) as the decaying host')"
+      - claim: "A3 record / S0 clean / L1-L5 / ~12s ladder start / Q1 stand-down (report P-j3-a3-record-standing, sheet:34,62,156)"
+        score: agree
+        basis: "report-execution-h-decay-3.yaml:7 (verdict), :12 (S0 clean), :18 (flat-1 + 54 K-samples), :20 (~12s start) all match"
+      - claim: "leg sheet:18 'The 2nd in-session add is the ONLY spike shape with observed in-session decay'"
+        score: note-imprecise-wording-not-load-bearing
+        basis: "G3 M1 observed 1->0->0 decay-to-zero with the rule present (G3 report:3,42,48,74) — same-boot decay, but across session-per-read inspections, not within one persistent WinBox session. The sentence holds under the ladder-session reading (H1 spike2 is the only within-one-WinBox-session graded decay) but reads as denying G3. Suggest 'only spike with observed within-one-WinBox-session graded decay'. Design conclusion unaffected: a first-add host is unpredictable either way (stable twice in H1-spike1/A3, decayed once in G3)"
+  - slice: R3-vs-J3-U1
+    file: work/2026-11-winbox-attributes/proof/j-reviewer/reconstruction-r3.yaml
+    verdict: AGREE-ON-STOP plus one claim-level discrepancy (second documented writer) and one precision nit
+    detail:
+      - claim: "no CLI setter, export/get/print only, all bodies Read-only (report P-j3-no-cli-defconf-writer; sheet Q1-Q10/Q22b)"
+        score: agree
+        basis: "all re-run queries confirm: 0 writer verbs across command_versions (67 versions); 0 changelog hits (Q23); 9/9 reset args match (Q12); 3 inspect subdirs confirmed (no wps subdir); /system/script HAS add/set (contrast confirmed)"
+      - claim: "netinstall writer prose; reset executes-does-not-write; branding negative (report P-j3-netinstall-sole-writer, P-j3-reset-executes-not-writes; sheet Q14/Q16/Q18/Q20/Q24-Q26)"
+        score: agree-on-netinstall-reset-branding
+        basis: "Q18/Q20 prose matches my independent extraction from pages 127/128/129 verbatim in substance"
+      - claim: "'SOLE documented writer' (report P-j3-netinstall-sole-writer:54-55; sheet menus_checked netinstall row + S2; fragment.yaml:12)"
+        score: discrepancy-second-writer-missed
+        basis: "Rosetta pages id 214 (TR-069, https://manual.mikrotik.com/docs/management-tools/tr-069), section 'RouterOS default configuration change (X MIKROTIK Factory Configuration File)': 'This vendor-specific FileType allows the change of the RouterOS default configuration script that is executed when /system/reset-configuration ... is executed.' J3's literal-term searches (Q16 '%custom-script%', Q26 branding co-mention) structurally miss it — the page uses 'default configuration script' / 'Factory Configuration File' vocabulary, never the literal 'custom-script'. J3 files contain zero mentions of TR-069/CWMP/ACS (verified by grep). IMPACT: the AMBIGUITY STOP verdict STANDS — TR-069 needs ACS infrastructure (not a CHR write leg) and the same page warns its change 'will not be displayed by /system/default-configuration/print', i.e. no CLI read-back for the U1 split (S7 would assess EXISTS-BUT-NON-DISCRIMINATING). But the sheet needs an S7 row and the fragment's 'sole documented writer' sentence needs a qualifier ('sole CLI-read-back-visible writer') before promotion"
+      - claim: "'7.10.2+' version floor (report:52; sheet:31; fragment:12)"
+        score: nit-conservative-understatement
+        basis: "command_versions defconf rows include 7.9 and 7.9.2 (true floor 7.9) through 7.26beta4 (not '7.22+'); no-writer finding holds on all 67 versions, i.e. stronger than stated. Claim truth unaffected"
+not_verifiable_from_raw:
+  - "J1 vm_state (report.yaml:55, 15/15 STOPPED) and J2 ws3c6 stop state (report.yaml:54-56): operational claims, no evidence artifact — standard, not scored against"
+  - "H1 ladder 4/4/3/2 values: TIER 2 by the proposers' own honest flagging (no rx bytes; step-ladder.jsonl absent confirmed) — untier-upgradable by any reviewer"
+  - "J3 designs propose future legs; only their citations were verifiable (done above), not their outcomes"
+spend: { approved: "0w+0r", spent: "0w+0r", vms_touched: 0, router_commands: 0 }
+evidence:
+  - work/2026-11-winbox-attributes/proof/j-reviewer/reconstruction-r1.yaml
+  - work/2026-11-winbox-attributes/proof/j-reviewer/reconstruction-r2.yaml
+  - work/2026-11-winbox-attributes/proof/j-reviewer/reconstruction-r3.yaml
+  - work/2026-11-winbox-attributes/proof/j-reviewer/report.yaml
+unresolved:
+  - "U-j3-fragment-sole-writer-wording: needs 'sole CLI-read-back-visible writer' qualifier + S7 TR-069 row before the J3 fragment promotes"
+  - "U-j3-j2-stale-gating-sentence: coordinator must reconcile J2 fragment '7.x gating still untested' lines with J1's proven gating at integration"
+  - "U-j1-126-selector (carried, agreed): 126 GETOBJ obj=0 still untested — one read-only leg"

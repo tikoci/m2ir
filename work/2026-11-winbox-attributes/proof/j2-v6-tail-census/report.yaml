@@ -1,0 +1,57 @@
+# cspell:ignore rowid getall getone getobj getcount hscan defconf qos pfc jsonl brkpath notimp unmappable quickchr
+# J2 EXECUTION report (worker). v6 tail census: 1b v6 legs (122/126) + U-siblings-v6 (116/117/120/121), live read-only on ws3c6 6.49.23.
+complete: true
+date: 2026-11-02
+worker: J2
+leg: j2-v6-tail-census
+verdict: "COMPLETE 0w+0r — [20,122]/[20,126] v6-absent PROVEN (0xfe0002 all verbs, rx byte-identical to the 114/115 precedent); U-siblings-v6 CLOSED (116/117/120/121 all 0xfe0002 all verbs); 0 deviations across 24 verbs"
+spend: { approved: "0w+0r (read-only census + boot)", spent: "0w+0r", machines: [ws3c6] }
+tooling:
+  script: work/2026-11-winbox-attributes/proof/j2-v6-tail-census/census.ts
+  shape: "I4 census.ts copy, unmodified (same proof-depth imports resolve): openSession/correlatedRequest/appendCapture (write-through, ts redacted); verbs getone/getall/getobj(obj=1)/getcount; router-error recorded as data, never thrown; explicit --host/--port/--user/--pass path for v6 (no REST on 6.49; target resolved live via quickchr list + inspect --json, never committed)"
+  quickchr: "0.5.2 pinned via bunx"
+  timeout: "30000ms per request; login budget max(3x,15000)"
+inputs:
+  git_head: 792f43d
+  tree: "clean (verified pre-run via git log + git status)"
+  mission_source: work/2026-11-winbox-attributes/proof/i3-handler-tail-census/report.yaml (1b plans)
+  method_precedent: work/2026-11-winbox-attributes/proof/i4-tail-census-exec/census.ts
+  baselines_7x: "116/117 no-obj on 7.x; [20,120] 2-row + [20,121] 8-row lists (fixtures/winbox-ipc/7.26beta4-qos-120-121.json)"
+coverage:
+  - mission: A-1b-v6
+    reads: ["GETONE/GETALL/GETOBJ/GETCOUNT [20,122] -> 0xfe0002 x4", "GETONE/GETALL/GETOBJ/GETCOUNT [20,126] -> 0xfe0002 x4"]
+  - mission: B-siblings-v6
+    reads: ["GETONE/GETALL/GETOBJ/GETCOUNT [20,116] -> 0xfe0002 x4", "GETONE/GETALL/GETOBJ/GETCOUNT [20,117] -> 0xfe0002 x4", "GETONE/GETALL/GETOBJ/GETCOUNT [20,120] -> 0xfe0002 x4", "GETONE/GETALL/GETOBJ/GETCOUNT [20,121] -> 0xfe0002 x4"]
+proven:
+  - id: P-j2-1b-v7-only
+    claim: "[20,122]/[20,126] absent on 6.49.23: ERROR_BRKPATH 0xfe0002 (errno 16646146, errstr null) from=[20] process-level, no total, no banner, zero USER keys, ff0003=2/ff0004=2 — all 4 verbs x both routes; rx bytes identical to the P-i4-qos-v7-only precedent at equal request ids. v7-only PROVEN live (role text basis was static-only until now)."
+    tier: "TIER 1 (step-649-1b.jsonl: 16 records, 8 tx + 8 rx, every rx verified BRKPATH-envelope, deviations=0)"
+  - id: P-j2-siblings-v6-absent
+    claim: "[20,116]/[20,117]/[20,120]/[20,121] absent on 6.49.23: same BRKPATH envelope, all 4 verbs x all 4 routes. U-siblings-v6 CLOSED."
+    tier: "TIER 1 (step-649-siblings.jsonl: 32 records, 16 tx + 16 rx, deviations=0)"
+tiers:
+  tier1: "committed rx bytes in step-*.jsonl (both proven ids rest here)"
+  tier2: "console-observed only, corroboration: all 24 legs printed ROUTER-ERROR errno=16646146 errstr=null, records=16 + records=32. No TIER 2 value is presented as rx-committed."
+unresolved:
+  - id: U-siblings-v6
+    claim: "CLOSED by P-j2-siblings-v6-absent (v6 presence pinned: absent, all verbs, all four routes)"
+  - id: U2-qos-populated-shapes
+    claim: "CARRIED untouched: CHR shapes still defaults; needs switch hardware (this leg was v6-absence only)"
+  - id: U-120-121-purpose
+    claim: "CARRIED: v6-absent adds version scope; purpose still role-open (120 plausibly profile selector, 121 plausibly per-priority — unproven)"
+  - id: U4b-114-115-getobj-selector
+    claim: "UNTOUCHED: out of J2 scope (read-only selector-variant matrix is a separate leg)"
+not_run_per_brief:
+  - "P-i4-qos-v7-only (114/115) NOT re-probed (do-not-reprove rule)"
+  - "defconf v6 shape NOT re-probed (do-not-reprove rule)"
+  - "1b 7.x gating matrices (122/126 GETALL/GETOBJ/GETCOUNT on 7.x) NOT run: outside the J2 v6-only brief; no claim made"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/j2-v6-tail-census/census.ts
+  - work/2026-11-winbox-attributes/proof/j2-v6-tail-census/report.yaml
+  - work/2026-11-winbox-attributes/proof/j2-v6-tail-census/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/j2-v6-tail-census/step-649-1b.jsonl
+  - work/2026-11-winbox-attributes/proof/j2-v6-tail-census/step-649-siblings.jsonl
+vm_state:
+  ws3c6: "STOPPED via quickchr stop (not shutdown); booted once, first-try success; no config changes; read-only throughout"
+  others: "untouched (no start/stop on any other machine)"
+stop_conditions: "none hit (no ambiguity: uniform 0xfe0002, no mixed signatures; no boot failure)"

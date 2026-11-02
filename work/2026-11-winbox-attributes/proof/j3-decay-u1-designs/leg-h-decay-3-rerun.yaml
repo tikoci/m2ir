@@ -1,0 +1,179 @@
+# cspell:ignore rowid getcount getall reqid mangle calea unacked ladder rungs oneshot churn ws21 keepalive keepalives asyncs trel msback hdecay nonmonotonic negcontrol untimed respike nodecay centrs jsonl jbe Nyquist precedented
+# H-decay-3 RE-RUN WRITE-LEG SHEET (design only, unexecuted).
+# Runs the H-decay-3 ladder against a DECAYING host: the 2nd in-session
+# filter add (H1 spike2 decayed in-session; H-decay-3 outcome A3 was a
+# STABLE spike so the mechanism question stays open). 3w+0r on ws21 7.25.
+# Needs explicit per-leg yes + coordinator scheduling. This worker seeks neither.
+id: J3-h-decay-3-rerun-decaying-host
+kind: write-leg-sheet
+status: design-unexecuted
+date: 2026-11-02
+worker: J3
+question: "U-h1-32-mechanism: H-decay-3 (announce-backlog) is STILL untested after outcome A3 (stable spike, no decay to correlate). Re-run the H-decay-3 ladder against a decaying spike so decay/async coincidence is testable."
+record_standing: "H-decay-3 outcome A3 second-stable-1-spike STAYS the record (report-execution-h-decay-3.yaml). This leg does not re-prove it; it tests the mechanism on a new, decaying host."
+host_spike_grounding:
+  choice: "2nd in-session /ip/firewall/filter add (H1 spike2 analog)"
+  why:
+    - "P-h1-respike (H1 report): 2nd in-session add RE-SPIKED (S1zero=0 -> nonzero with the rule present, TIER 1 fact): the spike is a per-add transient, so a 2nd add is a fresh host, not a re-read of spike1."
+    - "P-h1-graded-decay (H1 report): spike2 decayed GRADED in-session (R0a(+5.4s)=4 R0b=4 R1(+10s)=3 R2(+30s)=2, TIER 2; then Q1(+84.7s)=1 Q2=2 Q3=2 Q4=2 dip+plateau, TIER 1). The 2nd in-session add is the ONLY spike shape with observed in-session decay."
+    - "Prior modal shape is stability-at-1 (H1 spike1 + H-decay-3 A3: 2/4 timed samples). A 1st-add host risks a third A3; the 2nd-add host is the only grounded decaying candidate."
+    - "Carried recommendation: H-decay-3 execution report unresolved U-h1-32-mechanism next-step names exactly this ('consider a second in-session add (H1 spike2 decayed) as the decaying host')."
+  caveat: "H1 spike2 magnitude (4) and graded shape rest partly on TIER 2 (ladder rx bytes lost to idle-death-1). The re-spike FACT and dip+plateau are TIER 1. This leg re-proves the graded shape in TIER 1 if B1/B2 lands."
+decay_gate:
+  decision: "IN-LADDER gate at R2/R3. No separate pre-ladder M0-style reads."
+  pre_ladder_reads_considered_and_rejected:
+    - "Two session-per-reads (e.g. +8s/+20s) before the ladder would delay ladder start past +25s and CONSUME the fast-decay window: H1 spike2's graded decay ran +5s..+30s. A pre-gate that reads flat at +20s cannot distinguish stable from slow-decay (G3 decayed ~+60s), so it buys no decision while risking the window."
+    - "Session-per-reads ahead of the ladder are async-clean (P-h1-async-silence: 11 drains async=0), so the rejection is about the WINDOW, not contamination. If the coordinator wants belt-and-braces, ONE pre-ladder read at +8s is acceptable cost (0w) but it must not delay ladder spawn."
+  gate_rule:
+    - "R0a (first ladder rung, target <+10s post-add; see start-latency note) is the spike2 magnitude baseline, TIER 1."
+    - "DECAY-CONFIRMED if R1 < R0a OR R2 < R0a (any strict drop by +30s; H1-spike2 analog decayed by R2)."
+    - "Else DECAY-CONFIRMED-LATE if R3 < R0a (+60s; G3 analog)."
+    - "Else (flat R0a..R3) -> STABLE: B3 branch (complete ladder to R5 for the third stability sample; Q1 annex stands down)."
+    - "Threshold summary: decaying = any rung value strictly below R0a on committed TIER 1 rx bytes; stable = all rungs equal R0a through the gate."
+    - "Non-monotonic (dip-then-rise) -> RECORD and CONTINUE (H-decay-3 deliberate deviation from H0a-b flap-stop; H1 Q1-dip precedent)."
+  start_latency_note: "H-decay-3 ladder started ~+12s post-t0 (S1 read-back + spawn gap). Sub-12s decay would be invisible. No observed spike decayed that fast (fastest: H1 spike2 graded over +5..+30s; even a +12s start lands mid-curve on a spike2 analog). Executor must pre-stage the ladder command and minimize the read-back->ladder gap (target R0a <+10s); the S2 control read-back stays MANDATORY (stimulus validity beats speed)."
+vm:
+  name: ws21
+  routeros: "7.25"
+  arch: x86
+  network: user, socket::ws21-a, socket::ws21-b
+  ports: "resolve live at execution from `quickchr list` (H1/H-decay-3 line; re-resolve, never hardcode); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute --quickchr ws21 --yes (writes) / centrs retrieve --quickchr ws21 (reads)"
+  native_via: "proof/i2-decay-backlog/leg-h1-fixed.ts (write-through capture, per-rung async console+ledger, keepalive-sliced waits; read-only, 0w by construction; validated live L1-L5 on H-decay-3)"
+  console_tee_required: "tee ladder console to a file (console-ladder.txt): H-decay-3 L2 was partial-ledger-full because console was piped through tail, not persisted. L2-full this leg."
+counting_rule: "H1 F-jump rule: each control add/set = 1w; +1 per restore-verify branch; per-cell removes bundled 0w; rejected adds/sets 0w; ALL native reads 0w; quickchr start/stop 0r"
+budget: { counted_writes: 3, reboots: 0, itemized: "add1-spike1 (1) + add2-spike2 (1) + restore-verify branch (1); removes bundled; S0 + spike1-read + spike2 ladder + restore reads all 0w; 3w+0r fixed, no extension, no improvised re-spike" }
+baseline_snapshot:
+  verdict_required: PASS
+  control_commands:
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-base-firewall-filter.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/nat' > control-base-firewall-nat.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/raw' > control-base-firewall-raw.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/mangle' > control-base-firewall-mangle.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/calea' > control-base-firewall-calea.json"
+  control_expect: "0 rows in all five menus"
+  native_command: "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms <now-ms> read --out step-M0.jsonl --timing-out timing-M0.jsonl"
+  native_expect: "[20,3]=0 [20,32]=0, GETALL [20,3] 0 rows complete"
+  fail_action: "STOP: baseline not empty. Do not proceed; report."
+steps:
+  - tag: S0-negative-control
+    why: "matched-traffic churn-confound control, FIRST (before any stimulus in this boot). H-decay-3's S0 was clean (TIER 1) but each boot is new device-state; a per-leg control keeps the B1/B2 async account interpretable. 0w."
+    stimulus: NONE
+    commands:
+      - "T0NEG=$(date +%s%3N); bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $T0NEG ladder --out step-negcontrol.jsonl --timing-out timing-negcontrol.jsonl --keepalive-ms 5000 2>&1 | tee console-negcontrol.txt"
+    keepalive_note: "--keepalive-ms 5000 MATCHES the S2 ladder shape (matched-traffic control; H-decay-3 execution precedent: annex-attached S2 with matched S0)."
+    expect: "all rungs [20,3]=0 [20,32]=0; every rung async=0; every keepalive async=0; final drain async=0"
+    evidence: [step-negcontrol.jsonl, timing-negcontrol.jsonl, console-negcontrol.txt]
+    writes: 0
+    fail_action: "ANY async>0 -> AMBIGUITY STOP (outcome B6): churn model incomplete; skip spike1/spike2, still S3+S4, report."
+  - tag: S1-spike1-cycle
+    why: "creates the 2nd-in-session-add conditions for S2. Spike1 shape is diagnostic only (stability expected; 2/4 timed samples stable)."
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=j3-rerun-spike1"
+    commands:
+      - "centrs execute --quickchr ws21 --yes '/ip/firewall/filter/add chain=forward action=accept comment=j3-rerun-spike1' > control-S1-add.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-S1-read.json"
+      - "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(date +%s%3N) read --out step-spike1.jsonl --timing-out timing-spike1.jsonl"
+      - "centrs execute --quickchr ws21 --yes '/ip/firewall/filter/remove numbers=<S1-.id>' > control-S1-rm.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-S1-zero.json"
+      - "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(date +%s%3N) read --out step-spike1zero.jsonl --timing-out timing-spike1zero.jsonl"
+    read_back: "MANDATORY after add: exactly 1 row forward/accept, packets 0 bytes 0; ret .id recorded (expect *1 on an empty table; THAT .id is used in the remove)."
+    spike1_read_note: "step-spike1.jsonl value is diagnostic (expect ~1); proceed to remove regardless unless stimulus-invalid."
+    zero_gate: "MANDATORY: control 0 rows + native [20,3]=0 [20,32]=0 after remove1. Nonzero -> STOP (novel removal-does-not-clear), S3+S4, report. S2's spike is uninterpretable without a zeroed floor (P-h1-respike depended on S1zero=0)."
+    explains: "centrs explain offline on add/remove forms before sending (H1 gates precedent); outputs saved as explain-*.json"
+    evidence: [control-S1-add.json, control-S1-read.json, step-spike1.jsonl, timing-spike1.jsonl, control-S1-rm.json, control-S1-zero.json, step-spike1zero.jsonl, timing-spike1zero.jsonl]
+    writes: 1
+    fail_action: "read-back disagrees -> stimulus invalid: STOP, S3+S4, report."
+  - tag: S2-spike2-ladder
+    why: "the discriminating read: full decay window inside ONE persistent session (zero intermediate churn), every async record committed with relative timestamps, against the decaying host."
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=j3-rerun-spike2"
+    commands:
+      - "centrs execute --quickchr ws21 --yes '/ip/firewall/filter/add chain=forward action=accept comment=j3-rerun-spike2' > control-S2-add.json"
+      - "T0=$(date +%s%3N); echo $T0 > t0.txt"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-S2-read.json"
+      - "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(cat t0.txt) ladder --out step-ladder.jsonl --timing-out timing-ladder.jsonl --keepalive-ms 5000 2>&1 | tee console-ladder.txt"
+    read_back: "MANDATORY: exactly 1 row forward/accept, packets 0 bytes 0; ret .id recorded (expect *2 rowid-advanced; whatever the ret is, THAT .id is used in S3)."
+    speed_note: "pre-stage the ladder command; run read-back then ladder back-to-back (target R0a <+10s post-t0)."
+    expect: "rungs R0a/R0b/R1/R2/R3/R4/R5 + K-samples (~5s cadence); per-rung v32+async on console and in rung-*-end ledger events; decay gate evaluated at R2 (+30s), fallback R3 (+60s)"
+    evidence: [control-S2-add.json, control-S2-read.json, t0.txt, step-ladder.jsonl, timing-ladder.jsonl, console-ladder.txt]
+    writes: 0
+    mid_run_check: "while the ladder runs, spot-check write-through: `wc -l step-ladder.jsonl` must GROW after R0a. If the file stays empty past R0b console output, STOP the run (tooling failure, not science)."
+    fail_action: "rung-*-failed in ledger -> session died despite keepalives: run completes PARTIAL (committed rungs are TIER 1); fall back to session-per-read `read` invocations at the remaining rung offsets (same scale, fresh sessions; in-sheet fallback, H1-precedented); report the death honestly."
+  - tag: S3-remove-restore-verify
+    stimulus: "remove the S2 .id (bundled 0w) + 5-menu control verify + native zero read"
+    commands:
+      - "centrs execute --quickchr ws21 --yes '/ip/firewall/filter/remove numbers=<S2-.id>' > control-S2-rm.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-restored-filter.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/nat' > control-restored-nat.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/raw' > control-restored-raw.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/mangle' > control-restored-mangle.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/calea' > control-restored-calea.json"
+      - "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(date +%s%3N) read --out step-restored.jsonl --timing-out timing-restored.jsonl"
+    expect: "0 rows all five menus on both surfaces; GETALL [20,3] 0 rows complete"
+    evidence: [control-S2-rm.json, control-restored-filter.json, control-restored-nat.json, control-restored-raw.json, control-restored-mangle.json, control-restored-calea.json, step-restored.jsonl, timing-restored.jsonl]
+    writes: 1
+    fail_action: "restore-verify fail -> non-sheet recovery, recorded honestly, never silently re-run."
+  - tag: S4-stop-vm
+    commands: ["quickchr stop ws21"]
+    writes: 0
+stop_conditions:
+  - "baseline not empty (control or native) -> STOP before S0"
+  - "S0 draws ANY async -> AMBIGUITY STOP (B6), skip S1/S2, still S3+S4"
+  - "S1 read-back disagrees (row missing/wrong/traffic nonzero) -> STOP, S3+S4, report stimulus-invalid"
+  - "spike1-zero-verify fails (nonzero after remove1) -> STOP (novel removal-does-not-clear), S3+S4, report"
+  - "S2 read-back disagrees -> STOP, S3+S4, report stimulus-invalid"
+  - "[20,3] != 1 at any S2 spike-ladder rung (counter guard) -> STOP ladder, S3+S4, report guard-trip"
+  - "R0a = 0 and R0b = 0 with the rule present -> B4 branch: STOP ladder after R0b confirms, S3+S4, report; do NOT add a 3rd rule to retry (B4 is the result)"
+  - "timestamp capture failure (ts redacted with --t0-ms set, or ledger missing rung starts) -> STOP: scale lost, fix tooling, do not publish untimed rungs as timed"
+  - "non-monotonic values (0 then nonzero, or dip-then-rise) -> RECORD and CONTINUE (H-decay-3 precedent)"
+  - "flat R0a..R3 (STABLE at the gate) -> NOT a stop: complete the ladder to R5 (B3 third-stability-sample), S3+S4, report"
+async_match_rule: "match SYS_CMD=0xfe0014 pairs on SYS_REQID (mandatory): leg A TO=[] FROM=[0xff0003,slot] + leg B TO=[] FROM=[2,slot] policy-1, slot=(ctr<<8)|6. Record per pair: arrival t-t0, slot/ctr advance, leg sizes (expect A~30B B~38B per queue-3). Count pairs + ctr advance per inter-rung window. ANY non-pair async (handler-shaped traffic) is novel: report separately, never force into the pair count."
+outcomes:
+  - id: B1-decay-async-coincident
+    condition: "spike2 (R0a>0) + value drops across rungs AND >=1 matched 0xfe0014 pair arrives inside the decay window (drop when pairs arrive; pair count or ctr advance scales with spike magnitude) + S0 clean"
+    verdict: "H-decay-3 SUPPORTED (TIER 1). H-decay-1 variable-gauge WEAKENED (a pure internal gauge needs no fabric traffic). Multi-step one-shot + history-gating WEAKENED as decay drivers (the decay IS the backlog draining); survive only as magnitude-gating (why this spike this size)."
+  - id: B2-decay-zero-async
+    condition: "spike2 + decay completes (or graded-drops) with ZERO async in-window (all rungs + keepalives + final drain async=0) + S0 clean"
+    verdict: "H-decay-3 DEAD and churn-artifact DEAD as the decay driver (TIER 1; the A2 design finally testable). H-decay-1 variable-gauge + H-decay-4-multi-step REMAIN (internal mechanism). History-gating OPEN."
+  - id: B3-second-stable-repeat
+    condition: "spike2 + NO decay across R0a..R5 (flat at R0a through the R2/R3 gate and to R5) regardless of async silence"
+    verdict: "decay-correlation UNTESTABLE a second time; H-decay-3 stays UNTESTED. Consistent with H-decay-1 variable-gauge; third stability sample (modal shape now 3/5 timed samples). Report curve; no model killed; no claim for/against H-decay-3."
+  - id: B4-spike2-absent
+    condition: "R0a=0 and R0b=0 with the S2 rule present (read-back valid)"
+    verdict: "re-spike FAILED: per-add-transient WEAKENED (P-h1-respike not replicated). H-decay-1 DEAD in per-add-gauge form (a per-add gauge must re-spike). History/session-gating PROMOTED to lead (spike gated by session/rowid/history, not by the add alone). H-decay-4 survives only session-scoped (narrowed; needs a rowid-freshness follow-up). H-decay-3 untestable this attempt. 3w spent; report."
+  - id: B5-shape-split
+    condition: "SECONDARY, within B1/B2: graded (>=2 distinct intermediate TIER 1 values between peak and floor) vs step (peak then floor, no middle)"
+    verdict: "graded -> single-step one-shot DEAD in TIER 1 (upgrades H1's TIER 2 graded kill); multi-step one-shot REQUIRED if one-shot survives. Step -> shape-varies-per-add (extends D-h1-fixed-curve; single-step revived as a per-add variant, in tension with H1 TIER 2 graded: report the tension, do not adjudicate)."
+  - id: B6-ambiguity-stop
+    condition: "S0 draws pairs (or any async) with no rule stimulus"
+    verdict: "AMBIGUITY STOP (A4 analog): churn model incomplete; no mechanism claim in either direction; re-plan."
+  - id: B7-partial
+    condition: "rung-*-failed (session death despite keepalives) at any rung"
+    verdict: "PARTIAL (A6 analog): committed rungs are TIER 1 (write-through); remaining scale via session-per-read fallback; async account covers the committed window only; report the death as a third idle sample (after H1 idle-death-1/2)."
+magnitude_secondary: "add2 magnitude vs add1 magnitude (both TIER 1): EQUAL -> history-gating WEAKENED (different histories, same magnitude); DIFFERENT -> history-gating CONSISTENT (magnitude gated by history/rowid/session; the H1 1-vs-4 puzzle persists). Never a standalone kill; recorded alongside B1..B4."
+q1_annex_reattach:
+  standing: "Q1 annex STOOD DOWN stays stood-down unless the run is decaying. This sheet states RE-ATTACH CONDITIONS ONLY; the annex design (I2-annex-q1-dip) is unchanged."
+  operational: "S2 AND S0 ladders run with --keepalive-ms 5000 UNCONDITIONALLY (0w marginal; reads do not disturb, H-decay-2 dead; matched-traffic control preserved). Operationally the annex flag is always set (H-decay-3 execution precedent: attached under the per-leg yes with conditional stand-down honored)."
+  analytic_trigger: "DECAY-CONFIRMED (R1<R0a OR R2<R0a) or DECAY-CONFIRMED-LATE (R3<R0a), TIER 1 -> annex ACTIVE: analyze the +60..+120s K-samples (~12 TIER 1 points plus rungs R3/R4) under Q-dip-anomaly (exactly one low outlier) / Q-oscillation (>=2 spaced troughs, >=10s Nyquist bound) / Q-neither (flat in-window: dip not replicated, per-add variability)."
+  stand_down: "flat R0a..R3 -> Q-stand-down: K-samples fold into the B3 stability record; 0 spent beyond the host leg in all branches."
+  secondary_d_polls: "ONLY if primary shows a dip or oscillation: post-ladder (rule STILL present, async account closed), <=4 session-per-read polls at +330s/+360s/+390s/+420s post-t0 (step-D*.jsonl), plateau-persistence purpose per annex design."
+thread5_interaction:
+  recommendation: AGAINST
+  reasons:
+    - "Same-table mutation: T5-b/T5-c `set` commands mutate filter rows on the table the watched gauge/backlog is associated with. Interleaved sets are a perturbation confound (possible re-spike or value shift mid-window) and would void the B1/B2 discrimination."
+    - "Async-account contamination: control-plane sets may emit announce traffic on the ladder session, destroying the decay/async coincidence account (the entire point of this leg)."
+    - "Restore coupling: T5-c fasttrack sets risk the G1 'special dummy' side effect and a PARTIAL restore, which would taint this leg's clean-restore record."
+    - "Budget coupling: piggyback inflates one per-leg yes from 3w to 7-8w and couples two outcomes' fate. The decay window's value is its pristine shape; do not dilute it."
+  acknowledged_for:
+    - "Saves a boot; the spike2 row is present and could host sets-only cells after the ladder closes."
+  priced_option_not_recommended: "post-R5 (and post-D-polls if any) T5-b+T5-c sets-only on the spike2 row: 4-5w marginal (sets only, host owns add+restore), total 7-8w+0r. T5-a EXCLUDED (its own adds = new [20,32] stimuli; rides a future leg with spare add budget per its sheet). Coordinator may price this, but J3 recommends a clean 3w decay leg with T5 riding the next filter-write leg instead."
+evidence_tiers: "TIER 1 throughout: committed rx bytes + relative timestamps (step-*.jsonl write-through) + timing ledgers (rung-*-start/end, keepalive-K*, drain) + tee'd consoles (console-negcontrol.txt, console-ladder.txt). No H1-style TIER 2 ladder values by construction."
+fixed_script_live_validation:
+  - "L1 write-through: `wc -l step-ladder.jsonl` grows during the run (checked after R0a)"
+  - "L2 per-rung account FULL: every rung has a console line (v32+async+records) in the TEE'D console file AND a rung-*-end ledger event with matching counts (H-decay-3 L2-lesson fix: console piped through tail is not evidence)"
+  - "L3 keepalive cadence: keepalive-K* ledger events space <=10s across every inter-rung gap at 5s setting; count matches the --dry-run plan for the elapsed prefix"
+  - "L4 no-reconnect: exactly one session-open/session-close pair per ladder invocation in the ledger (a reconnect would be churn)"
+  - "L5 post-run replay: every record in step-*.jsonl decodes via replayBytes (no truncated lines from a mid-append death)"
+  - "L6 death drill (only if B7): the rung-*-failed ledger event exists AND all pre-death rungs are byte-complete in the step file"
+spend: { counted_writes: 3, reboots: 0, cap_note: "3w+0r fixed; no extension, no re-spike improvised (B4 is a result, not a retry prompt)" }

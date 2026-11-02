@@ -1,0 +1,91 @@
+# cspell:ignore rowid getcount jsonl reqid trel unacked defconf cliref netinstall tr069 cwmp acs alter mikrotik respike subdirs unsettable userscript
+# R3: blind reconstruction for the J3 designs' two load-bearing citations.
+# Sources: proof/H1-decay/ evidence + read-only Rosetta SQL + PRIOR-phase evidence ONLY.
+# Written BEFORE any read of proof/j3-decay-u1-designs/ ({report,fragment}.yaml, leg sheets).
+reviewer: j-reviewer
+reconstruction: R3-j3-citations
+written: 2026-11-02
+blind: true
+r3a_h1_decaying_spike:
+  question: "from proof/H1-decay/ evidence, did an in-session filter-add spike DECAY (which spike, what samples, what tier)?"
+  method: "independent re-extraction of GETCOUNT [20,32] totals from all H1 step-*.jsonl rx records + timing ledgers; checked for step-ladder.jsonl on disk"
+  spike1_first_add:
+    decayed: false
+    samples: "[20,32]=1 on all 6 reads: S1 (+10.1s) + P1..P5 (+77.2s/+148s/+217s/+287s/+354.1s post-add)"
+    tier: "TIER 1 (committed rx bytes in step-S1/P1-P5.jsonl, 8 recs each; offsets in timing-S1/P1-P5.jsonl)"
+    evidence:
+      - work/2026-11-winbox-attributes/proof/H1-decay/step-S1.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/step-P1.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/step-P2.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/step-P3.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/step-P4.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/step-P5.jsonl
+  spike2_second_add:
+    decayed: true
+    graded_ladder:
+      samples: "R0a(+5.4s)=4 R0b(back-to-back)=4 R1(+10s)=3 R2(+30s)=2 — graded 4->3->2 in one session"
+      tier: "TIER 2 — rung STARTS are committed (timing-ladder.jsonl: R0a 5373ms, R0b 5379ms, R1 10001ms, R2 30000ms, R3 attempt 60029ms then session-close) but the VALUES are console-observed only: step-ladder.jsonl does NOT exist on disk (verified absent); values are NOT independently re-extractable from committed files"
+    dip_plateau:
+      samples: "Q1(+84.7s)=1 Q2(+152.4s)=2 Q3=2 Q4=2 — 1-dip then plateau at 2, no convergence to 0 in-window"
+      tier: "TIER 1 (committed rx bytes in step-Q1-Q4.jsonl)"
+    respike_fact:
+      samples: "S1zero [20,32]=0 -> Q1=1 with the rule present"
+      tier: "TIER 1 (step-S1zero.jsonl + step-Q1.jsonl)"
+    evidence:
+      - work/2026-11-winbox-attributes/proof/H1-decay/timing-ladder.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/step-Q1.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/step-Q2.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/step-Q3.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/step-Q4.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/step-S1zero.jsonl
+  verdict: "YES — the SECOND in-session filter-add (spike2) decayed: graded 4->3->2 at TIER 2 (values console-only, rung timing committed) + TIER-1 dip/plateau 1/2/2/2 after. The FIRST add (spike1) did NOT decay (6x TIER-1 reads at 1). Any design that needs 'a decaying spike' must host on a spike2-like SECOND add; a first-add host is proven-stable, not decaying"
+r3b_u1_no_writer:
+  question: "via read-only Rosetta queries, is there any CLI setter for /system/default-configuration custom-script or script bodies on any tracked version, and what is the documented writer if any?"
+  rosetta_provenance:
+    db: ~/.rosetta/ros-help-0.12.0.db
+    hash_verified: "eee457411defe95c7a8111c89866dd5066a790ce2ffda46a37664c459515aae3 (matches source-inventory.yaml)"
+    meta_verified: "release v0.12.0, schema 12, commit 6b6397d7739a563b894f9b07f7ac2f6b1ad7f4bf, built 2026-10-30T21:34:20.911Z"
+    mode: "sqlite3 -readonly, zero writes"
+  sql_verbatim:
+    - name: defconf-entries
+      sql: "SELECT p.manual_version, e.source_path, e.source_type, e.package FROM cliref_entries e JOIN cliref_pages p ON p.id=e.page_id WHERE e.source_path LIKE '%default-configuration%' ORDER BY 1,2;"
+      result: "15 rows: system/default-configuration + 4 script subdirs (caps-mode-script, custom-script, script, wps-sync-mode-script), each on 7.24/7.25/7.26, all source_type 'Settings Directory'"
+    - name: custom-script-kind
+      sql: "SELECT p.manual_version, e.source_path, f.name, f.raw_type, f.field_kind, f.mandatory, f.unsettable, f.source_line FROM cliref_fields f JOIN cliref_entries e ON e.id=f.entry_id JOIN cliref_pages p ON p.id=e.page_id WHERE f.name='custom-script' ORDER BY 1,2;"
+      result: "6 rows: custom-script is field_kind 'Read-only Argument', raw_type string, on all 3 manual versions x both parent + subdir entries"
+    - name: all-defconf-kinds
+      sql: "SELECT DISTINCT p.manual_version, f.field_kind FROM cliref_fields f JOIN cliref_entries e ON e.id=f.entry_id JOIN cliref_pages p ON p.id=e.page_id WHERE e.source_path LIKE 'system/default-configuration%' ORDER BY 1,2;"
+      result: "3 rows, ALL 'Read-only Argument' (7.24/7.25/7.26) — zero writable fields under the whole subtree on any tracked cliref version"
+    - name: defconf-cmds
+      sql: "SELECT ros_version, name, COUNT(*) FROM commands WHERE path LIKE '/system/default-configuration%' AND type='cmd' GROUP BY ros_version, name ORDER BY ros_version, name;"
+      result: "7.25 only: export x4, get x4, print x4 (4 script dirs x 3 read verbs). commands table carries 7.25 only (verified: SELECT DISTINCT ros_version FROM commands => 7.25)"
+    - name: writer-hunt
+      sql: "SELECT ros_version, path, type FROM commands WHERE path LIKE '/system/default-configuration%' AND (path LIKE '%/set%' OR path LIKE '%/add%' OR path LIKE '%/unset%' OR path LIKE '%/edit%' OR path LIKE '%/remove%' OR path LIKE '%/set-%' OR path LIKE '%/enable%' OR path LIKE '%/disable%') ORDER BY ros_version, path;"
+      result: "0 rows — no writer command on the tracked version"
+    - name: inspect-presence
+      sql: "SELECT p.version, COUNT(*) FROM schema_node_presence p JOIN schema_nodes s ON s.id=p.node_id WHERE s.path LIKE '/system/default-configuration%' GROUP BY p.version;"
+      result: "7.25: 80 nodes, 7.26beta4: 80 nodes — identical presence; node-type split 64 arg / 12 cmd / 4 dir; the 12 cmds are export/get/print x4 (verified: zero set/add/unset/edit/remove cmd nodes)"
+    - name: script-contrast
+      sql: "SELECT path FROM schema_nodes WHERE path LIKE '/system/script/%' AND type='cmd' ORDER BY path;"
+      result: "/system/script HAS add/set/unset/edit/remove (+find/run/reset/comment) — script bodies elsewhere ARE CLI-writable; the read-only finding is specific to default-configuration, not to scripts in general"
+    - name: writer-docs
+      sql: "SELECT id, title, path FROM pages WHERE text LIKE '%custom-script%' LIMIT 10;"
+      result: "pages 127/128/129 (Netinstall for Linux / Netinstall package / Netinstall for Windows)"
+    - name: reset-arg-hunt
+      sql: "SELECT path FROM schema_nodes WHERE path LIKE '/system/reset-configuration%' AND (path LIKE '%script%' OR path LIKE '%defconf%') ORDER BY path;"
+      result: "0 rows — reset-configuration carries no script/defconf writer arg"
+  documented_writers:
+    - writer: "Netinstall install-time script (-s <userscript> / Configure Script / script-file)"
+      doc: "pages 127/128/129: 'Allows installation of a custom default configuration script on the device during installation. This replaces the RouterOS-supplied default configuration script. See /system/default-configuration/custom-script/print. The script is retained during RouterOS updates and used after subsequent configuration resets until the device is reinstalled with a new script or the script is removed.'"
+    - writer: "TR-069 Download RPC vendor FileType 'X MIKROTIK Factory Configuration File'"
+      doc: "page 214 (TR-069): 'allows the change of the RouterOS default configuration script that is executed when /system/reset-configuration ... is executed'. CAVEAT in the same page: a TR-069-changed script 'will not be displayed by /system/default-configuration/print ... as it is the case if that script is altered with the Netinstall tool' — so TR-069 writes a slot that does NOT surface in the same read path as the Netinstall custom-script"
+  verdict: "NO CLI setter exists for custom-script or any of the 4 default-configuration script bodies on any tracked version (cliref 7.24/7.25/7.26 all Read-only; inspect 7.25+7.26beta4 read-verbs only). The documented writer is Netinstall at install time (primary, read-back-visible); TR-069 vendor FileType is a second documented writer with a different read-back path. A 'custom-script-set leg' via CLI/REST is therefore ungrounded — any U1 write design must either use Netinstall/TR-069 or prove a native WinBox write verb, not assume a CLI setter"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/H1-decay/step-S1.jsonl
+  - work/2026-11-winbox-attributes/proof/H1-decay/step-P1.jsonl
+  - work/2026-11-winbox-attributes/proof/H1-decay/step-P5.jsonl
+  - work/2026-11-winbox-attributes/proof/H1-decay/step-S1zero.jsonl
+  - work/2026-11-winbox-attributes/proof/H1-decay/step-Q1.jsonl
+  - work/2026-11-winbox-attributes/proof/H1-decay/step-Q2.jsonl
+  - work/2026-11-winbox-attributes/proof/H1-decay/timing-ladder.jsonl
+  - work/2026-11-winbox-attributes/source-inventory.yaml

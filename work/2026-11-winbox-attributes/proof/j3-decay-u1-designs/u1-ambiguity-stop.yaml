@@ -1,0 +1,193 @@
+# cspell:ignore rowid getall getone getobj getcount defconf cliref wps etherboot netinstall subdirs precheck jsonl brkpath notimp multis rsc CPE PTP efault onfiguration flashfig netinstalled unpriceable unrestorable unsettable
+# U1 custom-script-set STIMULUS HUNT (static, offline). Verdict: AMBIGUITY STOP.
+# U1-defconf-field-split asks which of f2/f3/f4/f5/f6 carries which of
+# {script, caps-mode-script, wps-sync-mode-script, custom-script}. The version
+# axis is EXHAUSTED (I4: beta4==7.25 bodies, v6 same-6-fields). This sheet hunts
+# a CHR stimulus that moves one body independently. Finding: NONE EXISTS on CHR.
+# The only documented writer is netinstall script-file at install time
+# (etherboot reinstall: infeasible on CHR, out of write-leg scope). No CLI
+# setter exists on any tracked version; reset executes but does not rewrite
+# bodies; no other menu references custom-script. 0w+0r spent. Design only.
+id: J3-u1-custom-script-stimulus-hunt
+kind: ambiguity-stop
+status: design-complete-stopped
+date: 2026-11-02
+worker: J3
+question: "U1-defconf-field-split: which of f2/f3/f4/f5/f6 carries which of {script, caps-mode-script, wps-sync-mode-script, custom-script}? Bodies SUGGEST f3/f4/f6 are the three script bodies and f2/f5 banner/blank, but suggestion is not proof (I3 U1)."
+context_carried:
+  - "Wire shape (I3 census): GETONE [24,8] USER f1 bool F; f2 str (banner text); f3 bytes (defconf IP/ether1 body); f4 bytes (CAP body); f5 str; f6 bytes (WPS-Sync body). 6 populated fields on 7.25."
+  - "Version-diff EXHAUSTED (I4): beta4==7.25 bodies; v6 same-6-fields (reorder, no banner, f5 empty). No split on the version axis."
+  - "Gating (I4): defconf is GET-only on all 3 versions (GETALL/GETOBJ->0xfe0003); GETCOUNT=0xFFFFFFFF sentinel on 7.x, countless on v6."
+  - "Cardinality puzzle (observed, unclaimed): 6 populated wire fields vs 4 CLI bodies on a never-netinstalled CHR whose custom-script is PRESUMABLY empty (unconfirmed: needs one live `get custom-script` read, recorded as open question Q-live-1, not fetched). Any future stimulus leg must account for the mismatch rather than assume 1:1."
+rosetta_provenance:
+  db_path: ~/.rosetta/ros-help-0.12.0.db
+  db_sha256: eee457411defe95c7a8111c89866dd5066a790ce2ffda46a37664c459515aae3
+  db_bytes: 415490048
+  release_tag: v0.12.0
+  schema_version: "12"
+  source_commit: 6b6397d7739a563b894f9b07f7ac2f6b1ad7f4bf
+  built_at: 2026-10-30T21:34:20.911Z
+  access: "sqlite3 -readonly only; hash re-verified full-length this session, matches source-inventory.yaml"
+  caveat: "CLI names/types are CANDIDATES only, never numeric proof. Command data covers 7.10.2+ (this DB); inspect presence covers 7.25 + 7.26beta4; CLI reference covers manuals 7.24/7.25/7.26. No v6 CLI data."
+menus_checked:
+  - menu: /system/default-configuration (+ subdirs)
+    result: "NO WRITER. Verbs are export/get/print ONLY on every tracked version (command_versions 7.10.2+; inspect 7.25+7.26beta4, 83 nodes, presence identical both versions). All 4 fields Read-only Argument in all 3 manuals. Minor source discrepancy noted: cliref documents 4 subdirs (incl. wps-sync-mode-script) while the inspect/command tree carries 3 (caps-mode-script, custom-script, script); no writer in either source. Queries Q1/Q2/Q3/Q5/Q6/Q7/Q10/Q15/Q21/Q22b."
+  - menu: "/tool/netinstall (server: add/set/reset/devices/install/settings)"
+    result: "SOLE DOCUMENTED WRITER, INFEASIBLE on CHR. script-file arg: 'Allows installation of a custom default configuration script on the device during installation. This replaces the RouterOS-supplied default configuration script. See /system/default-configuration/custom-script/print.' (netinstall-package docs; same prose as 'Configure Script' in netinstall-windows/linux docs). Requires etherboot reinstall OF THE TARGET: CHR boots a disk image under QEMU (no etherboot path), and a reinstall is destructive and out of write-leg scope. Queries Q6-netinstall-lead/Q11c/Q14/Q16/Q18/Q20."
+  - menu: /system/reset-configuration
+    result: "NOT A WRITER. Args: keep-users, keep-apps, no-defaults, caps-mode, wps-sync-mode, skip-backup, force-v6-to-v7-configuration-upgrade, shutdown, run-after-reset(file). Reset EXECUTES the stored scripts (incl. a netinstalled custom script) after purging config; run-after-reset runs a separate .rsc FILE. Nothing rewrites defconf bodies. Queries Q12/Q24/Q25."
+  - menu: branding/custom-packages path
+    result: "NO AUTHORSHIP. Branding co-mentioned with default-configuration ONLY on the 3 netinstall pages (preserve/discard options); no branding-carries-defconf statement anywhere in the docs corpus. Query Q26."
+  - menu: whole CLI surface (custom-script name search)
+    result: "custom-script appears ONLY under system/default-configuration(+/custom-script) in cliref_fields (all manuals, always Read-only Argument) and in NO non-defconf schema_node. No other menu can address it. Queries Q8/Q9."
+  - menu: whole docs corpus (custom-script prose search)
+    result: "ONLY the 3 netinstall pages mention custom-script. No reset/first-boot/branding/flashfig page documents a write path. Query Q16."
+  - menu: changelogs (all versions)
+    result: "ZERO entries mention custom-script or default-configuration. No version signal for a setter appearing/disappearing. Query Q23."
+candidates_assessed:
+  - id: S1-cli-set
+    stimulus: "`/system/default-configuration set custom-script=<body>` (hypothetical)"
+    would_prove: "direct split: set a marker body per field-name, re-read GETONE [24,8], observe which wire field moves."
+    controls_if_it_existed: "byte-stability re-reads (GETONE x2 pre/post, exact body bytes); distinctive marker per body."
+    cost: "N/A — the verb DOES NOT EXIST (see menus_checked). Rejected adds/sets are 0w by the counting rule, but there is nothing to send: offline `centrs explain` has no such command to validate, and the design does not sheet speculative verbs."
+    verdict: NONEXISTENT
+  - id: S2-netinstall-script-file
+    stimulus: "netinstall the lab CHR with a marker script-file, re-read [24,8]"
+    would_prove: "custom-script <-> wire-field mapping (marker appears in exactly one of f2..f6); the 6-field/4-body cardinality puzzle would partially resolve."
+    controls_if_it_existed: "pre/post GETONE pair + `print` on /system/default-configuration/custom-script as the independent control read."
+    cost: "INFEASIBLE, unpriceable as a write leg: needs an etherboot target reinstall; CHR has no etherboot path (disk-image boot); reinstall is destructive (state wipe + re-provision) and exceeds any bounded per-leg budget. A hardware-netinstall leg is out of Phase scope (needs RouterBOARD + netinstall server + reinstall approval)."
+    verdict: EXISTS-BUT-INFEASIBLE-ON-CHR
+  - id: S3-reset-side-effect
+    stimulus: "/system/reset-configuration with run-after-reset / caps-mode / wps-sync-mode variants"
+    would_prove: "NOTHING about the split: reset executes bodies, never rewrites them (Q25). run-after-reset is a separate .rsc file mechanism."
+    side_note_f1: "f1 (bool F) MIGHT be a mode flag that moves under caps-mode/wps-sync-mode reset. That is a separate f1 micro-probe (reset leg +1r, out of U1 scope, NOT sheeted): it cannot split f2..f6 because bodies do not change. Recorded as open question Q-live-2."
+    cost: "N/A (non-discriminating for U1)."
+    verdict: NON-DISCRIMINATING
+  - id: S4-native-m2-set
+    stimulus: "M2 SETOBJ on [24,8] with a marker body (speculative; SET never attempted on this route — I4 proved GET-only for read verbs only)"
+    would_prove: "IF ACCEPTED: direct split (same as S1). IF REJECTED (expected): nothing about the split — confirms read-only, which is already the standing hypothesis."
+    risk: "ASYMMETRIC. Acceptance risks UNRESTORABLE state: no documented removal path exists short of reinstall ('until the device is reinstalled with a new script or the script is removed' — removal mechanism undocumented; netinstall docs). A write to a read-only surface with no undo is outside bounded-leg discipline."
+    cost: "0w if rejected (counting rule), unbounded-restore if accepted."
+    verdict: SPECULATIVE-NOT-RECOMMENDED
+  - id: S5-first-boot-path
+    stimulus: "first boot / re-boot observation of [24,8]"
+    would_prove: "NOTHING: first boot APPLIES pre-existing bodies; CHR first boot yields stock bodies. No authorship."
+    verdict: NON-DISCRIMINATING
+  - id: S6-other-menu-rewrite
+    stimulus: "branding install / file write / unknown menu rewriting defconf bodies"
+    would_prove: "would discriminate only if a writer were found; none was (Q8/Q9/Q26 negative; no file-path evidence exists for defconf, unlike the [24,10] /rw/ precedent which is a different handler)."
+    verdict: NONE-FOUND
+verdict: AMBIGUITY-STOP
+verdict_detail: "NO stimulus exists on CHR that moves one defconf body independently. The version axis (I4) and the stimulus axis (this hunt) are both exhausted. This is a RESULT, not a failure: U1-defconf-field-split stays open with the negative evidence below as its bound. Reopen only on: (a) hardware-netinstall leg (out of scope), (b) coordinator explicitly authorizing the S4 native-SET micro-probe against J3's recommendation, or (c) new static evidence (v6 CLI reference, binary file-path lead)."
+would_reopen:
+  - "hardware netinstall leg with marker script-file (needs RouterBOARD + server + reinstall approval; not a CHR leg)"
+  - "S4 native-SET micro-probe ONLY if the coordinator accepts the unrestorable-write risk against this recommendation (single SETOBJ, marker body, immediate re-read; restore plan must pre-exist)"
+  - "new static evidence: v6 CLI reference showing a setter (Rosetta has no v6 CLI data), or a binary/static file-path lead for defconf bodies"
+open_questions_live_only:
+  - id: Q-live-1
+    q: "Is /system/default-configuration/custom-script empty on a stock (never-netinstalled) CHR? (one `get custom-script` read would answer; constrains the 6-field/4-body cardinality puzzle)"
+    why_not_fetched: "J3 is offline: no live contact permitted. Recorded, not fetched."
+  - id: Q-live-2
+    q: "Does f1 (bool F) move under caps-mode/wps-sync-mode reset modes? (reset leg +1r; f1 micro-probe, out of U1 scope)"
+    why_not_fetched: "offline by charter; also non-discriminating for the U1 split."
+  - id: Q-static-1
+    q: "Does RouterOS v6 expose a defconf setter? (no v6 CLI reference in Rosetta; command data starts at 7.10.2)"
+    why_not_fetched: "no static source available offline; a v6 setter would in any case only open a v6 leg, not the 7.x split."
+promotion_upon_resolution:
+  note: "What U1 resolution would promote into the schema (coordinator integrates; J3 edits nothing canonical)."
+  entries:
+    - "default-config [24,8]: per-field entries for f2/f3/f4/f5/f6 binding each wire field to its CLI body role (script / caps-mode-script / wps-sync-mode-script / custom-script) with tcode+encoding (str vs bytes), banner-vs-body distinction for f2/f5, version scope (7.25+beta4+v6 per I4 shapes), TIER 1 write evidence, confidence observed-only (per plan section D: controlled live findings stay observed-only unless a public source names the wire association)."
+    - "f1 bool: meaning entry IF the f1 micro-probe ever runs (currently unknown; mode-flag is an untested guess, never promoted as such)."
+    - "revision-history on default-config if the bodies-suggest mapping (f3/f4/f6 = script bodies) is overturned."
+    - "STATIC NOW (fragment.yaml, clearly marked static-only): the writer finding — sole documented writer is netinstall script-file/Configure Script (3 manual URLs); no CLI setter any tracked version; reset executes-does-not-write. Investigation-trail material supporting this stop."
+rosetta_queries_run:
+  note: "Every query below ran via `sqlite3 -readonly ~/.rosetta/ros-help-0.12.0.db`. SQL verbatim for reproducibility; digest states the result. CLI names are candidates only, never numeric proof."
+  queries:
+    - id: Q1
+      sql: "SELECT e.source_path, e.source_type, e.package, p.manual_version FROM cliref_entries e JOIN cliref_pages p ON p.id=e.page_id WHERE e.source_path LIKE '%default-configuration%' ORDER BY p.manual_version, e.source_path;"
+      digest: "5 entries x3 manuals (system/default-configuration + 4 subdirs), all 'Settings Directory'."
+    - id: Q2
+      sql: "SELECT e.source_path, f.name, f.field_kind, f.raw_type, f.mandatory, f.unsettable FROM cliref_fields f JOIN cliref_entries e ON e.id=f.entry_id JOIN cliref_pages p ON p.id=e.page_id WHERE e.source_path LIKE '%default-configuration%' AND p.manual_version='7.26' ORDER BY e.source_path, f.source_order;"
+      digest: "4 fields on the parent + 1 per subdir, ALL Read-only Argument string, mandatory=0 unsettable=0."
+    - id: Q3
+      sql: "SELECT path, type, type_tag FROM schema_nodes WHERE path LIKE '%default-configuration%' ORDER BY path, type LIMIT 60;"
+      digest: "dir + export/get/print cmds + their args; no set/add among the first 60."
+    - id: Q4
+      sql: "SELECT count(*) FROM schema_nodes WHERE path LIKE '%default-configuration%';"
+      digest: "83 nodes (includes 3 /tool/netinstall apply-default-configuration arg hits — the netinstall lead)."
+    - id: Q5
+      sql: "SELECT DISTINCT substr(path, length('/system/default-configuration/')+1) FROM schema_nodes WHERE path LIKE '/system/default-configuration/%' AND type='cmd';"
+      digest: "cmds are export/get/print on the parent + caps-mode-script/custom-script/script subdirs. No set/add/edit/remove/unset. NOTE: the inspect tree has only 3 subdirs (no wps-sync-mode-script subdir) while cliref documents 4 (Q1); the parent still carries all 4 fields (Q2). No writer in either source."
+    - id: Q6
+      sql: "SELECT path, type FROM schema_nodes WHERE path LIKE '%default-configuration%' AND path NOT LIKE '%/export/%' AND path NOT LIKE '%/get/%' AND path NOT LIKE '%/print/%' ORDER BY path;"
+      digest: "parent dir + 3 subdirs (caps-mode-script, custom-script, script), each with export/get/print only; NO wps-sync-mode-script subdir in the inspect tree (cliref-only entry per Q1/Q2); plus the 3 netinstall apply-default-configuration args."
+    - id: Q7
+      sql: "SELECT p.version, count(*) FROM schema_node_presence p JOIN schema_nodes s ON s.id=p.node_id WHERE s.path LIKE '%default-configuration%' GROUP BY p.version;"
+      digest: "83 nodes present on BOTH 7.25 and 7.26beta4 — verb surface identical."
+    - id: Q8
+      sql: "SELECT p.manual_version, e.source_path, f.field_kind, f.raw_type FROM cliref_fields f JOIN cliref_entries e ON e.id=f.entry_id JOIN cliref_pages p ON p.id=e.page_id WHERE f.name='custom-script' ORDER BY p.manual_version, e.source_path;"
+      digest: "custom-script appears ONLY under system/default-configuration(+/custom-script), all 3 manuals, always Read-only Argument. No other menu addresses it."
+    - id: Q9
+      sql: "SELECT path, type FROM schema_nodes WHERE path LIKE '%custom-script%' AND path NOT LIKE '%default-configuration%';"
+      digest: "EMPTY: no non-defconf inspect node mentions custom-script."
+    - id: Q10
+      sql: "SELECT path, name, type, ros_version FROM commands WHERE path LIKE '%default-configuration%' ORDER BY ros_version, path;"
+      digest: "Full defconf command tree for 7.25 (export/get/print + args); no write verbs."
+    - id: Q11
+      sql: "SELECT e.source_path, f.name, f.field_kind, f.raw_type FROM cliref_fields f JOIN cliref_entries e ON e.id=f.entry_id JOIN cliref_pages p ON p.id=e.page_id WHERE e.source_path LIKE 'tool/netinstall%' AND p.manual_version='7.26' ORDER BY e.source_path, f.source_order;"
+      digest: "EMPTY: no cliref coverage of /tool/netinstall (inspect-only surface). Redirected to Q11b/Q11c."
+    - id: Q11b
+      sql: "SELECT DISTINCT e.source_path, p.manual_version FROM cliref_entries e JOIN cliref_pages p ON p.id=e.page_id WHERE e.source_path LIKE '%netinstall%' ORDER BY e.source_path, p.manual_version;"
+      digest: "EMPTY across all manuals/paths: netinstall has no CLI-reference entries at all."
+    - id: Q11c
+      sql: "SELECT path, type FROM schema_nodes WHERE path LIKE '%netinstall%' AND type IN ('dir','cmd') ORDER BY path;"
+      digest: "/tool/netinstall server tree: add/set/remove/unset/enable/disable + cache/devices/settings subdirs. A row-config surface (server jobs), not a defconf-body editor."
+    - id: Q12
+      sql: "SELECT e.source_path, f.name, f.field_kind, f.raw_type FROM cliref_fields f JOIN cliref_entries e ON e.id=f.entry_id JOIN cliref_pages p ON p.id=e.page_id WHERE e.source_path LIKE '%reset-configuration%' AND p.manual_version='7.26' ORDER BY e.source_path, f.source_order;"
+      digest: "9 Argument fields (keep-users, keep-apps, no-defaults, caps-mode, wps-sync-mode, skip-backup, force-v6-to-v7-configuration-upgrade, shutdown, run-after-reset:file). Mode selectors + file runner, no body writer."
+    - id: Q13
+      sql: "SELECT p.name, p.type, p.default_val, p.section, pg.title, pg.url FROM properties p JOIN pages pg ON pg.id=p.page_id WHERE p.name LIKE '%custom-script%';"
+      digest: "EMPTY: no property-table row for custom-script in the docs corpus."
+    - id: Q14
+      sql: "SELECT path FROM schema_nodes WHERE path LIKE '/tool/netinstall/add/%' OR path LIKE '/tool/netinstall/set/%' OR path LIKE '/tool/netinstall/reset/%' OR path LIKE '/tool/netinstall/devices/install/%' OR path LIKE '/tool/netinstall/settings/set/%' ORDER BY path;"
+      digest: "Server-job args incl. script-file, mode-file, branding-and-custom-packages, apply-default-configuration, keep-old-configuration. script-file is the writer lead (semantics from docs Q18)."
+    - id: Q15
+      sql: "SELECT f.name, substr(f.description_markdown,1,600) FROM cliref_fields f JOIN cliref_entries e ON e.id=f.entry_id JOIN cliref_pages p ON p.id=e.page_id WHERE e.source_path='system/default-configuration' AND p.manual_version='7.26' ORDER BY f.source_order;"
+      digest: "All 4 field descriptions EMPTY in the CLI reference. Redirected to docs pages (Q16+)."
+    - id: Q16
+      sql: "SELECT title, url, word_count FROM pages WHERE text LIKE '%custom-script%' ORDER BY word_count LIMIT 20;"
+      digest: "ONLY 3 pages in the whole docs corpus mention custom-script: netinstall-linux, netinstall-windows, netinstall-package."
+    - id: Q17
+      sql: "SELECT title, url FROM pages WHERE path LIKE '%default-configuration%' OR title LIKE '%efault onfiguration%';"
+      digest: "Default-configurations + default-configuration-passwords pages (per-board stock bodies; no custom-script write path)."
+    - id: Q18
+      sql: "SELECT substr(text, max(1,instr(text,'custom-script')-1500), 3000) FROM pages WHERE url='https://manual.mikrotik.com/docs/getting-started/installation-and-upgrade/netinstall/netinstall-package';"
+      digest: "KEY POSITIVE: script-file 'Allows installation of a custom default configuration script on the device during installation. This replaces the RouterOS-supplied default configuration script. See /system/default-configuration/custom-script/print. The script is retained during RouterOS updates and used after subsequent configuration resets until the device is reinstalled with a new script or the script is removed.' mode-file is one-time/first-boot-removed (not defconf)."
+    - id: Q19
+      sql: "SELECT substr(text,1,2500) FROM pages WHERE url='https://manual.mikrotik.com/docs/getting-started/configuration-management/default-configurations';"
+      digest: "Per-board stock configuration catalog (CPE/LTE/AP/PTP/Switch/CAP...). No write path."
+    - id: Q20
+      sql: "SELECT substr(text, max(1,instr(text,'custom-script')-800), 1600) FROM pages WHERE url='https://manual.mikrotik.com/docs/getting-started/installation-and-upgrade/netinstall/netinstall-windows';"
+      digest: "Same writer prose as Q18 under 'Configure Script' (+ $defconfPassword read-only vars note). Apply-Default-Config points at /system/default-configuration/script/print (the stock body)."
+    - id: Q21
+      sql: "SELECT p.url, substr(e.description_markdown,1,800) FROM cliref_entries e JOIN cliref_pages p ON p.id=e.page_id WHERE e.source_path='system/default-configuration' AND p.manual_version='7.26';"
+      digest: "Entry description also EMPTY; page URL recorded (cli-reference/system/default-configuration)."
+    - id: Q22
+      sql: "SELECT command_path, ros_version FROM command_versions WHERE command_path LIKE '%default-configuration%' ORDER BY command_path, ros_version;"
+      digest: "Parent path tracked from 7.10.2 through 7.22+ (sampled head; full verb list in Q22b)."
+    - id: Q22b
+      sql: "SELECT DISTINCT command_path FROM command_versions WHERE command_path LIKE '%default-configuration%' ORDER BY command_path;"
+      digest: "Across ALL tracked versions: parent + caps-mode-script/custom-script/script subdirs with export/get/print (+args) ONLY (no wps-sync-mode-script subdir in the command tree, matching Q5/Q6). No set/add/edit/remove/unset on ANY version. The no-CLI-writer finding is version-general within 7.10.2+."
+    - id: Q23
+      sql: "SELECT version, category, is_breaking, substr(description,1,300) FROM changelogs WHERE description LIKE '%custom-script%' OR description LIKE '%default-configuration%' ORDER BY version LIMIT 20;"
+      digest: "EMPTY: no changelog signal on either term."
+    - id: Q24
+      sql: "SELECT title, url FROM pages WHERE text LIKE '%run-after-reset%' LIMIT 10;"
+      digest: "Only the Configuration Management page documents run-after-reset."
+    - id: Q25
+      sql: "SELECT substr(text, max(1,instr(text,'run-after-reset')-600), 1800) FROM pages WHERE url='https://manual.mikrotik.com/docs/getting-started/configuration-management/';"
+      digest: "run-after-reset 'Run the specified .rsc file after reset... load your custom configuration' (separate file mechanism). A netinstalled script 'executes after purging'; 'To stop it... reinstall the router' — reset EXECUTES, never rewrites, bodies."
+    - id: Q26
+      sql: "SELECT title, url FROM pages WHERE text LIKE '%branding%' AND text LIKE '%default-configuration%';"
+      digest: "Only the same 3 netinstall pages (branding preserve/discard options). No branding-authors-defconf statement."
+spend: { counted_writes: 0, reboots: 0, note: "static hunt: 0 live contact, 0 router commands of any kind" }

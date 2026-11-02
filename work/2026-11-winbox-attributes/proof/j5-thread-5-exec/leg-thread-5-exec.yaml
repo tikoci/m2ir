@@ -1,0 +1,38 @@
+# cspell:ignore rowid getall getcount fasttrack tarpit udp icmp rowids unsets posthoc unrestorable j5 centrs jsonl
+# Thread-5 adjunct-field discrimination: EXECUTION INSTANCE (coordinator, Phase J).
+# Design source: proof/i2-decay-backlog/leg-thread-5-adjunct.yaml (unchanged
+# semantics; comments re-tagged j5-t5-*; exact strings below are what gets
+# explained + sent). STANDALONE 8w+0r, user-approved this session.
+id: J5-thread-5-exec
+kind: write-leg-execution
+status: in-progress
+date: 2026-11-02
+worker: coordinator
+design_ref: work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-thread-5-adjunct.yaml
+approval: "user per-leg yes this session (standalone 8w)"
+vm:
+  name: ws21
+  routeros: "7.25"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute --quickchr ws21 --yes (writes) / centrs retrieve --quickchr ws21 (reads); every string explained offline pre-send, outputs saved"
+  native_via: "proof/i2-decay-backlog/leg-h1-fixed.ts read (session-per-read 4-leg shape; row payloads in the GETALL [20,3] rx). Route scope: GETALL [20,3] row payloads ONLY, never [20,17]."
+counting_rule: "H1 F-jump rule: each control add/set = 1w; +1 restore-verify branch; per-cell removes bundled 0w; rejected adds/sets 0w; ALL native reads 0w; quickchr start/stop 0r"
+budget: { counted_writes: 8, reboots: 0, itemized: "T5-a 2 + T5-b 3 + T5-c 2 + restore branch 1" }
+exact_strings:
+  add_udp: "/ip/firewall/filter/add chain=forward action=accept protocol=udp comment=j5-t5-udp"
+  add_icmp: "/ip/firewall/filter/add chain=forward action=accept protocol=icmp comment=j5-t5-icmp"
+  add_host: "/ip/firewall/filter/add chain=forward action=accept comment=j5-t5-host"
+  set_proto_tcp: "/ip/firewall/filter/set numbers=<HOST-.id> protocol=tcp"
+  clear_proto: "/ip/firewall/filter/set numbers=<HOST-.id> protocol="
+  fallback_proto_udp: "/ip/firewall/filter/set numbers=<HOST-.id> protocol=udp"
+  set_fasttrack: "/ip/firewall/filter/set numbers=<HOST-.id> action=fasttrack-connection"
+  set_accept: "/ip/firewall/filter/set numbers=<HOST-.id> action=accept"
+  remove_form: "/ip/firewall/filter/remove numbers=<LIVE-.id>"
+row_matching: "at most ONE experimental row present at any time; the single GETALL [20,3] row with comment j5-t5-* is the cell row (no .id assumption needed for reads; removes use the live ret .id)"
+stop_conditions:
+  - "any add/set rejected -> 0w, rejection is data, continue with surviving cells"
+  - "row payload missing the expected row (.id drift) -> STOP, verify control surface, report"
+  - "baseline not empty -> STOP before any stimulus"
+  - "restore PARTIAL via fasttrack dummies -> report as G1 did (device design, not failure)"
+spend_log: []

@@ -1,0 +1,36 @@
+# cspell:ignore rowid getcount getall reqid mangle calea unacked ladder rungs oneshot churn keepalive keepalives asyncs trel msback hdecay nonmonotonic negcontrol untimed respike nodecay centrs jsonl jbe precedented j5 j6
+# H-decay-3 RE-RUN execution instance (coordinator, Phase J).
+# Design source: proof/j3-decay-u1-designs/leg-h-decay-3-rerun.yaml (J3 sheet,
+# user-approved this session, 3w+0r). Reviewer qualifier applied: the host is
+# the only spike shape with observed in-session decay *within one WinBox
+# session* (G3 M1 decayed across session-per-reads).
+id: J6-h-decay-3-rerun-exec
+kind: write-leg-execution
+status: in-progress
+date: 2026-11-02
+worker: coordinator
+design_ref: work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/leg-h-decay-3-rerun.yaml
+approval: "user per-leg yes this session (3w+0r fixed, no extension)"
+vm:
+  name: ws21
+  routeros: "7.25"
+  pre_state: "UP, recycled clean after J5 (5 fasttrack dummies cleared by stop/start 0r; filter/raw/mangle re-verified 0)"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute --quickchr ws21 --yes (writes) / centrs retrieve --quickchr ws21 (reads); every string explained offline pre-send, outputs saved"
+  native_via: "proof/i2-decay-backlog/leg-h1-fixed.ts (ladder + read; console tee'd to files)"
+counting_rule: "H1 F-jump rule: each control add/set = 1w; +1 restore-verify branch; removes bundled 0w; rejected adds/sets 0w; ALL native reads 0w; quickchr start/stop 0r"
+budget: { counted_writes: 3, reboots: 0, itemized: "add1-spike1 (1) + add2-spike2 (1) + restore-verify branch (1)" }
+exact_strings:
+  add_spike1: "/ip/firewall/filter/add chain=forward action=accept comment=j3-rerun-spike1"
+  add_spike2: "/ip/firewall/filter/add chain=forward action=accept comment=j3-rerun-spike2"
+  remove_form: "/ip/firewall/filter/remove numbers=<LIVE-.id>"
+decay_gate: "DECAY-CONFIRMED if R1<R0a OR R2<R0a; LATE if R3<R0a; else STABLE->B3; non-monotonic -> RECORD+CONTINUE"
+q1_annex: "re-attaches analytically ONLY on decay-confirm (0w all branches)"
+stop_conditions:
+  - "baseline not empty -> STOP before any stimulus"
+  - "S0 any async>0 -> B6 ambiguity stop (skip S1/S2, still S3+S4)"
+  - "S1 read-back disagrees -> stimulus invalid: STOP, S3+S4"
+  - "S1 zero-gate nonzero -> STOP (novel removal-does-not-clear), S3+S4"
+  - "rung-*-failed -> PARTIAL (committed rungs TIER 1) + session-per-read fallback"
+spend_log: []

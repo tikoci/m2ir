@@ -1,0 +1,50 @@
+# cspell:ignore rowid getall getone getobj getcount jsonl reqid errstr brkpath
+# R2: blind reconstruction of the J2 v6 (6.49.23) error signature per verb per route.
+# Sources: proof/j2-v6-tail-census/census.ts + step-*.jsonl + PRIOR-phase evidence ONLY
+# (std-errors.yaml 0xfe0002, I4 P-i4-qos-v7-only, queue-3 [20,125] v6 legs).
+# Written BEFORE any read of proof/j2-v6-tail-census/report.yaml or fragment.yaml.
+reviewer: j-reviewer
+reconstruction: R2-j2-v6-signature
+written: 2026-11-02
+blind: true
+scope:
+  version: 6.49.23
+  routes: [[20, 122], [20, 126], [20, 116], [20, 117], [20, 120], [20, 121]]
+  verbs_per_route: [GETONE-0xfe000d, GETALL-0xfe0004, GETOBJ-0xfe0002-obj1, GETCOUNT-0xfe0015]
+  total_legs: 24
+signature_per_leg:
+  status: router-error (0xff0004 == 2 on all 24)
+  errno: 0xfe0002
+  errno_name: ERROR_BRKPATH
+  errstr_0xff0009: absent (all 24)
+  from: "[20] (process level, NOT the full route — all 24)"
+  total_0xfe0019: absent (all 24)
+  banner_0xff001c: absent (all 24)
+  user_0x00_keys: none (all 24)
+  exact_reply_keyset: "0xff0001,0xff0002,0xff0008,0xff0003,0xff0004,0xff0006 (1 distinct set across all 24 rx records)"
+per_route:
+  - route: [20, 122]
+    legs: "reqIds 2-5: GETONE/GETALL/GETOBJ/GETCOUNT all -> 0xfe0002 from=[20]"
+    evidence: step-649-1b.jsonl lines 2,4,6,8
+  - route: [20, 126]
+    legs: "reqIds 6-9: GETONE/GETALL/GETOBJ/GETCOUNT all -> 0xfe0002 from=[20]"
+    evidence: step-649-1b.jsonl lines 10,12,14,16
+  - route: [20, 116]
+    legs: "reqIds 2-5: all four verbs -> 0xfe0002 from=[20]"
+    evidence: step-649-siblings.jsonl lines 2,4,6,8
+  - route: [20, 117]
+    legs: "reqIds 6-9: all four verbs -> 0xfe0002 from=[20]"
+    evidence: step-649-siblings.jsonl lines 10,12,14,16
+  - route: [20, 120]
+    legs: "reqIds 10-13: all four verbs -> 0xfe0002 from=[20]"
+    evidence: step-649-siblings.jsonl lines 18,20,22,24
+  - route: [20, 121]
+    legs: "reqIds 14-17: all four verbs -> 0xfe0002 from=[20]"
+    evidence: step-649-siblings.jsonl lines 26,28,30,32
+verdict: "UNIFORM — zero deviations across 24/24 legs: every route x every verb answers ERROR_BRKPATH from=[20] with no total/banner/USER/errstr. All six routes are ABSENT on 6.49.23 (v7-only), the same absent-handler signature as I4 [20,114]/[20,115] on v6 (P-i4-qos-v7-only) and queue-3 [20,125] on v6 (BRKPATH from=[20]). Closes I4 U-siblings-v6 for 116/117/120/121 and extends the v7-only finding to 122/126"
+claims_not_verifiable_from_j2_raw:
+  - "none within scope: the signature question is fully determined by the 24 rx records"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/j2-v6-tail-census/census.ts
+  - work/2026-11-winbox-attributes/proof/j2-v6-tail-census/step-649-1b.jsonl
+  - work/2026-11-winbox-attributes/proof/j2-v6-tail-census/step-649-siblings.jsonl

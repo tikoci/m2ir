@@ -1,0 +1,4 @@
+{"event":"session-open","tRelMs":1519}
+{"event":"read-start","tRelMs":1519}
+{"event":"read-end","tRelMs":1525,"detail":"v32=0 async=0 records=8"}
+{"event":"session-close","tRelMs":1526}

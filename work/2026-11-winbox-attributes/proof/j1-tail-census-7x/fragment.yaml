@@ -1,0 +1,46 @@
+# cspell:ignore rowid getall getone getobj getcount getobjbare getonly multiset jsonl brkpath notimp unknownid defconf qos pfc objid
+# J1 proposed fragment (Phase J, 7.x leg). Coordinator integrates; J1 edits nothing canonical.
+# Proposes: notes + evidence for qos-config-20-122 / qos-pfc-20-126 gating; notes amendment for
+# qos-profile-20-114 / qos-map-20-115 (U4b closed). Omits: everything unproven (126 obj=0, v6 legs,
+# field-name candidates — all still unresolved).
+proposals:
+  - handler: qos-config-20-122
+    add_notes: |
+      Verb gating (J1 census, both 7.x): GET-only — GETALL/GETOBJ ->
+      0xfe0003 (NOTIMP, same signature as default-config);
+      GETCOUNT = 0xFFFFFFFF sentinel (no row count). Beta4 GETONE
+      is drift-free vs 7.25 (255-bank pinned: 0x132=[255],
+      0x122/0x12f/0x131/0x121=255, 0x120=F, 0x12c=2,
+      0x12d/0x12e/0x130=0, 0x11=2). Populated rows still need
+      switch hardware.
+    add_evidence:
+      - source: sample
+        ref: "live CHR interrogation (J1 tail census 1b, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (GET-only, GETCOUNT 0xFFFFFFFF, no drift) — work/2026-11-winbox-attributes/proof/j1-tail-census-7x/{census.ts,step-beta4-122.jsonl,step-725-122.jsonl}"
+  - handler: qos-pfc-20-126
+    add_notes: |
+      Verb gating (J1 census, both 7.x): same wrap family as
+      114/115 — GETALL wraps the singleton as a 1-row list
+      (row-id 0, 0xfe0010='disabled', total 1); GETOBJ obj=1 ->
+      0xfe0004 (UNKNOWNID, id-miss per the U4b row-id-0 result);
+      GETCOUNT = 1. Beta4 GETONE is drift-free vs 7.25
+      (0x18/0x19=F, 0x14/0x15/0x16=255, 0xfe0010='disabled').
+      GETOBJ obj=0 untested here (next: one read-only leg).
+      Populated rows still need switch hardware.
+    add_evidence:
+      - source: sample
+        ref: "live CHR interrogation (J1 tail census 1b, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (1-row wrap id 0, GETOBJ->0xfe0004, GETCOUNT 1, no drift) — work/2026-11-winbox-attributes/proof/j1-tail-census-7x/{census.ts,step-beta4-126.jsonl,step-725-126.jsonl}"
+  - handler: qos-profile-20-114
+    amend_notes: "Replace the '(selector puzzle, not a missing id)' clause: J1 closed U4b — the singleton row-id IS 0 and GETOBJ is an exact row-id match (obj=0 returns the full singleton + 0xfe0001:0 echo; bare/obj=1/obj=2 -> 0xfe0004 UNKNOWNID, i.e. id-miss). Suggested replacement sentence: 'GETOBJ is an exact row-id match on the singleton row-id 0 (obj=0 hits; bare/obj=1/obj=2 -> 0xfe0004 UNKNOWNID id-miss).'"
+    add_evidence:
+      - source: sample
+        ref: "live CHR interrogation (J1 U4b selector matrix, 2026-11-02, 0w): GETALL row-id 0 + GETOBJ {obj=0:hit, bare/obj=2:0xfe0004} on 7.26beta4 — work/2026-11-winbox-attributes/proof/j1-tail-census-7x/{census.ts,step-beta4-u4b-getall.jsonl,step-beta4-u4b-obj0.jsonl,step-beta4-u4b-bare.jsonl,step-beta4-u4b-obj2.jsonl}"
+  - handler: qos-map-20-115
+    amend_notes: "Same U4b closure as 114: replace '(same selector puzzle as 114)' with 'GETOBJ is an exact row-id match on the singleton row-id 0 (obj=0 hits; bare/obj=1/obj=2 -> 0xfe0004 UNKNOWNID id-miss).'"
+    add_evidence:
+      - source: sample
+        ref: "live CHR interrogation (J1 U4b selector matrix, 2026-11-02, 0w): GETALL row-id 0 + GETOBJ {obj=0:hit, bare/obj=2:0xfe0004} on 7.26beta4 — work/2026-11-winbox-attributes/proof/j1-tail-census-7x/{census.ts,step-beta4-u4b-getall.jsonl,step-beta4-u4b-obj0.jsonl,step-beta4-u4b-bare.jsonl,step-beta4-u4b-obj2.jsonl}"
+omits:
+  - "126 GETOBJ obj=0 (untested; U-j1-126-selector)"
+  - "122/126 v6 legs (paired worker scope; U-siblings-v6 carried)"
+  - "all Rosetta field-name candidates for 122/126 (meanings unproven; U2 carried)"
+  - "no GLOSSARY.txt additions needed: no new protocol terms coined (rowid/getobjbare are proof-local)"

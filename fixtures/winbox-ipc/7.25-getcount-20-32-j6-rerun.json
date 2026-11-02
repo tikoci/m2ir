@@ -1,0 +1,388 @@
+{
+	"provenance": {
+		"report": "H-decay-3 re-run on a decaying host, 2026-11-02 (ws21 7.25 x86, 3w+0r of 3): outcome B2 decay-zero-async",
+		"routeros_version": "7.25",
+		"route": "[20,32] spike2 curve: R0a/R0b=4, R1=3, R2..R5=2 plateau, async=0; negative control all v32=0, async=0",
+		"note": "Sanitized M2 hex plus decoded entries only: no hosts, ports, or credentials. Full rungs + 54+55 keep-alive samples: proof/j6-h-decay-3-rerun/step-ladder.jsonl + step-negative-control.jsonl with timing ledgers."
+	},
+	"records": [
+		{
+			"id": "getcount-20-32-j6-rerun-spike-r0a-rx",
+			"role": "J6 rerun spike2 R0a [20,32] GETCOUNT",
+			"source": "proof/j6-h-decay-3-rerun/step-ladder.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09040600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 4
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-j6-rerun-spike-r0b-rx",
+			"role": "J6 rerun spike2 R0b [20,32] GETCOUNT",
+			"source": "proof/j6-h-decay-3-rerun/step-ladder.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09040600ff0907",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 4
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-j6-rerun-spike-r1-rx",
+			"role": "J6 rerun spike2 R1 [20,32] GETCOUNT",
+			"source": "proof/j6-h-decay-3-rerun/step-ladder.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09030600ff090b",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 11,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 11
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-j6-rerun-spike-r2-rx",
+			"role": "J6 rerun spike2 R2 [20,32] GETCOUNT",
+			"source": "proof/j6-h-decay-3-rerun/step-ladder.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09020600ff0912",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 18,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 18
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-j6-rerun-spike-r3-rx",
+			"role": "J6 rerun spike2 R3 [20,32] GETCOUNT",
+			"source": "proof/j6-h-decay-3-rerun/step-ladder.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09020600ff091b",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 27,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 27
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-j6-rerun-spike-r4-rx",
+			"role": "J6 rerun spike2 R4 [20,32] GETCOUNT",
+			"source": "proof/j6-h-decay-3-rerun/step-ladder.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09020600ff092a",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 42,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 42
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-j6-rerun-spike-r5-rx",
+			"role": "J6 rerun spike2 R5 [20,32] GETCOUNT",
+			"source": "proof/j6-h-decay-3-rerun/step-ladder.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09020600ff0951",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 81,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 81
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-j6-rerun-neg-r0a-rx",
+			"role": "J6 rerun neg R0a [20,32] GETCOUNT",
+			"source": "proof/j6-h-decay-3-rerun/step-negative-control.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09000600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-j6-rerun-neg-r5-rx",
+			"role": "J6 rerun neg R5 [20,32] GETCOUNT",
+			"source": "proof/j6-h-decay-3-rerun/step-negative-control.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09000600ff0952",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 82,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 82
+				}
+			]
+		}
+	]
+}

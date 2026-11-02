@@ -1,0 +1,669 @@
+{
+	"provenance": {
+		"report": "Thread-5 adjunct discrimination, standalone 2026-11-02 (ws21 7.25 x86, 8w+0r of 8)",
+		"routeros_version": "7.25",
+		"route": "[20,3] GETALL cell rows: 0x0b 17/1/6/17 (protocol-number pin + computed tracking); 0x1c6 false-on-set + cleared-on-exit",
+		"note": "Sanitized M2 hex plus decoded entries only: no hosts, ports, or credentials."
+	},
+	"records": [
+		{
+			"id": "getall-20-3-j5-udp-row-rx",
+			"role": "J5 T5-a udp row (0x0b=17)",
+			"source": "proof/j5-thread-5-exec/step-T5a-udp.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010041004d321c00fea00000160000000700fe000800fe009401000128000009000100fe09010b000009112700002107666f72776172640900fe21096a352d74352d7564700300ff09021900fe09010600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x000016",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000194",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x00000b",
+								"tcode": "0x9",
+								"value": 17
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "j5-t5-udp"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-20-3-j5-icmp-row-rx",
+			"role": "J5 T5-a icmp row (0x0b=1)",
+			"source": "proof/j5-thread-5-exec/step-T5a-icmp.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010042004d321c00fea00000160000000700fe000800fe009401000128000009000100fe09020b000009012700002107666f72776172640900fe210a6a352d74352d69636d700300ff09021900fe09010600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x000016",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000194",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x00000b",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "j5-t5-icmp"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-20-3-j5-set-tcp-row-rx",
+			"role": "J5 T5-b set-tcp row (0x0b=6)",
+			"source": "proof/j5-thread-5-exec/step-T5b-tcp.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010042004d321c00fea00000160000000700fe000800fe009401000128000009000100fe09030b000009060900fe210a6a352d74352d686f73742700002107666f72776172640300ff09021900fe09010600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x000016",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000194",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0x00000b",
+								"tcode": "0x9",
+								"value": 6
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "j5-t5-host"
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-20-3-j5-tracked-udp-row-rx",
+			"role": "J5 T5-b re-set udp row (0x0b tracks 17)",
+			"source": "proof/j5-thread-5-exec/step-T5b-udp.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010042004d321c00fea00000160000000700fe000800fe009401000128000009000100fe09030b000009112700002107666f72776172640900fe210a6a352d74352d686f73740300ff09021900fe09010600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x000016",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000194",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0x00000b",
+								"tcode": "0x9",
+								"value": 17
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "j5-t5-host"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-20-3-j5-fasttrack-row-rx",
+			"role": "J5 T5-c fasttrack row (0x1c6=false + dummy)",
+			"source": "proof/j5-thread-5-exec/step-T5c-ft.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea802004e004d320700fe0128000009040100fe09042700002107666f72776172640900fe212d7370656369616c2064756d6d792072756c6520746f2073686f772066617374747261636b20636f756e7465727346004d321c00fea0000016000000c60100000700fe000800fe009401000128000009280100fe09030b000009110900fe210a6a352d74352d686f73742700002107666f72776172640300ff09021900fe09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe0007",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "special dummy rule to show fasttrack counters"
+							}
+						],
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x000016",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x0001c6",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000194",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 40
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0x00000b",
+								"tcode": "0x9",
+								"value": 17
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "j5-t5-host"
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "getall-20-3-j5-exit-row-rx",
+			"role": "J5 T5-c action-exit row (0x1c6 cleared)",
+			"source": "proof/j5-thread-5-exec/step-T5c-accept.jsonl",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000030000001c00ffa001000e006d73672d70726f78792d372e32350200fea802004e004d320700fe0128000009040100fe09042700002107666f72776172640900fe212d7370656369616c2064756d6d792072756c6520746f2073686f772066617374747261636b20636f756e7465727342004d321c00fea00000160000000700fe000800fe009401000128000009000100fe09030b000009112700002107666f72776172640900fe210a6a352d74352d686f73740300ff09021900fe09020600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 3],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 3]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe0007",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "special dummy rule to show fasttrack counters"
+							}
+						],
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x000016",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000194",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0x00000b",
+								"tcode": "0x9",
+								"value": 17
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "forward"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "j5-t5-host"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		}
+	]
+}

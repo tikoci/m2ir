@@ -1,0 +1,83 @@
+# cspell:ignore rowid getall getcount fasttrack tarpit udp icmp rowids unsets posthoc unrestorable j5 centrs jsonl api trap builtin recycle num anyproto fanout
+# J5 EXECUTION report (coordinator). Thread-5 adjunct discrimination, standalone.
+complete: true
+date: 2026-11-02
+worker: coordinator
+leg: J5-thread-5-exec
+design_ref: work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-thread-5-adjunct.yaml
+verdict: "COMPLETE 8w+0r of 8w+0r — 0x0b=protocol-number PINNED (6/17/1); triple COMPUTED (post-hoc appear + value tracks); 0x16 constant-adjunct; 0x194 any-protocol; 0x1c6 action-computed FALSE post-hoc (vs G1 add-TRUE — new divergence) + cleared-on-exit replicated; restore PARTIAL in-session (5 builtin dummies, cannot-remove-builtin) -> FULL after 0r power-cycle"
+spend: { approved: "8w+0r standalone", spent: "8w+0r", vm: ws21, itemized: "T5-a 2 (udp+icmp adds) + T5-b 3 (host add + set tcp + set udp; clear-form rejected 0w) + T5-c 2 (set fasttrack + set accept) + restore branch 1" }
+tooling:
+  control_via: "centrs execute --quickchr ws21 --yes / retrieve --json; every string explained offline pre-send (explain-*.json)"
+  native_via: "proof/i2-decay-backlog/leg-h1-fixed.ts read; route scope GETALL [20,3] row payloads only"
+baseline: "PASS: 0 rows all five menus (control) + native [20,3]=0 [20,32]=0, GETALL 0 rows complete, async=0"
+cells:
+  - id: T5-a-udp
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept protocol=udp comment=j5-t5-udp (.id *1)"
+    row: "0x0b=17 (u32c), 0x16=false (bool present-but-false), 0x194=true"
+    tier: "TIER 1 (step-T5a-udp.jsonl GETALL row)"
+    writes: 1
+  - id: T5-a-icmp
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept protocol=icmp comment=j5-t5-icmp (.id *2)"
+    row: "0x0b=1, 0x16=false, 0x194=true"
+    tier: "TIER 1 (step-T5a-icmp.jsonl GETALL row)"
+    writes: 1
+  - id: T5-b-base
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=j5-t5-host (.id *3)"
+    row: "triple ABSENT, 0x1c6 ABSENT"
+    tier: "TIER 1 (step-T5b-base.jsonl)"
+    writes: 1
+  - id: T5-b-set-tcp
+    stimulus: "/ip/firewall/filter/set numbers=*3 protocol=tcp"
+    row: "triple appears post-hoc: 0x0b=6, 0x16=false, 0x194=true"
+    tier: "TIER 1 (step-T5b-tcp.jsonl)"
+    writes: 1
+  - id: T5-b-clear-rejected
+    stimulus: "/ip/firewall/filter/set numbers=*3 protocol="
+    outcome: "device-REJECTED 0w: routeros/api-trap 'ambiguous value of protocol, more than one possible value matches input' (empty value prefix-matches the enum)"
+    tier: "TIER 1 (control-T5b-clear-rejection.json)"
+    writes: 0
+  - id: T5-b-set-udp-fallback
+    stimulus: "/ip/firewall/filter/set numbers=*3 protocol=udp"
+    row: "0x0b tracks 6->17, 0x16=false, 0x194=true"
+    tier: "TIER 1 (step-T5b-udp.jsonl)"
+    writes: 1
+  - id: T5-c-set-fasttrack
+    stimulus: "/ip/firewall/filter/set numbers=*3 action=fasttrack-connection"
+    row: "host row 0x1c6 appears FALSE (present-but-false); row count 1->2: 'special dummy rule to show fasttrack counters' builtin (id 4, no 0x1c6)"
+    tier: "TIER 1 (step-T5c-ft.jsonl)"
+    writes: 1
+  - id: T5-c-set-accept
+    stimulus: "/ip/firewall/filter/set numbers=*3 action=accept"
+    row: "host row 0x1c6 ABSENT (cleared on action-exit); dummy row PERSISTS (id 4)"
+    tier: "TIER 1 (step-T5c-accept.jsonl)"
+    writes: 1
+proven:
+  - id: P-j5-0b-proto-num
+    claim: "0x0b = IP protocol number (u32c): 6/tcp (G1 M8) + 17/udp + 1/icmp — 3-point pin, highest-value cell of the sheet"
+  - id: P-j5-triple-computed
+    claim: "matcher triple is COMPUTED, not stored-at-add: absent on plain row, appears post-hoc on set-protocol, value tracks 6->17 on set-udp"
+  - id: P-j5-0x16-constant
+    claim: "0x16 is a constant adjunct (present-but-false on tcp/udp/icmp adds AND post-hoc sets) — NOT protocol-discriminating"
+  - id: P-j5-0x194-anyproto
+    claim: "0x194=true on every protocol-carrying row (adds + sets) — any-protocol gating confirmed at best (presence-only bool, low-medium value as sheeted)"
+  - id: P-j5-0x1c6-computed-false
+    claim: "0x1c6 presence is action-computed (appears post-hoc on set->fasttrack) but the VALUE is FALSE here vs TRUE on G1 M9 add-fasttrack — add-vs-set divergence is NEW data"
+  - id: P-j5-0x1c6-cleared-on-exit
+    claim: "0x1c6 clears on action-exit (set back to accept) — G1 M9 reversal replicated"
+  - id: P-j5-dummy-fanout
+    claim: "fasttrack set spawns FIVE dynamic builtins (filter x1, raw x1, mangle x3: prerouting/forward/postrouting), all 'cannot remove builtin'; persist after action-exit + host removal; cleared by power-cycle (0r)"
+restore: "PARTIAL in-session (5 builtin dummies, removal rejected 'cannot remove builtin' — device design, reported as G1 did) -> FULL after stop/start power-cycle 0r (filter/raw/mangle re-verified 0; ws21 kept UP for the approved J6 leg)"
+unresolved:
+  - id: U-j5-0x1c6-value-divergence
+    claim: "NEW: post-hoc set->fasttrack on a protocol=udp row grows 0x1c6=FALSE, but G1 M9 add-fasttrack carried TRUE. Add-vs-set and protocol-state are CONFOUNDED (G1 row protocol state unknown). Discriminator (unbudgeted, future leg): add fasttrack direct with/without protocol, or set fasttrack on a no-protocol row."
+  - id: U-j5-triple-unset-clear
+    claim: "NEW: clear-form `set protocol=` is device-rejected (ambiguous enum prefix), so cleared-on-unset vs sticky is UNTESTABLE via that form. Alternate clear path unknown."
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/j5-thread-5-exec/leg-thread-5-exec.yaml
+  - work/2026-11-winbox-attributes/proof/j5-thread-5-exec/report.yaml
+  - work/2026-11-winbox-attributes/proof/j5-thread-5-exec/explain-*.json
+  - work/2026-11-winbox-attributes/proof/j5-thread-5-exec/control-*.json
+  - work/2026-11-winbox-attributes/proof/j5-thread-5-exec/step-T5*.jsonl
+  - work/2026-11-winbox-attributes/proof/j5-thread-5-exec/timing-T5*.jsonl
+vm_end_state: "ws21 UP and recycled clean (0 rows filter/raw/mangle re-verified post-cycle) — handed to J6 in the same boot per sequential approvals"

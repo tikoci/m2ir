@@ -1,0 +1,104 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*1",
+      "action": "passthrough",
+      "bytes": "0",
+      "chain": "prerouting",
+      "comment": "special dummy rule to show fasttrack counters",
+      "dynamic": "true",
+      "packets": "0"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "target": {
+      "input": "ws21",
+      "host": "127.0.0.1",
+      "port": 9190,
+      "baseUrl": "http://127.0.0.1:9190/rest",
+      "identity": "ws21",
+      "source": {
+        "kind": "provider",
+        "key": "quickchr:ws21"
+      },
+      "sources": {
+        "host": {
+          "kind": "provider",
+          "key": "quickchr:ws21"
+        },
+        "port": {
+          "kind": "provider",
+          "key": "quickchr:ws21"
+        }
+      }
+    },
+    "via": "rest-api",
+    "settings": {
+      "via": {
+        "kind": "default",
+        "key": "via"
+      },
+      "host": {
+        "kind": "provider",
+        "key": "quickchr:ws21"
+      },
+      "port": {
+        "kind": "provider",
+        "key": "quickchr:ws21"
+      },
+      "timeoutMs": {
+        "kind": "default",
+        "key": "timeout"
+      },
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      },
+      "validate": {
+        "kind": "default",
+        "key": "validate"
+      },
+      "username": {
+        "kind": "provider",
+        "key": "quickchr:ws21:username"
+      },
+      "password": {
+        "kind": "provider",
+        "key": "quickchr:ws21:password"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "source": "live /console/inspect request=child",
+      "result": "passed",
+      "stages": [
+        {
+          "stage": "device",
+          "source": "live /console/inspect request=child",
+          "result": "passed"
+        }
+      ]
+    },
+    "operation": {
+      "kind": "data",
+      "objectCount": 1,
+      "request": {
+        "path": "/ip/firewall/raw",
+        "attributes": [],
+        "allAttributes": false,
+        "listAttributes": false,
+        "validate": true,
+        "verbose": false,
+        "timeoutMs": 10000,
+        "format": "json"
+      },
+      "auth": {
+        "username": "admin",
+        "passwordProvided": true
+      }
+    }
+  }
+}

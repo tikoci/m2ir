@@ -142,6 +142,7 @@ tiktui
 TLV
 tcode
 traceroute
+tr069 # TR-069 CWMP client (RouterOS tr069-client); vendor FileType 'X MIKROTIK Factory Configuration File' writes a defconf slot invisible to default-configuration/print (defconf U1 notes, gui-handlers.yaml)
 tsc
 tzsp
 TZSP
@@ -518,6 +519,7 @@ psweep # pid-sweep probe pattern (reconnect per dead pid)
 qcow # qcow2 CHR disk image shorthand
 dscp # Differentiated Services field (firewall change-dscp)
 netmap # NAT netmap action (RouterOS firewall)
+netinstall # MikroTik Netinstall reinstall tool; sole CLI-read-back-visible writer of /system/default-configuration custom-script (defconf U1 notes, gui-handlers.yaml)
 cexx # C++ exception shorthand in static RE notes
 clr # clear-operation shorthand in evidence file tags
 CPIN # modem CPIN (SIM PIN state, LTE aux handlers)

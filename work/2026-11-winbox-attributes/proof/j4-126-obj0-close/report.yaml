@@ -1,0 +1,24 @@
+# cspell:ignore getobj rowid jsonl
+# J4 coordinator follow-up (Phase J, read-only). Closes U-j1-126-selector.
+complete: true
+date: 2026-11-02
+worker: coordinator
+leg: J4-126-obj0-close
+verdict: "COMPLETE 0w+0r — [20,126] GETOBJ obj=0 HITS (full singleton + 0xfe0001:0 echo); 126 joins the exact-match family; U-j1-126-selector CLOSED"
+spend: { approved: "0w+0r (read-only census)", spent: "0w+0r", machines: [winbox-beta4] }
+tooling:
+  script: work/2026-11-winbox-attributes/proof/j4-126-obj0-close/census.ts
+  shape: "J1 census.ts copy (--obj flag); single verb getobj obj=0 on [20,126]; write-through jsonl, ts redacted"
+proven:
+  - id: P-j4-126-obj0-hit
+    claim: "[20,126] GETOBJ obj=0 -> ok, 17 fields: USER {0x18:F, 0x19:F, 0x14/0x15/0x16:255} + fe-flag bank + 0xfe0001:0 row-id echo + 0xfe0010 'disabled'"
+    tier: "TIER 1 (step-beta4-126-obj0.jsonl, 2 records, reqId 2)"
+  - id: P-j4-126-exact-match
+    claim: "126 GETOBJ is exact-match on row-id 0 (obj=0 hit here; obj=1 miss in J1 matrix) — same selector semantics as 114/115"
+    tier: "TIER 1 (this leg + proof/j1-tail-census-7x/step-beta4-126.jsonl)"
+unresolved: []
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/j4-126-obj0-close/census.ts
+  - work/2026-11-winbox-attributes/proof/j4-126-obj0-close/step-beta4-126-obj0.jsonl
+  - work/2026-11-winbox-attributes/proof/j4-126-obj0-close/report.yaml
+vm_end_state: "winbox-beta4 STOPPED; no other VM touched; no state changed (read-only)"

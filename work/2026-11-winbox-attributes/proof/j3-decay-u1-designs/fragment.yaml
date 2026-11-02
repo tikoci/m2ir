@@ -1,0 +1,14 @@
+# cspell:ignore defconf cliref netinstall etherboot getone rsc
+# J3 STATIC-ONLY fragment (proposal, not an edit).
+# Coordinator integrates or declines. No wire claim is made here: this is
+# investigation-trail material from the U1 stimulus hunt (26 read-only
+# Rosetta queries + 3 manual pages), grounding the U1 ambiguity stop.
+# It promotes no field meaning and changes no confidence.
+fragment_for: profiles/winbox-ipc/gui-handlers.yaml
+scope: default-config [24,8]
+static_only: true
+proposes:
+  - target: default-config notes/investigation-trail
+    text: "U1 stimulus hunt (J3, offline, 2026-11-02): the sole documented writer of the custom-script body is netinstall script-file / Configure Script at install time (manual: netinstall-package, netinstall-windows, netinstall-linux); it replaces the RouterOS-supplied default script and persists across updates and resets. /system/default-configuration exposes export/get/print ONLY on every Rosetta-tracked version (7.10.2+; inspect 7.25+7.26beta4 identical), and all four bodies are Read-only Argument in CLI-reference manuals 7.24/7.25/7.26. /system/reset-configuration executes stored defconf scripts after purging config but never rewrites bodies (run-after-reset is a separate .rsc-file mechanism). No other menu references custom-script (cliref + inspect); changelogs silent. Consequence: no CHR stimulus moves one defconf body independently, so U1-defconf-field-split is at an ambiguity stop on the stimulus axis (version axis already exhausted by I4). Evidence: work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/u1-ambiguity-stop.yaml (queries Q1..Q26, SQL verbatim)."
+    confidence_effect: none
+    wire_claim: none

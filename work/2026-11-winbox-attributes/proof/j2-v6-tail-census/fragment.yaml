@@ -1,0 +1,66 @@
+# cspell:ignore rowid getall getone getobj getcount hscan defconf qos pfc jsonl brkpath notimp unmappable quickchr
+# J2 proposed gui-handlers.yaml fragment (v6 scope only). Coordinator integrates; J2 edits nothing canonical.
+fragment_for: profiles/winbox-ipc/gui-handlers.yaml
+promotion_ready:
+  - target: qos-config-20-122.notes
+    action: add notes block (v6 absent PROVEN live) + one evidence entry
+    lines:
+      - '    notes: |'
+      - '      v6 (J2 census, ws3c6 6.49.23) -> 0xfe0002 on all'
+      - '      four verbs (absent-handler signature, rx'
+      - '      byte-identical to the 114/115 v6 legs) — v7-only'
+      - '      PROVEN live, not assumed from the composite'
+      - '      registration alone. 7.x verb gating'
+      - '      (GETALL/GETOBJ/GETCOUNT) still untested.'
+    evidence_to_attach:
+      - source: sample
+        ref: "live CHR interrogation (J2 v6 tail census, 2026-11-02, 0w): v6 absent (0xfe0002 all verbs) — work/2026-11-winbox-attributes/proof/j2-v6-tail-census/{census.ts,step-649-1b.jsonl}"
+    rationale: "8/8 v6 legs return the BRKPATH envelope (report.yaml P-j2-1b-v7-only, TIER 1); the entry role already claims v7-only from static evidence, so this adds the live proof without touching role text"
+  - target: qos-pfc-20-126.notes
+    action: add notes block (v6 absent PROVEN live) + one evidence entry
+    lines:
+      - '    notes: |'
+      - '      v6 (J2 census, ws3c6 6.49.23) -> 0xfe0002 on all'
+      - '      four verbs (absent-handler signature, rx'
+      - '      byte-identical to the 114/115 v6 legs) — v7-only'
+      - '      PROVEN live, not assumed from the composite'
+      - '      registration alone. 7.x verb gating'
+      - '      (GETALL/GETOBJ/GETCOUNT) still untested.'
+    evidence_to_attach:
+      - source: sample
+        ref: "live CHR interrogation (J2 v6 tail census, 2026-11-02, 0w): v6 absent (0xfe0002 all verbs) — work/2026-11-winbox-attributes/proof/j2-v6-tail-census/{census.ts,step-649-1b.jsonl}"
+    rationale: "same 8/8 BRKPATH result on the PFC route (report.yaml P-j2-1b-v7-only, TIER 1); mirrors the 122 proposal"
+  - target: unknown-20-120.notes
+    action: replace the trailing "v6 untested." sentence + one evidence entry (rest of notes unchanged)
+    lines:
+      - '      described here, not mapped. v6 (J2 census, ws3c6'
+      - '      6.49.23) -> 0xfe0002 on all four verbs'
+      - '      (absent-handler signature) — v7-only list.'
+    evidence_to_attach:
+      - source: sample
+        ref: "live CHR interrogation (J2 v6 tail census, 2026-11-02, 0w): v6 absent (0xfe0002 all verbs, all four sibling routes) — work/2026-11-winbox-attributes/proof/j2-v6-tail-census/{census.ts,step-649-siblings.jsonl}"
+    rationale: "4/4 v6 legs BRKPATH (report.yaml P-j2-siblings-v6-absent, TIER 1); closes the 'v6 untested' tail the I4 integration left behind"
+  - target: unknown-20-121.notes
+    action: replace the trailing "v6 untested." sentence + one evidence entry (rest of notes unchanged)
+    lines:
+      - '      claimed. v6 (J2 census, ws3c6 6.49.23) -> 0xfe0002'
+      - '      on all four verbs (absent-handler signature) —'
+      - '      v7-only list.'
+    evidence_to_attach:
+      - source: sample
+        ref: "live CHR interrogation (J2 v6 tail census, 2026-11-02, 0w): v6 absent (0xfe0002 all verbs, all four sibling routes) — work/2026-11-winbox-attributes/proof/j2-v6-tail-census/{census.ts,step-649-siblings.jsonl}"
+    rationale: "same 4/4 BRKPATH result on the 8-row route (report.yaml P-j2-siblings-v6-absent, TIER 1)"
+text_bank_no_entry:
+  - routes: [[20, 116], [20, 117]]
+    status: "no schema entry exists; creation NOT proposed (error-only shapes on both sides: 7.x GETONE self-reports 'no obj', v6 -> 0xfe0002 — nothing to map)"
+    text: "v6 (J2 census, ws3c6 6.49.23) -> 0xfe0002 on all four verbs (absent-handler signature); 7.x GETONE self-reports 'no obj' (I4 census). Evidence: work/2026-11-winbox-attributes/proof/j2-v6-tail-census/{census.ts,step-649-siblings.jsonl}."
+not_proposed:
+  - what: "7.x verb-gating notes for 122/126"
+    reason: "not run here (v6-only brief); no claim made (report.yaml not_run_per_brief)"
+  - what: "any field entries for 116/117/120/121/122/126"
+    reason: "v6 legs are error-only (zero USER keys); 7.x shapes unchanged by this leg"
+  - what: "116/117 catalog entries"
+    reason: "error-only both sides; text banked above for the coordinator instead"
+notes_for_coordinator:
+  - "glossary: no new protocol terms — brkpath/errno/errstr/getone/getall/getobj/getcount/qos/pfc are already in GLOSSARY.txt or file-local headers; nothing to add"
+  - "122/126 role text already says v7-only from static composite evidence; this fragment only adds the live proof (notes + evidence), no role change"

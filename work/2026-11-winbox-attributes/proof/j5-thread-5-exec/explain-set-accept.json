@@ -1,0 +1,228 @@
+{
+  "ok": true,
+  "data": {
+    "input": {
+      "bytes": 48,
+      "normalized": false,
+      "truncated": false,
+      "positionMap": [
+        {
+          "analyzed": {
+            "start": 0,
+            "end": 48
+          },
+          "originalUtf16": {
+            "start": 0,
+            "end": 48
+          }
+        }
+      ]
+    },
+    "verdict": "pass",
+    "canonical": {
+      "mode": "structured",
+      "path": "/ip/firewall/filter",
+      "verb": "set",
+      "args": {
+        "numbers": "*3",
+        "action": "accept"
+      },
+      "queries": [],
+      "writeShaped": true
+    },
+    "structure": {
+      "statementCount": 1,
+      "statements": [
+        {
+          "id": "s0",
+          "span": {
+            "start": 0,
+            "end": 48
+          },
+          "resolution": "resolved",
+          "kind": "command",
+          "command": {
+            "path": "/ip/firewall/filter",
+            "verb": "set",
+            "args": {
+              "numbers": "*3",
+              "action": "accept"
+            }
+          },
+          "arguments": {
+            "read": true,
+            "tokens": [
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 24,
+                  "end": 34
+                },
+                "name": "numbers",
+                "value": "*3",
+                "valueSpan": {
+                  "start": 32,
+                  "end": 34
+                },
+                "text": "numbers=*3"
+              },
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 35,
+                  "end": 48
+                },
+                "name": "action",
+                "value": "accept",
+                "valueSpan": {
+                  "start": 42,
+                  "end": 48
+                },
+                "text": "action=accept"
+              }
+            ],
+            "queries": [],
+            "positional": []
+          },
+          "contextCertain": true,
+          "ev": "e4",
+          "transport": {
+            "classification": "unknown",
+            "basis": "offline cannot distinguish a singleton menu from an id-bearing table",
+            "ev": "e8"
+          }
+        }
+      ],
+      "blocks": [],
+      "containsWrite": true,
+      "subcommands": [],
+      "ev": "e6"
+    },
+    "symbols": {
+      "occurrences": []
+    },
+    "values": {
+      "occurrences": [
+        {
+          "id": "v0",
+          "span": {
+            "start": 32,
+            "end": 34
+          },
+          "tokenSpan": {
+            "start": 24,
+            "end": 34
+          },
+          "kind": "attribute",
+          "name": "numbers",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "id"
+              ],
+              "ev": "e9"
+            }
+          }
+        },
+        {
+          "id": "v1",
+          "span": {
+            "start": 42,
+            "end": 48
+          },
+          "tokenSpan": {
+            "start": 35,
+            "end": 48
+          },
+          "kind": "attribute",
+          "name": "action",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        }
+      ]
+    },
+    "spans": [],
+    "diagnostics": [],
+    "evidence": [
+      {
+        "id": "e0",
+        "source": "canonicalizer",
+        "probe": "canonicalizeExecuteCommand",
+        "basis": "direct",
+        "outcome": "ok"
+      },
+      {
+        "id": "e1",
+        "source": "canonicalizer",
+        "probe": "analyzeCoordinates",
+        "basis": "direct",
+        "outcome": "ok"
+      },
+      {
+        "id": "e4",
+        "source": "canonicalizer",
+        "probe": "resolveVerbs",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e6",
+        "source": "canonicalizer",
+        "probe": "containsWrite",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e8",
+        "source": "canonicalizer",
+        "probe": "classifyExplainTransport",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e9",
+        "source": "canonicalizer",
+        "probe": "valueShapeHints",
+        "basis": "heuristic",
+        "outcome": "ok"
+      }
+    ],
+    "runtimeAcceptance": "not-proven"
+  },
+  "warnings": [],
+  "tips": [
+    {
+      "code": "tip/explain-offline-only",
+      "message": "No router was given, so this is the canonicalizer's reading alone.",
+      "fix": "Add a router (`centrs explain <router> '<input>'`) for read-only parse, highlight and argument-name evidence; `--schema` and `--complete` then describe paths and complete at the cursor.",
+      "detailsUrl": "https://tikoci.github.io/centrs/tips/tip/explain-offline-only"
+    }
+  ],
+  "meta": {
+    "target": {},
+    "via": null,
+    "settings": {
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      }
+    },
+    "validation": {
+      "enabled": false
+    },
+    "operation": {
+      "command": "explain",
+      "mode": "offline",
+      "statementCount": 1,
+      "verdict": "pass"
+    }
+  }
+}

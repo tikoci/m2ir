@@ -1,0 +1,88 @@
+# cspell:ignore rowid getcount getall getone getobj reqid mangle calea ladder rungs oneshot churn ws21 keepalive netinstall defconf cliref wps etherboot hdecay jsonl jbe llms oneline populatedness pregate rsc
+# J3 worker report (Phase J, offline designs — NO live contact).
+# Two design sheets: H-decay-3 re-run on a decaying host (design-unexecuted,
+# needs the user's per-leg yes, which J3 does not seek) and the U1
+# custom-script stimulus hunt (AMBIGUITY STOP: no CHR stimulus exists).
+complete: true
+date: 2026-11-02
+worker: J3
+live_contact: none
+inputs:
+  git_head: 792f43d
+  git_head_subject: "Record Phase I commit 1f392ac in handoff"
+  tree: "clean (verified: git log --oneline -1 + git status --short at session start)"
+  handoff_note: "handoff.yaml head: field still names 6708923; resume_commit 1f392ac is the Phase I work commit; actual HEAD verified as 792f43d per brief."
+  read_first:
+    - AGENTS.md, README.md, DESIGN.md, llms.txt
+    - .github/instructions/routeros-grounding.instructions.md
+    - .github/instructions/use-bun.instructions.md
+    - .github/instructions/linting.instructions.md
+    - .github/instructions/cspell-glossary.instructions.md
+    - .github/instructions/descriptive-prose-file-names.instructions.md
+    - work/2026-11-winbox-attributes/attribute-discovery-plan.md (incl. durable handoff rule)
+    - work/2026-11-winbox-attributes/handoff.yaml
+  slice_inputs:
+    - work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h-decay-3.yaml
+    - work/2026-11-winbox-attributes/proof/i2-decay-backlog/report-execution-h-decay-3.yaml
+    - work/2026-11-winbox-attributes/proof/i2-decay-backlog/annex-u-h1-q1-dip.yaml
+    - work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-thread-5-adjunct.yaml
+    - work/2026-11-winbox-attributes/proof/H1-decay/report.yaml
+    - work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/report.yaml
+    - work/2026-11-winbox-attributes/proof/i3-handler-tail-census/report.yaml
+    - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/report.yaml
+  rosetta_reverified: "~/.rosetta/ros-help-0.12.0.db sha256 eee457411defe95c7a8111c89866dd5066a790ce2ffda46a37664c459515aae3 (415490048 bytes), full-length, matches source-inventory.yaml; sqlite3 -readonly only"
+verdicts:
+  - design: J3-h-decay-3-rerun-decaying-host
+    file: work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/leg-h-decay-3-rerun.yaml
+    verdict: "DESIGN-COMPLETE, UNEXECUTED. 3w+0r on ws21 7.25 (add1 + add2 + restore branch). Host = 2nd in-session filter add (H1 spike2 analog, the only spike shape with observed in-session decay). In-ladder decay gate (no pre-ladder reads; thresholds: DECAY-CONFIRMED R1/R2<R0a, LATE R3<R0a, else STABLE). Outcomes B1..B7 discriminate H-decay-3 + the surviving models (variable-gauge, multi-step one-shot, history-gating) with a B4 spike-absent branch that would promote history-gating to lead. Q1 annex re-attaches ANALYTICALLY on decay-confirm only (flag always set, 0w). Thread-5 piggyback: AGAINST (priced post-ladder option recorded, not recommended). Execution needs the user's per-leg yes; not sought."
+  - design: J3-u1-custom-script-stimulus-hunt
+    file: work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/u1-ambiguity-stop.yaml
+    verdict: "AMBIGUITY STOP (result, not failure). 6 candidate stimuli assessed, 26 Rosetta queries run (SQL verbatim in the sheet). No CLI setter exists on any tracked version (export/get/print only, 7.10.2+); the sole documented writer is netinstall script-file/Configure Script at install time (etherboot reinstall: infeasible on CHR, out of write-leg scope); reset executes but never rewrites bodies; no other menu references custom-script; changelogs silent. Version axis (I4) and stimulus axis (this hunt) both exhausted. U1-defconf-field-split stays open with this negative evidence as its bound."
+proven:
+  - id: P-j3-rerun-host-grounded
+    claim: "A 2nd in-session filter add is a grounded decaying host: H1 spike2 re-spiked (TIER 1 re-spike fact) and decayed graded in-session (TIER 2 4/4/3/2 + TIER 1 dip+plateau 1/2/2/2); the H-decay-3 execution report explicitly names it as the next host."
+    evidence: [work/2026-11-winbox-attributes/proof/H1-decay/report.yaml, work/2026-11-winbox-attributes/proof/i2-decay-backlog/report-execution-h-decay-3.yaml]
+  - id: P-j3-a3-record-standing
+    claim: "H-decay-3 outcome A3 (stable spike, flat-1 R0a..R5 + 54 keep-alive samples/300s, async=0) stands untouched as the record; the re-run tests a NEW host, it does not re-prove A3."
+    evidence: [work/2026-11-winbox-attributes/proof/i2-decay-backlog/report-execution-h-decay-3.yaml]
+  - id: P-j3-pregate-rejected-with-reasons
+    claim: "Pre-ladder M0-style decay-confirmation reads were considered and rejected as a mandatory gate (they would delay ladder start past +25s and consume the +5..+30s fast-decay window while proving nothing a flat read could decide); replaced by an in-ladder R2/R3 gate with exact decaying-vs-stable thresholds."
+    evidence: [work/2026-11-winbox-attributes/proof/H1-decay/report.yaml]
+  - id: P-j3-no-cli-defconf-writer
+    claim: "/system/default-configuration exposes export/get/print ONLY on every tracked version (command_versions 7.10.2+; inspect 7.25+7.26beta4 identical presence); all 4 bodies are Read-only Argument in all 3 manuals; custom-script is addressed by no other menu in cliref or inspect."
+    evidence: [u1-ambiguity-stop.yaml Q1/Q2/Q5/Q6/Q7/Q8/Q9/Q22b]
+  - id: P-j3-netinstall-sole-writer
+    claim: "The sole documented custom-script writer is netinstall script-file / Configure Script at install time (3 manual pages, prose quoted in the sheet); it replaces the RouterOS-supplied default script and persists across updates/resets."
+    evidence: [u1-ambiguity-stop.yaml Q14/Q16/Q18/Q20]
+  - id: P-j3-reset-executes-not-writes
+    claim: "/system/reset-configuration executes stored defconf scripts after purging config but never rewrites bodies; run-after-reset is a separate .rsc-file mechanism."
+    evidence: [u1-ambiguity-stop.yaml Q12/Q24/Q25]
+  - id: P-j3-u1-both-axes-exhausted
+    claim: "U1 is bound on both axes: version-diff exhausted by I4 (beta4==7.25 bodies, v6 same-6-fields) and stimulus exhausted by this hunt (S1..S6 all negative/speculative-blocked)."
+    evidence: [work/2026-11-winbox-attributes/proof/i4-tail-census-exec/report.yaml, u1-ambiguity-stop.yaml]
+unresolved:
+  - id: U-h1-32-mechanism
+    claim: "CARRIED: H-decay-3 announce-backlog still untested; variable-gauge consistent; multi-step one-shot + history-gating open. The re-run sheet (B1..B7) is the bounded next step; needs a per-leg yes."
+  - id: U-h1-q1-dip
+    claim: "CARRIED, annex STOOD DOWN: re-attaches analytically to the re-run ONLY on decay-confirm (exact trigger in the sheet); costs 0w in all branches."
+  - id: U1-defconf-field-split
+    claim: "STOPPED (ambiguity): no CHR stimulus exists. Reopen only on hardware-netinstall leg, coordinator-authorized S4 native-SET micro-probe (against recommendation), or new static evidence."
+  - id: U-j3-f1-mode-flag
+    claim: "NEW (open question Q-live-2): whether defconf f1 (bool F) moves under caps-mode/wps-sync-mode reset modes. Out of U1 scope (cannot split f2..f6); needs a reset leg +1r. Not sheeted."
+  - id: U-j3-v6-defconf-setter
+    claim: "NEW (static gap Q-static-1): whether RouterOS v6 exposes a defconf setter (no v6 CLI data in Rosetta). Would open at most a v6 leg, not the 7.x split."
+  - id: U-j3-chr-custom-script-populatedness
+    claim: "NEW (open question Q-live-1): whether custom-script reads empty on a stock CHR (one live `get` read; constrains the 6-field/4-body cardinality puzzle). Recorded, not fetched (offline charter)."
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/leg-h-decay-3-rerun.yaml
+  - work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/u1-ambiguity-stop.yaml
+  - work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/report.yaml
+spend: { counted_writes: 0, reboots: 0, note: "offline designs: no VMs touched, no RouterOS commands of any kind (not even reads); no quickchr/centrs invocations" }
+scope_check: "rerun: 1 discriminating experiment (decaying-host ladder) + carried negative control + analytic annex; U1: 0 experiments sheeted (6 candidates assessed statically, all negative). Within the <=2-per-field bound. H-decay-3 A3 record and Q1 stand-down preserved by design."
+fragment:
+  file: work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/fragment.yaml
+  proposes: "STATIC-ONLY writer note for default-config [24,8] (sole documented writer = netinstall script-file; no CLI setter any tracked version; reset executes-does-not-write). Coordinator decides; no wire claim."
+forbidden_paths_edited: none
+owned_path: work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/
+git_commands_run: ["git log --oneline -1", "git status --short"]

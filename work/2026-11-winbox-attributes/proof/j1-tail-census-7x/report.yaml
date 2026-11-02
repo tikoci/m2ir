@@ -1,0 +1,56 @@
+# cspell:ignore rowid getall getone getobj getcount getobjbare getonly multiset jsonl brkpath notimp unknownid defconf qos pfc centrs winbox quickchr objid evidencing
+# J1 EXECUTION report (Phase J worker, 7.x leg). Tail census 1b + U4b selector matrix, live read-only.
+complete: true
+date: 2026-11-02
+worker: J1
+leg: J1-tail-census-7x
+verdict: "COMPLETE 0w+0r — 122 GET-only + drift-free; 126 wrap-family + drift-free; U4b CLOSED (singleton row-id is 0, GETOBJ exact-match)"
+spend: { approved: "0w+0r (read-only census + boot approval)", spent: "0w+0r", machines: [winbox-beta4, ws21] }
+tooling:
+  script: work/2026-11-winbox-attributes/proof/j1-tail-census-7x/census.ts
+  shape: "I4 census.ts copy + --obj flag (GETOBJ 0xfe0001 value, default 1) + getobjbare verb (CMD_GETOBJ, no selector); resolveLabTarget/openSession/correlatedRequest/appendCapture (write-through, ts redacted); router-error recorded as data, never thrown"
+  validation: "bunx biome check --write clean; usage path prints extended verbs/flags"
+coverage:
+  - family: 1b-A-qos-config
+    reads: ["GETONE [20,122] beta4 (IDENTICAL to ev/7.25-getone-20-122.json, drift-free)", "GETONE [20,122] 7.25 (IDENTICAL to ev baseline)", "gating GETALL/GETOBJ/GETCOUNT [20,122] both 7.x (->0xfe0003/->0xfe0003/0xFFFFFFFF)"]
+  - family: 1b-B-qos-pfc
+    reads: ["GETONE [20,126] beta4 (IDENTICAL to ev/7.25-getone-20-126.json, drift-free)", "GETONE [20,126] 7.25 (IDENTICAL to ev baseline)", "gating GETALL/GETOBJ/GETCOUNT [20,126] both 7.x (1-row wrap id 0 / ->0xfe0004 / 1)"]
+  - family: U4b-selector-matrix
+    reads: ["GETALL [20,114]/[20,115] beta4 (wrapped row-id 0xfe0001=0, total 1, both routes)", "GETOBJ obj=0 beta4 (ok both routes, full singleton + row-id echo)", "GETOBJ bare beta4 (->0xfe0004 both routes)", "GETOBJ obj=2 beta4 (->0xfe0004 both routes)"]
+proven:
+  - id: P-j1-122-drift-free
+    claim: "[20,122] GETONE byte-shape identical on 7.26beta4 and 7.25 vs ev/7.25-getone-20-122.json: 0x132=[255], 0x120=F, 0x122/0x12f/0x131/0x121=255, 0x12c=2, 0x12d/0x12e/0x130=0, 0x11=2 (11 USER fields pinned)"
+    tier: "TIER 1 (step-beta4-122.jsonl + step-725-122.jsonl; programmatic multiset diff vs ev baseline)"
+  - id: P-j1-122-getonly
+    claim: "[20,122] is GET-only on both 7.x (GETALL/GETOBJ->0xfe0003 NOTIMP, same signature as defconf P-i4-defconf-gating); GETCOUNT=0xFFFFFFFF sentinel, no row count"
+    tier: "TIER 1 (step-beta4-122.jsonl + step-725-122.jsonl)"
+  - id: P-j1-126-drift-free
+    claim: "[20,126] GETONE byte-shape identical on 7.26beta4 and 7.25 vs ev/7.25-getone-20-126.json: 0x18/0x19=F, 0x14/0x15/0x16=255, fe-flag bank, 0xfe0010='disabled' (5 USER fields pinned)"
+    tier: "TIER 1 (step-beta4-126.jsonl + step-725-126.jsonl; programmatic multiset diff vs ev baseline)"
+  - id: P-j1-126-wrap
+    claim: "[20,126] joins the 114/115 wrap family on both 7.x: GETALL wraps the singleton as a 1-row list (row-id 0, 0xfe0010='disabled', total 1); GETOBJ obj=1->0xfe0004 UNKNOWNID; GETCOUNT=1"
+    tier: "TIER 1 (step-beta4-126.jsonl + step-725-126.jsonl)"
+  - id: P-j1-u4b-rowid-zero
+    claim: "U4b CLOSED: the 114/115 singleton row-id is 0, and GETOBJ is an exact row-id match — obj=0 returns the full singleton (114: same 13 payload fields as the GETALL row + 0xfe0001:0 echo; 115: fe-flags + 0xfe0001:0 + 'default'), while bare/obj=2->0xfe0004 UNKNOWNID; with I4 obj=1->0xfe0004, {0:hit, 1:miss, 2:miss, bare:miss} proves 0xfe0004 means id-miss, not verb-unsupported"
+    tier: "TIER 1 (step-beta4-u4b-getall.jsonl + step-beta4-u4b-obj0.jsonl + step-beta4-u4b-bare.jsonl + step-beta4-u4b-obj2.jsonl)"
+unresolved:
+  - id: U-j1-126-selector
+    claim: "NEW: [20,126] shows the wrap+UNKNOWNID shape with row-id 0 but GETOBJ obj=0 is untested there (U4b matrix scoped to 114/115 by brief). Next: one read-only GETOBJ obj=0 on [20,126], either 7.x VM (1 experiment, within the <=2 bound)"
+  - id: U2-qos-populated-shapes
+    claim: "CARRIED: all QoS CHR shapes still defaults; populated rows need switch hardware"
+  - id: U-siblings-v6
+    claim: "CARRIED, out of J1 scope: 6.49 leg (122/126 BRKPATH checks) belongs to the paired v6 worker"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/census.ts
+  - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/report.yaml
+  - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/step-beta4-122.jsonl
+  - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/step-725-122.jsonl
+  - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/step-beta4-126.jsonl
+  - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/step-725-126.jsonl
+  - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/step-beta4-u4b-getall.jsonl
+  - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/step-beta4-u4b-obj0.jsonl
+  - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/step-beta4-u4b-bare.jsonl
+  - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/step-beta4-u4b-obj2.jsonl
+vm_state: "winbox-beta4 + ws21 each started once, stopped after their legs; quickchr list: 15/15 STOPPED; no other VMs touched"
+tiers_note: "Every proven[] claim above is TIER 1 (committed rx bytes in the cited step jsonl). No TIER 2 (console-observed) values are presented as rx-committed; console output was used only as a live progress signal."

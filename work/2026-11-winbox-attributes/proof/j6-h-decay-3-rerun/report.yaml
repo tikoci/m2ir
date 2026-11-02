@@ -1,0 +1,62 @@
+# cspell:ignore rowid getcount getall reqid mangle calea unacked ladder rungs oneshot churn keepalive keepalives asyncs trel msback hdecay nonmonotonic negcontrol untimed respike nodecay centrs jsonl jbe precedented j6 multistep reattach readback
+# J6 EXECUTION report (coordinator). H-decay-3 re-run on a decaying host.
+complete: true
+date: 2026-11-02
+worker: coordinator
+leg: J6-h-decay-3-rerun-exec
+design_ref: work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/leg-h-decay-3-rerun.yaml
+verdict: "COMPLETE 3w+0r of 3w+0r — outcome B2-DECAY-ZERO-ASYNC (TIER 1): spike2 decayed 4/4/3/2x58 with async=0 on every rung + all 54 keepalives + drain; H-decay-3 (announce-backlog as decay driver) DEAD; churn-artifact DEAD; single-step one-shot DEAD in TIER 1 (3-level decay); variable-gauge + multi-step one-shot REMAIN (internal); history-gating CONSISTENT (spike1=2 vs spike2=4); Q1 annex analytically ACTIVE, Q-neither (flat +60..+120s, dip not replicated); restore CLEAN"
+spend: { approved: "3w+0r fixed", spent: "3w+0r", vm: ws21, itemized: "add1-spike1 (1) + add2-spike2 (1) + restore-verify branch (1)" }
+tooling:
+  control_via: "centrs execute --quickchr ws21 --yes / retrieve --json; every string explained offline pre-send (explain-*.json)"
+  native_via: "proof/i2-decay-backlog/leg-h1-fixed.ts ladder + read; BOTH ladder consoles tee'd (console-negcontrol.txt, console-ladder.txt)"
+baseline: "PASS: 0 rows all five menus (control) + native read [20,3]=0 [20,32]=0"
+s0_negative_control:
+  result: "PASS: all rungs [20,3]=0 [20,32]=0, 55 keepalives all 0/async=0, drain async=0; 166 records; 62 v32 rx samples all 0"
+  tier: "TIER 1 (step-negcontrol.jsonl + timing-negcontrol.jsonl + console-negcontrol.txt)"
+s1_spike1_cycle:
+  stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=j3-rerun-spike1 (.id *1)"
+  readback: "exactly 1 row forward/accept, packets 0 bytes 0"
+  spike1_value: "[20,32]=2 (diagnostic, TIER 1 step-spike1.jsonl)"
+  zero_gate: "PASS ([20,3]=0 [20,32]=0 + control 0 rows after remove1)"
+  writes: 1
+s2_spike2_ladder:
+  stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=j3-rerun-spike2 (.id *2)"
+  readback: "exactly 1 row forward/accept, packets 0 bytes 0"
+  rungs_TIER1: "R0a(+6.4s)=4 R0b=4 R1(+10s)=3 R2(+30s)=2 R3(+60s)=2 R4(+120s)=2 R5(+300s)=2; async=0 every rung; [20,3]=1 counter guard held all rungs"
+  rx_bytes: "61 v32 samples: [4,4,3,2x58], zero other values (order-aware: back-to-back R0a/R0b/R1 cluster assigns in order)"
+  keepalives: "54 samples, ALL v32=2/async=0 (K1 at +15s already 2)"
+  drain: "async=0 (picked up 0)"
+  decay_gate: "DECAY-CONFIRMED at R1 (3<4), TIER 1 ledger + rx"
+  writes: 1
+outcome_classification:
+  primary: "B2-decay-zero-async (decay 4->3->2 plateau with ZERO async in-window + S0 clean)"
+  b5_secondary: "3-LEVEL decay (single intermediate 3): single-step one-shot DEAD in TIER 1 (a single step yields exactly 2 levels); multi-step REQUIRED if one-shot survives. NOTE: the sheet's B5-graded threshold (>=2 distinct intermediates) is not literally met (1 intermediate) — classified as graded-analog, reported exactly, not forced."
+  magnitude_secondary: "spike1=2 vs spike2 R0a=4 DIFFERENT -> history-gating CONSISTENT (H1 1-vs-4 puzzle persists as 2-vs-4)"
+  q1_annex: "ACTIVE analytically (decay-confirm trigger met): +60..+120s window = R3/R4 + K9..K19, ALL v32=2 flat -> Q-neither (H1 Q1-dip NOT replicated; per-add variability). No secondary D-polls (none shown; rule already removed per S3)."
+model_scoreboard:
+  - "H-decay-3 announce-backlog-as-decay-driver: DEAD (TIER 1 — decay with zero async)"
+  - "churn-artifact as decay driver: DEAD (same)"
+  - "H-decay-1 variable-gauge: REMAINS (internal mechanism; consistent)"
+  - "H-decay-4 multi-step one-shot: REMAINS in multi-step form; single-step DEAD in TIER 1"
+  - "history-gating: OPEN + CONSISTENT (magnitude differs across histories)"
+  - "standing-level: NEW observation — spike settles at plateau 2 (not 0/1) with 1 rule present across 58 samples/285s; single sample, recorded not promoted"
+live_validation: "L1 PASS-by-completion (164 committed records, L5 byte-complete; PROCESS NOTE: mid-run wc check after R0a not executed — no evidence impact) / L2 FULL (tee'd console + 7 rung-end ledger events match) / L3 PASS (54 keepalives, max gap 9996ms <=10s) / L4 PASS (one session-open/close pair) / L5 PASS (all 6 step files JSON-parse, 8/8/8/8/164/166 lines) / L6 N/A (no death)"
+restore: "CLEAN: remove *2 + 5-menu zero + native zero read; ws21 STOPPED"
+unresolved:
+  - id: U-h1-32-mechanism
+    claim: "NARROWED but OPEN: decay driver is INTERNAL (variable-gauge vs multi-step one-shot vs history-gating-magnitude). Announce-backlog and churn-artifact are dead. Next discriminator unscoped."
+  - id: U-h1-q1-dip
+    claim: "Q-neither on this host (dip not replicated). Annex stands down again; dip remains a per-add-variability observation."
+  - id: U-j6-standing-level-2
+    claim: "NEW: 4->3->2 plateau (58 samples) — is 2 a per-rule standing level? Single sample; needs a 2-rule / rule-removed-plateau leg to decide (unscoped, unbudgeted)."
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/leg-h-decay-3-rerun-exec.yaml
+  - work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/report.yaml
+  - work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/explain-*.json
+  - work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/control-*.json
+  - work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/step-ladder.jsonl
+  - work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/timing-ladder.jsonl
+  - work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/console-ladder.txt
+  - work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/step-negative-control.jsonl
+vm_end_state: "ws21 STOPPED; all 15 machines stopped; baselines restored clean"

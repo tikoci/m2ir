@@ -1,0 +1,181 @@
+{
+  "ok": true,
+  "data": {},
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "target": {
+      "input": "ws21",
+      "host": "127.0.0.1",
+      "port": 9193,
+      "baseUrl": "api://127.0.0.1:9193",
+      "identity": "ws21",
+      "source": {
+        "kind": "provider",
+        "key": "quickchr:ws21"
+      },
+      "sources": {
+        "host": {
+          "kind": "provider",
+          "key": "quickchr:ws21"
+        },
+        "port": {
+          "kind": "provider",
+          "key": "quickchr:ws21"
+        }
+      }
+    },
+    "via": "native-api",
+    "settings": {
+      "via": {
+        "kind": "default",
+        "key": "via"
+      },
+      "host": {
+        "kind": "provider",
+        "key": "quickchr:ws21"
+      },
+      "port": {
+        "kind": "provider",
+        "key": "quickchr:ws21"
+      },
+      "timeoutMs": {
+        "kind": "default",
+        "key": "timeout"
+      },
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      },
+      "validate": {
+        "kind": "default",
+        "key": "validate"
+      },
+      "insecure": {
+        "kind": "default",
+        "key": "insecure"
+      },
+      "username": {
+        "kind": "provider",
+        "key": "quickchr:ws21:username"
+      },
+      "password": {
+        "kind": "provider",
+        "key": "quickchr:ws21:password"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "source": ":put [:parse] + /console/inspect",
+      "result": "passed",
+      "syntax": true,
+      "semantic": true,
+      "availableAttributes": [
+        "action",
+        "address-list",
+        "address-list-timeout",
+        "chain",
+        "comment",
+        "connection-bytes",
+        "connection-limit",
+        "connection-mark",
+        "connection-nat-state",
+        "connection-rate",
+        "connection-state",
+        "connection-type",
+        "content",
+        "disabled",
+        "dscp",
+        "dst-address",
+        "dst-address-list",
+        "dst-address-type",
+        "dst-limit",
+        "dst-port",
+        "fragment",
+        "hotspot",
+        "icmp-options",
+        "in-bridge-port",
+        "in-bridge-port-list",
+        "in-interface",
+        "in-interface-list",
+        "ingress-priority",
+        "ipsec-policy",
+        "ipv4-options",
+        "jump-target",
+        "layer7-protocol",
+        "limit",
+        "log",
+        "log-prefix",
+        "nth",
+        "numbers",
+        "out-bridge-port",
+        "out-bridge-port-list",
+        "out-interface",
+        "out-interface-list",
+        "p2p",
+        "packet-mark",
+        "packet-size",
+        "per-connection-classifier",
+        "port",
+        "priority",
+        "protocol",
+        "psd",
+        "random",
+        "realm",
+        "reject-with",
+        "routing-mark",
+        "src-address",
+        "src-address-list",
+        "src-address-type",
+        "src-mac-address",
+        "src-port",
+        "tcp-flags",
+        "tcp-mss",
+        "time",
+        "tls-host",
+        "tos",
+        "ttl"
+      ],
+      "stages": [
+        {
+          "stage": "offline",
+          "source": "offline explain (canonicalizer)",
+          "result": "passed"
+        },
+        {
+          "stage": "device",
+          "source": ":put [:parse] + /console/inspect",
+          "result": "passed"
+        }
+      ]
+    },
+    "operation": {
+      "kind": "execute",
+      "objectCount": 0,
+      "request": {
+        "command": "/ip/firewall/filter/set numbers=*3 protocol=tcp",
+        "canonical": {
+          "mode": "structured",
+          "input": "/ip/firewall/filter/set numbers=*3 protocol=tcp",
+          "path": "/ip/firewall/filter",
+          "verb": "set",
+          "attributes": {
+            "numbers": "*3",
+            "protocol": "tcp"
+          },
+          "queries": []
+        },
+        "write": true,
+        "yes": true,
+        "validate": true,
+        "verbose": false,
+        "timeoutMs": 10000,
+        "format": "json"
+      },
+      "auth": {
+        "username": "admin",
+        "passwordProvided": true
+      }
+    }
+  }
+}

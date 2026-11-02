@@ -1223,7 +1223,26 @@ handlers:
       custom-script) do NOT split across versions — the
       version-diff leg is exhausted; the f2/f3/f4/f5/f6 mapping
       needs a custom-script-set leg.
+      U1 stimulus hunt (J3, offline, 2026-11-02): no CLI
+      setter moves one defconf body independently —
+      /system/default-configuration exposes export/get/
+      print ONLY on every Rosetta-tracked version
+      (7.10.2+; inspect 7.25+7.26beta4 identical) and
+      all four bodies are Read-only Argument in CLI
+      manuals 7.24/7.25/7.26. The sole
+      CLI-read-back-visible writer is netinstall
+      script-file / Configure Script at install time
+      (replaces the vendor default script; persists
+      across updates and resets). A second documented
+      writer, the TR-069 Download RPC vendor FileType
+      'X MIKROTIK Factory Configuration File', writes a
+      slot that does NOT surface in
+      /system/default-configuration/print (reviewer
+      R3, Rosetta TR-069 page id 214). Stimulus axis
+      exhausted with the version axis: U1 stays open.
     evidence:
+      - source: doc
+        ref: "static Rosetta/manual interrogation (J3 U1 stimulus hunt + J-reviewer R3, 2026-11-02, 0w): no CLI setter any tracked version; netinstall sole read-back-visible writer; TR-069 second writer, different read-back path — work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/u1-ambiguity-stop.yaml + work/2026-11-winbox-attributes/proof/j-reviewer/reconstruction-r3.yaml"
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
       - source: sample
@@ -1338,8 +1357,10 @@ handlers:
     notes: |
       Verb gating (I4 census, both 7.x): GETALL answers with the
       singleton wrapped as a 1-row list (same 6 USER fields +
-      row-id 0, total 1); GETOBJ obj=1 -> 0xfe0004 even with the
-      obj-id present (selector puzzle, not a missing id);
+      row-id 0, total 1); GETOBJ is an exact row-id match on
+      the singleton row-id 0 (J1 U4b matrix, beta4: obj=0
+      returns the full singleton + 0xfe0001:0 echo;
+      bare/obj=1/obj=2 -> 0xfe0004 UNKNOWNID id-miss);
       GETCOUNT = 1. Beta4 GETONE is drift-free vs 7.25. v6 ->
       0xfe0002 on all four verbs (absent-handler signature,
       same as the v6 SMS-absent census) — v7-only PROVEN, not
@@ -1347,6 +1368,8 @@ handlers:
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (J1 U4b selector matrix, 2026-11-02, 0w): GETALL row-id 0 + GETOBJ {obj=0:hit, bare/obj=2:0xfe0004} on 7.26beta4 — work/2026-11-winbox-attributes/proof/j1-tail-census-7x/{census.ts,step-beta4-u4b-getall.jsonl,step-beta4-u4b-obj0.jsonl,step-beta4-u4b-bare.jsonl,step-beta4-u4b-obj2.jsonl}; rows fixtures/winbox-ipc/7.26beta4-qos-u4b-obj0.json"
       - source: sample
         ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-114.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
@@ -1373,14 +1396,18 @@ handlers:
     notes: |
       Verb gating (I4 census, both 7.x): GETALL answers with the
       singleton wrapped as a 1-row list (total 1, still zero
-      USER fields); GETOBJ obj=1 -> 0xfe0004 even with the
-      obj-id present (same selector puzzle as 114); GETCOUNT =
-      1. Beta4 GETONE is drift-free vs 7.25. v6 -> 0xfe0002 on
-      all four verbs (absent-handler signature) — v7-only
+      USER fields); GETOBJ is an exact row-id match on the
+      singleton row-id 0 (J1 U4b matrix, beta4: obj=0
+      returns fe-flags + 0xfe0001:0 echo; bare/obj=1/obj=2
+      -> 0xfe0004 UNKNOWNID id-miss); GETCOUNT = 1. Beta4
+      GETONE is drift-free vs 7.25. v6 -> 0xfe0002 on all
+      four verbs (absent-handler signature) — v7-only
       PROVEN. Populated rows still need switch hardware.
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (J1 U4b selector matrix, 2026-11-02, 0w): GETALL row-id 0 + GETOBJ {obj=0:hit, bare/obj=2:0xfe0004} on 7.26beta4 — work/2026-11-winbox-attributes/proof/j1-tail-census-7x/{census.ts,step-beta4-u4b-getall.jsonl,step-beta4-u4b-obj0.jsonl,step-beta4-u4b-bare.jsonl,step-beta4-u4b-obj2.jsonl}; rows fixtures/winbox-ipc/7.26beta4-qos-u4b-obj0.json"
       - source: sample
         ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-115.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
@@ -1414,10 +1441,14 @@ handlers:
       all answer on 7.25 + 7.26beta4 with identical rows;
       GETOBJ obj=1 returns the offline row. The fe columns
       (0xfe0010 name, 0xfe0009 comment on row 1 only) are
-      described here, not mapped. v6 untested.
+      described here, not mapped. v6 (J2 census, 6.49.23)
+      -> 0xfe0002 on all four verbs (absent-handler
+      signature) — v7-only list.
     evidence:
       - source: sample
         ref: "live CHR interrogation (I4 tail census 1a, 2026-11-02, 0w): sibling scan + GETALL/GETOBJ/GETCOUNT on 7.26beta4 (winbox-beta4) + 7.25 (ws21), identical 2-row shape — work/2026-11-winbox-attributes/proof/i4-tail-census-exec/{census.ts,step-beta4-qos-siblings.jsonl,step-beta4-qos-siblings2.jsonl,step-725-siblings.jsonl,step-725-siblings2.jsonl}; rows fixtures/winbox-ipc/7.26beta4-qos-120-121.json"
+      - source: sample
+        ref: "live CHR interrogation (J2 v6 tail census, 2026-11-02, 0w): v6 absent (0xfe0002 all verbs, all four sibling routes) — work/2026-11-winbox-attributes/proof/j2-v6-tail-census/{census.ts,step-649-siblings.jsonl}"
 
   unknown-20-121:
     sys-to: [20, 121]
@@ -1446,10 +1477,14 @@ handlers:
       rows, total 8). Structurally: f7 mirrors the row id,
       f11 climbs 1-5 then drops off rows 6-7, f10 steps
       1/1/1/2/2/2/0/0, f13 flips on after row 0 — no names
-      claimed. v6 untested.
+      claimed. v6 (J2 census, 6.49.23) -> 0xfe0002 on all
+      four verbs (absent-handler signature) — v7-only
+      list.
     evidence:
       - source: sample
         ref: "live CHR interrogation (I4 tail census 1a, 2026-11-02, 0w): sibling scan + GETALL/GETOBJ/GETCOUNT on 7.26beta4 (winbox-beta4) + 7.25 (ws21), identical 8-row shape — work/2026-11-winbox-attributes/proof/i4-tail-census-exec/{census.ts,step-beta4-qos-siblings.jsonl,step-beta4-qos-siblings2.jsonl,step-725-siblings.jsonl,step-725-siblings2.jsonl}; rows fixtures/winbox-ipc/7.26beta4-qos-120-121.json"
+      - source: sample
+        ref: "live CHR interrogation (J2 v6 tail census, 2026-11-02, 0w): v6 absent (0xfe0002 all verbs, all four sibling routes) — work/2026-11-winbox-attributes/proof/j2-v6-tail-census/{census.ts,step-649-siblings.jsonl}"
 
   qos-config-20-122:
     sys-to: [20, 122]
@@ -1458,9 +1493,24 @@ handlers:
     cmd: GET_ONE
     role: "v7-only QoS config holder: AHolder('/nova/store/net/qos/config'), head (+0x0) of the 8-handler QoS composite (ctor 0x8190e3e; siblings 114/115/116/117/120/121/126). Live 255-heavy defaults are CHR-absent QoS config."
     confidence: observed-only
+    notes: |
+      Verb gating (J1 census, both 7.x): GET-only —
+      GETALL/GETOBJ -> 0xfe0003 (NOTIMP, same signature
+      as default-config); GETCOUNT = 0xFFFFFFFF sentinel
+      (no row count). Beta4 GETONE is drift-free vs 7.25
+      (255-bank pinned: 0x132=[255], 0x122/0x12f/0x131/
+      0x121=255, 0x120=F, 0x12c=2, 0x12d/0x12e/0x130=0,
+      0x11=2). v6 (J2 census, 6.49.23) -> 0xfe0002 on all
+      four verbs (absent-handler signature) — v7-only
+      PROVEN live. Populated rows still need switch
+      hardware.
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (J1 tail census 1b, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (GET-only, GETCOUNT 0xFFFFFFFF, no drift) — work/2026-11-winbox-attributes/proof/j1-tail-census-7x/{census.ts,step-beta4-122.jsonl,step-725-122.jsonl}"
+      - source: sample
+        ref: "live CHR interrogation (J2 v6 tail census, 2026-11-02, 0w): v6 absent (0xfe0002 all verbs) — work/2026-11-winbox-attributes/proof/j2-v6-tail-census/{census.ts,step-649-1b.jsonl}"
       - source: sample
         ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-122.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
@@ -1626,9 +1676,28 @@ handlers:
     cmd: GET_ONE
     role: "v7-only QoS PFC (Priority Flow Control) holder: AHolder('/nova/store/net/qos/pfc'), member of the 8-handler QoS composite (ctor 0x8190e3e; siblings 114/115/116/117/120/121/122). Live 0xfe-defaults (0xfe0010 = 'disabled') are CHR-absent QoS defaults."
     confidence: observed-only
+    notes: |
+      Verb gating (J1 census, both 7.x): same wrap family
+      as 114/115 — GETALL wraps the singleton as a 1-row
+      list (row-id 0, 0xfe0010='disabled', total 1);
+      GETCOUNT = 1. GETOBJ is an exact row-id match on
+      the singleton row-id 0 (J4 leg: obj=0 returns the
+      full singleton + 0xfe0001:0 echo; J1 matrix:
+      obj=1 -> 0xfe0004 UNKNOWNID id-miss). Beta4 GETONE
+      is drift-free vs 7.25 (0x18/0x19=F,
+      0x14/0x15/0x16=255, 0xfe0010='disabled'). v6 (J2
+      census, 6.49.23) -> 0xfe0002 on all four verbs
+      (absent-handler signature) — v7-only PROVEN live.
+      Populated rows still need switch hardware.
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (J1 tail census 1b, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (1-row wrap id 0, GETOBJ->0xfe0004, GETCOUNT 1, no drift) — work/2026-11-winbox-attributes/proof/j1-tail-census-7x/{census.ts,step-beta4-126.jsonl,step-725-126.jsonl}"
+      - source: sample
+        ref: "live CHR interrogation (J4 obj0 close leg, 2026-11-02, 0w): [20,126] GETOBJ obj=0 hits (full singleton + 0xfe0001:0 echo) — work/2026-11-winbox-attributes/proof/j4-126-obj0-close/{census.ts,step-beta4-126-obj0.jsonl}; rows fixtures/winbox-ipc/7.26beta4-qos-u4b-obj0.json"
+      - source: sample
+        ref: "live CHR interrogation (J2 v6 tail census, 2026-11-02, 0w): v6 absent (0xfe0002 all verbs) — work/2026-11-winbox-attributes/proof/j2-v6-tail-census/{census.ts,step-649-1b.jsonl}"
       - source: sample
         ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-126.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
@@ -1897,6 +1966,15 @@ handlers:
     fields:
       row-id: { namespace: session, field: 1 }
       namespace-user:
+        11:
+          name: protocol
+          tcode: u32
+          semantic: enum-u32
+          access: read-write
+          cli-alias: "/ip/firewall/filter protocol"
+          values: { 1: icmp, 6: tcp, 17: udp }
+          role: "IP protocol number (u32c), 3-point pin: 6/tcp (G1 M8 tarpit row) + 17/udp + 1/icmp (J5 T5-a adds). COMPUTED, not stored-at-add: absent on protocol-less rows, appears post-hoc on set-protocol, tracks 6->17 on re-set (J5 T5-b). Absent when protocol unset. Observed-only — values beyond 1/6/17 unproven."
+        22: { name: unknown-22, tcode: bool, role: "OPEN — present-but-false on every protocol-carrying row (tcp/udp/icmp adds + post-hoc sets, J5 T5-a/T5-b); absent when protocol unset. Constant adjunct, NOT protocol-discriminating; meaning UNKNOWN" }
         39: { name: chain, tcode: string, role: "'forward' on all observed rows (single chain value; other chains untested)" }
         40:
           name: action
@@ -1908,6 +1986,8 @@ handlers:
           role: "11-value action enum, single add-samples each + symmetric reversals (observed-only — no public source names the numeric association). Inverse native SETOBJ f40 1->0 takes effect (control *1 flips jump->accept and drops jump-target). NAT-shared values CONFIRMED on filter (2/3/4/5/6 match NAT f40); filter-only values (10/11/12/40) have no NAT counterpart (terminal pair drop/reject clusters 10/11). Cross-checks: drop=10 via R1 control exit, passthrough=4 via a device-created dummy row. Bare tarpit add is device-rejected ('tarpit valid only for tcp'); bare fasttrack add accepted."
         41: { name: jump-target, tcode: string, cli-alias: "/ip/firewall/filter jump-target", access: read-write, role: "target chain name: the ONLY J1->J2 row delta ('e3jump'->'e3jump2') while f40 stays 1; absent on the accept row; nonexistent chains accepted at add AND set (no chain seeding needed). Native row RETAINS f41 after action leaves jump while control drops it (general action-exit behavior: native SETOBJ in F-jump, control set in G1-R1)." }
         91: { name: address-list, tcode: string, role: "address-list name (t=0x21): 'g1-probe' on both the add-src and add-dst rows (single samples each, SHARED wire field); cleared on control action-exit (2/2 reversals)" }
+        404: { name: unknown-404, tcode: bool, role: "OPEN — true on every protocol-carrying row (adds + post-hoc sets, J5 T5-a/T5-b); absent when protocol unset. Any-protocol gating; meaning UNKNOWN" }
+        454: { name: unknown-454, tcode: bool, role: "OPEN — appears on fasttrack-action rows, cleared on action-exit (J5 T5-c replicates G1 M9). VALUE DIVERGENT: true on G1 add-fasttrack, false on J5 post-hoc set-fasttrack (add-vs-set confounded with protocol state); meaning UNKNOWN" }
       namespace-session:
         7: { name: unknown-7, tcode: bool, role: "OPEN — false on all observed rows (t=0x00); meaning UNKNOWN" }
         8: { name: unknown-8, tcode: bool, role: "OPEN — false on all observed rows (t=0x00); meaning UNKNOWN" }
@@ -1935,6 +2015,8 @@ handlers:
         ref: "static analysis (H0b, nova/bin/net 7.25 x86, sha256 4dfdc32ac9979b8ab86478dab601b79444875f936f7ff1b6b132553a565f6e7c, 2026-11-02, blind-corroborated by H-reviewer R2): [20,3] owner CONFIRMED (handler id 3 = ipt filter); 0xfd002a zero refs at full coverage — work/2026-11-winbox-attributes/proof/H0b-fd002a-owner-static/{report.yaml,sites-disassembly.txt} + work/2026-11-winbox-attributes/proof/H-reviewer/{report.yaml,reconstruction-r2.yaml}"
       - source: sample
         ref: "live CHR interrogation (H3 micro-leg, ws21 7.25, 2026-11-02, 2w+0r of 3): rejected bare-tarpit consumes one rowid (accept lands *2/rowid 2) — work/2026-11-winbox-attributes/proof/H3-rowid-gap/{report.yaml,control-reject.json,control-accept-add.json,step-gap.jsonl}"
+      - source: sample
+        ref: "live CHR interrogation (J5 thread-5 adjunct leg, ws21 7.25, 2026-11-02, 8w+0r): protocol vary (udp/icmp) + post-hoc set/clear + fasttrack set/exit — work/2026-11-winbox-attributes/proof/j5-thread-5-exec/{report.yaml,step-T5a-udp.jsonl,step-T5a-icmp.jsonl,step-T5b-base.jsonl,step-T5b-tcp.jsonl,step-T5b-udp.jsonl,step-T5c-ft.jsonl,step-T5c-accept.jsonl}; cell rows fixtures/winbox-ipc/7.25-filter-thread5.json"
     notes: |
       F0a offline discrimination (E3-W captures, ws21 7.25, 2026-11-02,
       zero new router contact): exhaustive record-level diff over all
@@ -2009,13 +2091,34 @@ handlers:
       rejection's). G1's 4-gap (*A-*D) explained as 4 attempts
       at 1:1 (3 recorded + the crashed-pipe M8bare). [20,3]
       counts rows, not id-space.
+      J5 thread-5 leg (ws21 7.25, 2026-11-02, 8w+0r
+      standalone): 0x0b is the IP protocol number (3-point
+      pin: 6/tcp + 17/udp + 1/icmp, u32c); the matcher
+      triple is COMPUTED (absent on protocol-less rows,
+      appears post-hoc on set, tracks 6->17 on re-set) —
+      compatible with G1 'persistent' (retained whenever
+      protocol is set, across action-exits). 0x16 is a
+      constant adjunct (present-but-false on all protocol
+      rows, never discriminating); 0x194 is any-protocol
+      gating (true on all protocol rows). 0x1c6 presence
+      is action-computed (appears on post-hoc set to
+      fasttrack) but the value DIVERGES (false here vs
+      true on G1 add-fasttrack — add-vs-set confounded
+      with protocol state, open); cleared on action-exit
+      (G1 M9 reversal replicated). Clear-form `set
+      protocol=` is device-rejected (ambiguous enum
+      prefix), so unset-clear is untestable via that form.
+      Restore PARTIAL in-session (5 builtin fasttrack
+      dummies, 'cannot remove builtin') then FULL after a
+      0r power-cycle (dummies are boot-local, G3
+      bycatch re-confirmed).
 
   unknown-20-32:
     sys-to: [20, 32]
     status: role-open
     process-id: 0x14
     cmd: GET_ONE
-    role: "unknown holder: GETCOUNT under filter rules is a TIME-VARYING PER-ADD TRANSIENT with variable magnitude and lifetime (H1 ws21 7.25: 1st add reads 1 stable across 6 reads/+354s with zero decay; 2nd in-session add re-spikes and graded-decays with a dip, plateauing at 2 without converging in-window; G3 decay-to-0 is one of three H1 lifetimes, not the curve; H-decay-3 leg: a SECOND stable-1 spike, R0a..R5 + 54 keep-alive samples over 300s — stability-at-1 is now the modal shape) — not a function of the rule-set alone ({A} reads 8/2/1 across three sessions), not a fixed curve, and not consumed by reads (6 consecutive nonzero). Magnitude-incompatible with row counting, so NOT a filter row-count slot. GET is selector-gated/FAILED, not table-shaped."
+    role: "unknown holder: GETCOUNT under filter rules is a TIME-VARYING PER-ADD TRANSIENT with variable magnitude and lifetime (H1 ws21 7.25: 1st add reads 1 stable across 6 reads/+354s with zero decay; 2nd in-session add re-spikes and graded-decays with a dip, plateauing at 2 without converging in-window; G3 decay-to-0 is one of three H1 lifetimes, not the curve; H-decay-3 leg: a SECOND stable-1 spike, R0a..R5 + 54 keep-alive samples over 300s — stability-at-1 is now the modal shape; J6 re-run: B2-DECAY-ZERO-ASYNC — spike2 decayed 4/4/3/2-plateau in TIER 1 with async=0 everywhere, so announce-backlog is DEAD as the decay driver and timed samples stand 2 stable / 2 decayed) — not a function of the rule-set alone ({A} reads 8/2/1 across three sessions), not a fixed curve, and not consumed by reads (6 consecutive nonzero). Magnitude-incompatible with row counting, so NOT a filter row-count slot. GET is selector-gated/FAILED, not table-shaped."
     confidence: observed-only
     evidence:
       - source: sample
@@ -2036,6 +2139,8 @@ handlers:
         ref: "live CHR interrogation (H1 decay leg, ws21 7.25, 2026-11-02, 3w+0r): spike1 flat-1 (6 reads/+354s, timestamped) + spike2 re-spike with graded 4->3->2 (TIER 2) + committed 1-dip/2-plateau + f15/f206 decoupling + idle-session death bound — work/2026-11-winbox-attributes/proof/H1-decay/{report.yaml,step-S1.jsonl,step-P1.jsonl,step-P2.jsonl,step-P3.jsonl,step-P4.jsonl,step-P5.jsonl,step-Q1.jsonl,step-Q2.jsonl,step-Q3.jsonl,step-Q4.jsonl,timing-ladder.jsonl}; curve rows fixtures/winbox-ipc/7.25-getcount-20-32-h1.json"
       - source: sample
         ref: "live CHR interrogation (H-decay-3 announce-backlog leg, ws21 7.25, 2026-11-02, 2w+0r): outcome A3 stable-untestable — spike flat-1 across R0a..R5 + 54 keep-alive samples/300s (TIER 1, write-through), negative-control ladder all-zero, async=0 everywhere; H-decay-3 untestable this spike (no decay to correlate) — work/2026-11-winbox-attributes/proof/i2-decay-backlog/{report-execution-h-decay-3.yaml,leg-h-decay-3.yaml,step-ladder.jsonl,timing-ladder.jsonl,step-negative-control.jsonl,timing-negative-control.jsonl,control-S1-read.json}; rung rows fixtures/winbox-ipc/7.25-getcount-20-32-h-decay-3.json"
+      - source: sample
+        ref: "live CHR interrogation (J6 H-decay-3 re-run, ws21 7.25, 2026-11-02, 3w+0r): outcome B2 decay-zero-async — spike2 4/4/3/2-plateau (TIER 1, 61 rx samples) with async=0 on every rung + 54 keep-alive samples + drain; S0 clean; Q-neither — work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/{report.yaml,step-ladder.jsonl,timing-ladder.jsonl,console-ladder.txt,step-negative-control.jsonl,step-spike1.jsonl,step-spike1zero.jsonl}; rung rows fixtures/winbox-ipc/7.25-getcount-20-32-j6-rerun.json"
     notes: |
       5-point dataset (values only, NO model): {}->0, {accept}->8
       (E3-W), {jump}->2, {jump,accept}->1, {accept,accept}->1 —
@@ -2111,6 +2216,25 @@ handlers:
       growth observed mid-run, 7/7 rung ledger events both
       runs, keep-alive gaps <=10s, single session pair each
       run, all 330 step records valid with decode ok.
+      J6 re-run (ws21 7.25, 2026-11-02, 3w+0r, decaying
+      2nd-add host): outcome B2 DECAY-ZERO-ASYNC —
+      R0a(+6.4s)=4 R0b=4 R1(+10s)=3 R2(+30s)=2 then
+      plateau 2 through R5 (61 rx samples: 4,4,3,2x58,
+      TIER 1) with async=0 on every rung, all 54
+      keep-alive samples, and the drain; S0 clean (166 records,
+      62 v32 samples all 0). Decay with zero async kills
+      announce-backlog (H-decay-3) AND churn-artifact as
+      decay drivers in TIER 1; single-step one-shot is
+      dead in TIER 1 (3-level decay); variable-gauge +
+      multi-step one-shot REMAIN as internal mechanisms;
+      history-gating is CONSISTENT (spike1=2 vs
+      spike2=4). Q1 annex analytically active, Q-neither
+      (+60..+120s flat 2 — H1 dip not replicated).
+      Plateau-at-2 with 1 rule present is a new
+      single-sample observation (per-rule standing
+      level? unscoped). Restore clean; L2/L3/L4/L5 pass
+      (L1 by completion: mid-run write-through check not
+      executed, no evidence impact).
 
   nat-20-5:
     sys-to: [20, 5]
