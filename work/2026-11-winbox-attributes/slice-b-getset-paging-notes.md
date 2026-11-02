@@ -17,6 +17,7 @@ Research-only. Do NOT promote to profiles/*.yaml from this note.
 ## Candidate mappings (strength)
 
 ### GET/SET family
+
 1. [13,7] WebUserPrefs CMD_SET overwrites whole username-keyed record; GET-after-SET
    round-trips (STRONG-MEDIUM: gui-handlers.yaml:1300-1324, ev/7.25-setone-13-7-u.json
    bare-SYS ack, §29 static vtable 0x8059e08; lacks harness lossless capture).
@@ -28,17 +29,18 @@ Research-only. Do NOT promote to profiles/*.yaml from this note.
 4. [20,61] SET=NOTIMP live + [24,31] slot10=base static (negatives, STRONG).
 
 ### Listing/pagination family
-5. [20,1] GETOBJ obj=rowid fetch-one-row (MEDIUM-LOW: analogy to [20,0] GETOBJ
-   ev/7.25-getobj-20-0-2.json; never tried on [20,1]).
-6. CMD_GETCOUNT 0xfe0015 on [20,0] -> u32(0xfe0014), honors filters (static-STRONG:
-   net-bridge2-handler-tables.md:171-176 + §8 "Slot-18 getcount honors the same
-   filters"; live-ZERO: no ev fixture, no probe path).
-7. [20,1] USER extras 0x000006 (u32 0) + 0x00000b (bool F) in ev/7.25-getall-20-1.json
-   (NEW, unmapped: absent from gui-handlers.yaml:539-552 and candidates.yaml ip/address
-   fields; 0x06 may be vrf-row-id shaped — needs discrimination, not assertion).
-8. CMD_RESET 0xfe0016 expected base-NOTIMP (LOW: slot-11 mapping only,
-   net-bridge2-handler-tables.md:43; no override found, no live probe).
-9. STD_QUERY 0xfe0016 + STD_QUERY_OP 0xfe0017 nested GETALL filter (documented-only,
+
+- **5.** [20,1] GETOBJ obj=rowid fetch-one-row (MEDIUM-LOW: analogy to [20,0] GETOBJ
+  ev/7.25-getobj-20-0-2.json; never tried on [20,1]).
+- **6.** CMD_GETCOUNT 0xfe0015 on [20,0] -> u32(0xfe0014), honors filters (static-STRONG:
+  net-bridge2-handler-tables.md:171-176 + §8 "Slot-18 getcount honors the same
+  filters"; live-ZERO: no ev fixture, no probe path).
+- **7.** [20,1] USER extras 0x000006 (u32 0) + 0x00000b (bool F) in ev/7.25-getall-20-1.json
+  (NEW, unmapped: absent from gui-handlers.yaml:539-552 and candidates.yaml ip/address
+  fields; 0x06 may be vrf-row-id shaped — needs discrimination, not assertion).
+- **8.** CMD_RESET 0xfe0016 expected base-NOTIMP (LOW: slot-11 mapping only,
+  net-bridge2-handler-tables.md:43; no override found, no live probe).
+- **9.** STD_QUERY 0xfe0016 + STD_QUERY_OP 0xfe0017 nested GETALL filter (documented-only,
    std-keys.yaml:302-312; never observed) and STD_FILTER 0xfe000c shape conflict
    (nested documented vs u32 observed, std-keys.yaml:210-233).
 

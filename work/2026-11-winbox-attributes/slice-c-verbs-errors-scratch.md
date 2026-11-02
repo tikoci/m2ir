@@ -1,3 +1,5 @@
+<!-- cspell:ignore errnos acks -->
+
 # Slice C scratch: action/verb + error/status handlers (2026-11-01)
 
 Scope: WinBox TLV/verb candidates for action verbs, error/status reply shapes.

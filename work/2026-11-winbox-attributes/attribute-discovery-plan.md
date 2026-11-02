@@ -1,6 +1,6 @@
 # WinBox configuration attributes and verbs — execution plan
 
-<!-- cspell:ignore llms cliref unsettable syscap rodenasl -->
+<!-- cspell:ignore llms cliref unsettable syscap rodenasl oneline getset -->
 
 Status: proposed execution sequence, grounded in repository and local-source
 inspection on 2026-11-01, starting at commit `31b3f85`. This is research
@@ -448,3 +448,119 @@ C's third slice and private action. Do not run broad discovery writes yet.
 The first integration checkpoint is the source ledger and offline harness
 tests. Then execute C on a disposable 7.25 CHR, promote through D, and use
 the measured results to select E's first two handler families.
+
+## Phase E status and orchestrator handoff (2026-11-02)
+
+Status at this revision: A-D are done, E1 (interfaces/bridges) is done and
+committed at `447b1f5` on `main`, and the following are queued untouched:
+E1 follow-ups, E2, and E3. Coverage at `447b1f5` is 310 handler field
+entries (161 named, 149 `unknown-*`), 522 evidence references, and 72
+revision-history entries, with the test suite at 266 pass / 0 fail.
+
+Carried blockers and known opens at this revision:
+
+- E2 write legs need a fresh per-leg yes; U1 f6/f11 semantics are unknown.
+- E3 needs a fresh per-leg yes; f40-drop is a proven negative (no value),
+  and jump/same, MOVEOBJ reorder params, v7 slot-19, and `[20,61]` are
+  open or blocked.
+- E1 follow-ups have recorded budgets: W2-rerun 9 (f5/f6 and
+  `filtering=yes` cells) and W5-retry 6 (host-table owner). f7-SET,
+  v7 `[16,13->3]`, `0xFFFFFFFF`, and the 0x38 writer are unbudgeted.
+- The 7.26beta4 pilot repeat of the E1 replay fixtures is outstanding.
+- The E1 promotion reviewer report on disk is truncated mid-section-3;
+  its fixes were applied from session log and re-verified, but no agent
+  may treat that file as a complete reviewer sign-off. The Phase E
+  reviewer below reconstructs mappings from raw fixtures for this reason.
+
+### Durable handoff rule
+
+Session state, chat history, and subagent result references do not
+survive a session boundary. Files and git do. Before ending any
+coordinator session - and early, if context runs low - write or update
+`work/2026-11-winbox-attributes/handoff.yaml` with:
+
+- HEAD SHA and `git status` state.
+- Slices done, in progress, and queued.
+- Proven, disproven, unknown, and blocked items per slice.
+- Evidence paths for every claim.
+- Budgets approved versus spent (counted writes and reboots), per leg.
+- VM state: named VMs stopped or running, and whether every leg's
+  baseline was restored.
+- The exact next action, specific enough for a fresh coordinator.
+
+A successor coordinator starts by reading that file, the HEAD SHA it
+names, and this plan - not prior chat. If "what was spent against which
+budget, and are the VMs restored" cannot be answered from
+`handoff.yaml` plus the per-leg control files alone, the handoff is
+incomplete.
+
+### Orchestrator prompt (copy verbatim, update the SHA)
+
+```text
+You are the coordinator for m2ir winbox-ipc Phase E, starting at commit
+447b1f5 (verify: git log --oneline -1, git status clean). Read AGENTS.md,
+README.md, DESIGN.md, llms.txt, .github/instructions/ for every path you
+touch, and work/2026-11-winbox-attributes/attribute-discovery-plan.md
+(including the handoff rule) before assigning anything.
+
+Model/role split: you coordinate and integrate; up to 3 worker subagents
+(muse-spark-contributor-1.3 class) do bounded slices. Workers NEVER edit
+profiles/winbox-ipc/*.yaml, profiles/winbox-ipc/README.md, README.md, or
+GLOSSARY.txt - they submit evidence plus proposed YAML fragments as files
+under work/2026-11-winbox-attributes/proof/<slice>/ plus a fragment file.
+You alone integrate canonical edits, sequentially, one slice at a time.
+
+Hard gates:
+- No RouterOS write leg without the user's explicit per-leg "yes" in
+  this session. Read-only census needs no yes. Each write leg needs a
+  stated budget (counted writes + reboots), named VM/ports, baseline
+  snapshot, restore step, and stop conditions BEFORE it runs. Validate
+  any RouterOS command with centrs before sending it; treat a rejection
+  as data, not an obstacle to route around.
+- One worker = one handler family, <=10 candidate properties, <=1
+  private verb, <=2 discriminating experiments per unresolved field.
+- Never share a mutable VM between workers. Disjoint owned paths per
+  worker, stated in the brief.
+
+Sequence:
+1. S0 (you, no subagents): rerun E1 replay fixtures against 7.26beta4
+   offline, record pass/fail per fixture; freeze E2 and E3 candidate
+   lists from candidates.yaml with budgets. Report before dispatching.
+2. Parallel workers: (a) E2-R read-only IP/routing census + U1 f6/f11
+   discrimination DESIGN (hypotheses, controls, what each outcome
+   proves); (b) E3-R read-only firewall/services census + jump/same and
+   MOVEOBJ-reorder design (f40-drop is a proven negative - design around
+   it, do not re-probe); (c) E1-followup: prepare W2-rerun (budget 9)
+   and W5-retry (budget 6) leg sheets, read-only prep only.
+   Each worker returns {complete, evidence[], unresolved[]} and writes
+   its full report to its proof/ directory - chat text is not the record.
+3. Reviewer worker (fresh context): independently reconstruct one new
+   mapping per family from raw fixtures, without reading the proposer's
+   labels. Report agreement or the exact discrepancy.
+4. You: reconcile, then STOP and present E2-W / E3-W leg sheets for the
+   user's per-leg yes. Do not execute writes on a general go-ahead.
+5. After any approved legs: integrate fragments into gui-handlers.yaml,
+   add replay fixtures + tests, update counts in both READMEs and
+   GLOSSARY.txt, run bun run test and bun run lint:ci (baseline at
+   447b1f5 plus the lint fix that followed it: 266/0 green and lint:ci
+   green - flag any lint error as yours). Do not commit or push; report
+   and wait.
+
+Handoff rule: before ending any session, write
+work/2026-11-winbox-attributes/handoff.yaml per the durable handoff
+rule in the plan. If context runs low, write the handoff early rather
+than finishing a slice - a written handoff beats a completed slice
+nobody can resume.
+```
+
+### Slice queue at this revision
+
+- `S0` - 7.26beta4 E1 replay repeat (offline) plus frozen E2/E3
+  candidate lists and per-leg budget sheets. No gate.
+- `E1-followup` - W2-rerun (budget 9) and W5-retry (budget 6) leg
+  sheets, then execution under the existing recorded budgets once the
+  coordinator confirms them with the user.
+- `E2-R` / `E2-W` - IP/routing census, then the U1 f6/f11 write legs
+  under a fresh per-leg yes.
+- `E3-R` / `E3-W` - firewall/services census and design, then write
+  legs under a fresh per-leg yes.
