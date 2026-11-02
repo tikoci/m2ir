@@ -638,9 +638,20 @@ processes:
       implementation's [16,2]/[16,13] bridge port/vlan paths (see
       ./gui-handlers.yaml) corroborate bridge2 functionally. dude is a
       separate process here, not the bridge manager.
+      E1 [16,0..32] GETCOUNT census (empty tables, both versions):
+      v7 ok on 1,2,3,9,10,11,12,13,14,15,16,17,18 (13 handlers;
+      0xFFFFFFFF in 0xfe0019 on {1,10}); v6 ok on
+      1,2,3,5,6,7,8,9,10,11,12,13,20,30,31,32 (16 handlers;
+      0xFFFFFFFF in 0xfe0014 on {1,5,7,8,10,20,30,32}).
+      Absent-handler shape both versions: ERROR_BRKPATH 0xFE0002,
+      from=[16] truncated, errstr null. 0xFFFFFFFF carries no
+      reading (count-vs-sentinel still unresolved) per the
+      [20,61] precedent in std-keys.yaml.
     evidence:
       - source: code
         ref: "private third-party WinBox client implementation (server-side monitoring product; source not publicly available)"
+      - source: sample
+        ref: "live CHR interrogation (E1 recon, 7.25 + 6.49.23): [16,0..32] GETCOUNT scan census; see work/2026-11-winbox-attributes/proof/7.25-e1-bridges/report.yaml scan_16_census"
     version-identities:
       - version-source: "Cisco-Talos reference version"
         canonical-name: dude

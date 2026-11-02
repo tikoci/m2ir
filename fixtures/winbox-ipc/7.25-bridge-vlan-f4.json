@@ -1,0 +1,168 @@
+{
+	"provenance": {
+		"proof": "work/2026-11-winbox-attributes/proof/7.25-e1-bridges",
+		"report": "work/2026-11-winbox-attributes/proof/7.25-e1-bridges/report.yaml",
+		"routeros_version": "7.25",
+		"route": [16, 13],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. W2 filtering=no cell (f4=[2]=configured-untagged while REST current-tagged/current-untagged are '' — see control-w2.json) + restore-empty proof."
+	},
+	"records": [
+		{
+			"id": "w2-cell-getall",
+			"role": "W2.3 configured cell: f4=[2] f3=[5] f5=f6=f7=[] rowid 1",
+			"source": "control-w2.json after E1-W2.3 (W2.3-configured getall)",
+			"hex": "4d320100ff880200000000000b0000000200ff880200100000000d0000001c00ffa001000e006d73672d70726f78792d372e32350200fea801006f004d321c00fea001001a00766c616e2d66696c746572696e672069732064697361626c656407000088000006000088000005000088000004000088010002000000030000880100050000000100008802000a0000000a0000000700fe000a00fe000100fe090102000009050900fe21000300ff09021900fe09010600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [16, 13],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16, 13]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": ["vlan-filtering is disabled"]
+							},
+							{
+								"key": "0x000007",
+								"tcode": "0x88",
+								"value": []
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x88",
+								"value": []
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x88",
+								"value": []
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x88",
+								"value": [2]
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x88",
+								"value": [5]
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x88",
+								"value": [10, 10]
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x9",
+								"value": 5
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "w2-proof-empty",
+			"role": "GETALL proof: 0 rows + total 0 after restore",
+			"source": "control-w2.json after restore (W2 proof getall)",
+			"hex": "4d320100ff880200000000000b0000000200ff880200100000000d0000001c00ffa001000e006d73672d70726f78792d372e32350200fea800000300ff09021900fe09000600ff0908",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [16, 13],
+			"reqId": 8,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16, 13]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": []
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 8
+				}
+			]
+		}
+	]
+}

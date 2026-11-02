@@ -1,0 +1,29 @@
+{
+	"leg": "W6 (0x010038 boot-fixed both versions; 0 writes + 2 reboots)",
+	"routeros_versions": ["7.25", "6.49.23"],
+	"steps": [
+		{
+			"at": "W6-pre twin3 (uptime 7m21s)",
+			"native": "GETALL [20,0] 0x010038",
+			"result": "ether1=320, lo=319, tcode 0x08; flat across the ~7 min session span (W4-baseline = W4-post = W7-pre = W6-pre)"
+		},
+		{
+			"at": "W6-post twin3 R1 (uptime 25s)",
+			"native": "GETALL [20,0] 0x010038",
+			"result": "ether1=1272, lo=302, tcode 0x08"
+		},
+		{
+			"at": "W6-pre ws3c6 (uptime 2m12s)",
+			"native": "GETALL [20,0] 0x010038",
+			"result": "ether1=746, tcode 0x08"
+		},
+		{
+			"at": "W6-post ws3c6 R2 (uptime 29s)",
+			"native": "GETALL [20,0] 0x010038",
+			"result": "ether1=1714, tcode 0x08"
+		},
+		{
+			"verdict": "three boots, three value sets (recon 216/216 + v6 1715; session 320/319 + 746; post-R 1272/302 + 1714); flat intra-boot; no monotonic relation to uptime (7m->320 vs 25s->1272). NOT a fast counter, NOT uptime. Writer/mechanism unknown (static-analysis follow-up)."
+		}
+	]
+}

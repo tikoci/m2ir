@@ -1,0 +1,44 @@
+{
+	"leg": "recon (read-only baseline)",
+	"routeros_versions": ["7.25", "6.49.23"],
+	"note": "No bridges/ports/vlans/hosts on either machine (REST-confirmed empty); row inventory impossible read-only, so emptiness + envelopes recorded instead.",
+	"steps": [
+		{
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge/port" },
+			"result_7_25": [],
+			"result_6_49": []
+		},
+		{
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge" },
+			"result_7_25": [],
+			"result_6_49": []
+		},
+		{
+			"control": { "tool": "centrs retrieve", "route": "/interface" },
+			"result_7_25": [
+				{ ".id": "*2", "name": "ether1", "type": "ether", "vrf": "main" },
+				{ ".id": "*1", "name": "lo", "type": "loopback", "vrf": "main" }
+			],
+			"result_6_49": [{ ".id": "*1", "name": "ether1", "type": "ether" }],
+			"note": "v6 has no vrf column and no lo row; neither version carries l2mtu on ether/lo"
+		},
+		{
+			"native": "GETALL [16,2] + [16,13] both versions",
+			"result": "ok, 0 rows, 0xfe0002/0xa8=[] present + total 0 (matches the NAT/RAW precedent)"
+		},
+		{
+			"native": "GETALL [20,0] both versions",
+			"result_7_25": "2 rows (ether1 id 2, lo id 1); f30 {ether, loopback}; f101 absent; f102 tcode 0x09 value 0 both rows",
+			"result_6_49": "1 row (ether1 id 1); f30 {ether}; f101 absent; f102 tcode 0x21 value ''"
+		},
+		{
+			"native": "0x010038 recon boot values",
+			"result_7_25": "216/216 tcode 0x09 (flat across the 4-min 3-sample series)",
+			"result_6_49": "1715 tcode 0x08"
+		},
+		{
+			"native": "GETCOUNT [16,0..32] scan",
+			"result": "see report.yaml scan_16_census (v7 13 ok, v6 16 ok, BRKPATH absent shape)"
+		}
+	]
+}

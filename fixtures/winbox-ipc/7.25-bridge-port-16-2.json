@@ -1,0 +1,1274 @@
+{
+	"provenance": {
+		"proof": "work/2026-11-winbox-attributes/proof/7.25-e1-bridges",
+		"report": "work/2026-11-winbox-attributes/proof/7.25-e1-bridges/report.yaml",
+		"routeros_version": "7.25",
+		"route": [16, 2],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. W1 full 40-key row + W3 native ADD/SET/REMOVE ack replies with GETALL/GETOBJ read-backs."
+	},
+	"records": [
+		{
+			"id": "w1-row-getall",
+			"role": "W1 full 40-key port row (f3=2 ether, f4=4 bridge, rowid 0)",
+			"source": "control-w1.json after E1-W1.2 (W1 postAdd getall1)",
+			"hex": "4d320100ff880200000000000b0000000200ff88020010000000020000001c00ffa001000e006d73672d70726f78792d372e32350200fea80100b6004d320e0000000f0000011000000011000000150000011700000118000001190000011a0000000700fe001b0000001c0000000a00fe001d0000001f00000020000000210000000800fe0025000000260000002700000028000000d700000004000009040a000009000b000009000c000009000d00000900120000090a130000090114000009000100fe09000500fe08ffffffff1e0000090122000009002300000900010000090a020000098003000009020900fe21000300ff09021900fe09010600ff0907",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [16, 2],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16, 2]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x00000e",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00000f",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000010",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000011",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000015",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000017",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000018",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000019",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x00001a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00001b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00001c",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00001d",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00001f",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000020",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000021",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000025",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000026",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x0000d7",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000b",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000c",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000d",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x000012",
+								"tcode": "0x9",
+								"value": 10
+							},
+							{
+								"key": "0x000013",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000014",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0005",
+								"tcode": "0x8",
+								"value": 4294967295
+							},
+							{
+								"key": "0x00001e",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000022",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x000023",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x9",
+								"value": 10
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x9",
+								"value": 128
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				}
+			]
+		},
+		{
+			"id": "w3-add-tx",
+			"role": "ADDOBJ [16,2] {3:2, 4:7}",
+			"source": "control-w3.json E1-W3.2 tx",
+			"hex": "4d320500ff010600ff09060700ff080500fe000100ff88020010000000020000000200ff880200000000000b00000003000009020400000907",
+			"cmd": 16646149,
+			"to": [16, 2],
+			"from": [0, 11],
+			"reqId": 6,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 6
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646149
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [16, 2]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000004",
+					"tcode": "0x9",
+					"value": 7
+				}
+			]
+		},
+		{
+			"id": "w3-add-ack",
+			"role": "ADDOBJ ack + new rowid=0",
+			"source": "control-w3.json E1-W3.2 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020010000000020000001c00ffa001000e006d73672d70726f78792d372e32350100fe09000300ff09020600ff0906",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [16, 2],
+			"reqId": 6,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16, 2]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 6
+				}
+			]
+		},
+		{
+			"id": "w3-add-verify-getall",
+			"role": "GETALL read-back: 1 row rowid=0 f3=2 f4=7",
+			"source": "control-w3.json E1-W3.2 read-back",
+			"hex": "4d320100ff880200000000000b0000000200ff88020010000000020000001c00ffa001000e006d73672d70726f78792d372e32350200fea80100b6004d320e0000000f0000011000000011000000150000011700000118000001190000011a0000000700fe001b0000001c0000000a00fe001d0000001f00000020000000210000000800fe0025000000260000002700000028000000d700000004000009070a000009000b000009000c000009000d00000900120000090a130000090114000009000100fe09000500fe08ffffffff1e0000090122000009002300000900010000090a020000098003000009020900fe21000300ff09021900fe09010600ff0907",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [16, 2],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16, 2]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x00000e",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00000f",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000010",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000011",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000015",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000017",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000018",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000019",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x00001a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00001b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00001c",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00001d",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x00001f",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000020",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000021",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000025",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000026",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x0000d7",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x9",
+								"value": 7
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000b",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000c",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000d",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x000012",
+								"tcode": "0x9",
+								"value": 10
+							},
+							{
+								"key": "0x000013",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000014",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0005",
+								"tcode": "0x8",
+								"value": 4294967295
+							},
+							{
+								"key": "0x00001e",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000022",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x000023",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x9",
+								"value": 10
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x9",
+								"value": 128
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				}
+			]
+		},
+		{
+			"id": "w3-set-tx",
+			"role": "SETOBJ [16,2] {0xfe0001:0, 0xfe000a:true}",
+			"source": "control-w3.json E1-W3.3 tx",
+			"hex": "4d320500ff010600ff09090700ff080300fe000100ff88020010000000020000000200ff880200000000000b0000000100fe09000a00fe01",
+			"cmd": 16646147,
+			"to": [16, 2],
+			"from": [0, 11],
+			"reqId": 9,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 9
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [16, 2]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xfe000a",
+					"tcode": "0x1",
+					"value": true
+				}
+			]
+		},
+		{
+			"id": "w3-set-ack",
+			"role": "SETOBJ bare SYS-only ack",
+			"source": "control-w3.json E1-W3.3 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020010000000020000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0909",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [16, 2],
+			"reqId": 9,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16, 2]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 9
+				}
+			]
+		},
+		{
+			"id": "w3-getobj-pre",
+			"role": "GETOBJ obj=0 pre-SET: 0xfe000a false",
+			"source": "control-w3.json E1-W3.2 getobj",
+			"hex": "4d320100ff880200000000000b0000000200ff88020010000000020000001c00ffa001000e006d73672d70726f78792d372e32350e0000000f0000011000000011000000150000011700000118000001190000011a0000000700fe001b0000001c0000000a00fe001d0000001f00000020000000210000000800fe0025000000260000002700000028000000d7000000040000090703000009020a000009000b000009000c000009000d00000900120000090a130000090114000009000100fe09000500fe08ffffffff1e00000901220000090023000009000300ff0902010000090a0600ff090802000009800900fe2100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [16, 2],
+			"reqId": 8,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16, 2]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00000f",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000019",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x00001a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe0007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00001b",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00001c",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe000a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00001d",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00001f",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000020",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000021",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe0008",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000025",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000026",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000027",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000028",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x0000d7",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000004",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000a",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00000b",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000012",
+					"tcode": "0x9",
+					"value": 10
+				},
+				{
+					"key": "0x000013",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000014",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xfe0005",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x00001e",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000022",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000023",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x9",
+					"value": 10
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 8
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x9",
+					"value": 128
+				},
+				{
+					"key": "0xfe0009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "w3-getobj-post",
+			"role": "GETOBJ obj=0 post-SET: 0xfe000a true, 0xfe0008 true, f15+f215 absent",
+			"source": "control-w3.json E1-W3.3 read-back",
+			"hex": "4d320100ff880200000000000b0000000200ff88020010000000020000001c00ffa001000e006d73672d70726f78792d372e32350e0000001000000011000000150000011700000118000001190000011a0000000700fe001b0000001c0000000a00fe011d0000001f00000020000000210000000800fe0125000000260000002700000028000000040000090703000009020a000009000b000009000c000009000d00000900120000090a130000090114000009000100fe09000500fe08ffffffff1e00000901220000090023000009000300ff0902010000090a0600ff090a02000009800900fe2100",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [16, 2],
+			"reqId": 10,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16, 2]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0x00000e",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000010",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000011",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000015",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000017",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000018",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000019",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x00001a",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe0007",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00001b",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00001c",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe000a",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x00001d",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x00001f",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000020",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000021",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0xfe0008",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000025",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000026",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000027",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000028",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000004",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x00000a",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00000b",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00000c",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x00000d",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000012",
+					"tcode": "0x9",
+					"value": 10
+				},
+				{
+					"key": "0x000013",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000014",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xfe0005",
+					"tcode": "0x8",
+					"value": 4294967295
+				},
+				{
+					"key": "0x00001e",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0x000022",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0x000023",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x9",
+					"value": 10
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 10
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x9",
+					"value": 128
+				},
+				{
+					"key": "0xfe0009",
+					"tcode": "0x21",
+					"value": ""
+				}
+			]
+		},
+		{
+			"id": "w3-remove-tx",
+			"role": "REMOVEOBJ [16,2] {0xfe0001:0}",
+			"source": "control-w3.json E1-W3.4 tx",
+			"hex": "4d320500ff010600ff090b0700ff080600fe000100ff88020010000000020000000200ff880200000000000b0000000100fe0900",
+			"cmd": 16646150,
+			"to": [16, 2],
+			"from": [0, 11],
+			"reqId": 11,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 11
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646150
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [16, 2]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 0
+				}
+			]
+		},
+		{
+			"id": "w3-remove-ack",
+			"role": "REMOVEOBJ bare SYS-only ack",
+			"source": "control-w3.json E1-W3.4 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020010000000020000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff090b",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [16, 2],
+			"reqId": 11,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16, 2]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 11
+				}
+			]
+		},
+		{
+			"id": "w3-remove-verify-getall",
+			"role": "GETALL read-back: row gone, 0 rows + total 0",
+			"source": "control-w3.json E1-W3.4 read-back",
+			"hex": "4d320100ff880200000000000b0000000200ff88020010000000020000001c00ffa001000e006d73672d70726f78792d372e32350200fea800000300ff09021900fe09000600ff090c",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [16, 2],
+			"reqId": 12,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [16, 2]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": []
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 12
+				}
+			]
+		}
+	]
+}

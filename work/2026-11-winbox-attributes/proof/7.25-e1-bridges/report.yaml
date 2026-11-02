@@ -1,0 +1,247 @@
+proof: "E1 bridge/interface native mapping: [16,2] port rows, [16,13] vlan rows, [20,0] interface rows, 7.25 + 6.49.23"
+provenance:
+  routeros_versions: ["7.25", "6.49.23"]
+  lab_shape: "disposable CHR VMs (twin3 7.25, ws3c6 6.49.23); all E1 tables restored to baseline after the legs"
+  distilled_from: "lossless local-only session manifests (LOCAL-ONLY, never cited); this directory is the citable root"
+  sanitization: "no secrets, hosts, ports, credentials, or capture timestamps; lab MACs are synthetic QEMU addresses"
+controls:
+  - control-recon.json
+  - control-w1.json
+  - control-w2.json
+  - control-w3.json
+  - control-w4.json
+  - control-w5.json
+  - control-w6.json
+  - control-w7.json
+  - control-w8.json
+budgets:
+  approved_total: "34 distinct counted writes + 2-4 reboots"
+  actual_total: "31 distinct counted writes + 2 reboots (3 headroom unused)"
+  per_leg:
+    - leg: W4
+      budget: 2
+      actual: 2
+      complete: true
+    - leg: W1
+      budget: 4
+      actual: 4
+      complete: true
+      note: "shell-completed: script E1-W1.1/.2/.3 + shell E1-W1.4 port remove (no-cascade orphan)"
+    - leg: W2
+      budget: 9
+      actual: 6
+      complete: false
+      note: "blocked: the tagged/untagged overlap rule rejected the single-var move (1/4 cells)"
+    - leg: W5
+      budget: 6
+      actual: 6
+      complete: false
+      note: "blocked: over-strict row-count gate tripped on self-learned dynamic co-rows; static add proven, scan lost"
+    - leg: W3
+      budget: 5
+      actual: 5
+      complete: true
+    - leg: W7-redesigned
+      budget: 4
+      actual: 4
+      complete: true
+      note: "redesigned off ether1 (lab access safety); by-name VRF remove rejected, by-id fallback ok"
+    - leg: W8
+      budget: 4
+      actual: 4
+      complete: true
+      note: "shell-completed: execute-form removes trap on v6; shell structured-DELETE ok"
+    - leg: W6
+      budget: 0
+      actual: 0
+      reboots: 2
+      complete: true
+      note: "stopped after (a): boot-pair discriminated, 24h pair moot"
+proven:
+  - id: p-port-row-40
+    claim: "[16,2] full row shape on 7.25 is 40 keys (34 user + session {1,5,7,8,9,10})"
+    legs: [W1]
+    wire: "user {1,2,3,4,10,11,12,13,14,15,16,17,18,19,20,21,23,24,25,26,27,28,29,30,31,32,33,34,35,37,38,39,40,215} + session {1,5,7,8,9,10}; mapped {3,4,19} present; per-row 0xfe0005 = 0xFFFFFFFF"
+    fixture: "fixtures/winbox-ipc/7.25-bridge-port-16-2.json record w1-row-getall"
+  - id: p-port-f3-f4-rowids
+    claim: "port f3/f4 are [20,0] rowids (interface/bridge)"
+    legs: [W1]
+    wire: "f3=2=etherRowId, f4=4=bridgeRowId (7.25); f3=1, f4=2 are the version-local rowids on 6.49.23"
+  - id: p-port-verbs
+    claim: "native bridge2 write path on 7.25: ADDOBJ {3,4} -> rowid 0; SETOBJ {0xfe0001:0, 0xfe000a:true} effective both surfaces; REMOVEOBJ {0xfe0001:0} removes"
+    legs: [W3]
+    wire: "ADD ack bare SYS-only + 0xfe0001=0 (`0100fe0900`); SET/REMOVE ack replies bare SYS-only, no 0xfe0001 echo (matches the [20,1] precedent); SET read-back native 0xfe000a false->true + CLI disabled/inactive false->true"
+    fixture: "fixtures/winbox-ipc/7.25-bridge-port-16-2.json records w3-*"
+  - id: p-port-row-32-v6
+    claim: "v6 [16,2] row is 32 keys and a strict subset of the v7 40 (row-shape drift, not proxy-subset)"
+    legs: [W8]
+    wire: "v7-only {0x20,0x21,0x22,0x23,0x25,0x26,0x27,0x28}; v6-only set empty; sole shared-key drift 0x15 (v7 true / v6 false, no CLI attribution claimed); f19/pvid=1, first port rowid 0, 0xfe0005=0xFFFFFFFF both versions"
+    fixture: "fixtures/winbox-ipc/6.49-bridge-port-16-2.json record w8-row-getall"
+  - id: p-vlan-f4
+    claim: "vlan f4 is configured-untagged ([20,0] rowid array)"
+    legs: [W2]
+    wire: "filtering=no cell: f4=[2]=ether1 rowid while REST current-tagged=current-untagged='' (a current-side array would be empty); f3=[5]=bridge rowid; vlan rowid 1; f1=[10,10]"
+    fixture: "fixtures/winbox-ipc/7.25-bridge-vlan-f4.json record w2-cell-getall"
+    revises: "schema guess tagged-extra/current-side for f4"
+  - id: p-iface-f101
+    claim: "f101 = 65535 live on an enabled v7 bridge row; absent on ether/lo rows"
+    legs: [W4]
+    wire: "`65000108ffff0000` (key 0x010065, tcode 0x08); exactly 1x in the 3-row GETALL (ether/lo absent)"
+  - id: p-iface-f30
+    claim: "f30 census is {ether, loopback, bridge, vrf} with per-row-type scope"
+    legs: [W4, W7]
+    wire: "bridge-row `1e00012106627269646765` (W4); vrf-interface row id 9 type vrf (W7 post-vrf, REST-confirmed type=vrf)"
+  - id: p-iface-second-mac
+    claim: "second-MAC split: 0x82 on bridge rows, 0x404 ether-only (absent on bridge)"
+    legs: [W4]
+    wire: "bridge `82000031060a4ee39ffb31` (tcode 0x31, 6 bytes, equals REST mac-address 0A:4E:E3:9F:FB:31); 0x404 absent on the bridge row"
+  - id: p-iface-vrf-alias
+    claim: "0x01006a IS the VRF alias"
+    legs: [W7]
+    wire: "e1br2 row main->e1vrf (`6a000121056531767266`) after /ip/vrf/add name=e1vrf interfaces=e1br2; control ether1 held main; ether1 named in no W7 command; restore verified"
+    fixture: "fixtures/winbox-ipc/7.25-vrf-6a.json records w7-pre-vrf / w7-post-vrf"
+  - id: p-iface-38-boot-fixed
+    claim: "0x010038 is boot-fixed on both versions (NOT a fast counter, NOT uptime)"
+    legs: [W6]
+    wire: "twin3 320/319 (uptime 7m21s, flat across ~7 min) -> 1272/302 after R1 (uptime 25s); ws3c6 746 (2m12s) -> 1714 after R2 (29s); recon boot 216/216 (v7) / 1715 (v6); three boots, three value sets; flat intra-boot; tcode 0x08 here vs 0x09 in recon is magnitude-consistent (320 > 255)"
+  - id: p-iface-f102-bridge
+    claim: "f102 = u32 0 on bridge rows pre-move (`6600010900`); e1br2 carries 1 post-VRF-move (both post-vrf GETALLs; correlates with main->e1vrf, no reading claimed)"
+    legs: [W4, W7]
+  - id: p-16-scan
+    claim: "[16,0..32] GETCOUNT census both versions (empty tables)"
+    legs: [recon]
+    wire: "v7 ok on 1,2,3,9,10,11,12,13,14,15,16,17,18 (13; 0xFFFFFFFF in 0xfe0019 on {1,10}); v6 ok on 1,2,3,5,6,7,8,9,10,11,12,13,20,30,31,32 (16; 0xFFFFFFFF in 0xfe0014 on {1,5,7,8,10,20,30,32}); absent shape ERROR_BRKPATH 0xFE0002, from=[16] truncated, errstr null"
+  - id: p-rowid-lifecycle
+    claim: "[20,0] rowids advance monotonically in-session (high-water 9); [16,2] port rowid 0 reused across empty->add cycles; [16,13] first vlan rowid 1"
+    legs: [W1, W3, W4, W7, W8]
+    wire: "bridge rowids 3,4,5,(6 unrecorded gap: W5 ran no [20,0] GETALL),7,8; vrf-interface rowid 9 is the id-space high-water; port rowid 0 in W1, W3, W8; CLI *<hex> matches native rowids (port *0, vlan *1, v6 bridge *2)"
+  - id: p-dup-0010
+    claim: "duplicate TLV key in one [20,0] bridge row: 0x000010 twice (u32 0 AND string '')"
+    legs: [W4]
+    wire: "`1000000900` AND `1000002100` in the e1br row; ether1/lo carry it 0x"
+  - id: p-v6-removes
+    claim: "v6 native-api removes via execute-form trap 'unknown parameter'; structured DELETE works"
+    legs: [W8]
+    note: "tooling finding (probable numbers= vs .id translation mismatch), recorded not diagnosed"
+  - id: p-vrf-builtin
+    claim: "/ip/vrf carries a builtin main row (*0, builtin=true, interfaces=all); VRF remove needs .id not name"
+    legs: [W7]
+disproven:
+  - id: d-no-cascade
+    claim: "bridge remove cascades to ports (7.25)"
+    legs: [W1]
+    wire: "removing e1br left port *0 orphaned (inactive=true, dangling bridge *4, native [16,2] still 1 row); required explicit port removes"
+  - id: d-vlan-single-var
+    claim: "single-var vlan set tagged=X moves an interface"
+    legs: [W2]
+    wire: "rejected: 'interface cannot be in tagged and untagged at the same time'; moves need the swap form (written but never live-tested)"
+  - id: d-vrf-empty
+    claim: "/ip/vrf is empty by default"
+    legs: [W7]
+  - id: d-38-ticks
+    claim: "0x010038 ticks per read / slow-ticks intra-session"
+    legs: [W6, recon]
+    wire: "flat across 5 identical full-table reads (~11 min span) and the 4-min 3-sample series; boot-fixed instead"
+  - id: d-dynamic-remove
+    claim: "dynamic host rows are CLI-removable"
+    legs: [W5]
+    wire: "host/remove rejected 'can not remove dynamic'; they clear on bridge removal"
+unknown:
+  - id: u-vlan-f5-f6
+    claim: "f5/f6 = current tagged/untagged (HYPOTHESIS, strong)"
+    legs: [W2]
+    wire: "W2.3 cell shows f5=f6=[] while f3=[e1br] and f4=[ether1]; empty fits any reading — needs the lost filtering=yes / move cells"
+    next: "W2 re-run with the swap-form W2.4 (plus W2b.1/W2b.2), budget 9"
+  - id: u-vlan-f7
+    claim: "user f7 = mvrp-forbidden rowid array (HYPOTHESIS)"
+    legs: [W2]
+    wire: "7th user TLV `070000880000` (empty u32-array) with mvrp-forbidden='' configured"
+    next: "leg that SETS mvrp-forbidden (no budget attached yet)"
+  - id: u-16-3
+    claim: "v6 [16,3] counts bridge membership: 0->2 with 1 bridge + 1 port (HYPOTHESIS, two fits one cell)"
+    legs: [W8]
+    wire: "handlers 2 and 3 the only scan movers; all 0xFFFFFFFF cells unmoved; reading ports+bridges or bridged-interface count"
+    next: "v7 [16,3] membership-count leg (no budget attached yet)"
+  - id: u-ffffffff
+    claim: "0xFFFFFFFF count-vs-sentinel (still unresolved)"
+    legs: [W8]
+    wire: "v6 populated scan moved only real-count cells 2,3; all FFFFFFFF cells held; v7 populated scan never ran"
+    next: "dedicated count-move leg (no budget attached yet)"
+  - id: u-38-writer
+    claim: "0x010038 writer/mechanism (per-row boot-frozen values incl. 1949/41042 on short-lived bridge rows)"
+    legs: [W6]
+    next: "static-analysis follow-up (non-lab work, no budget attached)"
+  - id: u-port-15-drift
+    claim: "0x15 port-bool drift (v7 true vs v6 false): which CLI flag? No claim"
+    legs: [W8]
+  - id: u-fe0005
+    claim: "per-row 0xfe0005 = 0xFFFFFFFF both versions: sentinel or bitmask? No reading claimed"
+    legs: [W1, W8]
+  - id: u-host-owner
+    claim: "host-table owner handler (populated scan never ran)"
+    legs: [W5]
+    next: "same W5 with the corrected gate (static MAC present, dynamic co-rows allowed), budget 6"
+blocked:
+  - id: b-w2-partial
+    leg: W2
+    cause: "E1-W2.4 single-var set rejected (tagged/untagged overlap rule); 1/4 cells; shared restore clean; not re-run per the stop rule"
+  - id: b-w5-gate
+    leg: W5
+    cause: "over-strict `host rows === 1` gate blocked on 2 self-learned dynamic co-rows after the static add succeeded; restore clean via bridge-first cleanup; not re-run per the stop rule"
+  - id: b-w7-attempt-1
+    leg: W7
+    cause: "first attempt blocked at baseline (0 writes) on the builtin main VRF row; baseline/proof model fixed, re-ran clean"
+  - id: b-w8-script-restore
+    leg: W8
+    cause: "all execute-form removes trapped on v6; completed via shell structured-DELETE, proof clean both surfaces"
+followups:
+  - id: f-w2-rerun
+    recipe: "W2 re-run with the swap-form W2.4 (plus W2b.1/W2b.2) for the f4/f6 move + filtering=yes cells"
+    budget: 9
+    caveat: "swap form written in-script but NEVER LIVE-TESTED; static-MAC gate likewise never live-tested"
+  - id: f-w5-retry
+    recipe: "same W5 with the corrected gate (static MAC present, dynamic co-rows allowed) for the host-table owner scan"
+    budget: 6
+  - id: f-f7-leg
+    recipe: "leg that SETS mvrp-forbidden to test the f7 rowid-array hypothesis"
+    budget: null
+  - id: f-16-3-v7
+    recipe: "v7 [16,3] membership-count leg (only v6 observed)"
+    budget: null
+  - id: f-ffffffff
+    recipe: "dedicated 0xFFFFFFFF count-vs-sentinel discrimination leg"
+    budget: null
+  - id: f-38-static
+    recipe: "0x010038 writer/mechanism via static analysis (non-lab)"
+    budget: null
+row_orders:
+  note: "per-row wire order is identical across all 3 in-session boots (recon == W4-baseline == post-R1 VERIFY, both rows, pairwise); ether1-vs-lo cross-row order differs (first divergence at shared-key index 1); both differ from the older WS-3C capture (lo {1046,1002} swap) — mechanism unknown, with no wider claim"
+  v7_ether1_48_keys: [0x01003c, 0x00040c, 0x0003f4, 0x001388, 0xfe000a, 0x01000d, 0x000400, 0x0003eb, 0x01000e, 0x0003f3, 0x0003f8, 0x0003f9, 0x0003fa, 0xfe0001, 0x010001, 0x010003, 0x010002, 0x010004, 0x010064, 0x01000c, 0x000416, 0x000417, 0x000418, 0x000419, 0xfe0012, 0x00041b, 0x010069, 0x00041c, 0x00041e, 0x010066, 0x000487, 0x01002e, 0x01002f, 0x010038, 0x010039, 0x0003ea, 0x01003a, 0x01003b, 0x0003f2, 0x0003f5, 0x01006a, 0x010031, 0x010005, 0x010006, 0x01001e, 0xfe0009, 0x000404, 0x0003e9]
+  v7_lo_30_keys: [0x01003c, 0x01000e, 0x0003eb, 0xfe000a, 0xfe0001, 0x010001, 0x010003, 0x010002, 0x01002f, 0x010004, 0x010064, 0x01000c, 0x000416, 0x0003ea, 0x000418, 0x000417, 0x000419, 0x01003a, 0x01003b, 0x010069, 0x010066, 0x010038, 0x010039, 0x01006a, 0x010005, 0x010006, 0x01001e, 0xfe0009, 0x000404, 0x0003e9]
+scan_16_census:
+  v7_7_25_ok_13: [1, 2, 3, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+  v7_ffffffff_in_0xfe0019: [1, 10]
+  v6_6_49_ok_16: [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 20, 30, 31, 32]
+  v6_ffffffff_in_0xfe0014: [1, 5, 7, 8, 10, 20, 30, 32]
+  absent_shape: "ERROR_BRKPATH 0xFE0002, from=[16] truncated, errstr null"
+  v6_populated_diff: "[16,2] 0->1, [16,3] 0->2 (only movers; all 0xFFFFFFFF cells held)"
+trail_38_boot:
+  - boot: recon
+    v7_ether1_lo: [216, 216]
+    v7_tcode: 0x09
+    v6_ether1: 1715
+    v6_tcode: 0x08
+  - boot: session-pre-R
+    v7_ether1_lo: [320, 319]
+    v7_tcode: 0x08
+    v6_ether1: 746
+    v6_tcode: 0x08
+    v7_uptime: 7m21s
+    v6_uptime: 2m12s
+  - boot: session-post-R
+    v7_ether1_lo: [1272, 302]
+    v7_tcode: 0x08
+    v6_ether1: 1714
+    v6_tcode: 0x08
+    v7_uptime: 25s
+    v6_uptime: 29s

@@ -1,0 +1,28 @@
+{
+	"leg": "W4 (7.25 bridge row cells: f101/f30/second-MAC)",
+	"routeros_version": "7.25",
+	"writes": [
+		{ "tag": "E1-W4.1", "control": { "tool": "centrs execute", "command": "/interface/bridge/add name=e1br" }, "outcome": "ok" },
+		{ "tag": "E1-W4.2", "control": { "tool": "centrs execute", "command": "/interface/bridge/remove e1br" }, "outcome": "ok" }
+	],
+	"steps": [
+		{
+			"after": "E1-W4.1",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge" },
+			"result": [{ ".id": "*3", "name": "e1br", "l2mtu": "65535", "mac-address": "0A:4E:E3:9F:FB:31", "disabled": "false" }]
+		},
+		{
+			"after": "E1-W4.1",
+			"native": "GETALL [20,0] (3 rows)",
+			"result": "e1br bridge row id 3: f101=65535 (`65000108ffff0000`, exactly 1x in the GETALL — ether/lo absent), f30=bridge, f102=u32 0, 0x82=`0a4ee39ffb31` (equals REST mac-address), 0x404 absent, 6a=main; 85 keys incl. 56 bridge-only user keys; duplicate 0x000010 (u32 0 AND string ''); -4 pattern (0x01000c/0x2f/0x3a) ether-only, bridge joins lo at 0"
+		},
+		{
+			"after": "E1-W4.2",
+			"control": { "tool": "centrs retrieve", "route": "/interface" },
+			"result": [
+				{ ".id": "*2", "name": "ether1", "type": "ether" },
+				{ ".id": "*1", "name": "lo", "type": "loopback" }
+			]
+		}
+	]
+}

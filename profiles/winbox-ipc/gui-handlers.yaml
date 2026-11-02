@@ -396,18 +396,108 @@ handlers:
         4: { name: kernel-ifindex, tcode: u32, role: "kernel interface index (entry+0x18 -> +0x28): lo=1, sequential per creation batch, gap at deleted interfaces, ABSENT on VRRP (no kernel device)" }
         5: { name: default-name, tcode: string }
         6: { name: name, tcode: string, role: "display name; the iteration-tree SECONDARY sort key (primary = u32 class at entry+0x20: type 1 ether -> 0, types 35/62 -> 1, else -> 2): every rename unconditionally unlinks + reinserts (full re-sort); creation sorted-inserts; R1-R4 dual-mode SUPERSEDED as mechanism (emergent shadow)" }
+        12: { name: unknown-12, tcode: u32, role: "OPEN — 4294967292 on ether rows, 0 on lo/bridge rows both versions (tcode width by value: 0x08/u32 vs 0x09/compact; moves exactly with f47/f58); the -4 pattern is recorded, not read; meaning UNKNOWN" }
+        13: { name: unknown-13, tcode: bool, role: "OPEN — false on ether rows both versions (t=0x00), absent on lo; meaning UNKNOWN" }
         14: { name: running, tcode: bool, role: "first-party: (entry+0x1c & 0x500) == 0x500" }
-        30: { name: type, tcode: string }
+        30: { name: type, tcode: string, role: "row type string; live census {ether, loopback, bridge, vrf} with per-row-type scope (bridge + vrf-interface rows observed on 7.25)" }
+        46: { name: unknown-46, tcode: u32, role: "OPEN — 1 on ether rows both versions (t=0x09), absent on lo; meaning UNKNOWN" }
+        47: { name: unknown-47, tcode: u32, role: "OPEN — 4294967292 on ether rows, 0 on lo/bridge rows both versions (same -4 triple as f12/f58); meaning UNKNOWN" }
+        49: { name: unknown-49, tcode: string, role: "OPEN — the row's own name on ether rows both versions ('ether1', t=0x21), absent on lo; not obviously parent/slave/DefaultName (DefaultName is 'eth0'); meaning UNKNOWN" }
+        56: { name: unknown-56, tcode: u32, role: "OPEN — boot-fixed per-row value both versions (3 boots/3 value sets: recon 216/216 + v6 1715; session 320/319 + 746; post-R 1272/302 + 1714; flat intra-boot; NOT a fast counter, NOT uptime; tcode width by value 0x08/0x09); writer unknown, static-analysis follow-up" }
+        57: { name: unknown-57, tcode: u32, role: "OPEN — 0 on ether/lo rows both versions (t=0x09); meaning UNKNOWN" }
+        58: { name: unknown-58, tcode: u32, role: "OPEN — 4294967292 on ether rows, 0 on lo/bridge rows both versions (same -4 triple as f12/f47); meaning UNKNOWN" }
+        59: { name: unknown-59, tcode: u32, role: "OPEN — 0 on ether/lo rows both versions (t=0x09); meaning UNKNOWN" }
+        60: { name: unknown-60, tcode: u32_array, role: "OPEN — [9,0,0,0,0,0,0,0] on ether/lo rows both versions (t=0x88); meaning UNKNOWN" }
         100: { name: mtu-config, tcode: u32, role: "configured MTU (0 = auto, arrives as u8; else u32)" }
-        101: { name: l2mtu, tcode: u32, role: "KEEP-WITH-CAVEAT: seen ONLY as 65535 on an enabled v7 bridge; absent on ether/lo/vlan both versions; CHR virtio has no l2mtu in REST. Likely correct for hardware ether, unproven." }
-        102: { name: unknown-102, tcode: u32, role: "v7: u32 written by type builders (0 on ether/vlan/bridge); v6: base row-core writes it as an EMPTY STRING. Producer moved base->type, type string->u32 across versions." }
+        101: { name: l2mtu, tcode: u32, role: "confirmed-live: 65535 on the enabled v7 bridge row (`65000108ffff0000`, exactly 1x in the 3-row GETALL); absent on ether/lo rows both versions; v6 bridge cell unobserved (no native [20,0] read on the v6 legs)" }
+        102: { name: unknown-102, tcode: u32, role: "v7: u32 written by type builders (0 on ether/vlan/pre-move bridge `6600010900`; e1br2 carries 1 post-VRF-move in both post-vrf GETALLs — correlates with the main→e1vrf move, no reading claimed); v6: base row-core writes it as an EMPTY STRING. Producer moved base->type, type string->u32 across versions." }
         105: { name: actual-mtu, tcode: u32 }
+        106: { name: vrf, tcode: string, role: "PROVEN VRF alias (7.25): e1br2 row main->e1vrf after /ip/vrf/add name=e1vrf interfaces=e1br2 while control ether1 held main; v7-only (v6 has no VRF column); wire `6a000121056531767266`" }
       namespace-user:
+        2: { name: unknown-2, tcode: u32, role: "OPEN — bridge-row-only: 32768 (t=0x08); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        3: { name: unknown-3, tcode: bool, role: "OPEN — bridge-row-only: true (t=0x01); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        4: { name: unknown-4, tcode: u32, role: "OPEN — bridge-row-only: 300 (t=0x08); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        5: { name: unknown-5, tcode: u32, role: "OPEN — 15 on bridge rows (t=0x09); vrf-interface row carries \"vrf1\" (t=0x21, `050000210476726631`); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        8: { name: unknown-8, tcode: u32, role: "OPEN — bridge-row-only: 20 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        16: { name: unknown-16, tcode: u32, role: "OPEN — bridge-row-only, carried TWICE in one row: u32 0 (`1000000900`) AND string '' (`1000002100`); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        19: { name: unknown-19, tcode: u32, role: "OPEN — bridge-row-only: 20 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        100: { name: unknown-100, tcode: u32, role: "OPEN — bridge-row-only: 2 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        101: { name: unknown-101, tcode: bool, role: "OPEN — bridge-row-only: true (t=0x01); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        102: { name: unknown-102, tcode: bytes, size: 6, role: "OPEN — bridge-row-only: 6 zero bytes (`hex:000000000000`, t=0x31); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        103: { name: unknown-103, tcode: u32, role: "OPEN — bridge-row-only: 6 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        104: { name: unknown-104, tcode: bool, role: "OPEN — bridge-row-only: true (t=0x01); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        105: { name: unknown-105, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        106: { name: unknown-106, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        107: { name: unknown-107, tcode: u32, role: "OPEN — bridge-row-only: 1 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        108: { name: unknown-108, tcode: u32, role: "OPEN — bridge-row-only: 0 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        109: { name: unknown-109, tcode: bool, role: "OPEN — bridge-row-only: true (t=0x01); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        110: { name: unknown-110, tcode: u32, role: "OPEN — bridge-row-only: 33024 (t=0x08); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        111: { name: unknown-111, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        112: { name: unknown-112, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        113: { name: unknown-113, tcode: u32, role: "OPEN — bridge-row-only: 1 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        114: { name: unknown-114, tcode: u32, role: "OPEN — bridge-row-only: 2 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        115: { name: unknown-115, tcode: u32, role: "OPEN — bridge-row-only: 2 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        116: { name: unknown-116, tcode: u32, role: "OPEN — bridge-row-only: 100 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        117: { name: unknown-117, tcode: u32, role: "OPEN — bridge-row-only: 26000 (t=0x08); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        118: { name: unknown-118, tcode: u32, role: "OPEN — bridge-row-only: 25500 (t=0x08); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        119: { name: unknown-119, tcode: u32, role: "OPEN — bridge-row-only: 12500 (t=0x08); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        120: { name: unknown-120, tcode: u32, role: "OPEN — bridge-row-only: 1000 (t=0x08); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        121: { name: unknown-121, tcode: u32, role: "OPEN — bridge-row-only: 3125 (t=0x08); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        122: { name: unknown-122, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        123: { name: unknown-123, tcode: u32, role: "OPEN — bridge-row-only: 2 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        124: { name: unknown-124, tcode: u32, role: "OPEN — bridge-row-only: 1 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        125: { name: unknown-125, tcode: bool, role: "OPEN — bridge-row-only: true (t=0x01); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        126: { name: unknown-126, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        128: { name: unknown-128, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        129: { name: unknown-129, tcode: u32, role: "OPEN — bridge-row-only: 4294967295 (t=0x08); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        130: { name: second-mac-address, tcode: bytes, size: 6, role: "bridge-row-only second MAC (t=0x31, 6 bytes; `82000031060a4ee39ffb31`, equals REST mac-address); bridge rows carry 0x82 with 0x404 absent, ether/lo rows carry 0x404 with 0x82 absent; v6 bridge cell unobserved" }
+        131: { name: unknown-131, tcode: u32, role: "OPEN — bridge-row-only: 1 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        132: { name: unknown-132, tcode: u32, role: "OPEN — bridge-row-only: 4294967295 (t=0x08); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        133: { name: unknown-133, tcode: u32, role: "OPEN — bridge-row-only: 128 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        134: { name: unknown-134, tcode: u32, role: "OPEN — bridge-row-only: 5 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        135: { name: unknown-135, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        136: { name: unknown-136, tcode: string, role: "OPEN — bridge-row-only template string '$(INTERFACE):$(VID)' (t=0x21, verbatim); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        137: { name: unknown-137, tcode: string, role: "OPEN — bridge-row-only template string '$(BRIDGEMAC)' (t=0x21, verbatim); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        138: { name: unknown-138, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        139: { name: unknown-139, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        140: { name: unknown-140, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        141: { name: unknown-141, tcode: string, role: "OPEN — bridge-row-only template string '$(INTERFACE):$(VID)' (t=0x21, verbatim); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        142: { name: unknown-142, tcode: string, role: "OPEN — bridge-row-only template string '$(BRIDGEMAC)' (t=0x21, verbatim); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        143: { name: unknown-143, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        144: { name: unknown-144, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        145: { name: unknown-145, tcode: bool, role: "OPEN — bridge-row-only: true (t=0x01); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        146: { name: unknown-146, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        147: { name: unknown-147, tcode: bool, role: "OPEN — bridge-row-only: false (t=0x00); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        148: { name: unknown-148, tcode: u32, role: "OPEN — bridge-row-only: 60 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        149: { name: unknown-149, tcode: bool, role: "OPEN — bridge-row-only: true (t=0x01); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
         1001: { name: mac-address, tcode: bytes, size: 6 }
+        1002: { name: unknown-1002, tcode: u32, role: "OPEN — 1 on ether/lo rows both versions (t=0x09); meaning UNKNOWN" }
+        1003: { name: unknown-1003, tcode: bool, role: "OPEN — v7-only: false on ether/lo rows (t=0x00), absent on v6; meaning UNKNOWN" }
+        1010: { name: unknown-1010, tcode: u32, role: "OPEN — 1 on ether rows both versions (t=0x09), absent on lo; meaning UNKNOWN" }
+        1011: { name: unknown-1011, tcode: bool, role: "OPEN — true on ether rows both versions (t=0x01), absent on lo; meaning UNKNOWN" }
+        1012: { name: unknown-1012, tcode: bool, role: "OPEN — true on ether rows both versions (t=0x01), absent on lo; meaning UNKNOWN" }
+        1013: { name: unknown-1013, tcode: u32, role: "OPEN — 2 on ether rows both versions (t=0x09), absent on lo; meaning UNKNOWN" }
+        1016: { name: unknown-1016, tcode: u32, role: "OPEN — 0 on ether rows both versions (t=0x09), absent on lo; meaning UNKNOWN" }
+        1017: { name: unknown-1017, tcode: u32, role: "OPEN — 0 on ether rows both versions (t=0x09), absent on lo; meaning UNKNOWN" }
+        1018: { name: unknown-1018, tcode: u32, role: "OPEN — 0 on ether rows both versions (t=0x09), absent on lo; meaning UNKNOWN" }
+        1024: { name: unknown-1024, tcode: bool, role: "OPEN — false on ether rows both versions (t=0x00), absent on lo; meaning UNKNOWN" }
+        1028: { name: unknown-1028, tcode: bytes, size: 6, role: "OPEN — second MAC on ether/lo rows both versions (t=0x31, 6 bytes; zero MAC on lo); absent on bridge rows (which carry 0x82 instead); meaning UNKNOWN beyond the noted second-MAC split" }
+        1033: { name: unknown-1033, tcode: u32, role: "OPEN — v6-only: 3221229631 (0xC000103F, t=0x08) on the v6 ether1 row, absent on v7; meaning UNKNOWN" }
+        1036: { name: unknown-1036, tcode: u32_array, role: "OPEN — v7-only: [] on the v7 ether1 row (t=0x88), absent on lo/v6; meaning UNKNOWN" }
+        1046: { name: unknown-1046, tcode: u32, role: "OPEN — 0 on ether/lo rows both versions (t=0x09); meaning UNKNOWN" }
+        1047: { name: unknown-1047, tcode: u32, role: "OPEN — 1 on ether/lo rows both versions (t=0x09); meaning UNKNOWN" }
+        1048: { name: unknown-1048, tcode: u32, role: "OPEN — 5 on ether/lo rows both versions (t=0x09); meaning UNKNOWN" }
+        1049: { name: unknown-1049, tcode: u32, role: "OPEN — 300 on ether/lo rows both versions (t=0x08); meaning UNKNOWN" }
+        1051: { name: unknown-1051, tcode: u32, role: "OPEN — v7-only: 3 on the v7 ether1 row (t=0x09), absent on lo/v6; meaning UNKNOWN" }
+        1052: { name: unknown-1052, tcode: u32, role: "OPEN — v7-only: 1000 on the v7 ether1 row (t=0x08), absent on lo/v6; meaning UNKNOWN" }
+        1054: { name: unknown-1054, tcode: u32, role: "OPEN — v7-only: 0 on ether rows (t=0x09); absent on lo (0/22 lo observations) and on v6; meaning UNKNOWN" }
+        1159: { name: unknown-1159, tcode: u32, role: "OPEN — v7-only: 0 on the v7 ether1 row (t=0x09), absent on lo/v6; meaning UNKNOWN" }
+        5000: { name: unknown-5000, tcode: bool, role: "OPEN — v7-only: false on the v7 ether1 row (t=0x00), absent on lo/v6; meaning UNKNOWN" }
       namespace-session:
         7: { name: dynamic, tcode: bool, role: "base row-core: present-True if entry+0x14 bit 0x80 is set, else ABSENT (both versions). v7 bridge-type builder additionally writes explicit False (v6 bridge omits) — version drift in the TYPE builder, not the core." }
         9: { name: comment, tcode: string }
         10: { name: disabled, tcode: bool }
+        18: { name: unknown-18, tcode: u32, role: "OPEN — 0 on the v7 ether1 row only (t=0x09), absent on lo/v6; schema-mapped STD_VERSION, row role unresolved; meaning UNKNOWN" }
     evidence:
       - source: code
         ref: "RouterOS net interface row-core 0x80f6738 (810 instructions, 75 ops, 6.49.23): all seven mapped fields converge here; entry+0x14/0x1c/0x60 feed row 0x10002/0x10003/0x10001, running = (w & 0x500) == 0x500, dynamic gated on entry+0x14 bit 0x80; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4/§8"
@@ -451,6 +541,10 @@ handlers:
         ref: "RouterOS v7 sstore record grammar (u32 table + rowid + len + M2 payload, table-0 directory, len-0 tombstones) + GCCHECK rotation gates (junk > 4096, free ≥ 8×junk, 0x804da8e) + boot-load token reaper (0x804d4d0); see work/2026-10-chr-extraction/ws3c-prober-findings.md §47"
       - source: sample
         ref: "live CHR interrogation + store forensics (forensics batch, 7.25): 8 boots / 6 carves (rowid reservation + explicit-reclaim + high-water auto-assign + ERROR_EXISTS on live id); ev/7.25-getall-20-0-rp47-{base,live,post,clean}.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §47"
+      - source: sample
+        ref: "controlled-change proof (E1 W4/W6/W7, 7.25 + 6.49.23): report + control envelopes work/2026-11-winbox-attributes/proof/7.25-e1-bridges/{report.yaml,control-w4.json,control-w6.json,control-w7.json}; f101 confirmed live, f30 census, second-MAC split, VRF alias, boot-fixed 0x010038"
+      - source: sample
+        ref: "live CHR interrogation (E1 W7, 7.25): pre/post VRF pair — fixtures/winbox-ipc/7.25-vrf-6a.json"
     notes: |
       Fields split across three byte_2 values: 0x01 (NS-1: interface
       fields + private control plane — the old `namespace-1` label is now
@@ -519,6 +613,31 @@ handlers:
       (total−live bytes) exceeds 4096 with free ≥ 8×junk, on a
       minute-scale write-independent check (~5 min best-fit) —
       this rotation is what GCs tombstones and stale versions.
+      E1 bridge/interface legs (disposable CHR, 7.25 + 6.49.23):
+      f101=65535 confirmed live on the enabled v7 bridge row
+      (ether/lo absent both versions); f30 census
+      {ether,loopback,bridge,vrf} with per-row-type scope; 0x82
+      second-MAC on bridge rows (0x404 ether/lo-only, absent
+      on bridge rows); 0x01006a PROVEN as the VRF alias (e1br2
+      main->e1vrf, control ether1 held); 0x010038 boot-fixed both
+      versions (3 boots/3 value sets, flat intra-boot, NOT a
+      fast counter, NOT uptime; writer unknown). The -4 pattern
+      (0x01000c/0x2f/0x3a = 4294967292) is ether-only; bridge
+      rows join lo at 0. One bridge row carries 0x000010 TWICE
+      (u32 0 AND string '') — another shape-not-canonical data
+      point. Per-row wire order is boot-stable (identical
+      across all 3 in-session boots, both rows, pairwise) but
+      differs from the older WS-3C capture (lo {1046,1002}
+      swap) — mechanism unknown, with no wider claim. [20,0] rowids
+      advance monotonically in-session (ether1=2/lo=1 stable
+      incl. across reboot; bridge rowids 3,4,5,(6 unrecorded
+      gap),7,8; vrf-interface rowid 9 is the id-space
+      high-water) — unlike [16,2] port rowid 0, which IS reused
+      across empty->add cycles (sstore-exception flag; see
+      bridge-port). Follow-ups: W2 re-run for the vlan
+      filtering=yes / move cells (budget 9; swap form + static
+      MAC gate never live-tested), W5 retry for the host-table
+      owner scan (budget 6).
     revision-history:
       - date: 2026-10-31
         belief: "GETALL start cursor on [20,0] is opaque (no closed form)"
@@ -552,6 +671,18 @@ handlers:
         evidence:
           - source: sample
             ref: "live CHR interrogation (token batch, 7.25): M2-ADDed vlan carries 0xff001e = 12345; ev/7.25-getall-20-0-ff001e.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §26"
+      - date: 2026-11-02
+        belief: "f101 KEEP-WITH-CAVEAT: 65535 on an enabled v7 bridge, unproven live"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (E1 W4, 7.25): f101=65535 confirmed live on the enabled bridge row (`65000108ffff0000`, exactly 1x in the 3-row GETALL; ether/lo absent); see work/2026-11-winbox-attributes/proof/7.25-e1-bridges/control-w4.json"
+      - date: 2026-11-02
+        belief: "per-row [20,0] wire order differs across boots"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "E1 recon + write legs (7.25): each row's wire order identical across all 3 in-session boots (recon == W4-baseline == post-R1 VERIFY, both rows, pairwise); the older WS-3C capture differs (lo {1046,1002} swap) — mechanism unknown; see work/2026-11-winbox-attributes/proof/7.25-e1-bridges/report.yaml row_orders"
 
   ip-address:
     sys-to: [20, 1]
@@ -700,17 +831,72 @@ handlers:
     fields:
       row-id: { namespace: session, field: 1 }
       namespace-user:
-        3: { name: interface, tcode: u32 }
-        4: { name: bridge, tcode: u32 }
-        19: { name: pvid, tcode: u32 }
+        1: { name: unknown-1, tcode: u32, role: "OPEN — 10 on the port rows both versions (t=0x09); meaning UNKNOWN" }
+        2: { name: unknown-2, tcode: u32, role: "OPEN — 128 on the port rows both versions (t=0x09); meaning UNKNOWN" }
+        3: { name: interface, tcode: u32, role: "PROVEN [20,0] rowid of the enslaved interface (7.25: f3=2=etherRowId; 6.49.23: f3=1 — version-local rowids)" }
+        4: { name: bridge, tcode: u32, role: "PROVEN [20,0] rowid of the parent bridge (7.25: f4=4=bridgeRowId; 6.49.23: f4=2 — version-local rowids)" }
+        10: { name: unknown-10, tcode: u32, role: "OPEN — 0 on the port rows both versions (t=0x09); meaning UNKNOWN" }
+        11: { name: unknown-11, tcode: u32, role: "OPEN — 0 on the port rows both versions (t=0x09); meaning UNKNOWN" }
+        12: { name: unknown-12, tcode: u32, role: "OPEN — 0 on the port rows both versions (t=0x09); meaning UNKNOWN" }
+        13: { name: unknown-13, tcode: u32, role: "OPEN — 0 on the port rows both versions (t=0x09); meaning UNKNOWN" }
+        14: { name: unknown-14, tcode: bool, role: "OPEN — false on the port rows both versions (t=0x00); meaning UNKNOWN" }
+        15: { name: unknown-15, tcode: bool, role: "OPEN — true on the port rows both versions (t=0x01); meaning UNKNOWN" }
+        16: { name: unknown-16, tcode: bool, role: "OPEN — false on the port rows both versions (t=0x00); meaning UNKNOWN" }
+        17: { name: unknown-17, tcode: bool, role: "OPEN — false on the port rows both versions (t=0x00); meaning UNKNOWN" }
+        18: { name: unknown-18, tcode: u32, role: "OPEN — 10 on the port rows both versions (t=0x09); meaning UNKNOWN" }
+        19: { name: pvid, tcode: u32, role: "port VLAN id, 1 on the observed rows both versions (REST pvid=1)" }
+        20: { name: unknown-20, tcode: u32, role: "OPEN — 0 on the port rows both versions (t=0x09); meaning UNKNOWN" }
+        21: { name: unknown-21, tcode: bool, role: "OPEN — v7 true / v6 false (sole shared-key value drift; no CLI attribution claimed); meaning UNKNOWN" }
+        23: { name: unknown-23, tcode: bool, role: "OPEN — true on the port rows both versions (t=0x01); meaning UNKNOWN" }
+        24: { name: unknown-24, tcode: bool, role: "OPEN — true on the port rows both versions (t=0x01); meaning UNKNOWN" }
+        25: { name: unknown-25, tcode: bool, role: "OPEN — true on the port rows both versions (t=0x01); meaning UNKNOWN" }
+        26: { name: unknown-26, tcode: bool, role: "OPEN — false on the port rows both versions (t=0x00); meaning UNKNOWN" }
+        27: { name: unknown-27, tcode: bool, role: "OPEN — false on the port rows both versions (t=0x00); meaning UNKNOWN" }
+        28: { name: unknown-28, tcode: bool, role: "OPEN — false on the port rows both versions (t=0x00); meaning UNKNOWN" }
+        29: { name: unknown-29, tcode: bool, role: "OPEN — false on the port rows both versions (t=0x00); meaning UNKNOWN" }
+        30: { name: unknown-30, tcode: u32, role: "OPEN — 1 on the port rows both versions (t=0x09); meaning UNKNOWN" }
+        31: { name: unknown-31, tcode: bool, role: "OPEN — false on the port rows both versions (t=0x00); meaning UNKNOWN" }
+        32: { name: unknown-32, tcode: bool, role: "OPEN — v7-only, false on the 7.25 row (t=0x00); meaning UNKNOWN" }
+        33: { name: unknown-33, tcode: bool, role: "OPEN — v7-only, false on the 7.25 row (t=0x00); meaning UNKNOWN" }
+        34: { name: unknown-34, tcode: u32, role: "OPEN — v7-only, 0 on the 7.25 row (t=0x09); meaning UNKNOWN" }
+        35: { name: unknown-35, tcode: u32, role: "OPEN — v7-only, 0 on the 7.25 row (t=0x09); meaning UNKNOWN" }
+        37: { name: unknown-37, tcode: bool, role: "OPEN — v7-only, false on the 7.25 row (t=0x00); meaning UNKNOWN" }
+        38: { name: unknown-38, tcode: bool, role: "OPEN — v7-only, false on the 7.25 row (t=0x00); meaning UNKNOWN" }
+        39: { name: unknown-39, tcode: bool, role: "OPEN — v7-only, false on the 7.25 row (t=0x00); meaning UNKNOWN" }
+        40: { name: unknown-40, tcode: bool, role: "OPEN — v7-only, false on the 7.25 row (t=0x00); meaning UNKNOWN" }
+        215: { name: unknown-215, tcode: bool, role: "OPEN — false on the port rows both versions (t=0x00); meaning UNKNOWN" }
       namespace-session:
+        5: { name: unknown-5, tcode: u32, role: "OPEN — per-row 0xFFFFFFFF on the port rows both versions (t=0x08); sentinel-or-bitmask, no reading claimed" }
+        7: { name: unknown-7, tcode: bool, role: "OPEN — false on the port rows both versions (t=0x00); documented STD_DYNAMIC elsewhere, local name unassigned" }
+        8: { name: unknown-8, tcode: bool, role: "OPEN — false on the created rows both versions (t=0x00), true post-SET alongside CLI inactive false->true (single leg); documented STD_INACTIVE elsewhere, local name unassigned" }
         9: { name: comment, tcode: string }
         10: { name: disabled, tcode: bool }
+    set:
+      cmd: { value: 0xfe0003, name: CMD_SETOBJ, ref: "./std-commands.yaml 0xfe0003" }
+      scope: "table-row path on [16,2]; request carries 0xfe0001=rowid + the fields to write (here: 0xfe000a disabled bool)"
+      ack: "bare SYS-only success, no 0xfe0001 echo (same key set as REMOVEOBJ) — status-ok-proves-nothing, read back after SET"
+      versions: ["7.25"]
+    add:
+      cmd: { value: 0xfe0005, name: CMD_ADDOBJ, ref: "./std-commands.yaml 0xfe0005" }
+      scope: "table-row path on [16,2]; request carries the new row's fields (here: f3 interface rowid + f4 bridge rowid, live-resolved); untokened (no 0xff001e)"
+      ack: "bare SYS-only success + 0xfe0001 = new row id (here: 0)"
+      versions: ["7.25"]
+    remove:
+      cmd: { value: 0xfe0006, name: CMD_REMOVEOBJ, ref: "./std-commands.yaml 0xfe0006" }
+      scope: "table-row path on [16,2]; request carries only 0xfe0001=rowid (here: 0)"
+      ack: "bare SYS-only success (same key set as SETOBJ); row gone on GETALL read-back"
+      versions: ["7.25"]
     evidence:
       - source: code
         ref: "RouterOS bridge2 candidate 0x806db62 (38 inserts incl. u32:3, u32:4, u32:19 + ~30 more + meta, 6.49.23) — probable attribution (shape + handler-2-custom consistent); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): [16,2] exists both versions (empty here — no bridges at scan time); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+      - source: sample
+        ref: "controlled-change proof (E1 W1/W3, 7.25): report + control envelopes work/2026-11-winbox-attributes/proof/7.25-e1-bridges/{report.yaml,control-w1.json,control-w3.json}; 40-key row census + f3/f4 rowid check + ADDOBJ {3,4}->rowid 0 + SETOBJ 0xfe000a effective both surfaces + REMOVEOBJ"
+      - source: sample
+        ref: "live CHR interrogation (E1 W1/W3, 7.25): W1 full row + ADD/SET/REMOVE tx + ack replies with GETALL/GETOBJ read-backs — fixtures/winbox-ipc/7.25-bridge-port-16-2.json"
+      - source: sample
+        ref: "live CHR interrogation (E1 W8, 6.49.23): 32-key row, strict v7 subset — fixtures/winbox-ipc/6.49-bridge-port-16-2.json + work/2026-11-winbox-attributes/proof/7.25-e1-bridges/control-w8.json"
     notes: |
       See processes.yaml 0x10 for the version-scoping (resolved for v6:
       bridge2; the Cisco-Talos `dude` label is another version).
@@ -719,6 +905,37 @@ handlers:
       bridges existed at scan time). Bridge2-2/13 slot-9 getters are
       REQUEST-BUILDERS (proxy/join: SYS_CMD + 0x1003b/0x10001 +
       string(0xfe0009) + u32(1)) — sub-request targets TBD.
+      E1 row census (disposable CHR legs): the 7.25 port row is 40
+      keys (34 user + session {1,5,7,8,9,10}); the 6.49.23 row is
+      32 keys and a STRICT subset — v7-only
+      {0x20,0x21,0x22,0x23,0x25,0x26,0x27,0x28}, v6-only set
+      empty. Sole shared-key value drift is 0x15 (v7 true / v6
+      false; no CLI attribution claimed). f3/f4 are PROVEN
+      [20,0] rowids (interface/bridge). Per-row 0xfe0005 =
+      0xFFFFFFFF both versions (no reading claimed).
+      Native write path (7.25): ADDOBJ {3,4} answers bare SYS-only
+      + 0xfe0001 = new rowid 0 (`0100fe0900`); the row is
+      CLI-visible (.id *0, bridge e1br, interface ether1); SETOBJ
+      {0xfe0001:0, 0xfe000a:true} takes effect on BOTH surfaces
+      (native 0xfe000a false->true + CLI disabled/inactive
+      false->true); REMOVEOBJ {0xfe0001:0} removes it. SET/REMOVE
+      ack replies are bare SYS-only with no 0xfe0001 echo (the [20,1]
+      precedent). Wire: SYS_CMD rides `0700ff08{03,05,06}00fe`
+      (SET/ADD/REMOVE), rowid `0100fe09{NN}`.
+      Bridge remove does NOT cascade to ports on 7.25 (DISPROVEN):
+      removing e1br left port *0 orphaned (inactive=true, dangling
+      bridge *4, native [16,2] still 1 row). Port rowid 0 is
+      REUSED across empty->add cycles (W1, W3, W8 all 0) — the
+      sstore no-reuse reading does NOT hold for bridge2 ports
+      (store resets or slot-indexes; sstore-exception flag for the
+      [20,0] lifecycle note). Static-candidate delta (v6 live vs
+      the 0x806db62 candidate): static MINUS {5,22,208,216,220}
+      PLUS {215} — probable attribution confirmed with deltas.
+      HYPOTHESIS (v6 only, unbudgeted follow-up): [16,3] counts
+      bridge membership (0->2 with 1 bridge + 1 port; handlers 2
+      and 3 the only populated-scan movers) — ports+bridges or
+      bridged-interface count, two fits for one cell. No [16,3]
+      handler entry is created for this single cell.
 
   bridge-vlan:
     sys-to: [16, 13]
@@ -730,12 +947,13 @@ handlers:
     fields:
       row-id: { namespace: session, field: 1 }
       namespace-user:
-        1: { name: vlan-ids, tcode: u32_array, role: "pairs of (start,end); a singleton pair start==end is one vlan id" }
-        2: { name: bridge, tcode: u32 }
-        3: { name: tagged, tcode: u32_array, role: "interface row ids" }
-        4: { name: tagged-extra, tcode: u32_array, role: "NEW (first-party): configured-vs-current tagged/untagged?" }
-        5: { name: untagged, tcode: u32_array, role: "interface row ids" }
-        6: { name: untagged-extra, tcode: u32_array, role: "NEW (first-party): configured-vs-current tagged/untagged?" }
+        1: { name: vlan-ids, tcode: u32_array, role: "pairs of (start,end); a singleton pair start==end is one vlan id ([10,10] on the observed row)" }
+        2: { name: bridge, tcode: u32, role: "parent bridge [20,0] rowid (5 on the observed row)" }
+        3: { name: tagged, tcode: u32_array, role: "tagged [20,0] rowids ([5]=bridge rowid on the observed row, 7.25)" }
+        4: { name: configured-untagged, tcode: u32_array, role: "PROVEN configured-untagged [20,0] rowids: [2]=ether1 rowid while REST current-tagged/current-untagged are both verifiably empty (a current-side array would be empty); wire `04000088010002000000` (7.25)" }
+        5: { name: untagged, tcode: u32_array, role: "HYPOTHESIS (strong): one of the current tagged/untagged pair (unassigned which) — [] in the only observed cell (filtering=no, currents verifiably empty); empty fits any reading, needs the filtering=yes / move cells" }
+        6: { name: untagged-extra, tcode: u32_array, role: "HYPOTHESIS (strong): the other of the current tagged/untagged pair (unassigned which) — [] in the only observed cell (same cell as f5); empty fits any reading" }
+        7: { name: unknown-7, tcode: u32_array, role: "OPEN — 7th user TLV, empty u32-array (`070000880000`) with mvrp-forbidden='' configured (7.25); consistent with an mvrp-forbidden rowid array, needs a leg that SETS mvrp-forbidden" }
       namespace-session:
         7: { name: dynamic, tcode: bool }
         9: { name: comment, tcode: string }
@@ -745,6 +963,36 @@ handlers:
         ref: "RouterOS bridge2 row-builder 0x806df36 (91 instructions, 6.49.23): schema {1,2,3,5} ALL MATCH + new {4,6}; attributed via /nova/store/bridge-vlans -> handler 0xd; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): [16,13] exists both versions (empty here); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9"
+      - source: sample
+        ref: "controlled-change proof (E1 W2, 7.25, partial 1/4 cells): report + control envelope work/2026-11-winbox-attributes/proof/7.25-e1-bridges/{report.yaml,control-w2.json}; f4=configured-untagged proven from the filtering=no cell"
+      - source: sample
+        ref: "live CHR interrogation (E1 W2, 7.25): filtering=no cell + restore-empty proof — fixtures/winbox-ipc/7.25-bridge-vlan-f4.json (REST currents in control-w2.json)"
+    revision-history:
+      - date: 2026-11-02
+        belief: "vlan f4 is tagged-extra / current-side (configured-vs-current tagged/untagged guess)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (E1 W2, 7.25): f4=[2] is non-empty while both REST currents are verifiably empty, so f4 is configured-side (configured-untagged); see work/2026-11-winbox-attributes/proof/7.25-e1-bridges/control-w2.json"
+    notes: |
+      E1 discrimination (7.25, disposable CHR, partial 1/4 cells):
+      with filtering=no and vlan-ids=10 tagged=e1br untagged=ether1,
+      REST reads tagged=e1br, untagged=ether1, current-tagged='',
+      current-untagged='', mvrp-forbidden='' while the native row
+      (vlan rowid 1) carries f3=[5] (bridge [20,0] rowid), f4=[2]
+      (ether1 [20,0] rowid), f5=f6=f7=[]. f4 MUST be
+      configured-side — a current-side array would be empty — so
+      f4=configured-untagged is PROVEN (single cell, but the logic
+      is airtight). f5/f6=[] stay HYPOTHESIS (current
+      tagged/untagged): empty fits any reading; the filtering=yes
+      and move cells were lost when the single-var move was
+      rejected (follow-up: W2 re-run with the swap form, budget 9
+      — swap form never live-tested). f7=[] is a 7th user TLV
+      with mvrp-forbidden='' configured — consistent with an
+      mvrp-forbidden rowid array, unproven (follow-up: leg that
+      SETS mvrp-forbidden, no budget attached). Vlan-row wire
+      order is roughly descending user keys (7,6,5,4,3,1 ... 2
+      trailing).
 
   system-clock:
     sys-to: [24, 0]

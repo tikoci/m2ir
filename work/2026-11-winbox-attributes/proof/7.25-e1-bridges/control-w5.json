@@ -1,0 +1,28 @@
+{
+	"leg": "W5 (7.25 host rows; scan science LOST to the gate)",
+	"routeros_version": "7.25",
+	"writes": [
+		{ "tag": "E1-W5.1", "control": { "tool": "centrs execute", "command": "/interface/bridge/add name=e1br" }, "outcome": "ok" },
+		{ "tag": "E1-W5.2", "control": { "tool": "centrs execute", "command": "/interface/bridge/port/add bridge=e1br interface=ether1" }, "outcome": "ok" },
+		{ "tag": "E1-W5.3", "control": { "tool": "centrs execute", "command": "/interface/bridge/host/add mac-address=02:00:00:E1:00:01 bridge=e1br interface=ether1" }, "outcome": "ok", "note": "static host rows are device-accepted" },
+		{ "tag": "E1-W5.r1", "control": { "tool": "centrs execute", "command": "host/remove *4 (dynamic)" }, "outcome": "rejected (0 writes)", "detail": "can not remove dynamic" },
+		{ "tag": "E1-W5.r1/r2/r3", "control": { "tool": "centrs execute", "command": "host/port/bridge removes (bridge-first cleanup)" }, "outcome": "ok" }
+	],
+	"steps": [
+		{
+			"after": "E1-W5.3",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge/host" },
+			"result": [
+				{ ".id": "*6", "mac-address": "02:00:00:E1:00:01", "dynamic": "false", "bridge": "e1br", "interface": "ether1" },
+				{ ".id": "*4", "mac-address": "02:91:A6:6C:44:D5", "dynamic": "true", "local": "true", "bridge": "e1br", "interface": "ether1" },
+				{ ".id": "*5", "mac-address": "52:55:0A:00:02:02", "dynamic": "true", "local": "false", "bridge": "e1br", "interface": "ether1" }
+			],
+			"note": "*4 MAC matches the lab ether1 MAC; *5 is a second self-learned dynamic row (QEMU-convention gateway inference, not artifact-proven)"
+		},
+		{
+			"blocked": true,
+			"cause": "over-strict `host rows === 1` gate tripped on the 2 self-learned dynamic co-rows; the populated scan never ran, so the host-table owner handler stays unknown"
+		}
+	],
+	"followup": "same W5 with the corrected gate (static MAC present, dynamic co-rows allowed), budget 6; static-MAC gate never live-tested"
+}

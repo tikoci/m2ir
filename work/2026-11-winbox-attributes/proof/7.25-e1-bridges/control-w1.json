@@ -1,0 +1,43 @@
+{
+	"leg": "W1 (7.25 port row shape + no-cascade)",
+	"routeros_version": "7.25",
+	"writes": [
+		{ "tag": "E1-W1.1", "control": { "tool": "centrs execute", "command": "/interface/bridge/add name=e1br" }, "outcome": "ok" },
+		{ "tag": "E1-W1.2", "control": { "tool": "centrs execute", "command": "/interface/bridge/port/add bridge=e1br interface=ether1" }, "outcome": "ok" },
+		{ "tag": "E1-W1.3", "control": { "tool": "centrs execute", "command": "/interface/bridge/remove e1br" }, "outcome": "ok" },
+		{ "tag": "E1-W1.4", "control": { "tool": "centrs execute", "command": "/interface/bridge/port/remove *0" }, "outcome": "ok", "note": "shell completion: orphan cleanup after the no-cascade finding" }
+	],
+	"steps": [
+		{
+			"after": "E1-W1.2",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge/port" },
+			"result": [{ ".id": "*0", "bridge": "e1br", "interface": "ether1", "disabled": "false", "inactive": "false", "status": "in-bridge", "pvid": "1" }]
+		},
+		{
+			"after": "E1-W1.2",
+			"native": "GETALL [16,2]",
+			"result": "1 row, 40 keys, rowid 0; f3=2=etherRowId, f4=4=bridgeRowId; f19=1; per-row 0xfe0005=0xFFFFFFFF"
+		},
+		{
+			"after": "E1-W1.3",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge/port" },
+			"result": [{ ".id": "*0", "bridge": "*4", "interface": "ether1", "disabled": "false", "inactive": "true", "status": "inactive" }],
+			"note": "NO-CASCADE DISPROOF: port orphaned with dangling bridge *4"
+		},
+		{
+			"after": "E1-W1.3",
+			"native": "GETALL [16,2]",
+			"result": "still 1 row (orphan); bridge retrieve []"
+		},
+		{
+			"after": "E1-W1.4",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge/port" },
+			"result": []
+		},
+		{
+			"after": "E1-W1.4",
+			"native": "GETALL [16,2]",
+			"result": "0 rows + total 0 (empty envelope)"
+		}
+	]
+}

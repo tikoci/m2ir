@@ -1,0 +1,41 @@
+{
+	"leg": "W2 (7.25 vlan f4 discrimination, PARTIAL 1/4 cells)",
+	"routeros_version": "7.25",
+	"writes": [
+		{ "tag": "E1-W2.1", "control": { "tool": "centrs execute", "command": "/interface/bridge/add name=e1br" }, "outcome": "ok" },
+		{ "tag": "E1-W2.2", "control": { "tool": "centrs execute", "command": "/interface/bridge/vlan/add bridge=e1br vlan-ids=10 tagged=e1br untagged=ether1" }, "outcome": "ok" },
+		{ "tag": "E1-W2.3", "control": { "tool": "centrs execute", "command": "/interface/bridge/port/add bridge=e1br interface=ether1" }, "outcome": "ok" },
+		{ "tag": "E1-W2.4", "control": { "tool": "centrs execute", "command": "vlan/set *1 tagged=ether1 (single-var)" }, "outcome": "rejected (0 writes)", "detail": "interface cannot be in tagged and untagged at the same time" },
+		{ "tag": "E1-W2.r1/r2/r3", "control": { "tool": "centrs execute", "command": "vlan/port/bridge removes" }, "outcome": "ok", "note": "shared restore, clean" }
+	],
+	"steps": [
+		{
+			"after": "E1-W2.3 (filtering=no cell)",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge/vlan" },
+			"result": [
+				{
+					".id": "*1",
+					".about": "vlan-filtering is disabled",
+					"bridge": "e1br",
+					"tagged": "e1br",
+					"untagged": "ether1",
+					"current-tagged": "",
+					"current-untagged": "",
+					"mvrp-forbidden": "",
+					"vlan-ids": "10"
+				}
+			]
+		},
+		{
+			"after": "E1-W2.3 (filtering=no cell)",
+			"native": "GETALL [16,13]",
+			"result": "1 row, vlan rowid 1; f1=[10,10], f2=5 (bridge rowid), f3=[5] (bridge rowid), f4=[2]=ether1 rowid (PROVEN configured-untagged: non-empty while both currents empty), f5=[], f6=[] (HYPOTHESIS current-side, empty fits any reading), f7=[] (HYPOTHESIS mvrp-forbidden)"
+		},
+		{
+			"after": "restore",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge/vlan" },
+			"result": []
+		}
+	],
+	"followup": "W2 re-run with the swap-form W2.4 (plus W2b.1/W2b.2), budget 9; swap form never live-tested"
+}

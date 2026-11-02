@@ -2,8 +2,8 @@
 //
 // Independent of the work/ harness decoder by construction (no imports
 // outside node/yaml). Decodes the tcode subset used by Tier-1 fixtures:
-// bools, u8/u32/u64, compact/wide strings, nested messages,
-// u32/string/message arrays.
+// bools, u8/u32/u64, compact/wide strings, length-prefixed bytes,
+// nested messages, u32/string/message arrays.
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -131,6 +131,13 @@ function decodeValue(c: Cursor, tcode: number, text: TextDecoder): unknown {
 			const len = c.buf[c.pos] as number;
 			c.pos += 1;
 			const v = text.decode(c.buf.slice(c.pos, c.pos + len));
+			c.pos += len;
+			return v;
+		}
+		case 0x31: {
+			const len = c.buf[c.pos] as number;
+			c.pos += 1;
+			const v = `hex:${[...c.buf.slice(c.pos, c.pos + len)].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
 			c.pos += len;
 			return v;
 		}

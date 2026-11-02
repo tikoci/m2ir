@@ -1,0 +1,38 @@
+{
+	"leg": "W8 (6.49.23 port row shape + populated scan)",
+	"routeros_version": "6.49.23",
+	"writes": [
+		{ "tag": "E1-W8.1", "control": { "tool": "centrs execute", "command": "/interface/bridge/add name=e1br" }, "outcome": "ok" },
+		{ "tag": "E1-W8.2", "control": { "tool": "centrs execute", "command": "/interface/bridge/port/add bridge=e1br interface=ether1" }, "outcome": "ok" },
+		{ "tag": "E1-W8.3", "control": { "tool": "centrs execute", "command": "port/remove (by-id, by-name forms)" }, "outcome": "rejected (0 writes)", "detail": "routeros/api-trap unknown parameter" },
+		{ "tag": "E1-W8.3r", "control": { "tool": "centrs api DELETE", "command": "/interface/bridge/port/*0 --via native-api" }, "outcome": "ok", "note": "shell completion" },
+		{ "tag": "E1-W8.4r", "control": { "tool": "centrs api DELETE", "command": "/interface/bridge/*2 --via native-api" }, "outcome": "ok", "note": "shell completion" }
+	],
+	"steps": [
+		{
+			"after": "E1-W8.2",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge/port" },
+			"result": [{ ".id": "*0", "bridge": "e1br", "interface": "ether1", "status": "in-bridge", "pvid": "1" }]
+		},
+		{
+			"after": "E1-W8.2",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge" },
+			"result": [{ ".id": "*2", "name": "e1br", "l2mtu": "65535", "mac-address": "02:8B:47:00:1F:77", "disabled": "false" }]
+		},
+		{
+			"after": "E1-W8.2",
+			"native": "GETALL [16,2]",
+			"result": "1 row, 32 keys, strict subset of the v7 40 (v7-only {0x20-0x23, 0x25-0x28}); sole shared-key drift 0x15 (v7 true / v6 false, no claim); f3=1, f4=2 (version-local rowids); f19=1; rowid 0; 0xfe0005=0xFFFFFFFF"
+		},
+		{
+			"after": "E1-W8.2",
+			"native": "GETCOUNT [16,0..32] populated diff",
+			"result": "only movers [16,2] 0->1 and [16,3] 0->2; all 0xFFFFFFFF cells held ([16,3] membership-count HYPOTHESIS: ports+bridges or bridged-interface count — one cell, two fits)"
+		},
+		{
+			"after": "restore",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge/port" },
+			"result": []
+		}
+	]
+}

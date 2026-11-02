@@ -1,0 +1,43 @@
+{
+	"leg": "W3 (7.25 native bridge2 ADD-SET-REMOVE chain)",
+	"routeros_version": "7.25",
+	"writes": [
+		{ "tag": "E1-W3.1", "control": { "tool": "centrs execute", "command": "/interface/bridge/add name=e1br" }, "outcome": "ok", "note": "CLI anchor; bridge rowid 7" },
+		{ "tag": "E1-W3.2", "control": { "tool": "native ADDOBJ", "command": "[16,2] {3:2, 4:7} (f3=etherRowId, f4=bridgeRowId, live-resolved)" }, "outcome": "ok", "note": "ack bare SYS-only + 0xfe0001 = new rowid 0" },
+		{ "tag": "E1-W3.3", "control": { "tool": "native SETOBJ", "command": "[16,2] {0xfe0001:0, 0xfe000a:true}" }, "outcome": "ok", "note": "ack bare SYS-only, no 0xfe0001 echo" },
+		{ "tag": "E1-W3.4", "control": { "tool": "native REMOVEOBJ", "command": "[16,2] {0xfe0001:0}" }, "outcome": "ok", "note": "ack bare SYS-only, no 0xfe0001 echo" },
+		{ "tag": "E1-W3.5", "control": { "tool": "centrs execute", "command": "/interface/bridge/remove e1br" }, "outcome": "ok" }
+	],
+	"steps": [
+		{
+			"after": "E1-W3.2",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge/port" },
+			"result": [{ ".id": "*0", "bridge": "e1br", "interface": "ether1", "disabled": "false", "inactive": "false", "status": "in-bridge" }]
+		},
+		{
+			"after": "E1-W3.2",
+			"native": "GETALL [16,2] read-back + GETOBJ obj=0",
+			"result": "1 row, 40 keys, rowid 0; f3=2, f4=7; 0xfe000a false"
+		},
+		{
+			"after": "E1-W3.3",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge/port" },
+			"result": [{ ".id": "*0", "bridge": "e1br", "interface": "ether1", "disabled": "true", "inactive": "true", "status": "disabled" }]
+		},
+		{
+			"after": "E1-W3.3",
+			"native": "GETOBJ obj=0 read-back",
+			"result": "0xfe000a false->true AND 0xfe0008 false->true; user f15 + f215 absent post-SET (43 vs 45 keys) — disabled rows serve slim, observation only"
+		},
+		{
+			"after": "E1-W3.4",
+			"control": { "tool": "centrs retrieve", "route": "/interface/bridge/port" },
+			"result": []
+		},
+		{
+			"after": "E1-W3.4",
+			"native": "GETALL [16,2] read-back",
+			"result": "0 rows + total 0"
+		}
+	]
+}

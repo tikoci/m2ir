@@ -1,0 +1,43 @@
+{
+	"leg": "W7-redesigned (7.25 VRF alias proof; ether1 never named)",
+	"routeros_version": "7.25",
+	"writes": [
+		{ "tag": "E1-W7.1", "control": { "tool": "centrs execute", "command": "/interface/bridge/add name=e1br2" }, "outcome": "ok" },
+		{ "tag": "E1-W7.2", "control": { "tool": "centrs execute", "command": "/ip/vrf/add name=e1vrf interfaces=e1br2" }, "outcome": "ok" },
+		{ "tag": "E1-W7.3", "control": { "tool": "centrs execute", "command": "/ip/vrf/remove e1vrf (by-name)" }, "outcome": "rejected (0 writes)", "detail": "validation/syntax — VRF remove needs .id" },
+		{ "tag": "E1-W7.3fb", "control": { "tool": "centrs execute", "command": "/ip/vrf/remove *1 (by-id)" }, "outcome": "ok" },
+		{ "tag": "E1-W7.4", "control": { "tool": "centrs execute", "command": "/interface/bridge/remove e1br2" }, "outcome": "ok" }
+	],
+	"steps": [
+		{
+			"at": "baseline",
+			"control": { "tool": "centrs retrieve", "route": "/ip/vrf" },
+			"result": [{ ".id": "*0", "builtin": "true", "disabled": "false", "interfaces": "all", "name": "main" }]
+		},
+		{
+			"after": "E1-W7.1 (pre-vrf)",
+			"native": "GETALL [20,0]",
+			"result": "3 rows: ether1 id 2 6a=main, e1br2 id 8 6a=main, lo id 1 6a=main"
+		},
+		{
+			"after": "E1-W7.2 (post-vrf)",
+			"control": { "tool": "centrs retrieve", "route": "/ip/vrf" },
+			"result": [
+				{ ".id": "*1", "disabled": "false", "interfaces": "e1br2", "name": "e1vrf" },
+				{ ".id": "*0", "builtin": "true", "disabled": "false", "interfaces": "all", "name": "main" }
+			]
+		},
+		{
+			"after": "E1-W7.2 (post-vrf)",
+			"native": "GETALL [20,0]",
+			"result": "4 rows: ether1 id 2 6a=main (control held), e1br2 id 8 6a=e1vrf (`6a000121056531767266`, exactly 1x — ALIAS PROVEN), e1vrf id 9 f30=vrf 6a=main (vrf-interface row, high-water 9), lo id 1 6a=main"
+		},
+		{
+			"after": "restore",
+			"control": { "tool": "centrs retrieve", "route": "/ip/vrf" },
+			"result": [{ ".id": "*0", "builtin": "true", "disabled": "false", "interfaces": "all", "name": "main" }],
+			"native": "GETALL [20,0]",
+			"native_result": "2 rows (ether1 id 2, lo id 1)"
+		}
+	]
+}
