@@ -1,0 +1,11 @@
+proof: "phase-C nat follow-up: inverse SETOBJ + redirect retry, 7.25"
+verdicts:
+  native_setobj_f40_effective:
+    holds: true
+    evidence: outcome=ok native=4 control=passthrough
+  redirect_f40_mapped:
+    holds: true
+    evidence: f40=23
+  restored:
+    holds: true
+    evidence: rows=0

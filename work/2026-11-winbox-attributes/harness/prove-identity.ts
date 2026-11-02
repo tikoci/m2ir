@@ -529,7 +529,9 @@ async function main(): Promise<void> {
 	}
 }
 
-void main().catch((e: unknown) => {
-	console.error(`prove: FATAL: ${(e as Error).message}`);
-	process.exit(1);
-});
+if (import.meta.main) {
+	void main().catch((e: unknown) => {
+		console.error(`prove: FATAL: ${(e as Error).message}`);
+		process.exit(1);
+	});
+}

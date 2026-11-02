@@ -42,7 +42,7 @@ Fixed in the existing prober (`work/2026-10-chr-extraction/ws3c/`):
 
 ## Checks
 
-- `bun test ./work/2026-11-winbox-attributes/harness/` — 60 offline tests
+- `bun test ./work/2026-11-winbox-attributes/harness/` — 61 offline tests
   (hand-written byte fixtures, socket framing, correlation/paging fakes,
   schema naming, pilot replay). No CHR needed.
 - `bun run lint` and `bun run test` — repo gates must stay green.

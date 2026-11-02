@@ -164,6 +164,25 @@ describe("m2 explicit failures", () => {
 	test("root without M2 magic is rejected", () => {
 		expect(() => decodeM2(bx("0000" + "0100fe09" + "01"))).toThrow(/magic/);
 	});
+
+	test("array counts past the end overrun explicitly", () => {
+		// u32 array claims 2 items, carries 1.
+		expect(() =>
+			decodeM2(bx("4d32" + "0100ff88" + "0200" + "00000000")),
+		).toThrow(/overrun/);
+		// String array item length past the end.
+		expect(() =>
+			decodeM2(bx("4d32" + "1c00ffa0" + "0100" + "0500" + "6162")),
+		).toThrow(/overrun/);
+		// Message array item length past the end.
+		expect(() =>
+			decodeM2(bx("4d32" + "0200fea8" + "0100" + "2000" + "4d32")),
+		).toThrow(/overrun/);
+		// bytes16 array item cut short.
+		expect(() => decodeM2(bx(`4d32c90000980100${"00".repeat(8)}`))).toThrow(
+			/overrun/,
+		);
+	});
 });
 
 describe("m2 encoder reproduces hand literals", () => {

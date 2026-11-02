@@ -563,9 +563,9 @@ handlers:
     fields:
       row-id: { namespace: session, field: 1 }
       namespace-user:
-        1: { name: address, tcode: be32, role: "IPv4 address, BIG-endian bytes on the wire (10.0.2.15 -> 0x0F02000A)" }
+        1: { name: address, tcode: be32, cli-alias: "/ip/address address", role: "IPv4 address, BIG-endian bytes on the wire (10.0.2.15 -> 0x0F02000A); CLI `address` is a composite of this + field 3 (prefix-only control moves only f3, addr-only only f1; 7.25 proof)" }
         2: { name: network, tcode: be32, role: "network address, big-endian" }
-        3: { name: netmask, tcode: be32, role: "expressed on the wire as a bitmask (/24 -> 0x00FFFFFF); CLI shows /popcount" }
+        3: { name: netmask, tcode: be32, cli-alias: "/ip/address address", role: "expressed on the wire as a bitmask (/24 -> 0x00FFFFFF); CLI shows /popcount; composite with field 1 under CLI `address` (same proof)" }
         4: { name: broadcast, tcode: be32, role: "broadcast address, big-endian" }
         5: { name: actual-interface, tcode: u32, role: "references the ACTUAL interface row id (discriminated: bridge-port enslavement splits it from field 10)" }
         6: { name: unknown-6, tcode: u32, role: "OPEN — v7-only (GETALL+GETOBJ), 0 on the observed row (single zero-valued sample; semantic width follows the 0x09 u32_compact wire family per the f1/field-5 precedent); meaning UNKNOWN, no CLI-guess recorded" }
@@ -576,6 +576,21 @@ handlers:
         8: { name: invalid, tcode: bool, role: "true when the address's bridge is disabled" }
         9: { name: comment, tcode: string }
         10: { name: disabled, tcode: bool }
+    set:
+      cmd: { value: 0xfe0003, name: CMD_SETOBJ, ref: "./std-commands.yaml 0xfe0003" }
+      scope: "table-row path on [20,1]; request carries 0xfe0001=rowid + the fields to write (here: 0xfe0009 comment string)"
+      ack: "bare SYS-only success (0xff0001/0xff0002/0xff001c/0xff0003=2/0xff0006=reqid), no USER fields, no statusWord — status-ok-proves-nothing, read back after SET"
+      versions: ["7.25"]
+    add:
+      cmd: { value: 0xfe0005, name: CMD_ADDOBJ, ref: "./std-commands.yaml 0xfe0005" }
+      scope: "table-row path on [20,1]; request carries the new row's fields (here: f1 address be32 + f3 netmask be32 + f10 interface rowid + 0xfe0009 comment); untokened (no 0xff001e)"
+      ack: "bare SYS-only success + 0xfe0001 = new row id (here: 3)"
+      versions: ["7.25"]
+    remove:
+      cmd: { value: 0xfe0006, name: CMD_REMOVEOBJ, ref: "./std-commands.yaml 0xfe0006" }
+      scope: "table-row path on [20,1]; request carries only 0xfe0001=rowid (here: 3)"
+      ack: "bare SYS-only success (same key set as SETOBJ); row gone on GETALL read-back"
+      versions: ["7.25"]
     evidence:
       - source: code
         ref: "RouterOS net candidate 0x80ae18e {be32:1..4, u32:5, u32:10} (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
@@ -589,7 +604,24 @@ handlers:
         ref: "live CHR interrogation (queue-1 capture batch, 3 versions): GETOBJ obj=1/999 + count=1 chain — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getobj-20-1.json"
       - source: sample
         ref: "live CHR interrogation (queue-1 capture batch, 3 versions): validated-cursor transcripts s=0/999/1 — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-getall-20-1-cursor.json"
+      - source: sample
+        ref: "controlled-change proof (harness/prove-ip-address.ts, 7.25): report + lossless captures work/2026-11-winbox-attributes/proof/7.25-ip-address/{report.yaml,step-*.jsonl,control-*.json}; verdicts native_setobj_comment_effective + native_addobj_effective + native_removeobj_effective hold"
+      - source: sample
+        ref: "live CHR interrogation (phase-C pilot slice 2, 7.25, 2026-11-02): SETOBJ/ADDOBJ/REMOVEOBJ legs with GETALL read-backs — fixtures/winbox-ipc/7.25-verbs-20-1-ip.json"
     notes: |
+      Controlled-change + inverse-write proof (7.25, disposable
+      CHR): prefix-only control (198.51.100.10/24 -> /25) moves
+      only f3 (0x00ffffff -> 0x80ffffff); addr-only control
+      (.10 -> .20) moves only f1 — CLI `address` is a composite
+      of fields 1+3. Native SETOBJ 0xfe0003 {0xfe0001=2,
+      0xfe0009='m2ir-native-w1'} reads back via an independent
+      control read; native ADDOBJ 0xfe0005 {f1=c633640b,
+      f3=ffffff00, f10=2} answers new rowid 3; native
+      REMOVEOBJ 0xfe0006 {0xfe0001=3} removes it (GETALL
+      read-back). Wire: SYS_CMD rides `0700ff080300fe`
+      (SETOBJ; 05=ADD, 06=REMOVE), rowid `0100fe0902`,
+      comment `0900fe210e...`. All three ack replies are the bare
+      SYS-only shape — status proves nothing.
       GETALL start on this handler is a VALIDATED row-id cursor
       (inclusive): s=0 or nonexistent -> UNKNOWNID error + total
       count; s=1 -> the id-1 row. Transcript-proven on all 3
@@ -1301,7 +1333,14 @@ handlers:
     fields:
       namespace-user:
         39: { name: chain, tcode: string }
-        40: { name: action, tcode: u32 }
+        40:
+          name: action
+          tcode: u32
+          semantic: enum-u32
+          access: read-write
+          cli-alias: "/ip/firewall/nat action"
+          values: { 0: accept, 2: return, 3: log, 4: passthrough, 5: add-src-to-address-list, 6: add-dst-to-address-list, 20: src-nat, 21: masquerade, 22: dst-nat, 23: redirect, 25: netmap }
+          role: "11-value action enum, one control add per value (7.25 rule matrix); observed-only — no public source names the numeric association. Inverse native SETOBJ f40 0->4 takes effect (control reads passthrough). drop has NO value: the control plane rejects action=drop (:parse syntax error). jump/same untested (open)."
         45: { name: log-prefix, tcode: string }
         30: { name: packet-mark, tcode: string, role: "matcher; feeds registry 13" }
         33: { name: connection-mark, tcode: string, role: "matcher; feeds registry 14" }
@@ -1318,17 +1357,45 @@ handlers:
         1003: { name: to-ports-end, tcode: u32 }
         1011: { name: socksify-service, tcode: u32, role: "M2-only; values from [164,0]" }
         1013: { name: socks5-port, tcode: u32, role: "M2-only" }
+    set:
+      cmd: { value: 0xfe0003, name: CMD_SETOBJ, ref: "./std-commands.yaml 0xfe0003" }
+      scope: "table-row path on [20,5]; request carries 0xfe0001=rowid + the fields to write (here: f40 action u32)"
+      ack: "bare SYS-only success (0xff0001/0xff0002/0xff001c/0xff0003=2/0xff0006=reqid) — status-ok-proves-nothing, read back after SET"
+      versions: ["7.25"]
     notes: |
       Queue-3 empty-table legs (all 3 versions; REST /ip/firewall/nat
       = []): GETALL -> 0 rows with 0xfe0002/0xa8=[] PRESENT (wire
       `0200fea80000`) + 0xfe0019/0x9=0; GETCOUNT -> 0 in the
       version slot (v6 0xfe0014, 7.x 0xfe0019); GETOBJ obj=1 AND
       obj=999 -> UNKNOWNID from=[20,5] with NO total (obj id
-      irrelevant on empty tables). f40 (action) UNOBSERVED
-      read-only — zero rows carry it, so no value semantics are
-      claimed; its enum needs a rule-matrix leg with writes. No
+      irrelevant on empty tables). f40 (action) was UNOBSERVED
+      read-only on empty tables (zero rows carry it); its enum is
+      now proven by the rule-matrix legs below. No
       7.25 -> 7.26beta4 drift (byte-identical modulo the proxy
       banner).
+      Rule-matrix legs (phase-C pilot slice 3, 7.25, disposable
+      CHR): one control add per action, each read back natively —
+      f40 rides `28000009{NN}` (tcode 0x09 u32_compact):
+      accept=0, return=2, log=3, passthrough=4,
+      add-src-to-address-list=5, add-dst-to-address-list=6,
+      src-nat=20, masquerade=21 (`2800000915`), dst-nat=22,
+      redirect=23, netmap=25. Chain rides f39 string
+      (srcnat/dstnat); rowid rides 0xfe0001. Redirect needed
+      proto=tcp + to-ports=8080 before the control plane would
+      add it (bare redirect add fails: 'to-ports valid only for
+      tcp/udp/sctp/dccp'); its row carries f11=6 + f1002/f1003
+      =8080. Inverse native SETOBJ f40 0->4 takes effect
+      (native + control read passthrough). drop has NO f40
+      value: control adds with action=drop fail in :parse
+      (syntax error col 42) on both chains — a control-plane
+      negative, not a missing row. jump/same actions stay open.
+      MOVEOBJ negative (phase-C pilot item 4, 7.25): native
+      CMD_MOVEOBJ 0xfe0007 carrying only 0xfe0001=rowid (wire
+      `0700ff080700fe ... 0100fe090e`, rowid 14) answers the
+      bare ok ack, but the GETALL order is byte-identical
+      before/after on both the native and control surfaces —
+      rowid alone does not reorder. Reorder parameters (if
+      any) are UNKNOWN; see std-commands.yaml 0xfe0007.
     evidence:
       - source: sample
         ref: "live CHR interrogation (f137 batch, 7.25): REST-set field correlation + row dumps ev/7.25-getall-20-5-f137.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §39"
@@ -1336,6 +1403,19 @@ handlers:
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): empty-table GETALL/GETCOUNT/GETOBJ — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-nat-raw-f40.json"
       - source: code
         ref: "RouterOS v7 net NAT handler (ctor store-string ipt-nat, HD cross-check [20,5] exact, E4732 rows) + WebFig wfig.js NAT dialog ids; see work/2026-10-chr-extraction/ws3c-prober-findings.md §39"
+      - source: sample
+        ref: "controlled-change proof (harness/prove-nat-action.ts, 7.25): report + lossless captures work/2026-11-winbox-attributes/proof/7.25-nat-action/{report.yaml,step-*.jsonl,control-*.json}; verdict action_enum_mapped holds"
+      - source: sample
+        ref: "live CHR interrogation (phase-C pilot slice 3 + nat follow-up, 7.25, 2026-11-02): 11-leg rule matrix + inverse SETOBJ 0->4 + redirect row — work/2026-11-winbox-attributes/proof/7.25-nat-followup/{report.yaml,step-*.jsonl,control-*.json} + fixtures/winbox-ipc/7.25-nat-f40-enum.json"
+      - source: sample
+        ref: "live CHR interrogation (phase-C pilot item 4, 7.25, 2026-11-02): MOVEOBJ rowid-only negative — work/2026-11-winbox-attributes/proof/7.25-moveobj/{report.yaml,step-*.jsonl,control-*.json} + fixtures/winbox-ipc/7.25-moveobj-20-5.json"
+    revision-history:
+      - date: 2026-11-02
+        belief: "f40 (action) UNOBSERVED read-only — zero rows carry it, no value semantics claimed"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "live CHR interrogation (phase-C pilot slice 3, 7.25, 2026-11-02): 11-leg rule matrix + inverse SETOBJ — fixtures/winbox-ipc/7.25-nat-f40-enum.json"
 
   raw-20-87:
     sys-to: [20, 87]

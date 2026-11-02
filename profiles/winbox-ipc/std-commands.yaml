@@ -54,10 +54,30 @@ commands:
       singleton-attr path; [20,0] CMD_SET is base-NOTIMP).
       Slot-7 verbs: SET=0x8066b08, GETALL=0x80675bc,
       ADD=0x8066821, REMOVE=0x8066fb5.
+      Table-row legs (phase-C pilot, 7.25): [20,1] SETOBJ
+      {0xfe0001=2, 0xfe0009='m2ir-native-w1'} takes effect
+      (control read-back); [20,5] SETOBJ {0xfe0001=15, f40=4}
+      takes effect (accept->passthrough, both surfaces). Wire:
+      SYS_CMD entry `0700ff080300fe`.
     evidence:
       - source: sample
         ref: "live CHR interrogation (persistence batch, 7.25): raw slot-7 SETOBJ + 0xfe0001=rowid; see work/2026-10-chr-extraction/ws3c-prober-findings.md §31"
-  0xfe0004: { canonical-name: CMD_GETALL,       confidence: documented }
+      - source: sample
+        ref: "live CHR interrogation (phase-C pilot slice 2, 7.25, 2026-11-02): [20,1] SETOBJ + read-back — fixtures/winbox-ipc/7.25-verbs-20-1-ip.json"
+      - source: sample
+        ref: "live CHR interrogation (phase-C nat follow-up, 7.25, 2026-11-02): [20,5] inverse SETOBJ f40 0->4 — fixtures/winbox-ipc/7.25-nat-f40-enum.json"
+  0xfe0004:
+    canonical-name: CMD_GETALL
+    confidence: documented
+    notes: |
+      Table-list legs (phase-C pilot, 7.25): bare GETALL reads
+      back every [20,1] verb result and every [20,5] matrix
+      row (wire SYS_CMD entry `0700ff080400fe`); the [20,5]
+      reply rows carry the proven f40 values. See
+      gui-handlers.yaml ip-address + nat-20-5.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (phase-C pilot slices 2-3, 7.25, 2026-11-02): GETALL read-backs — fixtures/winbox-ipc/7.25-verbs-20-1-ip.json + fixtures/winbox-ipc/7.25-nat-f40-enum.json"
   0xfe0005:
     canonical-name: CMD_ADDOBJ
     confidence: documented
@@ -67,6 +87,10 @@ commands:
       token is the ephemerality switch (see sys-keys.yaml
       0xff001e). Explicit-rowid ADD reclaims a tombstoned id
       but answers ERROR_EXISTS on a live one.
+      Table-row leg (phase-C pilot slice 2, 7.25): [20,1]
+      ADDOBJ {f1=c633640b, f3=ffffff00, f10=2} answers new
+      rowid 3 (wire `0100fe0903`); GETALL read-back carries
+      the row. Wire: SYS_CMD entry `0700ff080500fe`.
     evidence:
       - source: sample
         ref: "live CHR interrogation (token batch, 7.25): ev/7.25-raw-20-0-addobj.json (reply shape + row id); see work/2026-10-chr-extraction/ws3c-prober-findings.md §26"
@@ -74,8 +98,32 @@ commands:
         ref: "live CHR interrogation (persistence batch, 7.25): untokened M2-ADD persists ADD-only; see work/2026-10-chr-extraction/ws3c-prober-findings.md §31"
       - source: sample
         ref: "live CHR interrogation + store forensics (forensics batch, 7.25): explicit-reclaim + ERROR_EXISTS on live id; see work/2026-10-chr-extraction/ws3c-prober-findings.md §47"
-  0xfe0006: { canonical-name: CMD_REMOVEOBJ,    confidence: documented }
-  0xfe0007: { canonical-name: CMD_MOVEOBJ,      confidence: documented }
+      - source: sample
+        ref: "live CHR interrogation (phase-C pilot slice 2, 7.25, 2026-11-02): [20,1] ADDOBJ + read-back — fixtures/winbox-ipc/7.25-verbs-20-1-ip.json"
+  0xfe0006:
+    canonical-name: CMD_REMOVEOBJ
+    confidence: documented
+    notes: |
+      Table-row leg (phase-C pilot slice 2, 7.25): [20,1]
+      REMOVEOBJ {0xfe0001=3} answers the bare SYS-only ack and
+      the row is gone on GETALL read-back. Wire: SYS_CMD entry
+      `0700ff080600fe`, selector `0100fe0903`.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (phase-C pilot slice 2, 7.25, 2026-11-02): REMOVEOBJ rowid=3 + read-back — fixtures/winbox-ipc/7.25-verbs-20-1-ip.json"
+  0xfe0007:
+    canonical-name: CMD_MOVEOBJ
+    confidence: documented
+    notes: |
+      Rowid-only is ok-but-noop (phase-C pilot item 4, 7.25):
+      [20,5] MOVEOBJ {0xfe0001=14} (wire `0700ff080700fe ...
+      0100fe090e`) answers the bare ok ack, but GETALL order
+      is unchanged on both native and control surfaces.
+      Reorder parameters (if any) are UNKNOWN — a rowid-only
+      client must not claim reorder support.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (phase-C pilot item 4, 7.25, 2026-11-02): MOVEOBJ rowid-only negative — fixtures/winbox-ipc/7.25-moveobj-20-5.json"
   0xfe0008: { canonical-name: CMD_SETFORM,      confidence: documented }
   0xfe0009:
     canonical-name: UNHANDLED_0x09
@@ -106,6 +154,13 @@ commands:
       Project's `cmdGet=7` (a u8 SYS_CMD value, see commands.yaml) is a
       legacy short form used pre-mepty; it is distinct from
       CMD_GET=0xFE000D.
+      Singleton leg (phase-C pilot slice 1, 7.25): bare GET [24,1]
+      (wire SYS_CMD entry `0700ff080d00fe`) answers name + version
+      (f12/f13); the same tx shape re-verified 2026-11-02
+      (decode-equal). See gui-handlers.yaml system-identity.
+    evidence:
+      - source: sample
+        ref: "controlled-change proof (harness/prove-identity.ts, 7.25): work/2026-11-winbox-attributes/proof/7.25-identity/{report.yaml,step-01-baseline.jsonl}"
   0xfe000e:
     canonical-name: CMD_SET
     confidence: documented

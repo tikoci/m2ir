@@ -1,0 +1,279 @@
+proof: "phase-C pilot slice 3: NAT action enum on [20,5] f40, 7.25"
+provenance:
+  machine: twin3
+  routeros_version: "7.25"
+  generated_by: harness/prove-nat-action.ts
+steps:
+  - id: step-1-baseline
+    control: none (native GETALL + GETCOUNT)
+    native_manifest: step-01-baseline.jsonl
+    observation: rows=0 count=0
+  - id: step-2-srcnat-accept
+    control: add + remove rule action=accept
+    native_manifest: step-02-01-matrix.jsonl
+    observation: f40=0
+  - id: step-2-srcnat-drop
+    control: add rejected by control plane
+    observation: "control-add failed: centrs execute failed; see control-02-02-add.json"
+  - id: step-2-srcnat-passthrough
+    control: add + remove rule action=passthrough
+    native_manifest: step-02-03-matrix.jsonl
+    observation: f40=4
+  - id: step-2-srcnat-return
+    control: add + remove rule action=return
+    native_manifest: step-02-04-matrix.jsonl
+    observation: f40=2
+  - id: step-2-srcnat-log
+    control: add + remove rule action=log
+    native_manifest: step-02-05-matrix.jsonl
+    observation: f40=3
+  - id: step-2-srcnat-add-src-to-address-list
+    control: add + remove rule action=add-src-to-address-list
+    native_manifest: step-02-06-matrix.jsonl
+    observation: f40=5
+  - id: step-2-srcnat-src-nat
+    control: add + remove rule action=src-nat
+    native_manifest: step-02-07-matrix.jsonl
+    observation: f40=20
+  - id: step-2-srcnat-masquerade
+    control: add + remove rule action=masquerade
+    native_manifest: step-02-08-matrix.jsonl
+    observation: f40=21
+  - id: step-2-srcnat-netmap
+    control: add + remove rule action=netmap
+    native_manifest: step-02-09-matrix.jsonl
+    observation: f40=25
+  - id: step-2-dstnat-accept
+    control: add + remove rule action=accept
+    native_manifest: step-02-10-matrix.jsonl
+    observation: f40=0
+  - id: step-2-dstnat-drop
+    control: add rejected by control plane
+    observation: "control-add failed: centrs execute failed; see control-02-11-add.json"
+  - id: step-2-dstnat-dst-nat
+    control: add + remove rule action=dst-nat
+    native_manifest: step-02-12-matrix.jsonl
+    observation: f40=22
+  - id: step-2-dstnat-redirect
+    control: add rejected by control plane
+    observation: "control-add failed: centrs execute failed; see control-02-13-add.json"
+  - id: step-2-dstnat-add-dst-to-address-list
+    control: add + remove rule action=add-dst-to-address-list
+    native_manifest: step-02-14-matrix.jsonl
+    observation: f40=6
+  - id: step-3-inverse-write
+    control: "skipped: matrix lacks srcnat accept/drop f40 values"
+    observation: accept=0 drop=undefined
+  - id: step-4-restore
+    control: control remove of non-initial rows + verify
+    native_manifest: step-04-restored.jsonl
+    observation: final rows=0 count=0 restored=true
+action_f40_map:
+  srcnat/accept: 0
+  srcnat/passthrough: 4
+  srcnat/return: 2
+  srcnat/log: 3
+  srcnat/add-src-to-address-list: 5
+  srcnat/src-nat: 20
+  srcnat/masquerade: 21
+  srcnat/netmap: 25
+  dstnat/accept: 0
+  dstnat/dst-nat: 22
+  dstnat/add-dst-to-address-list: 6
+write_inventory:
+  - leg: step-2-srcnat-accept
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: action
+    value: srcnat/accept
+    outcome: ok
+  - leg: step-2-srcnat-accept-cleanup
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*1"
+    field: row
+    value: remove
+    outcome: ok
+  - leg: step-2-srcnat-passthrough
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: action
+    value: srcnat/passthrough
+    outcome: ok
+  - leg: step-2-srcnat-passthrough-cleanup
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*2"
+    field: row
+    value: remove
+    outcome: ok
+  - leg: step-2-srcnat-return
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: action
+    value: srcnat/return
+    outcome: ok
+  - leg: step-2-srcnat-return-cleanup
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*3"
+    field: row
+    value: remove
+    outcome: ok
+  - leg: step-2-srcnat-log
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: action
+    value: srcnat/log
+    outcome: ok
+  - leg: step-2-srcnat-log-cleanup
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*4"
+    field: row
+    value: remove
+    outcome: ok
+  - leg: step-2-srcnat-add-src-to-address-list
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: action
+    value: srcnat/add-src-to-address-list
+    outcome: ok
+  - leg: step-2-srcnat-add-src-to-address-list-cleanup
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*5"
+    field: row
+    value: remove
+    outcome: ok
+  - leg: step-2-srcnat-src-nat
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: action
+    value: srcnat/src-nat
+    outcome: ok
+  - leg: step-2-srcnat-src-nat-cleanup
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*6"
+    field: row
+    value: remove
+    outcome: ok
+  - leg: step-2-srcnat-masquerade
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: action
+    value: srcnat/masquerade
+    outcome: ok
+  - leg: step-2-srcnat-masquerade-cleanup
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*7"
+    field: row
+    value: remove
+    outcome: ok
+  - leg: step-2-srcnat-netmap
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: action
+    value: srcnat/netmap
+    outcome: ok
+  - leg: step-2-srcnat-netmap-cleanup
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*8"
+    field: row
+    value: remove
+    outcome: ok
+  - leg: step-2-dstnat-accept
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: action
+    value: dstnat/accept
+    outcome: ok
+  - leg: step-2-dstnat-accept-cleanup
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*9"
+    field: row
+    value: remove
+    outcome: ok
+  - leg: step-2-dstnat-dst-nat
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: action
+    value: dstnat/dst-nat
+    outcome: ok
+  - leg: step-2-dstnat-dst-nat-cleanup
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*A"
+    field: row
+    value: remove
+    outcome: ok
+  - leg: step-2-dstnat-add-dst-to-address-list
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: action
+    value: dstnat/add-dst-to-address-list
+    outcome: ok
+  - leg: step-2-dstnat-add-dst-to-address-list-cleanup
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*C"
+    field: row
+    value: remove
+    outcome: ok
+distinct_write_count: 12
+restore_proof:
+  - branch: restore-04-primary
+    method: control remove per non-initial .id + control verify
+    restored: true
+    fallbackUsed: false
+    detail: rows=0 clean=true
+verdicts:
+  action_enum_mapped:
+    holds: true
+    evidence: '{"srcnat/accept":0,"srcnat/passthrough":4,"srcnat/return":2,"srcnat/log":3,"srcnat/add-src-to-address-list":5,"srcnat/src-nat":20,"srcnat/masquerade":21,"srcnat/netmap":25,"dstnat/accept":0,"dstnat/dst-nat":22,"dstnat/add-dst-to-address-list":6}'
+  native_setobj_f40_effective:
+    holds: false
+    evidence: accept=0 drop=undefined inverse=false
+  restored:
+    holds: true
+    evidence: '[{"branch":"restore-04-primary","method":"control remove per
+      non-initial .id + control
+      verify","restored":true,"fallbackUsed":false,"detail":"rows=0
+      clean=true"}]'

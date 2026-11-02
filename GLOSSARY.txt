@@ -599,3 +599,7 @@ tik # Tik-App hyphen fragment in the verbatim v6 'connect to the router via Tik-
 nosuchuser # verbatim synthetic probe username in queue-3 [13,6]/[13,7] miss legs ('nosuchuser-q3'; JSON fixtures cannot carry file-local cspell ignores)
 q3setprobe # verbatim synthetic [13,7] write-leg selector in queue-3 SET-overwrite fixtures/YAML/tests (record ids use the cspell-clean 'synthetic-selector' expansion instead)
 mipsbe # RouterOS big-endian MIPS architecture label (queue-3 item-5 LTE leg: 7.16.2 mipsbe real hardware, fixtures/YAML/tests)
+srcnat # firewall srcnat chain (NAT rule matrix, phase-C pilot slice 3)
+dstnat # firewall dstnat chain (NAT rule matrix, phase-C pilot slice 3)
+sctp # verbatim RouterOS protocol name in the quoted to-ports NAT error (phase-C NAT follow-up, gui-handlers.yaml)
+dccp # verbatim RouterOS protocol name in the quoted to-ports NAT error (phase-C NAT follow-up, gui-handlers.yaml)

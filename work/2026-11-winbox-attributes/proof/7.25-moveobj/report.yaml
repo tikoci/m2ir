@@ -1,0 +1,79 @@
+proof: "phase-C pilot item 4: MOVEOBJ on [20,5], 7.25"
+provenance:
+  machine: twin3
+  routeros_version: "7.25"
+  generated_by: harness/prove-moveobj.ts
+steps:
+  - id: step-1-setup
+    control: add two synthetic rules
+    native_manifest: step-01-before.jsonl
+    observation: order=m2ir-mv-1#13,m2ir-mv-2#14 move-rowid=14
+  - id: step-2-move
+    control: independent centrs retrieve after native MOVEOBJ
+    native_manifest: step-02-move.jsonl
+    control_manifest: control-02-move-verify.json
+    observation: MOVE outcome=ok; order m2ir-mv-1#13,m2ir-mv-2#14 ->
+      m2ir-mv-1#13,m2ir-mv-2#14; control=m2ir-mv-1,m2ir-mv-2
+  - id: step-3-restore
+    control: control remove of non-initial rows + verify
+    native_manifest: step-03-restored.jsonl
+    observation: final rows=0 restored=true
+write_inventory:
+  - leg: step-1-add-1
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: comment
+    value: m2ir-mv-1
+    outcome: ok
+  - leg: step-1-add-2
+    kind: control
+    verb: /ip/firewall/nat/add
+    route: /ip/firewall/nat
+    obj: new
+    field: comment
+    value: m2ir-mv-2
+    outcome: ok
+  - leg: step-2-move
+    kind: native
+    verb: CMD_MOVEOBJ
+    route: "[20,5]"
+    obj: rowid=14
+    field: position
+    value: unspecified (rowid-only attempt)
+    outcome: ok
+  - leg: restore-03
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*D"
+    field: row
+    value: remove
+    outcome: ok
+  - leg: restore-03
+    kind: control
+    verb: /ip/firewall/nat/remove
+    route: /ip/firewall/nat
+    obj: "*E"
+    field: row
+    value: remove
+    outcome: ok
+distinct_write_count: 4
+restore_proof:
+  - branch: restore-03-primary
+    method: control remove per non-initial .id + control verify
+    restored: true
+    fallbackUsed: false
+    detail: rows=0 clean=true
+verdicts:
+  moveobj_reorders_table:
+    holds: false
+    evidence: outcome=ok order m2ir-mv-1#13,m2ir-mv-2#14 ->
+      m2ir-mv-1#13,m2ir-mv-2#14 control=m2ir-mv-1,m2ir-mv-2
+  restored:
+    holds: true
+    evidence: '[{"branch":"restore-03-primary","method":"control remove per
+      non-initial .id + control
+      verify","restored":true,"fallbackUsed":false,"detail":"rows=0
+      clean=true"}]'

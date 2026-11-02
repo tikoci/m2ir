@@ -1,0 +1,105 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*3",
+      "action": "return",
+      "bytes": "0",
+      "chain": "srcnat",
+      "comment": "m2ir-act-srcnat-return",
+      "dynamic": "false",
+      "invalid": "false",
+      "packets": "0"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "target": {
+      "input": "twin3",
+      "host": "127.0.0.1",
+      "port": 9120,
+      "baseUrl": "http://127.0.0.1:9120/rest",
+      "identity": "twin3",
+      "source": {
+        "kind": "provider",
+        "key": "quickchr:twin3"
+      },
+      "sources": {
+        "host": {
+          "kind": "provider",
+          "key": "quickchr:twin3"
+        },
+        "port": {
+          "kind": "provider",
+          "key": "quickchr:twin3"
+        }
+      }
+    },
+    "via": "rest-api",
+    "settings": {
+      "via": {
+        "kind": "default",
+        "key": "via"
+      },
+      "host": {
+        "kind": "provider",
+        "key": "quickchr:twin3"
+      },
+      "port": {
+        "kind": "provider",
+        "key": "quickchr:twin3"
+      },
+      "timeoutMs": {
+        "kind": "default",
+        "key": "timeout"
+      },
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      },
+      "validate": {
+        "kind": "default",
+        "key": "validate"
+      },
+      "username": {
+        "kind": "provider",
+        "key": "quickchr:twin3:username"
+      },
+      "password": {
+        "kind": "provider",
+        "key": "quickchr:twin3:password"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "source": "live /console/inspect request=child",
+      "result": "passed",
+      "stages": [
+        {
+          "stage": "device",
+          "source": "live /console/inspect request=child",
+          "result": "passed"
+        }
+      ]
+    },
+    "operation": {
+      "kind": "data",
+      "objectCount": 1,
+      "request": {
+        "path": "/ip/firewall/nat",
+        "attributes": [],
+        "allAttributes": false,
+        "listAttributes": false,
+        "validate": true,
+        "verbose": false,
+        "timeoutMs": 10000,
+        "format": "json"
+      },
+      "auth": {
+        "username": "admin",
+        "passwordProvided": true
+      }
+    }
+  }
+}

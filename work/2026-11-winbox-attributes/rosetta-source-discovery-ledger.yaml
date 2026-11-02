@@ -1,0 +1,315 @@
+# cspell:ignore cliref syscap unsettable restraml libumsg vtable rodata getall getone getobj setobj addobj removeobj getcount getset reqid tcode mproxy mepty looper sstore novasock rdata uclibc objdump sys2 enums regen DDL
+# Step A source-discovery ledger — Rosetta candidate inventory (offline, bounded).
+#
+# Hand-written ledger (NOT generated): records the repo-wide source-discovery
+# pass for Rosetta/crosswalk/attribute candidates, with one disposition per
+# row: candidate, rejected, or negative. Complements the generated plan-A
+# outputs; it does not replace them and does not restate their counts.
+#
+# Scope: profiles/, physical/, concepts/, work/, fixtures/, test/,
+# src/tooling/. Method: bounded literal/regex content search, then targeted
+# reads; every row cites inspected file bodies (path:line), never bare
+# search hits. Offline only: no network, no lab VMs touched.
+provenance:
+  worker: step-a source-discovery (phase 2 handler field tail)
+  ledger_date: 2026-11-02T00:21:35Z
+  git_head: 7abe4ff270728950bf691dbcc873b62f76bf5b39
+  git_tree_at_start: clean
+  plan: work/2026-11-winbox-attributes/attribute-discovery-plan.md
+  offline: true
+placement:
+  decision: additive file under work/2026-11-winbox-attributes/
+  reason: >-
+    Plan A names source-inventory.yaml and candidates.yaml as its outputs,
+    but both already exist as GENERATED do-not-hand-edit artifacts (see
+    their header comments). Per the exploratory-in-work rule, this ledger
+    lives alongside them as the bounded source-discovery record instead
+    of editing generated files.
+regen_check:
+  # No scratch paths are cited here by repo rule; method only.
+  method: >-
+    Ran the pinned extractor with --out to an uncommitted scratch
+    directory (read-only DB open, offline) and diffed both outputs
+    against the committed files.
+  result: >-
+    byte-identical except volatile provenance (extracted_at, git_head,
+    git_dirty). Reproduced counts: cliref 10758/10833/11284, inspect
+    37240/37233, strict hits 0.
+  acceptance: plan A regen acceptance ("the inventory can be
+    regenerated") verified without touching the committed tree.
+candidates:
+  - id: A-EXTRACTOR
+    disposition: candidate
+    source: work/2026-11-winbox-attributes/rosetta-extract.ts
+    lines: 1-14, 16, 32-46, 53-100
+    plan_link: attribute-discovery-plan.md A.1-A.2
+    reason: >-
+      Phase A extractor: opens the pinned Rosetta DB read-only via
+      bun:sqlite, runs the version-pinned queries, fails closed on
+      provenance drift, and regenerates both plan-A outputs without
+      exporting bulk vendor prose.
+  - id: A-QUERIES
+    disposition: candidate
+    source: work/2026-11-winbox-attributes/queries/
+    lines: 00-db-meta.sql:1-4, 20-pilot-cliref.sql:1-20, 30-type-tag-samples.sql:1-8
+    plan_link: attribute-discovery-plan.md A.1-A.2, SQL blocks
+    reason: >-
+      Fourteen pinned extraction queries (provenance, plan-verbatim
+      count queries, pilot cliref/standard/inspect/link exports,
+      type-tag distribution, table DDL). Every query ships with sha256
+      and row counts in the inventory, so each extraction is auditable.
+  - id: A-SOURCE-INVENTORY
+    disposition: candidate
+    source: work/2026-11-winbox-attributes/source-inventory.yaml
+    lines: 4-17, 18-51, 52-79, 584-641
+    plan_link: attribute-discovery-plan.md A output
+    reason: >-
+      Generated plan-A output: DB hash and schema metadata, count
+      tables, the recorded numeric-identity negative finding, the
+      full column audit, and the query manifest with regen command.
+  - id: A-CANDIDATES
+    disposition: candidate
+    source: work/2026-11-winbox-attributes/candidates.yaml
+    lines: 4-20, 22-40, 460+
+    plan_link: attribute-discovery-plan.md A output
+    reason: >-
+      Generated plan-A output: pilot menus (ip/address,
+      system/identity) across manual versions 7.24/7.25/7.26 with
+      version trees kept separate, shared standard args, and every
+      field held at native_wire_identity unknown pending live proof.
+  - id: A-HANDLERS-TS
+    disposition: candidate
+    source: work/2026-10-chr-extraction/handlers.ts
+    lines: 1-7
+    plan_link: attribute-discovery-plan.md existing-work (static leads)
+    reason: >-
+      Static addHandler-to-vtable-to-getter extractor over disassembly;
+      pairs handler IDs with vtables and lists field-id-to-tcode
+      inserts. Pattern matches still need function-level checking.
+  - id: A-FIELDS-TS
+    disposition: candidate
+    source: work/2026-10-chr-extraction/fields.ts
+    lines: 1-4
+    plan_link: attribute-discovery-plan.md existing-work (static leads)
+    reason: >-
+      Static (tcode, id, op) site indexer with sibling-field context;
+      verifies candidate numeric fields against getter/setter paths.
+  - id: A-SYS2-TABLES
+    disposition: candidate
+    source: work/2026-10-chr-extraction/sys2-handler-tables.md
+    lines: 1-20
+    plan_link: attribute-discovery-plan.md A.3
+    reason: >-
+      Version-pinned static handler registration and field tables for
+      sys2 on 6.49.23; input for reconstructing native field tuples.
+  - id: A-NET-BRIDGE2-TABLES
+    disposition: candidate
+    source: work/2026-10-chr-extraction/net-bridge2-handler-tables.md
+    lines: 1-15, 19-30
+    plan_link: attribute-discovery-plan.md A.3
+    reason: >-
+      Framework command dispatch plus data-driven net/bridge2 handler
+      tables with validated tooling. (Line 17's "rosetta stone" is the
+      shared library, not the Rosetta DB; see R-ROSETTA-STONE.)
+  - id: A-PR-HD-REGISTRY
+    disposition: candidate
+    source: profiles/winbox-ipc/processes.yaml
+    lines: 111, 128, 130-138
+    plan_link: attribute-discovery-plan.md A inputs, existing-work PR/HD
+    reason: >-
+      Version-scoped v7 process/handler registry (PR + HD tables with
+      menu/store bindings). Candidate inventory only: never turn every
+      menu binding into an assumed distinct handler.
+  - id: A-GUI-HANDLERS
+    disposition: candidate
+    source: profiles/winbox-ipc/gui-handlers.yaml
+    lines: 1-30
+    plan_link: attribute-discovery-plan.md A.3
+    reason: >-
+      Canonical per-handler routes and field maps with unknowns kept
+      visible; the schema side of native field-tuple reconstruction.
+  - id: A-WS3C-TRANSCRIPTS
+    disposition: candidate
+    source: work/2026-10-chr-extraction/ws3c/
+    lines: probe.ts + ev/ corpus; see profiles/winbox-ipc/README.md:151-152
+    plan_link: attribute-discovery-plan.md A inputs, existing-work
+    reason: >-
+      Existing framing/codec/auth/crypto plus the historical native
+      observation transcripts. Preserve old artifacts; new runs need
+      their own manifests.
+  - id: A-NAME-ORACLE
+    disposition: candidate
+    source: work/2026-10-winbox-client-re/README.md
+    lines: 54-60
+    plan_link: attribute-discovery-plan.md existing-work (client evidence)
+    reason: >-
+      First-party envelope ID-to-name ground truth from the WinBox
+      client. Envelope only: bulk config discovery needs
+      handler-specific evidence, not another envelope sweep.
+  - id: A-DISSECTOR-SHAPE
+    disposition: candidate
+    source: src/tooling/winbox-dissector-shape.ts
+    lines: 1-60
+    plan_link: attribute-discovery-plan.md existing-work (adapter)
+    reason: >-
+      Existing schema-to-data adapter for fields and command spaces,
+      with tests at test/tooling/winbox-dissector-shape.test.ts:1-5.
+      Audit and extend rather than keeping a second naming inventory.
+  - id: A-NOVA-SOURCES
+    disposition: candidate
+    source: work/2026-05-winbox-nova-sources/winbox-nova-source-inventory.md
+    lines: 1-15
+    plan_link: attribute-discovery-plan.md source strategy
+    reason: >-
+      Public-source investigation queue for the bounded public-asset
+      sweep. A queue, not a promotion into schema evidence or credits.
+  - id: A-RESTRAML-PROPOSAL
+    disposition: candidate
+    source: work/2026-05-m2ir-bootstrap/m2ir-design-review.md
+    lines: 611-616
+    plan_link: attribute-discovery-plan.md source strategy
+    reason: >-
+      Proposal to cross-link schema keys to REST paths. Proposal only
+      from an imported May draft; nothing implements it (see N2).
+  - id: A-COVERAGE-PROXIES
+    disposition: candidate
+    source: profiles/winbox-ipc/README.md
+    lines: 151-170
+    plan_link: attribute-discovery-plan.md coverage
+    reason: >-
+      Scale proxies citing the Rosetta DB behind restraml. Explicitly
+      inexact; the plan replaces them with version-scoped native
+      field and operation coverage.
+rejected:
+  - id: R-ROSETTA-STONE
+    disposition: rejected
+    source: work/2026-10-chr-extraction/net-bridge2-handler-tables.md
+    lines: 17
+    reason: >-
+      "Rosetta stone" here means the shared framework library that
+      decodes dispatch, not the Rosetta documentation database. Text
+      match only; no DB relationship.
+  - id: R-CORTEX-DB
+    disposition: rejected
+    source: src/tooling/cortex-db.ts
+    lines: 1-30
+    reason: >-
+      Repo-local event/hook logging database (repo events, git-hook
+      runs). Shares only the sqlite driver with the Rosetta work; not
+      a source importer.
+  - id: R-CORTEX-TEST
+    disposition: rejected
+    source: test/tooling/repo-tooling.test.ts
+    lines: 1-3
+    reason: Tests the repo-local logging DB only; no Rosetta content.
+  - id: R-HARNESS
+    disposition: rejected
+    source: work/2026-11-winbox-attributes/harness/README.md
+    lines: 1-6
+    reason: >-
+      Phase B experiment-harness tooling. Out of Step A scope by work
+      package, not by quality.
+  - id: R-PROOF
+    disposition: rejected
+    source: work/2026-11-winbox-attributes/harness/README.md
+    lines: 27-32
+    reason: >-
+      Phase C live-lab proof artifacts. Step A is offline; live
+      evidence belongs to later packages.
+  - id: R-SLICE-NOTES
+    disposition: rejected
+    source: work/2026-11-winbox-attributes/slice-b-getset-paging-notes.md
+    lines: 1-3
+    also: work/2026-11-winbox-attributes/slice-c-verbs-errors-scratch.md:1-4
+    reason: >-
+      Phase C scratch notes, explicitly research-only with no
+      canonical promotion. Not Step A inputs.
+  - id: R-PROFILE-TESTS
+    disposition: rejected
+    source: test/profiles/winbox-ipc/identity-promotion.test.ts
+    lines: 249
+    reason: >-
+      Anchor/replay tests consume the candidate inventory; they are
+      not Rosetta sources themselves.
+  - id: R-ERROR-CANDIDATE
+    disposition: rejected
+    source: profiles/winbox-ipc/std-commands.yaml
+    lines: 136
+    reason: >-
+      "Error-candidate writes" means unclassified write outcomes, an
+      unrelated sense of "candidate".
+  - id: R-EXPERT-INFO
+    disposition: rejected
+    source: work/2026-05-winbox-dissector-feasibility/winbox-wireshark-dissector-feasibility.md
+    lines: 53
+    reason: >-
+      "Expert-info candidates" are dissector UI warnings, unrelated to
+      Rosetta candidates.
+negatives:
+  - id: N-NO-NUMERIC-CROSSWALK
+    disposition: negative
+    source: work/2026-11-winbox-attributes/source-inventory.yaml
+    lines: 52-84
+    also: work/2026-11-winbox-attributes/queries/30-type-tag-samples.sql:1-8
+    reason: >-
+      No numeric WinBox handler/field/verb identity columns exist in
+      the inspected Rosetta data: strict identity-token search over
+      all table definitions returned zero hits, the loose wire match
+      is Wi-Fi chain counts, and every type_tag value is a CLI enum
+      type name. Assume no hidden crosswalk; CLI names suggest
+      experiments but never prove numeric mappings.
+  - id: N-NO-RESTRAML-LINK-KEYS
+    disposition: negative
+    source: work/2026-05-m2ir-bootstrap/m2ir-design-review.md
+    lines: 615
+    reason: >-
+      The tokens corresponds-to and restraml:// occur exactly once in
+      the bounded scope, inside the May proposal text. No canonical
+      YAML implements the cross-link; no hidden numeric bridge exists
+      in the schema.
+  - id: N-CROSSWALK-TERM-SCOPE
+    disposition: negative
+    source: work/2026-11-winbox-attributes/attribute-discovery-plan.md
+    lines: 69
+    reason: >-
+      "Crosswalk" occurs exactly once in the bounded scope outside
+      this ledger: the plan sentence instructing this step to record a
+      negative rather than assume a hidden numeric crosswalk. There is
+      no other crosswalk material to drain.
+  - id: N-QUIET-TREES
+    disposition: negative
+    source: physical/README.md
+    lines: 1-15
+    also: concepts/README.md:20
+    reason: >-
+      No Rosetta/crosswalk material in physical/ (wire grammar only),
+      concepts/ (placeholder), fixtures/ (native JSON fixtures, no
+      Rosetta hits), test/ (anchor tests; only sqlite hit is the
+      repo-local logging test), or the dude-on-disk, mndp, and
+      winbox-cdb profiles (no hits in any bounded term search).
+  - id: N-SQLITE-CONSUMERS
+    disposition: negative
+    source: work/2026-11-winbox-attributes/rosetta-extract.ts
+    lines: 16
+    also: src/tooling/cortex-db.ts:1
+    reason: >-
+      The only sqlite consumers in scope are the Rosetta extractor
+      (read-only DB open) and the repo-local logging DB plus its
+      test. No second Rosetta importer exists to reconcile.
+unresolved:
+  - id: U-PUBLIC-ASSETS
+    disposition: negative
+    status: deferred-not-disproven
+    reason: >-
+      The plan's bounded sweep covers public assets AND local source
+      importers. This offline step covered the local side only; live
+      manual-site source metadata needs network and stays explicitly
+      deferred, not silently treated as negative.
+  - id: U-EXTERNAL-RESTRAML
+    disposition: negative
+    status: deferred-not-disproven
+    reason: >-
+      The restraml project itself is external and not vendored here,
+      so the May cross-link proposal is unactionable from this repo
+      alone. No local evidence either confirms or denies a future
+      numeric bridge there; per plan, never assume one.

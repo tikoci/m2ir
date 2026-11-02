@@ -1,0 +1,886 @@
+{
+	"provenance": {
+		"proof": "work/2026-11-winbox-attributes/proof/7.25-ip-address",
+		"report": "work/2026-11-winbox-attributes/proof/7.25-ip-address/report.yaml",
+		"routeros_version": "7.25",
+		"route": [20, 1],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. Source captures retain full envelopes. Table-row SETOBJ/ADDOBJ/REMOVEOBJ legs with GETALL read-backs."
+	},
+	"records": [
+		{
+			"id": "set-tx",
+			"role": "SETOBJ rowid=2 comment=m2ir-native-w1",
+			"source": "step-06-native-set.jsonl reqId=11 tx",
+			"hex": "4d320500ff010600ff090b0700ff080300fe000100ff88020014000000010000000200ff880200000000000b0000000100fe09020900fe210e6d3269722d6e61746976652d7731",
+			"cmd": 16646147,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 11,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 11
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0009",
+					"tcode": "0x21",
+					"value": "m2ir-native-w1"
+				}
+			]
+		},
+		{
+			"id": "set-ack",
+			"role": "SETOBJ bare SYS-only ack",
+			"source": "step-06-native-set.jsonl reqId=11 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff090b",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 11,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 11
+				}
+			]
+		},
+		{
+			"id": "set-verify-getall",
+			"role": "GETALL read-back: rowid=2 comment=m2ir-native-w1",
+			"source": "step-06-native-set.jsonl reqId=12 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa001000e006d73672d70726f78792d372e32350200fea802004b004d320b0000000700fe010800fe000a00fe00040000080a0002ff050000090206000009000a000009020100fe0901010000080a00020f020000080a00020003000008ffffff000900fe210059004d320b0000000700fe000800fe000a00fe0004000008c63364ff050000090206000009000a000009020100fe090201000008c633640a02000008c633640003000008ffffff000900fe210e6d3269722d6e61746976652d77310300ff09021900fe09020600ff090c",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 12,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4278321162
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 251789322
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 131082
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						],
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4284756934
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 174339014
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 6566854
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-native-w1"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 12
+				}
+			]
+		},
+		{
+			"id": "add-tx",
+			"role": "ADDOBJ 198.51.100.11/24 iface rowid=2 comment=m2ir-native-add",
+			"source": "step-06b-native-add.jsonl reqId=14 tx",
+			"hex": "4d320500ff010600ff090e0700ff080500fe000100ff88020014000000010000000200ff880200000000000b00000001000008c633640b03000008ffffff000a000009020900fe210f6d3269722d6e61746976652d616464",
+			"cmd": 16646149,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 14,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 14
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646149
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x8",
+					"value": 191116230
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x8",
+					"value": 16777215
+				},
+				{
+					"key": "0x00000a",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0009",
+					"tcode": "0x21",
+					"value": "m2ir-native-add"
+				}
+			]
+		},
+		{
+			"id": "add-ack",
+			"role": "ADDOBJ ack + new rowid=3",
+			"source": "step-06b-native-add.jsonl reqId=14 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa001000e006d73672d70726f78792d372e32350100fe09030300ff09020600ff090e",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 14,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 14
+				}
+			]
+		},
+		{
+			"id": "add-verify-getall",
+			"role": "GETALL read-back: 3 rows incl. new rowid=3",
+			"source": "step-06b-native-add.jsonl reqId=15 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa001000e006d73672d70726f78792d372e32350200fea803004b004d320b0000000700fe010800fe000a00fe00040000080a0002ff050000090206000009000a000009020100fe0901010000080a00020f020000080a00020003000008ffffff000900fe210059004d320b0000000700fe000800fe000a00fe0004000008c63364ff050000090206000009000a000009020100fe090201000008c633640a02000008c633640003000008ffffff000900fe210e6d3269722d6e61746976652d77315a004d320b0000000700fe000800fe000a00fe0004000008c63364ff050000090206000009000a000009020100fe090301000008c633640b02000008c633640003000008ffffff000900fe210f6d3269722d6e61746976652d6164640300ff09021900fe09030600ff090f",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 15,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4278321162
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 251789322
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 131082
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						],
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4284756934
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 174339014
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 6566854
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-native-w1"
+							}
+						],
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4284756934
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 191116230
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 6566854
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-native-add"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 15
+				}
+			]
+		},
+		{
+			"id": "remove-tx",
+			"role": "REMOVEOBJ rowid=3",
+			"source": "step-06c-native-remove.jsonl reqId=16 tx",
+			"hex": "4d320500ff010600ff09100700ff080600fe000100ff88020014000000010000000200ff880200000000000b0000000100fe0903",
+			"cmd": 16646150,
+			"to": [20, 1],
+			"from": [0, 11],
+			"reqId": 16,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 16
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646150
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "remove-ack",
+			"role": "REMOVEOBJ bare SYS-only ack",
+			"source": "step-06c-native-remove.jsonl reqId=16 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0910",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 16,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 16
+				}
+			]
+		},
+		{
+			"id": "remove-verify-getall",
+			"role": "GETALL read-back: rowid=3 gone",
+			"source": "step-06c-native-remove.jsonl reqId=17 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa001000e006d73672d70726f78792d372e32350200fea802004b004d320b0000000700fe010800fe000a00fe00040000080a0002ff050000090206000009000a000009020100fe0901010000080a00020f020000080a00020003000008ffffff000900fe210059004d320b0000000700fe000800fe000a00fe0004000008c63364ff050000090206000009000a000009020100fe090201000008c633640a02000008c633640003000008ffffff000900fe210e6d3269722d6e61746976652d77310300ff09021900fe09020600ff0911",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 17,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4278321162
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 251789322
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 131082
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						],
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4284756934
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 174339014
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 6566854
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-native-w1"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 17
+				}
+			]
+		}
+	]
+}

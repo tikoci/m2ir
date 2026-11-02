@@ -1,0 +1,1371 @@
+{
+	"provenance": {
+		"proof": "work/2026-11-winbox-attributes/proof/7.25-nat-action",
+		"report": "work/2026-11-winbox-attributes/proof/7.25-nat-action/report.yaml",
+		"followup": "work/2026-11-winbox-attributes/proof/7.25-nat-followup/report.yaml",
+		"routeros_version": "7.25",
+		"route": [20, 5],
+		"note": "Sanitized M2 hex plus decoded entries only: no capture timestamps, hosts, ports, or credentials. Source captures retain full envelopes. NAT action rule matrix (11 legs) + inverse SETOBJ 0->4 + redirect row."
+	},
+	"records": [
+		{
+			"id": "matrix-srcnat-accept",
+			"role": "srcnat accept -> f40=0",
+			"source": "step-02-01-matrix.jsonl reqId=4",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010040004d321c00fea000000700fe000800fe0028000009000100fe090127000021067372636e61740900fe21166d3269722d6163742d7372636e61742d6163636570740300ff09021900fe09010600ff0904",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 4,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-srcnat-accept"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 4
+				}
+			]
+		},
+		{
+			"id": "matrix-srcnat-passthrough",
+			"role": "srcnat passthrough -> f40=4",
+			"source": "step-02-03-matrix.jsonl reqId=5",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010045004d321c00fea000000700fe000800fe0128000009040100fe090227000021067372636e61740900fe211b6d3269722d6163742d7372636e61742d706173737468726f7567680300ff09021900fe09010600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-srcnat-passthrough"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		},
+		{
+			"id": "matrix-srcnat-return",
+			"role": "srcnat return -> f40=2",
+			"source": "step-02-04-matrix.jsonl reqId=6",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010040004d321c00fea000000700fe000800fe0128000009020100fe090327000021067372636e61740900fe21166d3269722d6163742d7372636e61742d72657475726e0300ff09021900fe09010600ff0906",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 6,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-srcnat-return"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 6
+				}
+			]
+		},
+		{
+			"id": "matrix-srcnat-log",
+			"role": "srcnat log -> f40=3",
+			"source": "step-02-05-matrix.jsonl reqId=7",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea801003d004d321c00fea000000700fe000800fe0128000009030100fe090427000021067372636e61740900fe21136d3269722d6163742d7372636e61742d6c6f670300ff09021900fe09010600ff0907",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 3
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-srcnat-log"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				}
+			]
+		},
+		{
+			"id": "matrix-srcnat-add-src",
+			"role": "srcnat add-src-to-address-list -> f40=5",
+			"source": "step-02-06-matrix.jsonl reqId=8",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010060004d321c00fea000000700fe000800fe0128000009050100fe090527000021067372636e61745b0000210a6d3269722d70726f62650900fe21276d3269722d6163742d7372636e61742d6164642d7372632d746f2d616464726573732d6c6973740300ff09021900fe09010600ff0908",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 8,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 5
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 5
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0x00005b",
+								"tcode": "0x21",
+								"value": "m2ir-probe"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-srcnat-add-src-to-address-list"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 8
+				}
+			]
+		},
+		{
+			"id": "matrix-srcnat-src-nat",
+			"role": "srcnat src-nat -> f40=20",
+			"source": "step-02-07-matrix.jsonl reqId=9",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010055004d321c00fea00000ee0300010800fe010700fe0028000009140100fe0906e8030008c6336463e9030008c633646327000021067372636e61740900fe21176d3269722d6163742d7372636e61742d7372632d6e61740300ff09021900fe09010600ff0909",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 9,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x0003ee",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 20
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 6
+							},
+							{
+								"key": "0x0003e8",
+								"tcode": "0x8",
+								"value": 1667511238
+							},
+							{
+								"key": "0x0003e9",
+								"tcode": "0x8",
+								"value": 1667511238
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-srcnat-src-nat"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 9
+				}
+			]
+		},
+		{
+			"id": "matrix-srcnat-masquerade",
+			"role": "srcnat masquerade -> f40=21",
+			"source": "step-02-08-matrix.jsonl reqId=10",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010044004d321c00fea000000700fe000800fe0128000009150100fe090727000021067372636e61740900fe211a6d3269722d6163742d7372636e61742d6d6173717565726164650300ff09021900fe09010600ff090a",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 10,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 21
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 7
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-srcnat-masquerade"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 10
+				}
+			]
+		},
+		{
+			"id": "matrix-srcnat-netmap",
+			"role": "srcnat netmap -> f40=25",
+			"source": "step-02-09-matrix.jsonl reqId=11",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010054004d321c00fea00000ee0300010800fe010700fe0028000009190100fe0908e8030008c6336400e9030008c63364ff27000021067372636e61740900fe21166d3269722d6163742d7372636e61742d6e65746d61700300ff09021900fe09010600ff090b",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 11,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x0003ee",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 25
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 8
+							},
+							{
+								"key": "0x0003e8",
+								"tcode": "0x8",
+								"value": 6566854
+							},
+							{
+								"key": "0x0003e9",
+								"tcode": "0x8",
+								"value": 4284756934
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-srcnat-netmap"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 11
+				}
+			]
+		},
+		{
+			"id": "matrix-dstnat-accept",
+			"role": "dstnat accept -> f40=0",
+			"source": "step-02-10-matrix.jsonl reqId=12",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010040004d321c00fea000000700fe000800fe0128000009000100fe090927000021066473746e61740900fe21166d3269722d6163742d6473746e61742d6163636570740300ff09021900fe09010600ff090c",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 12,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 9
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "dstnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-dstnat-accept"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 12
+				}
+			]
+		},
+		{
+			"id": "matrix-dstnat-dst-nat",
+			"role": "dstnat dst-nat -> f40=22",
+			"source": "step-02-12-matrix.jsonl reqId=13",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010055004d321c00fea00000ee0300010800fe010700fe0028000009160100fe090ae8030008c6336463e9030008c633646327000021066473746e61740900fe21176d3269722d6163742d6473746e61742d6473742d6e61740300ff09021900fe09010600ff090d",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 13,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x0003ee",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 22
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 10
+							},
+							{
+								"key": "0x0003e8",
+								"tcode": "0x8",
+								"value": 1667511238
+							},
+							{
+								"key": "0x0003e9",
+								"tcode": "0x8",
+								"value": 1667511238
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "dstnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-dstnat-dst-nat"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 13
+				}
+			]
+		},
+		{
+			"id": "matrix-dstnat-add-dst",
+			"role": "dstnat add-dst-to-address-list -> f40=6",
+			"source": "step-02-14-matrix.jsonl reqId=14",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010060004d321c00fea000000700fe000800fe0128000009060100fe090c27000021066473746e61745b0000210a6d3269722d70726f62650900fe21276d3269722d6163742d6473746e61742d6164642d6473742d746f2d616464726573732d6c6973740300ff09021900fe09010600ff090e",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 14,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 6
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 12
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "dstnat"
+							},
+							{
+								"key": "0x00005b",
+								"tcode": "0x21",
+								"value": "m2ir-probe"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-dstnat-add-dst-to-address-list"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 14
+				}
+			]
+		},
+		{
+			"id": "inv-before-getall",
+			"role": "GETALL before inverse SET: f40=0 accept",
+			"source": "step-inv.jsonl reqId=2 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea801003b004d321c00fea000000700fe000800fe0028000009000100fe090f27000021067372636e61740900fe21116d3269722d6163742d696e7665727365320300ff09021900fe09010600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 15
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-inverse2"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "inv-set-tx",
+			"role": "SETOBJ rowid=15 f40=4",
+			"source": "step-inv.jsonl reqId=3 tx",
+			"hex": "4d320500ff010600ff09030700ff080300fe000100ff88020014000000050000000200ff880200000000000b0000000100fe090f2800000904",
+			"cmd": 16646147,
+			"to": [20, 5],
+			"from": [0, 11],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0005",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				},
+				{
+					"key": "0xff0007",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xfe0001",
+					"tcode": "0x9",
+					"value": 15
+				},
+				{
+					"key": "0x000028",
+					"tcode": "0x9",
+					"value": 4
+				}
+			]
+		},
+		{
+			"id": "inv-set-ack",
+			"role": "SETOBJ bare SYS-only ack",
+			"source": "step-inv.jsonl reqId=3 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "inv-verify-getall",
+			"role": "GETALL read-back: f40=4 passthrough",
+			"source": "step-inv.jsonl reqId=4 rx",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea801003b004d321c00fea000000700fe000800fe0028000009040100fe090f0900fe21116d3269722d6163742d696e76657273653227000021067372636e61740300ff09021900fe09010600ff0904",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 4,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 4
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 15
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-inverse2"
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "srcnat"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 4
+				}
+			]
+		},
+		{
+			"id": "redirect-getall",
+			"role": "dstnat redirect -> f40=23 (proto=tcp, ports 8080)",
+			"source": "step-red.jsonl reqId=5",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000050000001c00ffa001000e006d73672d70726f78792d372e32350200fea8010064004d321c00fea00000160000000700fe00ef0300010800fe019401000128000009170100fe09100b00000906ea030008901f0000eb030008901f000027000021066473746e61740900fe21196d3269722d6163742d6473746e61742d7265646972656374320300ff09021900fe09010600ff0905",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 5],
+			"reqId": 5,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0xfe001c",
+								"tcode": "0xa0",
+								"value": []
+							},
+							{
+								"key": "0x000016",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x0003ef",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000194",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0x000028",
+								"tcode": "0x9",
+								"value": 23
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 16
+							},
+							{
+								"key": "0x00000b",
+								"tcode": "0x9",
+								"value": 6
+							},
+							{
+								"key": "0x0003ea",
+								"tcode": "0x8",
+								"value": 8080
+							},
+							{
+								"key": "0x0003eb",
+								"tcode": "0x8",
+								"value": 8080
+							},
+							{
+								"key": "0x000027",
+								"tcode": "0x21",
+								"value": "dstnat"
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "m2ir-act-dstnat-redirect2"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 5
+				}
+			]
+		}
+	]
+}

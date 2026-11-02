@@ -146,7 +146,7 @@ the terminal surface (handler 76 privates — a separate protocol, only
 seeded here). mproxy (the TCP/8291 front end) and undo have their own
 seed files.
 
-## Coverage in numbers (inexact, counted 2026-11-01)
+## Coverage in numbers (inexact, counted 2026-11-02)
 
 Counted from the YAML in this directory, the 249 live transcripts in
 `work/2026-10-chr-extraction/ws3c/ev/`, and the Rosetta database
@@ -187,7 +187,7 @@ How to read this:
   (80 of 80) actually appears in the live transcripts. The gap is
   handlers and fields never probed, not keys invented on paper.
 - Quality counts: 284 confidence-tagged entries (150 documented,
-  131 observed-only, 3 inferred), 498 evidence references, and 68
+  131 observed-only, 3 inferred), 511 evidence references, and 69
   kept revision-history entries recording beliefs live work corrected.
 
 The CLI-reference total includes repeated records across three manual

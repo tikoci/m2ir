@@ -1,0 +1,152 @@
+proof: "phase-C pilot slice 2: /ip/address route [20,1] on 7.25"
+provenance:
+  machine: twin3
+  routeros_version: "7.25"
+  synthetic_rowid: 2
+  values:
+    a: 198.51.100.10/24
+    prefix_only: 198.51.100.10/25
+    addr_only: 198.51.100.20/25
+  generated_by: harness/prove-ip-address.ts
+steps:
+  - id: step-1-baseline
+    control: none (two unchanged native GETALL)
+    native_manifest: step-01-baseline.jsonl
+    observation: reads rows=1/1
+  - id: step-5-controls
+    control: disabled yes/no + comment unset on synthetic row
+    observation: unset rows=2
+  - id: step-6-inverse-write
+    control: independent centrs retrieve after native SETOBJ
+    native_manifest: step-06-native-set.jsonl
+    control_manifest: control-06-native-verify.json
+    observation: SET outcome=ok; native="m2ir-native-w1"; control="m2ir-native-w1"
+  - id: step-6b-native-add
+    control: independent centrs retrieve after native ADDOBJ
+    native_manifest: step-06b-native-add.jsonl
+    control_manifest: control-06b-native-verify.json
+    observation: ADD outcome=ok; native-rowid=3; control-rows=1
+  - id: step-6c-native-remove
+    control: independent centrs retrieve after native REMOVEOBJ
+    native_manifest: step-06c-native-remove.jsonl
+    control_manifest: control-06c-native-verify.json
+    observation: REMOVE outcome=ok; removed=true
+  - id: step-7-restore
+    control: control remove of non-initial rows + verify
+    native_manifest: step-07-restored.jsonl
+    observation: final rows=1 restored=true
+write_inventory:
+  - leg: step-2
+    kind: control
+    verb: /ip/address/add
+    route: /ip/address
+    obj: new
+    field: address
+    value: 198.51.100.10/24
+    outcome: ok
+  - leg: step-3a
+    kind: control
+    verb: /ip/address/set
+    route: /ip/address
+    obj: "*2"
+    field: address
+    value: 198.51.100.10/25
+    outcome: ok
+  - leg: step-3b
+    kind: control
+    verb: /ip/address/set
+    route: /ip/address
+    obj: "*2"
+    field: address
+    value: 198.51.100.20/25
+    outcome: ok
+  - leg: step-4
+    kind: control
+    verb: /ip/address/set
+    route: /ip/address
+    obj: "*2"
+    field: address
+    value: 198.51.100.10/24
+    outcome: ok
+  - leg: step-5a
+    kind: control
+    verb: /ip/address/set
+    route: /ip/address
+    obj: "*2"
+    field: disabled
+    value: yes
+    outcome: ok
+  - leg: step-5b
+    kind: control
+    verb: /ip/address/set
+    route: /ip/address
+    obj: "*2"
+    field: disabled
+    value: no
+    outcome: ok
+  - leg: step-5c
+    kind: control
+    verb: /ip/address/set
+    route: /ip/address
+    obj: "*2"
+    field: comment
+    value: unset
+    outcome: ok
+  - leg: step-6
+    kind: native
+    verb: CMD_SETOBJ
+    route: "[20,1]"
+    obj: rowid=2
+    field: "0xfe0009"
+    value: m2ir-native-w1
+    outcome: ok
+  - leg: step-6b
+    kind: native
+    verb: CMD_ADDOBJ
+    route: "[20,1]"
+    obj: new
+    field: row
+    value: 198.51.100.11/24
+    outcome: ok
+  - leg: step-6c
+    kind: native
+    verb: CMD_REMOVEOBJ
+    route: "[20,1]"
+    obj: rowid=3
+    field: row
+    value: remove
+    outcome: ok
+  - leg: restore-07
+    kind: control
+    verb: /ip/address/remove
+    route: /ip/address
+    obj: "*2"
+    field: row
+    value: remove
+    outcome: ok
+distinct_write_count: 8
+restore_proof:
+  - branch: restore-07-primary
+    method: control remove per non-initial .id + control verify
+    restored: true
+    fallbackUsed: false
+    detail: rows=1 clean=true
+verdicts:
+  synthetic_row_tracked_by_rowid:
+    holds: true
+    evidence: rowid=2
+  native_setobj_comment_effective:
+    holds: true
+    evidence: native="m2ir-native-w1" control="m2ir-native-w1"
+  native_addobj_effective:
+    holds: true
+    evidence: outcome=ok rowid=3 control-rows=1
+  native_removeobj_effective:
+    holds: true
+    evidence: removed=true
+  restored:
+    holds: true
+    evidence: '[{"branch":"restore-07-primary","method":"control remove per
+      non-initial .id + control
+      verify","restored":true,"fallbackUsed":false,"detail":"rows=1
+      clean=true"}]'
