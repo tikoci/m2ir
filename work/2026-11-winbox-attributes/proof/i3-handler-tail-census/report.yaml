@@ -1,0 +1,473 @@
+# cspell:ignore rowid u32 reqid getall getcount getobj getone hscan calea mangle notimp brkpath unknownid defconf qos pfc dscp wred sim lte dbrd sys2 chfont rbbios syscap cliref subtable prefilter unprobed readback num automap wps
+# I3 handler-tail static census (Phase I, offline). Coordinator integrates; I3 edits nothing canonical.
+# Inputs: commit 6708923 clean tree + gui-handlers.yaml (read-only) + ev/ transcripts + Rosetta 0.12.0 (read-only).
+complete: true
+worker: I3
+scope: "static census of the 19 gui-handlers.yaml entries with no fields block (batch-1 scoping)"
+live_contact: none
+inputs:
+  git_head: 6708923
+  git_head_subject: "Record Phase H commit 5ecfb0d in handoff"
+  tree: clean
+  schema: profiles/winbox-ipc/gui-handlers.yaml
+  readme: profiles/winbox-ipc/README.md
+  transcripts: work/2026-10-chr-extraction/ws3c/ev/
+  prior_candidates: work/2026-11-winbox-attributes/candidates.yaml
+  source_inventory: work/2026-11-winbox-attributes/source-inventory.yaml
+  rosetta:
+    db_path: ~/.rosetta/ros-help-0.12.0.db
+    db_sha256: eee457411defe95c7a8111c89866dd5066a790ce2ffda46a37664c459515aae3
+    db_bytes: 415490048
+    release_tag: v0.12.0
+    schema_version: "12"
+    source_commit: 6b6397d7739a563b894f9b07f7ac2f6b1ad7f4bf
+    built_at: 2026-10-30T21:34:20.911Z
+    cliref_manual_version: "7.26"
+    access: "sqlite3 -readonly only; hash re-verified full-length this session, matches source-inventory.yaml"
+    caveat: "Rosetta names/types below are CANDIDATES only. No numeric mapping is claimed from any CLI-spelling join."
+drift:
+  - id: D1-coordinator-list-verified
+    verdict: no-drift
+    detail: "All 19 coordinator-listed handlers lack a fields block at 6708923, and every other handler entry (29 of 48) has one. Count cross-checks: 48 entries total, 29 with fields, 19 without."
+  - id: D2-readme-17-vs-19
+    verdict: drift-readme-stale
+    detail: "README 'Queued next phase' prose says '17 catalogued handlers without fields' but the YAML has 19 and the README's own table says '29 of 48' with fields (48-29=19). The prose is stale by 2; the table is right. READ-ONLY here; coordinator to fix."
+  - id: D3-readme-unknown-star-count
+    verdict: drift-brief-wording
+    detail: "The brief's '19 unknown-* entries' does not appear in the README: the README table says 160 unknown-* field entries (inside mapped handlers), not 19. The 19-count is handlers-without-fields (D1), a different population. The '296 v7 menu bindings' figure is confirmed (README line 167)."
+  - id: D4-ev-count
+    verdict: drift-readme-stale
+    detail: "README says '249 live transcripts in ws3c/ev/' but ev/ holds 290 files at 6708923. Coverage below is keyed to exact filenames, so the count drift does not affect this census."
+  - id: D5-filename-trap-24-2-1
+    verdict: caution
+    detail: "ev/7.25-getobj-24-2-1.json is route [24,2] (CPU object), NOT route [2,1]. It must never be counted as unknown-2-1 coverage."
+census:
+  - handler: default-config
+    route: [24, 8]
+    cmd: GET_ONE
+    notes_summary: "Default-configuration scripts; defconf bodies arrive verbatim (first-connect dialog content)."
+    transcripts: ["ev/7.25-getone-24-8.json"]
+    transcript_gaps: ["no 6.49 leg", "no 7.26beta4 leg", "no verb-gating matrix (GETALL/GETOBJ/GETCOUNT untested)"]
+    wire_shape: "USER f1 bool F; f2 str (banner text); f3 bytes (defconf IP/ether1 body); f4 bytes (CAP body); f5 str; f6 bytes (WPS-Sync body). 6 populated fields."
+    rosetta_candidates:
+      menu: system/default-configuration
+      status: plausible
+      fields:
+        - { name: script, kind: Read-only Argument, type: string }
+        - { name: caps-mode-script, kind: Read-only Argument, type: string }
+        - { name: wps-sync-mode-script, kind: Read-only Argument, type: string }
+        - { name: custom-script, kind: Read-only Argument, type: string }
+    blockers: []
+    batch: 1a-A
+  - handler: sim-settings-20-107
+    route: [20, 107]
+    cmd: GET_ONE
+    status: identified-chr-absent
+    notes_summary: "AHolder sim_settings + defconf ModemSIMSlots; thin SIM-slot defaults on a modem-less CHR."
+    transcripts: ["ev/7.25-getone-20-107.json", "ev/7.25-hscan-20-hi.txt (presence/shape)"]
+    wire_shape: "18 USER fields: bools 0x0e/0x11/0x12/0x13/0x0a (all F); u32c 4=1, 9=0, 0x0b=3, 0x0d=0, 0x0f=120, 0x10=0, 0x14=5, 1=0; u32 8=0xFFFFFFFF; strings 0x0c/0x15/7 empty, 5='firmware'. Perturbation-negative (identity/timezone/filter/user)."
+    rosetta_candidates:
+      menu: interface/lte/settings
+      status: weak
+      reason: "Only sim-slot/sim-link vaguely resemble ModemSIMSlots; no SIM-settings menu exists. Family worker trims to <=10 (see batch_splits future modem-pair)."
+      fields:
+        - { name: sim-slot, kind: Argument, type: enum }
+        - { name: sim-link, kind: Argument, type: enum }
+        - { name: mode, kind: Argument, type: enum }
+        - { name: firmware-path, kind: Argument, type: string }
+        - { name: info-polling-interval, kind: Argument, type: num }
+        - { name: link-recovery-timer, kind: Argument, type: num }
+        - { name: external-antenna, kind: Argument, type: enum }
+    blockers: ["CHR has no modem: populated shapes need LTE hardware + SIM"]
+    batch: future-modem-pair
+  - handler: qos-profile-20-114
+    route: [20, 114]
+    cmd: GET_ONE
+    status: identified-chr-absent
+    notes_summary: "AHolder /nova/store/net/qos/profile; CHR-absent QoS defaults (0xfe0010 'default')."
+    transcripts: ["ev/7.25-getone-20-114.json", "ev/7.25-hscan-20-hi.txt (presence/shape)"]
+    wire_shape: "6 USER fields (0x23 bool T; u32c 3=0, 7=1, 8=0, 1=0, 2=0) + fe-flag bank + 0xfe0010 'default'. Perturbation-negative."
+    rosetta_candidates:
+      menu: interface/ethernet/switch/qos/profile
+      status: plausible
+      fields:
+        - { name: name, kind: Argument, type: string }
+        - { name: pcp, kind: Argument, type: num }
+        - { name: dscp, kind: Argument, type: num }
+        - { name: traffic-class, kind: Argument, type: num }
+        - { name: automap, kind: Argument, type: bool }
+        - { name: hw-id, kind: Read-only Argument, type: num }
+    blockers: ["switch-chip hardware needed for populated rows; CHR leg establishes defaults only"]
+    batch: 1a-B
+  - handler: qos-map-20-115
+    route: [20, 115]
+    cmd: GET_ONE
+    status: identified-chr-absent
+    notes_summary: "AHolder /nova/store/net/qos/map; 0xfe-only defaults, zero USER fields on CHR."
+    transcripts: ["ev/7.25-getone-20-115.json", "ev/7.25-hscan-20-hi.txt (presence/shape)"]
+    wire_shape: "No USER fields at all: fe-flags + 0xfe0010 'default' only. Perturbation-negative."
+    rosetta_candidates:
+      menu: interface/ethernet/switch/qos/map
+      status: plausible
+      fields:
+        - { name: name, kind: Argument, type: string }
+        - { name: hw-id, kind: Read-only Argument, type: num }
+    blockers: ["switch-chip hardware needed for populated rows; CHR leg establishes defaults only"]
+    batch: 1a-B
+  - handler: qos-config-20-122
+    route: [20, 122]
+    cmd: GET_ONE
+    status: identified-chr-absent
+    notes_summary: "AHolder /nova/store/net/qos/config, head of the 8-handler QoS composite; 255-heavy CHR defaults."
+    transcripts: ["ev/7.25-getone-20-122.json", "ev/7.25-hscan-20-hi.txt (presence/shape)"]
+    wire_shape: "11 USER fields in the 0x11x/0x12x bank (0x132 u32arr [255]; 0x120 F; 0x122/0x12f/0x131/0x121 = 255; 0x12c=2; 0x12d/0x12e/0x130=0; 0x11=2). Perturbation-negative."
+    rosetta_candidates:
+      menu: interface/ethernet/switch/qos/settings
+      status: plausible
+      fields:
+        - { name: multicast-buffers, kind: Argument, type: num }
+        - { name: mirror-buffers, kind: Argument, type: num }
+        - { name: mirror-profile, kind: Argument, type: enum }
+        - { name: shared-buffers, kind: Argument, type: num }
+        - { name: lossless-buffers, kind: Argument, type: num }
+        - { name: lossless-traffic-class, kind: Argument, type: multi-array }
+        - { name: wred-threshold, kind: Argument, type: enum }
+    blockers: ["switch-chip hardware needed for populated rows; CHR leg establishes defaults only"]
+    batch: 1b-A
+  - handler: qos-pfc-20-126
+    route: [20, 126]
+    cmd: GET_ONE
+    status: identified-chr-absent
+    notes_summary: "AHolder /nova/store/net/qos/pfc (Priority Flow Control); CHR defaults (0xfe0010 'disabled')."
+    transcripts: ["ev/7.25-getone-20-126.json", "ev/7.25-hscan-20-hi.txt (presence/shape)"]
+    wire_shape: "5 USER fields (0x18/0x19 bool F; 0x14/0x15/0x16 = 255) + fe-flags + 0xfe0010 'disabled'. Perturbation-negative."
+    rosetta_candidates:
+      menu: interface/ethernet/switch/qos/priority-flow-control
+      status: plausible
+      fields:
+        - { name: name, kind: Argument, type: string }
+        - { name: traffic-class, kind: Argument, type: multi-array }
+        - { name: rx, kind: Argument, type: bool }
+        - { name: tx, kind: Argument, type: bool }
+        - { name: pause-threshold, kind: Argument, type: alt }
+        - { name: resume-threshold, kind: Argument, type: alt }
+        - { name: hw-id, kind: Read-only Argument, type: num }
+    blockers: ["PFC-capable switch hardware needed for populated rows; CHR leg establishes defaults only"]
+    batch: 1b-B
+  - handler: boot-flags-24-10
+    route: [24, 10]
+    cmd: GET_ONE
+    status: identified
+    notes_summary: "PROVEN f1=exists(/rw/DISABLE_SMP), f2=exists(/rw/ENABLE_X86_64); bit-29 leg unfolds nested 0xfe001d defaults."
+    transcripts: ["ev/6.49-getone-24-10.json (v6 {F,T} drift)", "ev/7.25-getone-24-10.json (v7 {F,F})", "ev/7.25-getone-24-10-bit29.json", "ev/7.25-pert-24-10-pre.json", "ev/7.25-pert-24-10-post.json"]
+    wire_shape: "USER f1/f2 bools + nested 0xfe001d {1:F,2:F} under bit-29 requests."
+    rosetta_candidates: none
+    rosetta_none_reason: "Not configuration: literal /rw path probes. No CLI menu can exist for this."
+    blockers: []
+    batch: none-promotion-ready
+  - handler: unknown-24-14
+    route: [24, 14]
+    cmd: GET_ONE
+    status: role-open
+    notes_summary: "Unknown singleton {8:F, 9:T, 15:0}, byte-identical both versions."
+    transcripts: ["ev/6.49-getone-24-14.json", "ev/7.25-getone-24-14.json"]
+    wire_shape: "3 USER fields: f8 bool F, f9 bool T, f15 u32c 0."
+    rosetta_candidates: none
+    rosetta_none_reason: "No static lead to any menu; sys2 binary lead needed (static, no live contact)."
+    blockers: ["role open; needs perturbation legs or a sys2 static lead"]
+    batch: future-sys2-residue
+  - handler: unknown-24-16
+    route: [24, 16]
+    cmd: GET_ONE
+    status: role-open
+    notes_summary: "Unknown singleton {1:2, 2:10}, byte-identical both versions; weak /nova/store/chfont (console font) lead, unconvinced."
+    transcripts: ["ev/6.49-getone-24-16.json", "ev/7.25-getone-24-16.json"]
+    wire_shape: "2 USER fields: f1 u32c 2, f2 u32c 10."
+    rosetta_candidates:
+      menu: console/settings
+      status: very-weak
+      reason: "chfont lead only; values {2,10} resemble no console setting. Recorded so the worker can kill it, not to suggest it."
+      fields:
+        - { name: sanitize-names, kind: Argument, type: bool }
+        - { name: log-script-errors, kind: Argument, type: bool }
+        - { name: tab-width, kind: Argument, type: num }
+    blockers: ["role open; chfont lead is not a menu mapping"]
+    batch: future-sys2-residue
+  - handler: unknown-13-5
+    route: [13, 5]
+    cmd: GET_ONE
+    status: role-open
+    notes_summary: "Unknown singleton {5:[], 1:F, 2:T, 4:1, 3:0}, byte-identical all 3 versions."
+    transcripts: ["ev/6.49-getone-13-5.json", "ev/7.25-getone-13-5.json", "fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-user-family.json (queue-3 re-proof)"]
+    wire_shape: "5 USER fields: f5 u32arr [], f1 F, f2 T, f4 u32c 1, f3 u32c 0 (f3 sorts after SYS keys)."
+    rosetta_candidates: none
+    rosetta_none_reason: "user/* menus (user, user/aaa, user/active, user/group, user/settings) carry usernames/groups/sessions; nothing resembles {[],F,T,1,0}. Honest unknown."
+    blockers: ["role open; needs user-family stimulus hunt (add/remove user, sessions)"]
+    batch: future-user-tail
+  - handler: unknown-2-1
+    route: [2, 1]
+    cmd: GET_ONE
+    status: role-open
+    notes_summary: "Unknown singleton {2:u32 0x2000000}, identical both versions; sole catalogued process-2 handler."
+    transcripts: ["ev/6.49-getone-2-1.json", "ev/7.25-getone-2-1.json"]
+    wire_shape: "1 USER field: f2 u32 0x2000000 (wire 0x08 full u32, not compact)."
+    rosetta_candidates: none
+    rosetta_none_reason: "No process-2-adjacent menu exists in the CLI surface; single-bitmask u32 suggests flags/caps, unprovable statically."
+    blockers: ["role open; needs cross-version + cross-process comparison (mproxy-era [2,2] is file transfer, unrelated)"]
+    batch: future-sys2-residue
+  - handler: dbrd-holder-24-35
+    route: [24, 35]
+    cmd: GET_ONE
+    status: identified-chr-empty
+    notes_summary: "AHolder /nova/store/sys2-dbrd; empty on CHR (bare-SYS-only success); GETALL NOTIMP (GET-only)."
+    transcripts: ["ev/7.25-getone-24-35.json"]
+    transcript_gaps: ["no 6.49 leg (expect BRKPATH: v7-only registration)", "no 7.26beta4 leg"]
+    wire_shape: "Empty: SYS keys only, zero USER fields on CHR. Perturbation-negative."
+    rosetta_candidates:
+      menu: system/routerboard
+      status: weak
+      reason: "Daughterboard info plausibly surfaces board-name/model/revision/serial-number, but no dbrd-specific menu exists; all 9 read-only fields are guesses at best."
+      fields:
+        - { name: board-name, kind: Read-only Argument, type: string }
+        - { name: model, kind: Read-only Argument, type: string }
+        - { name: revision, kind: Read-only Argument, type: string }
+        - { name: serial-number, kind: Read-only Argument, type: string }
+        - { name: firmware-type, kind: Read-only Argument, type: string }
+        - { name: minimum-firmware, kind: Read-only Argument, type: string }
+        - { name: current-firmware, kind: Read-only Argument, type: string }
+        - { name: upgrade-firmware, kind: Read-only Argument, type: string }
+        - { name: routerboard, kind: Read-only Argument, type: bool }
+    blockers: ["needs real hardware WITH a daughterboard; CHR leg can only re-prove emptiness + version scope"]
+    batch: future-board-info
+  - handler: unknown-20-134
+    route: [20, 134]
+    cmd: GET_ALL
+    status: identified
+    notes_summary: "Third mark-registry instance (same factory as [20,13]/[20,14]); M2 SETOBJ f137 insert PROVEN; driver bounded to {WinBox-native-only field, internal process sync}; registries GC on rule removal."
+    transcripts: ["ev/7.25-getone-20-134.json", "ev/7.25-getall-20-134.json", "ev/7.25-getall-20-134-rt.json", "ev/7.25-getall-20-134-dscp.json", "ev/7.25-getall-20-134-m2mark1.json"]
+    wire_shape: "Registry rows {0xfe0001 row-id, 0xfe0010 mark-name} + 0xfe0019 total; m2mark1 fixture proves a second row inserts and names echo."
+    rosetta_candidates: none
+    rosetta_none_reason: "PROVEN negative: 40-probe driver hunt found no REST/CLI/WebFig writer (NAT surface complete, RAW shares numbering, WebFig has no such field). No menu to join."
+    blockers: ["driver needs WinBox-native capture or LTE/CAPsMAN/PPP peers; row SHAPE needs no further work (promotion-ready)"]
+    batch: none-promotion-ready
+  - handler: unknown-20-124
+    route: [20, 124]
+    cmd: GET_ONE
+    status: role-open
+    notes_summary: "Present but selector-gated: FAILED 'no INTERFACE_IDS' on GETCOUNT+GETALL+GETOBJ (both 7.x); GET FAILED in hscan."
+    transcripts: ["NO ev/ file; coverage is E2-R/E3-R census jsonl + fixtures/winbox-ipc/{7.25,7.26beta4}-getcount-20-17-124.json"]
+    wire_shape: "Error-only: 0xfe0006 FAILED + 0xff0009 errstr. No positive shape exists."
+    rosetta_candidates: none
+    rosetta_none_reason: "No menu lead; the INTERFACE_IDS selector is a read-field puzzle, not a config surface."
+    blockers: ["interface-ids selector unknown; read-only selector-variant matrix is the next step (no write needed)"]
+    batch: future-gated-pair
+  - handler: unknown-20-32
+    route: [20, 32]
+    cmd: GET_ONE
+    status: role-open
+    notes_summary: "GETCOUNT is a time-varying per-add TRANSIENT (variable magnitude/lifetime, NOT a row count); GET selector-gated/FAILED. Surviving models: variable-gauge, multi-step one-shot, history-gating; announce-backlog untested."
+    transcripts: ["NO ev/ file; coverage is E3-W/F/G/H proof legs + fixtures/winbox-ipc/7.25-getcount-20-3-32.json + 7.25-getcount-20-32-{matrix,decay,h1}.json"]
+    wire_shape: "GETCOUNT u32 samples only ({A} reads 8/2/1 across sessions; decay 1->0->0; spike re-spike 4->3->2). GET is FAILED, not table-shaped."
+    rosetta_candidates: none
+    rosetta_none_reason: "Filter-adjacent gauge with no config semantics; no menu lead."
+    blockers: ["mechanism open; next step needs TIMESTAMPED captures (H0a: all prior ts redacted at capture) + async-drain watch for H-decay-3"]
+    batch: future-gated-pair
+  - handler: unknown-13-9
+    route: [13, 9]
+    cmd: GET_ONE
+    status: role-open
+    notes_summary: "v7-only {1:u32 0, 2:u32 0} (tcode 0x09 u32_compact); GET-only (GETALL NOTIMP); v6 BRKPATH; proven NOT user/session count."
+    transcripts: ["ev/7.25-getone-13-9.json", "fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json (GET/GETALL transcripts)"]
+    wire_shape: "2 USER fields, both u32c 0. Zero-valued: stimulus hunt required."
+    rosetta_candidates: none
+    rosetta_none_reason: "user/* menus carry strings/enums/dates; a {0,0} u32 pair matches nothing. Honest unknown."
+    blockers: ["zero-valued: needs stimulus hunt (user add/remove, sessions, aaa/radius toggles)"]
+    batch: future-user-tail
+  - handler: user-prefs-13-6
+    route: [13, 6]
+    cmd: GET_ONE
+    notes_summary: "WinBox-side UserPrefs store (6=WinBox, 7=WebFig by vtable); username-selected; EMPTY miss 6/6; bare GET FAILED 'no user name provided'; GETALL/GETOBJ NOTIMP."
+    transcripts: ["ev/7.25-getone-13-6-admin.json (empty)", "fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-user-family.json", "fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json"]
+    wire_shape: "No positive shape exists anywhere: miss = EMPTY success, bare = FAILED. Field inventory is impossible until a record exists."
+    rosetta_candidates: none
+    rosetta_none_reason: "WinBox-side client prefs have no CLI surface by construction."
+    blockers: ["needs a populated record: WinBox client prefs write or an M2 SET leg (write leg, coordinator scope); read-only census can only re-prove the miss shape + version scope"]
+    batch: future-user-tail
+  - handler: unknown-13-8
+    route: [13, 8]
+    cmd: GET_ALL
+    status: role-open
+    notes_summary: "Singleton-list: one row {id 0, 0xfe0010 'default'} + total 1, all 3 versions."
+    transcripts: ["ev/7.25-getall-13-8.json", "fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-user-family.json (GETALL/GETCOUNT all versions)"]
+    wire_shape: "Registry-shaped rows {0xfe0001, 0xfe0010} with a single 'default' row; GETCOUNT total 1 in the version slot."
+    rosetta_candidates: none
+    rosetta_none_reason: "user/aaa default-group is a spelling temptation only: a one-row 'default' registry matches no user-menu structure. Rejected, not recorded."
+    blockers: ["role open; needs default-row stimulus hunt (group add/remove, aaa changes)"]
+    batch: future-user-tail
+  - handler: modem-aux-20-61
+    route: [20, 61]
+    cmd: GET_ONE
+    status: identified-chr-absent
+    notes_summary: "net/modem_aux store; GET selector = request f7 string; all-negative on CHR AND on LTE hardware (interface presence insufficient); GETCOUNT ok+0xFFFFFFFF; verb matrix version-divided (v6 GETALL UNKNOWNID vs 7.x NOTIMP)."
+    transcripts: ["ev/7.25-getone-20-61-f7.json", "fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-neg-20-61.json", "fixtures/winbox-ipc/7.16-neg-20-61-lte.json (7.16.2 mipsbe real hardware)"]
+    wire_shape: "Negative-only: UNKNOWNID SYS-only shape; 0x411/0x3fa reply legs never observed live. Slot-7 pre-filter + 29-id policy vocab known statically."
+    rosetta_candidates:
+      menu: interface/lte
+      status: weak
+      reason: "Row-level LTE props are the nearest config surface to a modem-aux store, but the selector/key semantics are unknown, so every name here is a loose guess. Family worker trims to <=10 shared with 107 (see batch_splits)."
+      fields:
+        - { name: pin, kind: Argument, type: string }
+        - { name: sms-protocol, kind: Argument, type: enum }
+        - { name: network-mode, kind: Argument, type: multi-array }
+    blockers: ["SIM-absent/running=false confound on the only hardware leg; a hit may need a registered modem or a non-name key (path/USB-id/serial untested)"]
+    batch: future-modem-pair
+batch_splits:
+  ordering: "WinBox-visible-menus-first, then centrs-retrieve usefulness (per plan section E: UI/explain usefulness over raw row counts)"
+  bound_check: "every family <=10 candidate properties and <=1 private verb"
+  batch_1a:
+    - family: 1a-A-defconf
+      handlers: [default-config]
+      routes: [[24, 8]]
+      candidate_count: 4
+      private_verbs: 0
+      why_first: "WinBox-visible (first-connect default-configuration dialog) AND fully CHR-populated: the only tail handler distinguishable now with zero hardware."
+    - family: 1a-B-qos-profile-map
+      handlers: [qos-profile-20-114, qos-map-20-115]
+      routes: [[20, 114], [20, 115]]
+      candidate_count: 8
+      candidate_split: "profile menu 6 + map menu 2"
+      private_verbs: 0
+      why: "WinBox-visible (Switch > QoS); cleanest 1:1 name-plausible menus of the tail; profile+map pair fits one worker under the bound."
+  batch_1b:
+    - family: 1b-A-qos-config
+      handlers: [qos-config-20-122]
+      routes: [[20, 122]]
+      candidate_count: 7
+      private_verbs: 0
+      why: "QoS composite head; CHR leg pins 255-heavy defaults + version scope; populated rows await switch hardware."
+    - family: 1b-B-qos-pfc
+      handlers: [qos-pfc-20-126]
+      routes: [[20, 126]]
+      candidate_count: 7
+      private_verbs: 0
+      why: "PFC is the most operationally distinct QoS slice (rx/tx/thresholds); same CHR-defaults-then-hardware shape as 1b-A."
+  future_families:
+    - family: modem-pair
+      handlers: [sim-settings-20-107, modem-aux-20-61]
+      routes: [[20, 107], [20, 61]]
+      candidate_count: 10
+      candidate_split: "lte/settings 7 (sim-slot, sim-link, mode, firmware-path, info-polling-interval, link-recovery-timer, external-antenna) + lte row 3 (pin, sms-protocol, network-mode)"
+      private_verbs: 1
+      private_verb: "[20,61] slot-19/private 5 (role unknown; private 6/7 explicitly deferred to a follow-up)"
+      why: "Shared LTE/modem/winbox-retrieve theme (modem status + SIM slots); blocked on registered-modem hardware."
+    - family: board-info
+      handlers: [dbrd-holder-24-35]
+      routes: [[24, 35]]
+      candidate_count: 9
+      private_verbs: 0
+      why: "RouterBOARD row shape is the README-parked hardware item with [24,35] as the named lead; CHR leg is negative-only."
+    - family: user-tail
+      handlers: [unknown-13-5, unknown-13-9, user-prefs-13-6, unknown-13-8]
+      routes: [[13, 5], [13, 9], [13, 6], [13, 8]]
+      candidate_count: 0
+      private_verbs: 0
+      why: "Stimulus-hunt batch (no plausible menu for any of the 4); user add/remove + session + aaa legs discriminate all four at once."
+    - family: sys2-residue
+      handlers: [unknown-24-14, unknown-24-16, unknown-2-1]
+      routes: [[24, 14], [24, 16], [2, 1]]
+      candidate_count: 3
+      candidate_split: "console/settings 3 for 24-16 only, flagged very-weak (kill-list, not suggestions)"
+      private_verbs: 0
+      why: "Tiny single-digit wire shapes, all role-open; static sys2/binary leads + perturbation, minimal live cost."
+    - family: gated-pair
+      handlers: [unknown-20-124, unknown-20-32]
+      routes: [[20, 124], [20, 32]]
+      candidate_count: 0
+      private_verbs: 0
+      why: "Experiment batch, not candidate batch: 124 needs a read-only selector matrix, 32 needs timestamped GETCOUNT series + async-drain watch."
+  no_worker_needed:
+    - handlers: [boot-flags-24-10]
+      reason: "field meanings PROVEN (code + live legs); static promotion via fragment.yaml, no census."
+    - handlers: [unknown-20-134]
+      reason: "row shape PROVEN (m2mark1 fixture); static promotion via fragment.yaml; only the DRIVER stays open (WinBox-native capture, not a field worker)."
+  coverage_check: "1a-A(1) + 1a-B(2) + 1b-A(1) + 1b-B(1) + modem(2) + board(1) + user-tail(4) + sys2-residue(3) + gated(2) + promotions(2) = 19 of 19"
+census_plans:
+  patterns_reused:
+    - "leg-g4.ts read-only shape: resolveLabTarget(machine, {allowedVersions}) + openSession + correlatedRequest + appendCapture lossless jsonl (proof/G4-beta5-populated/leg-g4.ts)"
+    - "E2-R census.ts: GETALLx2 + GETOBJ + GETCOUNT per route + optional [20,*] sweep (proof/E2-R-census/census.ts)"
+    - "E3-R census-e3r.ts: bare GETCOUNT per slot sweep (proof/E3-R-census/census-e3r.ts)"
+    - "prober buildRequest(route, CMD_*, sourceId, reqId, extra) for selector/bit-29 variants (2026-10-chr-extraction/ws3c/probe.ts)"
+    - "ALL legs read-only: no SET/ADD/REMOVE, no VM config changes; live census is a coordinator follow-up — PLANNED here, NOT run"
+  plans:
+    - family: 1a-A-defconf
+      reads:
+        - { route: [24, 8], verbs: [GETONE], versions: ["6.49.23", "7.26beta4"], reason: "fill version gaps (7.25 exists)" }
+        - { route: [24, 8], verbs: [GETALL, GETOBJ, GETCOUNT], versions: ["6.49.23", "7.25", "7.26beta4"], reason: "verb-gating matrix currently untested (E2-R census.ts pattern)" }
+      capture: "lossless jsonl per version via appendCapture; defconf bodies are bytes/string TLVs — verify byte-stability across re-reads"
+    - family: 1a-B-qos-profile-map
+      reads:
+        - { route: [20, 114], verbs: [GETONE], versions: ["7.26beta4"], reason: "7.25 exists; beta4 drift check" }
+        - { route: [20, 115], verbs: [GETONE], versions: ["7.26beta4"], reason: "same" }
+        - { route: [20, 114], verbs: [GETONE], versions: ["6.49.23"], reason: "expect BRKPATH (v7-only AHolder); verify, do not assume" }
+        - { route: [20, 115], verbs: [GETONE], versions: ["6.49.23"], reason: "same" }
+        - { route: [20, 114], verbs: [GETALL, GETOBJ, GETCOUNT], versions: ["7.25", "7.26beta4"], reason: "gating matrix untested" }
+        - { route: [20, 115], verbs: [GETALL, GETOBJ, GETCOUNT], versions: ["7.25", "7.26beta4"], reason: "gating matrix untested" }
+        - { route: [20, 116], verbs: [hscan-GET], versions: ["7.26beta4"], reason: "QoS-octet sibling presence scope (116/117/120/121 uncatalogued); E3-R sweep pattern" }
+        - { route: [20, 117], verbs: [hscan-GET], versions: ["7.26beta4"], reason: "same" }
+        - { route: [20, 120], verbs: [hscan-GET], versions: ["7.26beta4"], reason: "same" }
+        - { route: [20, 121], verbs: [hscan-GET], versions: ["7.26beta4"], reason: "same" }
+      capture: "lossless jsonl; compare 0xfe0010 default strings + fe-flag bank across versions"
+    - family: 1b-A-qos-config
+      reads:
+        - { route: [20, 122], verbs: [GETONE], versions: ["7.26beta4"], reason: "7.25 exists; beta4 drift check on the 0x11x/0x12x bank" }
+        - { route: [20, 122], verbs: [GETONE], versions: ["6.49.23"], reason: "expect BRKPATH; verify" }
+        - { route: [20, 122], verbs: [GETALL, GETOBJ, GETCOUNT], versions: ["7.25", "7.26beta4"], reason: "gating matrix untested" }
+      capture: "lossless jsonl; pin every 255-valued field per version (defaults may move)"
+    - family: 1b-B-qos-pfc
+      reads:
+        - { route: [20, 126], verbs: [GETONE], versions: ["7.26beta4"], reason: "7.25 exists; beta4 drift check" }
+        - { route: [20, 126], verbs: [GETONE], versions: ["6.49.23"], reason: "expect BRKPATH; verify" }
+        - { route: [20, 126], verbs: [GETALL, GETOBJ, GETCOUNT], versions: ["7.25", "7.26beta4"], reason: "gating matrix untested" }
+      capture: "lossless jsonl; pin 0xfe0010 'disabled' + 0x14-0x16 across versions"
+  future_family_plan_pointers:
+    - family: modem-pair
+      pointer: "GETONE [20,107] on 7.26beta4 + 6.49-BRKPATH-check; selector matrix on [20,61] f7 (empty/non-name keys are READ-ONLY variants); hardware leg needs registered modem + SIM (coordinator scope)"
+    - family: board-info
+      pointer: "GETONE [24,35] on 7.26beta4 + 6.49-BRKPATH-check (expect empty/BRKPATH); populated leg is real-hardware-only"
+    - family: user-tail
+      pointer: "GETONE [13,5] + [13,9] on 7.26beta4 (drift); selector variants on [13,6] f1 (existing usernames, read-only); GETALL [13,8] on 7.26beta4; stimulus hunts are write-adjacent (coordinator scope)"
+    - family: sys2-residue
+      pointer: "GETONE [24,14]/[24,16]/[2,1] on 7.26beta4 (drift; both-version baselines exist); static sys2 lead first (no live cost)"
+    - family: gated-pair
+      pointer: "124: read-only INTERFACE_IDS selector-variant matrix via buildRequest extra fields; 32: TIMESTAMPED GETCOUNT series (un-redacted ts by coordinator approval — H0a lesson) + async-drain watch for H-decay-3"
+unresolved:
+  - id: U1-defconf-field-split
+    detail: "Which of f2/f3/f4/f5/f6 carries which of {script, caps-mode-script, wps-sync-mode-script, custom-script} is unproven; bodies suggest f3/f4/f6 are the three script bodies and f2/f5 are banner/blank, but suggestion is not proof. Needs version-diff or custom-script-set leg."
+  - id: U2-qos-populated-shapes
+    detail: "All four QoS CHR shapes are defaults (115 has zero USER fields). No static source predicts the populated row shape; switch-hardware leg required."
+  - id: U3-107-wire-field-count
+    detail: "107 exposes 18 USER wire fields but the nearest menu (lte/settings) has 12; the excess fields (bools 0x0e/0x11/0x12/0x13/0x0a, u32 8=0xFFFFFFFF, strings) have no candidate at all. Ambiguity stop: candidate list covers the menu-plausible subset only."
+  - id: U4-124-selector-encoding
+    detail: "INTERFACE_IDS selector field id/encoding unknown; hscan GET FAILED shape gives no hint. The read-only variant matrix may itself fail closed (ambiguity stop is a result)."
+  - id: U5-32-mechanism
+    detail: "Three models survive (variable-gauge, multi-step one-shot, history-gating); no static route to decide. Timestamped re-run is the only forward step."
+  - id: U6-13-6-population-path
+    detail: "No evidence shows how a [13,6] record comes to exist (WinBox client write? first-login default?). A read-only worker cannot populate it; this may need a real WinBox client session."
+  - id: U7-13-8-identity
+    detail: "Registry-shaped single-'default'-row list in the user process; no menu lead. Could be a default-group/policy stub — unprovable statically."
+  - id: U8-61-hit-condition
+    detail: "LTE-hardware negative leaves {registered-modem-needed, non-name-key} confounded; no 7.16 CHR control exists to separate version from hardware."
+fragment:
+  file: work/2026-11-winbox-attributes/proof/i3-handler-tail-census/fragment.yaml
+  proposes:
+    - "boot-flags-24-10: fields f1/f2 (proven by code + live legs)"
+    - "unknown-20-134: fields row-id + 16/mark-name (proven by m2mark1 fixture, mirrors sibling registries)"
+  omits: "all other 17 handlers: meanings unproven (see unresolved[]); default-config bodies need the U1 split leg first"
+evidence:
+  - "19/19 handlers classified against gui-handlers.yaml at 6708923 (this report: census[])"
+  - "transcript coverage keyed to exact ev/ filenames + fixture paths (this report: census[].transcripts)"
+  - "Rosetta 0.12.0 read-only pulls: system/default-configuration(+/script), interface/ethernet/switch/qos/{profile,map,settings,priority-flow-control}, system/routerboard(+/settings), interface/lte(+/settings), console/settings, system/console, user/{settings,aaa,active}, tool/sms (names/types only, CANDIDATE-flagged)"
+  - "batch splits with bound counts (this report: batch_splits; counts 4/8/7/7/10/9/0/3/0 candidates, verbs 0/0/0/0/1/0/0/0/0 — all within bounds)"
+  - "read-only census plans with exact routes/versions/patterns (this report: census_plans; NOT run)"
+  - "promotion fragment with evidence refs (fragment.yaml)"
+

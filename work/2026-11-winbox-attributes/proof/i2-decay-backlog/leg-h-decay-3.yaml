@@ -1,0 +1,119 @@
+# cspell:ignore rowid getcount getall reqid mangle calea unacked ladder rungs oneshot churn ws3c keepalive keepalives asyncs ctr trel msback hdecay nonmonotonic negcontrol untimed precedented
+# H-decay-3 announce-backlog WRITE-LEG SHEET (design only, unexecuted).
+# 2w+0r on ws21 7.25. Needs explicit per-leg yes + coordinator scheduling.
+id: I2-h-decay-3-announce-backlog
+kind: write-leg-sheet
+status: design-unexecuted
+date: 2026-11-02
+worker: I2
+hypothesis: "H-decay-3 (H0a rank 3): [20,32] counts queued-but-undelivered change announcements for the filter table; decay tracks the notify fabric draining. UNTESTED: H1's ladder-window async was lost to idle-session death (H1 report idle-death-1; P-h1-async-silence covers stability silence only, decay-correlation untested)."
+vm:
+  name: ws21
+  routeros: "7.25"
+  arch: x86
+  network: user, socket::ws21-a, socket::ws21-b
+  ports: "resolve live at execution from `quickchr list` (H1 observed the http:9190 block / winbox:9195 pattern; re-resolve, never hardcode); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute --quickchr ws21 --yes (writes) / centrs retrieve --quickchr ws21 (reads)"
+  native_via: "proof/i2-decay-backlog/leg-h1-fixed.ts (write-through capture, per-rung async console+ledger, keepalive-sliced waits; read-only, 0w by construction)"
+counting_rule: "H1 F-jump rule: each control add/set = 1w; +1 per restore-verify branch; per-cell removes bundled 0w; rejected adds/sets 0w; ALL native reads 0w; quickchr start/stop 0r"
+budget: { counted_writes: 2, reboots: 0, itemized: "add-hdecay3 (1) + remove (0 bundled) + restore-verify branch (1); negative-control ladder + spike ladder + baseline/restore reads all 0w" }
+baseline_snapshot:
+  verdict_required: PASS
+  control_commands:
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-base-firewall-filter.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/nat' > control-base-firewall-nat.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/raw' > control-base-firewall-raw.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/mangle' > control-base-firewall-mangle.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/calea' > control-base-firewall-calea.json"
+  control_expect: "0 rows in all five menus"
+  native_command: "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms <now-ms> read --out step-M0.jsonl --timing-out timing-M0.jsonl"
+  native_expect: "[20,3]=0 [20,32]=0, GETALL [20,3] 0 rows complete"
+  fail_action: "STOP: baseline not empty. Do not proceed; report."
+steps:
+  - tag: S0-negative-control
+    why: "H0a-c churn-confound control (i)+(iii): equal-duration persistent session with NO rule add must draw zero pairs. Runs FIRST (before any stimulus in this boot) so boot stimulus-history cannot confound it; ladder mode reuses the exact rung+keepalive traffic shape of the spike ladder (matched-traffic control). 0w."
+    stimulus: NONE
+    commands:
+      - "T0NEG=$(date +%s%3N); bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $T0NEG ladder --out step-negcontrol.jsonl --timing-out timing-negcontrol.jsonl"
+    expect: "all rungs [20,3]=0 [20,32]=0; every rung async=0; every keepalive async=0; final drain async=0"
+    evidence: [step-negcontrol.jsonl, timing-negcontrol.jsonl]
+    writes: 0
+    fail_action: "ANY async>0 -> AMBIGUITY STOP (outcome A4): the churn model is incomplete; do not run the spike (its async would be uninterpretable); restore-verify (still 1w branch) and report."
+  - tag: S1-add
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=i2-hdecay3"
+    commands:
+      - "centrs execute --quickchr ws21 --yes '/ip/firewall/filter/add chain=forward action=accept comment=i2-hdecay3' > control-S1-add.json"
+      - "T0=$(date +%s%3N); echo $T0 > t0.txt"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-S1-read.json"
+    read_back: "MANDATORY: exactly 1 row forward/accept, packets 0 bytes 0; ret .id recorded (expect *1 on an empty table; whatever the ret is, THAT .id is used in the remove)"
+    explain: explain-add-hdecay3.json
+    evidence: [control-S1-add.json, control-S1-read.json, explain-add-hdecay3.json, t0.txt]
+    writes: 1
+    fail_action: "read-back disagrees -> stimulus invalid: STOP, remove + restore, report."
+  - tag: S2-spike-ladder
+    why: "the discriminating read: full decay window inside ONE persistent session (zero intermediate churn), every async record committed with relative timestamps."
+    stimulus: NONE
+    commands:
+      - "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(cat t0.txt) ladder --out step-ladder.jsonl --timing-out timing-ladder.jsonl"
+    expect: "rungs R0a/R0b/R1/R2/R3/R4/R5 + K-samples; per-rung v32+async on console and in rung-*-end ledger events"
+    evidence: [step-ladder.jsonl, timing-ladder.jsonl]
+    writes: 0
+    mid_run_check: "while the ladder runs, spot-check write-through: `wc -l step-ladder.jsonl` must GROW after R0a (F1 live validation). If the file stays empty past R0b console output, STOP the run (tooling failure, not science)."
+    fail_action: "rung-*-failed in ledger -> session died despite keepalives: run completes PARTIAL (committed rungs are TIER 1); fall back to session-per-read `read` invocations at the remaining rung offsets (same scale, fresh sessions; in-sheet fallback, H1-precedented); report the death honestly."
+  - tag: S3-remove-restore-verify
+    stimulus: "remove the S1 .id (bundled 0w) + 5-menu control verify + native zero read"
+    commands:
+      - "centrs execute --quickchr ws21 --yes '/ip/firewall/filter/remove numbers=<S1-.id>' > control-S1-rm.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-restored-filter.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/nat' > control-restored-nat.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/raw' > control-restored-raw.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/mangle' > control-restored-mangle.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/calea' > control-restored-calea.json"
+      - "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(date +%s%3N) read --out step-restored.jsonl --timing-out timing-restored.jsonl"
+    remove_id_note: "<S1-.id> is the literal ret from S1 (e.g. *1); offline explain validated the *1 shape (explain-rm.json)"
+    expect: "0 rows all five menus on both surfaces; GETALL [20,3] 0 rows complete"
+    evidence: [control-S1-rm.json, explain-rm.json, control-restored-filter.json, control-restored-nat.json, control-restored-raw.json, control-restored-mangle.json, control-restored-calea.json, step-restored.jsonl, timing-restored.jsonl]
+    writes: 1
+    fail_action: "restore-verify fail -> non-sheet recovery, recorded honestly, never silently re-run."
+  - tag: S4-stop-vm
+    commands: ["quickchr stop ws21"]
+    writes: 0
+stop_conditions:
+  - "baseline not empty (control or native) -> STOP before S0"
+  - "negative control draws ANY async -> AMBIGUITY STOP (A4), skip S1/S2, still S3+S4"
+  - "S1 read-back disagrees (row missing/wrong/traffic nonzero) -> STOP, S3+S4, report stimulus-invalid"
+  - "[20,3] != 1 at any spike-ladder rung (counter guard) -> STOP ladder, S3+S4, report guard-trip"
+  - "R0a = 0 (spike-absent) -> STOP ladder after R0b confirms (A5 branch), S3+S4, report; do NOT burn further writes"
+  - "timestamp capture failure (ts redacted with --t0-ms set, or ledger missing rung starts) -> STOP: scale lost, fix tooling, do not publish untimed rungs as timed"
+  - "non-monotonic values (0 then nonzero, or dip-then-rise) -> RECORD and CONTINUE (deliberate deviation from H0a-b's flap-stop: flapping does not invalidate async coincidence; H1 Q1-dip precedent)"
+async_match_rule: "match SYS_CMD=0xfe0014 pairs on SYS_REQID (mandatory): leg A TO=[] FROM=[0xff0003,slot] + leg B TO=[] FROM=[2,slot] policy-1, slot=(ctr<<8)|6. Record per pair: arrival t-t0, slot/ctr advance, leg sizes (expect A~30B B~38B per queue-3). Count pairs + ctr advance per inter-rung window. ANY non-pair async (handler-shaped traffic) is novel: report separately, never force into the pair count."
+outcomes:
+  - id: A1-supported
+    condition: "spike (R0a>0) + value drops across rungs AND >=1 matched 0xfe0014 pair arrives inside the decay window (drop when pairs arrive; pair count or ctr advance scales with spike magnitude) + negative control clean"
+    verdict: "H-decay-3 SUPPORTED (TIER 1); H-decay-1 internal-gauge weakened (a pure gauge needs no fabric traffic)"
+  - id: A2-dead
+    condition: "spike + decay completes (or graded-drops) with ZERO async in-window (all rungs + keepalives + final drain async=0) + negative control clean"
+    verdict: "H-decay-3 DEAD and H-decay-5-churn-artifact DEAD as the decay driver (TIER 1); H-decay-1/H-decay-4-multi-step remain"
+  - id: A3-stable-untestable
+    condition: "spike + NO decay across R0a..R5 (spike1-like stability) regardless of async silence"
+    verdict: "decay-correlation UNTESTABLE this spike (no decay to correlate); consistent with H-decay-1 variable-gauge; report curve, do not claim for/against H-decay-3"
+  - id: A4-ambiguity-stop
+    condition: "negative control draws pairs (or any async) with no rule stimulus"
+    verdict: "AMBIGUITY STOP: churn model incomplete (H0a-c stop condition); no H-decay-3 claim in either direction; re-plan"
+  - id: A5-spike-absent
+    condition: "R0a=0 and R0b=0 with the rule present"
+    verdict: "spike-absent stop: H-decay-3 untestable this attempt; 2w spent (add+restore); report"
+  - id: A6-partial
+    condition: "rung-*-failed (session death despite keepalives) at any rung"
+    verdict: "PARTIAL: committed rungs are TIER 1 (write-through); remaining scale via session-per-read fallback; async account covers the committed window only; report the death as a third idle sample"
+evidence_tiers: "TIER 1 (committed rx bytes + relative timestamps): step-negcontrol.jsonl + step-ladder.jsonl (write-through: every record durable at capture) + timing ledgers (rung-*-start/end, keepalive-K*, drain) + K-sample values. TIER 2 (console-observed, no rx bytes): only if file append itself fails (tooling fault, must be reported as such). By construction this leg has no H1-style TIER 2 ladder values."
+fixed_script_live_validation:
+  - "L1 write-through: `wc -l step-ladder.jsonl` grows during the run (checked after R0a)"
+  - "L2 per-rung account: every rung has BOTH a console line (v32+async+records) AND a rung-*-end ledger event with matching counts"
+  - "L3 keepalive cadence: keepalive-K* ledger events space <=15s across every inter-rung gap; count matches the --dry-run plan for the elapsed prefix"
+  - "L4 no-reconnect: exactly one session-open/session-close pair per ladder invocation in the ledger (a reconnect would be churn)"
+  - "L5 post-run replay: every record in step-ladder.jsonl decodes via replayBytes (no truncated lines from a mid-append death)"
+  - "L6 death drill (only if A6): the rung-*-failed ledger event exists AND all pre-death rungs are byte-complete in the step file"
+spend: { counted_writes: 2, reboots: 0, cap_note: "2w+0r fixed; no extension, no re-spike improvised" }

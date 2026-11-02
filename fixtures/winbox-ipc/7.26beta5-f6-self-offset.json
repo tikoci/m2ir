@@ -1,0 +1,192 @@
+{
+	"provenance": {
+		"report": "I1-B main-VRF decider leg, 2026-11-02 (g4beta5 7.26beta5 x86, 2w+0r of 2)",
+		"routeros_version": "7.26beta5",
+		"route": "f6 self-offset decision table: main *2 second row reads 0 (VRF-key), not own-rowid-minus-1 (13-key rows)",
+		"note": "Sanitized M2 hex plus decoded entries only: no hosts, ports, or credentials. Control ground truth: proof/i1-h2-self-offset/control-W1b-read.json."
+	},
+	"records": [
+		{
+			"id": "getall-20-1-i1b-w1-rx",
+			"role": "I1-B W1 [20,1] GETALL (main contrast rows *1/*2)",
+			"source": "proof/i1-h2-self-offset/step-W1b.jsonl rx (from [20,1])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000010000001c00ffa0010013006d73672d70726f78792d372e323662657461350200fea802004b004d320b0000000700fe010800fe000a00fe00040000080a0002ff050000090206000009000a000009020100fe0901010000080a00020f020000080a00020003000008ffffff000900fe210052004d320b0000000700fe000800fe000a00fe0004000008c63364ff050000090206000009000a000009020100fe090201000008c633641902000008c633640003000008ffffff000900fe210769316d61696e620300ff09021900fe09020600ff0904",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 1],
+			"reqId": 4,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta5"]
+				},
+				{
+					"key": "0xfe0002",
+					"tcode": "0xa8",
+					"value": [
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x1",
+								"value": true
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4278321162
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 1
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 251789322
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 131082
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": ""
+							}
+						],
+						[
+							{
+								"key": "0x00000b",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0007",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe0008",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0xfe000a",
+								"tcode": "0x0",
+								"value": false
+							},
+							{
+								"key": "0x000004",
+								"tcode": "0x8",
+								"value": 4284756934
+							},
+							{
+								"key": "0x000005",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000006",
+								"tcode": "0x9",
+								"value": 0
+							},
+							{
+								"key": "0x00000a",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0xfe0001",
+								"tcode": "0x9",
+								"value": 2
+							},
+							{
+								"key": "0x000001",
+								"tcode": "0x8",
+								"value": 425997254
+							},
+							{
+								"key": "0x000002",
+								"tcode": "0x8",
+								"value": 6566854
+							},
+							{
+								"key": "0x000003",
+								"tcode": "0x8",
+								"value": 16777215
+							},
+							{
+								"key": "0xfe0009",
+								"tcode": "0x21",
+								"value": "i1mainb"
+							}
+						]
+					]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 4
+				}
+			]
+		}
+	]
+}

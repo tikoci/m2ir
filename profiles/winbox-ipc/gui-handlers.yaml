@@ -699,7 +699,7 @@ handlers:
         3: { name: netmask, tcode: be32, cli-alias: "/ip/address address", role: "expressed on the wire as a bitmask (/24 -> 0x00FFFFFF); CLI shows /popcount; composite with field 1 under CLI `address` (same proof)" }
         4: { name: broadcast, tcode: be32, role: "broadcast address, big-endian" }
         5: { name: actual-interface, tcode: u32, role: "references the ACTUAL interface row id (discriminated: bridge-port enslavement splits it from field 10)" }
-        6: { name: vrf, tcode: u32, cli-alias: "/ip/address vrf", role: "VRF identity of the address row: the containing VRF's .id — 0 on main (dynamic DHCP, static, comment-unset, disabled states), 1 on h2vrf1 (*1), 2 on h2vrf2 (*2): ROWID PROVEN, flag dead (H2 two-VRF leg, 3/3 zero-offset). Interface-rowid excluded (mismatched on all rows). Open finer point: address-own-rowid-minus-1 fits the same 3 points numerically (ungrounded, needs a +2w second-address-in-VRF decider); native VRF-rowid equivalence untested (no native VRF-table read in the catalog)." }
+        6: { name: vrf, tcode: u32, cli-alias: "/ip/address vrf", role: "VRF identity of the address row: the containing VRF's .id — 0 on main (dynamic DHCP, static, comment-unset, disabled states), 1 on h2vrf1 (*1), 2 on h2vrf2 (*2): ROWID PROVEN, flag dead (H2 two-VRF leg, 3/3 zero-offset). Interface-rowid excluded (mismatched on all rows). Finer point CLOSED: a second main-VRF row (*2, same GETALL as the DHCP row) reads f6=0, killing address-own-rowid-minus-1 which predicted 1 (I1-B main-VRF decider, 2w). Native VRF-rowid equivalence untested (no native VRF-table read in the catalog)." }
         10: { name: interface, tcode: u32, role: "references the CONFIGURED interface row id; equals field 5 whenever interface==actual (disabled/VRRP do NOT split them)" }
         11: { name: slave, tcode: bool, cli-alias: "/ip/address slave", role: "PROVEN bridge-enslaved flag: false->true->false across enslave/deenslave, exactly with control slave (DHCP control row unmoved, byte-identical). Disabled ruled out (E2-W), vrf ruled out (f6=0 throughout), dynamic/invalid false on the flipped row. Confound: enslavement also splits f5/f10 on the test row (4/3 vs 3/3); no split-without-slave state observed." }
       namespace-session:
@@ -757,6 +757,8 @@ handlers:
         ref: "live CHR interrogation (G4 write leg, g4beta5 7.26beta5, 2026-11-02, 10w+0r): f6=1 on the g4vrf row + f5/f10 split + f11 slave reproduction — work/2026-11-winbox-attributes/proof/G4-beta5-populated/{report.yaml,step-B0.jsonl,step-B5.jsonl,control-B5-read.json}; rows fixtures/winbox-ipc/7.26beta5-populated-shapes.json"
       - source: sample
         ref: "live CHR interrogation (H2 write leg, g4beta5 7.26beta5, 2026-11-02, 10w+0r): f6=rowid PROVEN (VRF .id 0/1/2 exact, flag dead, interface-rowid excluded) — work/2026-11-winbox-attributes/proof/H2-f6/{report.yaml,step-B0.jsonl,step-B4.jsonl,step-B5.jsonl,control-B4-read.json,control-B5-read.json}; rows fixtures/winbox-ipc/7.26beta5-f6-rowid.json"
+      - source: sample
+        ref: "live CHR interrogation (I1-B main-VRF decider leg, g4beta5 7.26beta5, 2026-11-02, 2w+0r): second main row (*2) reads f6=0 in the same GETALL as the DHCP row — self-offset (predicted 1) DISPROVEN — work/2026-11-winbox-attributes/proof/i1-h2-self-offset/{report-b.yaml,leg-sheet-main-b.md,step-W1b.jsonl,control-W1b-read.json}; rows fixtures/winbox-ipc/7.26beta5-f6-self-offset.json"
     notes: |
       Controlled-change + inverse-write proof (7.25, disposable
       CHR): prefix-only control (198.51.100.10/24 -> /25) moves
@@ -1206,9 +1208,26 @@ handlers:
     cmd: GET_ONE
     role: "default-configuration scripts (defconf bodies verbatim)"
     confidence: observed-only
+    notes: |
+      Verb gating (I4 census, all 3 versions): GETALL/GETOBJ ->
+      0xfe0003 on 7.25, 7.26beta4, and 6.49.23 alike (GET-only
+      singleton); GETCOUNT carries 0xfe0019 = 0xFFFFFFFF on
+      both 7.x (count-N/A sentinel, not a row count) and NO
+      0xfe0019 at all on v6 (verb-semantics drift).
+      Version identity: beta4 GETONE is the same 6 USER fields
+      with the same bodies as 7.25 (f1 bool F; f2 banner; f3
+      IP/ether1 body; f4 CAP body; f5 " \n"; f6 WPS body); v6
+      carries the same 6 fields in a different wire order, with
+      no proxy banner and f5 "" (vs " \n"). The 4 Rosetta script
+      candidates (script, caps-mode-script, wps-sync-mode-script,
+      custom-script) do NOT split across versions — the
+      version-diff leg is exhausted; the f2/f3/f4/f5/f6 mapping
+      needs a custom-script-set leg.
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (I4 tail census 1a, 2026-11-02, 0w): GETONE + gating on 7.26beta4 (winbox-beta4), 7.25 (ws21), 6.49.23 (ws3c6, explicit target) — beta4==7.25 bodies, v6 same-6-fields reorder, GETALL/GETOBJ->0xfe0003 all versions — work/2026-11-winbox-attributes/proof/i4-tail-census-exec/{census.ts,step-beta4-defconf.jsonl,step-725-gating.jsonl,step-649-defconf.jsonl}"
 
   updater:
     sys-to: [24, 24]
@@ -1316,6 +1335,15 @@ handlers:
     cmd: GET_ONE
     role: "v7-only QoS profile holder: AHolder('/nova/store/net/qos/profile'), member of the 8-handler QoS composite (ctor 0x8190e3e; siblings 115/116/117/120/121/122/126). Live 0xfe-defaults (0xfe0010 = 'default') are CHR-absent QoS defaults."
     confidence: observed-only
+    notes: |
+      Verb gating (I4 census, both 7.x): GETALL answers with the
+      singleton wrapped as a 1-row list (same 6 USER fields +
+      row-id 0, total 1); GETOBJ obj=1 -> 0xfe0004 even with the
+      obj-id present (selector puzzle, not a missing id);
+      GETCOUNT = 1. Beta4 GETONE is drift-free vs 7.25. v6 ->
+      0xfe0002 on all four verbs (absent-handler signature,
+      same as the v6 SMS-absent census) — v7-only PROVEN, not
+      assumed. Populated rows still need switch hardware.
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
@@ -1325,6 +1353,8 @@ handlers:
         ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
       - source: code
         ref: "RouterOS v7 net QoS composite ctor 0x8190e3e (AHolder '/nova/store/net/qos/profile' at +0x90); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+      - source: sample
+        ref: "live CHR interrogation (I4 tail census 1a, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (GETALL 1-row wrap, GETOBJ->0xfe0004, GETCOUNT 1, no drift) + v6 absent (0xfe0002 all verbs) — work/2026-11-winbox-attributes/proof/i4-tail-census-exec/{census.ts,step-beta4-qos.jsonl,step-725-gating.jsonl,step-649-qos.jsonl}"
     revision-history:
       - date: 2026-10-31
         belief: "v7-net-singleton-114: 0xfe-family singleton, role open"
@@ -1340,6 +1370,14 @@ handlers:
     cmd: GET_ONE
     role: "v7-only QoS map holder: AHolder('/nova/store/net/qos/map'), member of the 8-handler QoS composite (ctor 0x8190e3e; siblings 114/116/117/120/121/122/126). Live 0xfe-only defaults (0xfe0010 = 'default', no USER fields) are CHR-absent QoS defaults."
     confidence: observed-only
+    notes: |
+      Verb gating (I4 census, both 7.x): GETALL answers with the
+      singleton wrapped as a 1-row list (total 1, still zero
+      USER fields); GETOBJ obj=1 -> 0xfe0004 even with the
+      obj-id present (same selector puzzle as 114); GETCOUNT =
+      1. Beta4 GETONE is drift-free vs 7.25. v6 -> 0xfe0002 on
+      all four verbs (absent-handler signature) — v7-only
+      PROVEN. Populated rows still need switch hardware.
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
@@ -1349,6 +1387,8 @@ handlers:
         ref: "live CHR interrogation (identity batch, 7.25): perturbation-negative (identity/timezone/filter/user move nothing; pre/post byte-identical); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
       - source: code
         ref: "RouterOS v7 net QoS composite ctor 0x8190e3e (AHolder '/nova/store/net/qos/map' at +0x1a0); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+      - source: sample
+        ref: "live CHR interrogation (I4 tail census 1a, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (GETALL 1-row wrap, GETOBJ->0xfe0004, GETCOUNT 1, no drift) + v6 absent (0xfe0002 all verbs) — work/2026-11-winbox-attributes/proof/i4-tail-census-exec/{census.ts,step-beta4-qos.jsonl,step-725-gating.jsonl,step-649-qos.jsonl}"
     revision-history:
       - date: 2026-10-31
         belief: "v7-net-singleton-115: 0xfe-only singleton, role open"
@@ -1356,6 +1396,60 @@ handlers:
         evidence:
           - source: code
             ref: "RouterOS v7 net QoS composite decode; see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+
+  unknown-20-120:
+    sys-to: [20, 120]
+    status: role-open
+    process-id: 0x14
+    cmd: GET_ALL
+    role: "QoS-octet 2-row list (member of the 8-handler QoS composite per the 114/115 roles): row 0 'default', row 1 'offline' with comment 'Use this for permanently disconnected ports'; one USER field (0x1e = 255 both rows). GETONE self-reports 'more than one obj'. Purpose UNKNOWN — plausibly a profile selector, unproven."
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-user:
+        30: { name: unknown-30, tcode: u32, role: "OPEN — 255 on both rows both 7.x (t=0x09); meaning UNKNOWN" }
+    notes: |
+      First sighted by the I4 census sibling scan (no prior
+      catalog entry, no ev/ coverage). GETALL/GETOBJ/GETCOUNT
+      all answer on 7.25 + 7.26beta4 with identical rows;
+      GETOBJ obj=1 returns the offline row. The fe columns
+      (0xfe0010 name, 0xfe0009 comment on row 1 only) are
+      described here, not mapped. v6 untested.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (I4 tail census 1a, 2026-11-02, 0w): sibling scan + GETALL/GETOBJ/GETCOUNT on 7.26beta4 (winbox-beta4) + 7.25 (ws21), identical 2-row shape — work/2026-11-winbox-attributes/proof/i4-tail-census-exec/{census.ts,step-beta4-qos-siblings.jsonl,step-beta4-qos-siblings2.jsonl,step-725-siblings.jsonl,step-725-siblings2.jsonl}; rows fixtures/winbox-ipc/7.26beta4-qos-120-121.json"
+
+  unknown-20-121:
+    sys-to: [20, 121]
+    status: role-open
+    process-id: 0x14
+    cmd: GET_ALL
+    role: "QoS-octet 8-row list (member of the 8-handler QoS composite per the 114/115 roles): ids 0-7, ten USER fields, no name column. GETONE self-reports 'more than one obj'. Purpose UNKNOWN — 8 rows suggest a per-priority table, unproven."
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-user:
+        7: { name: unknown-7, tcode: u32, role: "OPEN — equals the row id (0-7) both 7.x (t=0x09); meaning UNKNOWN" }
+        9: { name: unknown-9, tcode: u32, role: "OPEN — 0 on all rows both 7.x (t=0x09); meaning UNKNOWN" }
+        10: { name: unknown-10, tcode: u32, role: "OPEN — 1/1/1/2/2/2/0/0 across rows 0-7 both 7.x (t=0x09); meaning UNKNOWN" }
+        11: { name: unknown-11, tcode: u32, role: "OPEN — 1/2/3/3/4/5/absent/absent across rows 0-7 both 7.x (t=0x09); meaning UNKNOWN" }
+        13: { name: unknown-13, tcode: bool, role: "OPEN — false on row 0, true on rows 1-7 both 7.x; meaning UNKNOWN" }
+        15: { name: unknown-15, tcode: bool, role: "OPEN — false on all rows both 7.x; meaning UNKNOWN" }
+        19: { name: unknown-19, tcode: bool, role: "OPEN — false on all rows both 7.x; meaning UNKNOWN" }
+        30: { name: unknown-30, tcode: u32, role: "OPEN — 255 on all rows both 7.x (t=0x09); meaning UNKNOWN" }
+        32: { name: unknown-32, tcode: bool, role: "OPEN — false on all rows both 7.x; meaning UNKNOWN" }
+        33: { name: unknown-33, tcode: bool, role: "OPEN — false on all rows both 7.x; meaning UNKNOWN" }
+    notes: |
+      First sighted by the I4 census sibling scan (no prior
+      catalog entry, no ev/ coverage). GETALL/GETOBJ/GETCOUNT
+      all answer on 7.25 + 7.26beta4 with identical rows (8
+      rows, total 8). Structurally: f7 mirrors the row id,
+      f11 climbs 1-5 then drops off rows 6-7, f10 steps
+      1/1/1/2/2/2/0/0, f13 flips on after row 0 — no names
+      claimed. v6 untested.
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (I4 tail census 1a, 2026-11-02, 0w): sibling scan + GETALL/GETOBJ/GETCOUNT on 7.26beta4 (winbox-beta4) + 7.25 (ws21), identical 8-row shape — work/2026-11-winbox-attributes/proof/i4-tail-census-exec/{census.ts,step-beta4-qos-siblings.jsonl,step-beta4-qos-siblings2.jsonl,step-725-siblings.jsonl,step-725-siblings2.jsonl}; rows fixtures/winbox-ipc/7.26beta4-qos-120-121.json"
 
   qos-config-20-122:
     sys-to: [20, 122]
@@ -1556,6 +1650,11 @@ handlers:
     cmd: GET_ONE
     role: "boot-flag probe pair: field 1 = exists('/rw/DISABLE_SMP'), field 2 = exists('/rw/ENABLE_X86_64') (literal open() paths in slot-9 0x805719e). v7 {F,F} = both absent; v6 {F,T} = x86_64-flag era drift. Bit-29 request leg unfolds nested 0xfe001d defaults {1:F,2:F} (proven live)."
     confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        1: { name: disable-smp-flag, tcode: bool, role: "exists(/rw/DISABLE_SMP): literal open() probe in sys2 slot-9 0x805719e; v7 F, v6 F", source: "sys2 slot-9 0x805719e; ev/{6.49,7.25}-getone-24-10.json" }
+        2: { name: enable-x86-64-flag, tcode: bool, role: "exists(/rw/ENABLE_X86_64): literal open() probe in sys2 slot-9 0x805719e; v7 F, v6 T (x86_64-flag era drift)", source: "sys2 slot-9 0x805719e; ev/{6.49,7.25}-getone-24-10.json" }
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
@@ -1747,6 +1846,10 @@ handlers:
     cmd: GET_ALL
     role: "v7-only THIRD mark-registry instance — same factory class as [20,13]/[20,14] (max 0xfff/0xffff/0x7ffe, name 'no-mark', adjacent registration; v6 has 13/14 only). MECHANISM PROVEN (§39): M2 SETOBJ f137 on a [20,5] row inserts into 134 (gated non-empty); f30→13/f33→14/f137→134 share one apply idiom (0x80de6ac/0x80de725/0x80df846); f137 ECHOES in rows (0x89). Driver BOUNDED after 40 negatives: no REST/CLI/WebFig writer exists (NAT surface complete, RAW shares numbering, WebFig has no *89 firewall field and no [20,134] item) — driver in {WinBox-native-only field, internal process sync}. Registries GC on rule removal."
     confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-session:
+        16: { name: mark-name, tcode: string, role: "0xfe0010: 'no-mark' default + one row per M2 f137 insert (m2mark1 fixture: second row inserts carrying its mark name); same factory class as [20,13]/[20,14]" }
     evidence:
       - source: code
         ref: "RouterOS v7 net one-factory build 0x8056724 for 13/14/134 (0x805c69e/0x805c6af/0x805c6c3); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
@@ -1912,7 +2015,7 @@ handlers:
     status: role-open
     process-id: 0x14
     cmd: GET_ONE
-    role: "unknown holder: GETCOUNT under filter rules is a TIME-VARYING PER-ADD TRANSIENT with variable magnitude and lifetime (H1 ws21 7.25: 1st add reads 1 stable across 6 reads/+354s with zero decay; 2nd in-session add re-spikes and graded-decays with a dip, plateauing at 2 without converging in-window; G3 decay-to-0 is one of three observed lifetimes, not the curve) — not a function of the rule-set alone ({A} reads 8/2/1 across three sessions), not a fixed curve, and not consumed by reads (6 consecutive nonzero). Magnitude-incompatible with row counting, so NOT a filter row-count slot. GET is selector-gated/FAILED, not table-shaped."
+    role: "unknown holder: GETCOUNT under filter rules is a TIME-VARYING PER-ADD TRANSIENT with variable magnitude and lifetime (H1 ws21 7.25: 1st add reads 1 stable across 6 reads/+354s with zero decay; 2nd in-session add re-spikes and graded-decays with a dip, plateauing at 2 without converging in-window; G3 decay-to-0 is one of three H1 lifetimes, not the curve; H-decay-3 leg: a SECOND stable-1 spike, R0a..R5 + 54 keep-alive samples over 300s — stability-at-1 is now the modal shape) — not a function of the rule-set alone ({A} reads 8/2/1 across three sessions), not a fixed curve, and not consumed by reads (6 consecutive nonzero). Magnitude-incompatible with row counting, so NOT a filter row-count slot. GET is selector-gated/FAILED, not table-shaped."
     confidence: observed-only
     evidence:
       - source: sample
@@ -1931,6 +2034,8 @@ handlers:
         ref: "live CHR interrogation (G3 write leg, ws21 7.25, 2026-11-02, 2w+0r of 8, ambiguity stop at M1): M1=1 (not 8) + 1->0->0 decay with the rule present — work/2026-11-winbox-attributes/proof/G3-2032-matrix/{report.yaml,step-M0.jsonl,step-M1.jsonl,step-M1-confirm.jsonl,step-M1-confirm2.jsonl,step-M7.jsonl,control-M1-read.json}; decay rows fixtures/winbox-ipc/7.25-getcount-20-32-decay.json"
       - source: sample
         ref: "live CHR interrogation (H1 decay leg, ws21 7.25, 2026-11-02, 3w+0r): spike1 flat-1 (6 reads/+354s, timestamped) + spike2 re-spike with graded 4->3->2 (TIER 2) + committed 1-dip/2-plateau + f15/f206 decoupling + idle-session death bound — work/2026-11-winbox-attributes/proof/H1-decay/{report.yaml,step-S1.jsonl,step-P1.jsonl,step-P2.jsonl,step-P3.jsonl,step-P4.jsonl,step-P5.jsonl,step-Q1.jsonl,step-Q2.jsonl,step-Q3.jsonl,step-Q4.jsonl,timing-ladder.jsonl}; curve rows fixtures/winbox-ipc/7.25-getcount-20-32-h1.json"
+      - source: sample
+        ref: "live CHR interrogation (H-decay-3 announce-backlog leg, ws21 7.25, 2026-11-02, 2w+0r): outcome A3 stable-untestable — spike flat-1 across R0a..R5 + 54 keep-alive samples/300s (TIER 1, write-through), negative-control ladder all-zero, async=0 everywhere; H-decay-3 untestable this spike (no decay to correlate) — work/2026-11-winbox-attributes/proof/i2-decay-backlog/{report-execution-h-decay-3.yaml,leg-h-decay-3.yaml,step-ladder.jsonl,timing-ladder.jsonl,step-negative-control.jsonl,timing-negative-control.jsonl,control-S1-read.json}; rung rows fixtures/winbox-ipc/7.25-getcount-20-32-h-decay-3.json"
     notes: |
       5-point dataset (values only, NO model): {}->0, {accept}->8
       (E3-W), {jump}->2, {jump,accept}->1, {accept,accept}->1 —
@@ -1989,6 +2094,23 @@ handlers:
       (ladder async lost; 11 drains + 15s watch all async=0).
       Transport bound: idle sessions die ~24-30s (2 samples),
       bounding persistent designs.
+      H-decay-3 leg (ws21 7.25, 2026-11-02, 2w+0r, fixed
+      ladder with write-through capture + 5s keep-alive samples):
+      outcome A3 STABLE-UNTESTABLE — the spike reads 1 flat
+      across R0a..R5 plus 54 in-window keep-alive samples over 300s
+      (TIER 1 throughout; second stable-1 sample after H1
+      spike1), with async=0 on every rung, keep-alive probe, and
+      drain; the matched-traffic negative control (no rule)
+      reads 0 flat with async=0. With no decay there is no
+      decay/async correlation to test, so H-decay-3
+      (announce-backlog) stays UNTESTED — neither supported
+      nor dead — and the Q1-dip annex stood down (no dip to
+      resolve; dip needs a decaying spike). Consistent with
+      variable-gauge; multi-step one-shot and history-gating
+      still open. Fixed-ladder live validation: write-through
+      growth observed mid-run, 7/7 rung ledger events both
+      runs, keep-alive gaps <=10s, single session pair each
+      run, all 330 step records valid with decode ok.
 
   nat-20-5:
     sys-to: [20, 5]

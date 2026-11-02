@@ -1,0 +1,109 @@
+# cspell:ignore rowid getcount getall getone reqid mangle calea unacked ladder rungs oneshot newflag churn ws3c keepalive keepalives hscan qos pfc dscp m2mark1 f137 brkpath notimp vrf ether1 ether2 h2vrf1 i1vrf1a i1vrf1b unmappable precheck cliref unblind unblinding parameterizes unenslaved nyquist automap
+# Phase I blind-review report: R1/R2/R3 reconstructions vs I1/I2/I3 proposer slices.
+reviewer: i-reviewer
+report: i-reviewer-comparison
+written: 2026-11-02
+verdict-summary:
+  I1-h2-self-offset: "AGREE on all reconstructed items (end state, minimal setup, 6w+0r F-vlan budget, .id live-resolution, parameterized predictions). The within-VRF contrast decision rule is a sound strengthening (logic verified). Tooling claims verified (leg-g4 read subcommand, 0xfe0009 comment key, explain pass). Zero discrepancies."
+  I2-decay-backlog: "AGREE on requirements coverage (F1/F3/F4 fixes, O1-O5 H-decay-3 needs, decision rule, annex) and ALL offline-validation claims re-verified green by the reviewer (biome, tsc, build 11 modules, --help/--dry-run exits, no-files, H1 untouched, 9/9 explains). Thread-5 route-scope claim byte-verified. Two EXACT minor gaps: (G1) watch-mode zero-record runs still create no out file (REQ-F2 partially unmet; mitigated: S0 uses ladder mode); (G2) keepalive-throw path skips the rung-*-failed ledger event (breaks I2's own L6 invariant; data still TIER 1)."
+  I3-handler-tail-census: "AGREE on the QoS pair on every reconstructed point (routes, transcripts, wire shapes exact, Rosetta candidates verified field-for-field in cliref and properly candidate-caveated). R3 scope correction recorded: R3 checked schema_nodes only and missed the cliref tables that ground I3's menus. Fragment items BOTH promotion-ready (AGREE/AGREE) with one citation-wording note (0x89 echo parenthetical). Drift items D1-D5 all verified AGREE. Non-QoS census rows out of R3 scope: no verdict."
+blindness-trail:
+  protocol: "strict: all three reconstructions written BEFORE any read of proposer-dir contents"
+  reconstruction-r1-written: "before R2 (tool-call order: write R1 -> write R2 -> write R3 -> R3 header fix)"
+  reconstruction-r2-written: "before R3, before any proposer content access"
+  reconstruction-r3-written: "before any proposer content access"
+  first-proposer-content-listing: "after all three reconstructions + fix (ls of the three proposer dirs)"
+  first-proposer-file-reads: "after the listing (I1 report.yaml + leg-sheet.md first)"
+  name-listing-note: "one proof-dir name-only ls ran BEFORE reconstructions (to confirm the owned dir existed); it revealed only the i1/i2/i3 directory NAMES, which were already quoted verbatim in the task brief — zero proposer content accessed. First CONTENT access postdates all reconstructions."
+  order: "R1 -> R2 -> R3 -> header-fix -> unblind(list) -> I1 read -> I2 read -> I3 read -> cross-checks -> this report"
+  prior-phase-reads-before-unblinding: "H2/H1/H0a/H3/G4/G1 reports+fragments+step/control/timing files, leg-h1.ts, leg-g4.ts usage, ws3c/ev/ getone+hscan JSONs, gui-handlers.yaml QoS/boot-flags/registry entries (read-only), ws3c-prober-findings.md §§16/25/39, net-bridge2-handler-tables.md §8, Rosetta 0.12.0 read-only queries (all explicitly allowed; none is I proposer content)"
+  audit-note: "coordinator can verify order from session tool-call sequence: three write_file reconstructions (+1 header edit) precede the first ls of any proposer dir's contents"
+I1-comparison:
+  slice: I1-h2-self-offset
+  end_state: "AGREE — I1 baseline_plan.must_match (vrf {*0:main}, addr {*1 DHCP}, bridge 0, [20,1]=1/[20,0]=3, byte-equal to H2 restored_*.json) == R1 restored-exact"
+  baseline_insufficient: "AGREE — I1 W1 rebuilds VRF1 ('H2 restored exact, so VRF1 must be rebuilt'); no bridge/VRF2 rebuild sheeted == R1 partial-rebuild"
+  minimal_setup: "AGREE — VRF + 2 coexisting addresses in VRF1 with control read-back gates + native GETALL [20,1] == R1 minimal setup (incl. the why: I1's contrast pair needs distinct rowids, same root reason as R1's B.rowid>=3)"
+  budget: "AGREE — 6w+0r core under the F-vlan rule (3 adds + 3 removes) == R1; 9w ceiling = 6 + 1 counted retry per remove, arithmetic exact"
+  id_allocation: "AGREE — I1 'anchor on nothing' (reuse observed VRF *1 + addr *2 both legs; bridge *4-then-*5 counter-evidence; H3 reject-consumes) == R1 allocation analysis exactly"
+  predictions: "AGREE — I1 parameterizes on live-resolved N/M1/M2 and explicitly demotes the brief's f6=1-vs-3 to mid-state arithmetic == R1 numeral-dependence point"
+  decision_rule: "AGREE, sound strengthening — within-VRF contrast (equal f6 kills self-offset given distinct rowids; unequal f6 kills VRF-key given one VRF) is valid; reviewer verified the distinct-.id premise holds by coexistence. Outcome table covers both-dead + ambiguity-stop honestly."
+  tooling_claims_verified:
+    - "leg-g4.ts read --out subcommand exists exactly as sheeted (leg-g4.ts:31-54)"
+    - "[20,1] comment key is 0xfe0009 (H2 step-B4.jsonl rowid 2 = 'h2vrf1'); row mapping via 0xfe0009 + 0xfe0001 cross-check grounded"
+    - "explain-W1-template.json verdict pass for the exact sheeted W1 string"
+  considered_alternative: "no conflict — main-VRF +2w-total variant arithmetic and discrimination logic check out; deferring to the brief's VRF1 stimulus with coordinator-may-redirect is reasonable"
+  wording_note_not_discrepancy: "leg-sheet P0/W1 'verified unenslaved at B0: /ip/vrf shows main only' is loose justification (main/interfaces=all does not directly show ether2 state), but the operation is H2-B1-precedent-proven from the identical baseline — wording only, zero verdict weight"
+  discrepancies: []
+I2-comparison:
+  slice: I2-decay-backlog
+  requirements_coverage_vs_R2:
+    REQ-F1-write-through: "AGREE — onCapture appends at capture (leg-h1-fixed.ts:249-253); end-of-run loop deleted, summary only (:454-458)"
+    REQ-F4-per-rung-async: "AGREE — fourLeg returns {v32,asyncN,records} (:294,342); console (:339-341) + rung-*-end ledger (:427-430) + keepalive ledger (:359)"
+    REQ-F3-gaps-under-20s: "AGREE, stronger than required — slicedWait default 15000 (:364-376) + hard refusal >=20000 (:229-234)"
+    O1-O5-h-decay-3-needs: "AGREE — S0 matched-traffic negative control FIRST + S2 one-session ladder + async_match_rule exact (legs/slot/sizes per H0a-c) + churn ledger + rx-committed step files"
+    decision_rule: "AGREE — A1 (supported) / A2 (dead) match R2; A3 stable-untestable + A5 spike-absent + A6 partial are honest necessary additions"
+    REQ-K1-K6-kept: "AGREE — timestamped capture, 4-leg shape, churn ledger, bounded drains with counts, read-only native, tier discipline all retained"
+    annex_q1_dip: "AGREE — denser +60..+120s sampling via --keepalive-ms 5000 (~12 TIER 1 samples, Nyquist bound stated); churn-contamination reasoning correct; 0w rider form sound"
+  offline_validations_re_run_by_reviewer:
+    - "biome check --write leg-h1-fixed.ts: 'Checked 1 file... No fixes applied' (re-ran, exit 0)"
+    - "bun run lint:typecheck (tsc --noEmit): exit 0 (re-ran)"
+    - "bun build --target bun: 'Bundled 11 modules' (re-ran; exact count matches I2's claim)"
+    - "--help: exit 0, usage printed (re-ran)"
+    - "--dry-run keepalive: verdict OK exit 0 (re-ran); --no-keepalive: UNSAFE exit 1 (re-ran, true exit via redirect); --keepalive-ms 20000: UNSAFE exit 1 (re-ran)"
+    - "dry-run creates no files (re-ran in empty dir; only shell redirects present)"
+    - "git diff --stat -- proof/H1-decay/: empty; H1 untouched (re-ran; tree shows only untracked i*/ dirs)"
+    - "9/9 explain verdicts True/pass (re-checked every file)"
+  thread5_route_scope: "AGREE, byte-verified — [20,17] GET shows 0x16=true/0x0b=18000 in both M8/M9; [20,3] tarpit row shows 0x16=false/0x194=true/0x0b=6; M9 fasttrack row shows 0x1c6=true. I2's P-i2-adjunct-route-scope matches exactly."
+  h0b_counts_cited: "AGREE — $0x16=120/$0x194=4/$0xb=216/$0x1c6=3 match H-reviewer report (prior-phase cross-check)"
+  gap_G1_watch_no_eager_create:
+    status: "EXACT GAP (minor; REQ-F2 partially unmet)"
+    r2_requirement: "REQ-F2: ALWAYS create the out file even with zero records (H1 step-watch15.jsonl precedent: cited but absent)"
+    code: "leg-h1-fixed.ts:249-253 appends only on capture; watch path :439-443 with zero pickups still creates no --out file"
+    mitigation: "H-decay-3 S0 negative control uses LADDER mode (rungs guarantee records), so the sheeted leg is unaffected; only direct watch-mode use retains the gap"
+  gap_G2_keepalive_throw_skips_failed_event:
+    status: "EXACT GAP (minor; breaks I2's own L6 invariant)"
+    code: "slicedWait call at leg-h1-fixed.ts:420 sits OUTSIDE the per-rung try/catch (:425-437); a keepalive oneShot throw (the likely death-detection point) propagates with NO rung-*-failed ledger event"
+    impact: "L6 'the rung-*-failed ledger event exists' fails exactly when death is detected during a keepalive; committed data still TIER 1 (write-through); death still bracketed by last ledger event + session-close + console error"
+    fix_suggestion: "wrap the slicedWait call in the same try (ledger rung-<next-id>-failed) or ledger keepalive-K*-failed inside keepalive()"
+  observation_flap_outcome_unclassified: "flap-with-async fits neither A1 (needs drops) nor A2 (needs zero async); the record-and-continue deviation is explicitly justified (H1 Q1-dip precedent) and data stays honest, but no named outcome covers it — observation, not a discrepancy"
+  out_of_R2_scope_no_verdict:
+    - "thread-5 adjunct budgets/set-designs (beyond route-scope + counts verified above)"
+    - "L1-L6 live checklist (deferred to execution by design; correctly not claimed)"
+I3-comparison:
+  slice: I3-handler-tail-census
+  qos_pair_vs_R3:
+    routes_cmd_status: "AGREE — [20,114]/[20,115], GET_ONE, identified-chr-absent == R3"
+    transcripts_114: "AGREE — ev/7.25-getone-20-114.json + ev/7.25-hscan-20-hi.txt == R3; no getall/getcount (reviewer grep over 290 files confirms)"
+    transcripts_115: "AGREE — ev/7.25-getone-20-115.json + ev/7.25-hscan-20-hi.txt == R3"
+    wire_shape_114: "AGREE EXACT — 6 USER fields (0x23 bool T; u32c 3=0, 7=1, 8=0, 1=0, 2=0) + fe-flag bank + 0xfe0010 'default' == reviewer's independent JSON reading"
+    wire_shape_115: "AGREE EXACT — 0xfe-only, zero USER fields == reviewer's independent JSON reading"
+    perturbation_negative: "AGREE — ws3c-prober-findings.md §18 batch (9/9 negatives incl. 114/115/126-family) + schema evidence refs"
+    v6_scope: "AGREE — I3 plans 6.49 BRKPATH-checks as 'verify, do not assume' == R3 untested-on-v6 (I3 claims no transcript-based v7-only proof)"
+    rosetta_candidates_114: "AGREE — menu interface/ethernet/switch/qos/profile + 6 fields (name/pcp/dscp/traffic-class/automap/hw-id, kinds+types) verified EXACTLY in cliref_entries/cliref_fields (3 page variants); properly flagged plausible/candidate-only, no numeric mapping claimed"
+    rosetta_candidates_115: "AGREE — menu interface/ethernet/switch/qos/map + 2 fields (name/hw-id) verified EXACTLY in cliref; same caveats"
+    batch_arithmetic: "AGREE — 1a-B candidate_count 8 = 6 + 2"
+  r3_scope_correction: "R3 checked schema_nodes (inspect.json command tree) ONLY, where ZERO switch-QoS paths exist (true as stated), and missed the cliref_* tables that carry interface/ethernet/switch/qos/*. I3's menus are grounded in cliref. R3's verdict stands (candidate-only, no numeric join) but its Rosetta source coverage was incomplete — recorded here, no verdict change."
+  fragment_item_1_boot_flags: "AGREE, promotion-ready — f1/f2 values both versions verified in ev/{6.49,7.25}-getone-24-10.json ({F,F} v7, {F,T} v6 — fragment roles exact); bit-29 nested 0xfe001d {1:F,2:F} verified in ev/7.25-getone-24-10-bit29.json; §25 literal-open()-path text verified; target entry has no fields block (promotion adds one) and role text already states the meanings"
+  fragment_item_2_20_134: "AGREE, promotion-ready — m2mark1 fixture verified ({0,'no-mark'} + {1,'m2mark1'}, total 2: insert proven); sibling-mirror shape exact vs packet-mark-registry fields (row-id session/1 + namespace-session 16 mark-name string); one-factory 0x8056724 verified in net-bridge2-handler-tables.md §8 (Handler 134 subsection); §39 mechanism + f137-echo verified"
+  fragment_wording_note: "fragment.yaml evidence_to_attach for 20-134 says 'M2 SETOBJ proof ev/7.25-getall-20-134-m2mark1.json (second row inserts, 0x89 echo)' — the FILE proves the insert; the 0x89 echo is proven by §39 + ev/7.25-getall-20-5-f137.json (driver rows), not by the m2mark1 file itself. Loose parenthetical, both phenomena real and evidenced — citation wording, zero verdict weight."
+  drift_items:
+    D1: "AGREE EXACT — YAML parse: 48 entries, 29 with fields, 19 without; 19-roster matches the census set one-for-one"
+    D2: "AGREE — README prose '17 catalogued handlers' (line 222) vs table '29 of 48' (line 164, 48-29=19): stale by 2"
+    D3: "AGREE — README line 165 '334 (174 named, 160 unknown-*)' field entries vs 19 handlers-without-fields are different populations; 296 confirmed (line 167)"
+    D4: "AGREE — README '249 live transcripts' (line 151) vs 290 files in ev/ (reviewer wc -l = 290)"
+    D5: "AGREE — ev/7.25-getobj-24-2-1.json is route [24,2] (verified in JSON: 0xff0002=[24,2]); the trap warning is correct"
+  db_hash: "AGREE — sha256sum full-length match eee45741...515aae3; 415490048 bytes match ls"
+  out_of_R3_scope_no_verdict:
+    - "non-QoS census rows (defconf/107/122/126/24-14/24-16/13-5/2-1/24-35/20-124/20-32/13-9/13-6/13-8/20-61 wire shapes, candidates, blockers)"
+    - "batch splits beyond 1a-B arithmetic and census/live plans (planned-not-run by design)"
+    - "'WinBox-visible (Switch > QoS)' menu-visibility basis (stated without a transcript citation; not checked)"
+reproduce:
+  - 'python3 -c "import json;[print(r) for f in [\"step-B0\",\"step-B4\",\"step-B5\"] for line in open(\"work/2026-11-winbox-attributes/proof/H2-f6/\"+f+\".jsonl\") for r in [json.loads(line)] if r.get(\"from\")==[20,1] and r.get(\"direction\")==\"rx\"]" # f6 0/1/2'
+  - 'cat work/2026-11-winbox-attributes/proof/G4-beta5-populated/control-B4-add.json work/2026-11-winbox-attributes/proof/H2-f6/control-B1-add.json  # both ret *1: reuse'
+  - 'bunx biome check --write work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts  # clean'
+  - 'bun run lint:typecheck  # exit 0'
+  - 'bun build work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --target bun --outfile /tmp/x.js  # Bundled 11 modules'
+  - 'bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts ladder --out p.jsonl --dry-run; echo $?  # OK, 0'
+  - 'bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts ladder --out p.jsonl --dry-run --no-keepalive > /dev/null; echo $?  # UNSAFE, 1'
+  - 'sqlite3 "file:$HOME/.rosetta/ros-help-0.12.0.db?mode=ro" "SELECT source_path FROM cliref_entries WHERE source_path LIKE \"%qos/profile%\";"  # cliref menus'
+  - 'sha256sum ~/.rosetta/ros-help-0.12.0.db  # eee45741...515aae3'

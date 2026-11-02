@@ -1,109 +1,96 @@
-# cspell:ignore rowid getcount getall getobj subtable reqid mvrp tarpit fasttrack gcd unmapped addrlist addsrc adddst addshape h0a h0b vrf oneshot newflag unacked untimed oneline amm lsb dyn omap xfd findall unblind jbe vaddr unthreatened sed bitfield bitfields bswap jmp imm fini binutils ctor aoomap hid jcc vtable looper ebtables ebtable iptable novabin libumsg mproxy zombification churn backoff subnano legid novasock unroutable rodata ws3c scanw unblinding unaffecting fraw worktree agentlint foldin unpromoted respike nodecay undersampled rowidgap ladder rungs trel msback h2br h2vrf1 h2vrf2
-# Phase H coordinator handoff (durable handoff rule, attribute-discovery-plan.md).
-# Written 2026-11-02 at FULL completion (read-only + all 3 write legs executed,
+# cspell:ignore rowid getcount getall getobj getone subtable reqid mvrp tarpit fasttrack gcd unmapped addrlist addsrc adddst h0a h0b vrf oneshot newflag unacked untimed oneline amm lsb dyn omap xfd findall unblind unblinding jbe vaddr sed bitfield bitfields bswap jmp imm fini binutils ctor aoomap hid jcc vtable looper ebtables ebtable iptable novabin libumsg mproxy zombification churn backoff subnano legid novasock unroutable rodata ws3c scanw unblinding unaffecting fraw worktree agentlint foldin unpromoted respike nodecay undersampled rowidgap ladder rungs trel msback h2br h2vrf1 h2vrf2 i1vrf1 i1mainb defconf qos pfc nkeys fvlan fjump keepalive mqtt cliref nyquist automap precheck unmappable unenslaved parameterizes dscp aholder brkpath notimp m2mark1 markname hdecay negcontrol rtt vms mainb wps
+# Phase I coordinator handoff (durable handoff rule, attribute-discovery-plan.md).
+# Written 2026-11-02 at FULL completion (read-only + all approved legs executed,
 # integrated, green). Uncommitted by design; do not commit or push without instruction.
-head: 5ecfb0dda882baf59ee160cc29f1fadab7e83752
-git_status: "PHASE H COMPLETE + COMMITTED 5ecfb0d on user instruction (NOT pushed); gates 372/0 + lint:ci green; all VMs stopped, all baselines restored"
+head: 67089238c1805b10ace5b8462ab346af37cb8592
+git_status: "PHASE I COMPLETE, UNCOMMITTED; gates 390/0 + lint:ci green; all VMs stopped (15 machines, 7.25-x86-1 gone — not removed by this session); all baselines restored"
 dirty_files:
-  - profiles/winbox-ipc/gui-handlers.yaml (M: unknown-20-32 H0a notes + H1 role/notes/evidence; filter-20-3 H0b notes/evidence + H3 notes/evidence; ip-address f6 role/evidence)
-  - profiles/winbox-ipc/README.md (M: evidence count 580->584, raw-count verified)
-  - work/2026-11-winbox-attributes/proof/E1-W5r/scan-w5r.ts (M: pre-existing biome/tsc fix, see scanw5r_fix in prior handoff revision)
-  - test/profiles/winbox-ipc/2032-timing-audit.test.ts (new: 12 tests)
-  - test/profiles/winbox-ipc/f6-rowid.test.ts (new: 4 tests)
-  - test/profiles/winbox-ipc/rowid-gap.test.ts (new: 4 tests)
-  - fixtures/winbox-ipc/7.25-getcount-20-32-h1.json (new: 10 records)
-  - fixtures/winbox-ipc/7.26beta5-f6-rowid.json (new: 3 records)
-  - work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/{report,fragment,explain-*.txt} (new)
-  - work/2026-11-winbox-attributes/proof/H0b-fd002a-owner-static/{report,fragment,sites-disassembly.txt} (new)
-  - work/2026-11-winbox-attributes/proof/H-reviewer/{report,reconstruction-r1,r2.yaml} (new)
-  - work/2026-11-winbox-attributes/proof/H1-decay/{report,fragment,leg-h1.ts,sanitize.ts,step-*.jsonl,timing-*.jsonl,control-*.json,explain-*.json} (new)
-  - work/2026-11-winbox-attributes/proof/H2-f6/{report,fragment,sanitize.ts,step-*.jsonl,control-*.json,explain-*.json,baseline_*,restored_*} (new)
-  - work/2026-11-winbox-attributes/proof/H3-rowid-gap/{report,fragment,sanitize.ts,step-*.jsonl,control-*.json,explain-*.json} (new)
+  - profiles/winbox-ipc/gui-handlers.yaml (M: read-only boot-flags f1/f2 + 20-134 row shape; I1-B f6 finer-point CLOSED; H-decay-3 A3 role/notes; census defconf/QoS notes + NEW unknown-20-120/121 entries)
+  - profiles/winbox-ipc/README.md (M: 50 handlers, 33 with fields, 348 entries (177/171), 591 evidence)
+  - README.md (M: 50 handlers, 348 entries)
+  - GLOSSARY.txt (M: +mainb, +wps)
+  - test/profiles/winbox-ipc/handler-tail-promotion.test.ts (new: 4 tests)
+  - test/profiles/winbox-ipc/f6-self-offset.test.ts (new: 4 tests)
+  - test/profiles/winbox-ipc/h-decay-3-stable.test.ts (new: 4 tests)
+  - test/profiles/winbox-ipc/tail-census-1a.test.ts (new: 6 tests)
+  - fixtures/winbox-ipc/7.26beta5-f6-self-offset.json (new: 1 record)
+  - fixtures/winbox-ipc/7.25-getcount-20-32-h-decay-3.json (new: 9 records)
+  - fixtures/winbox-ipc/7.26beta4-qos-120-121.json (new: 2 records)
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/{design + leg-sheet-main-b.md + execution artifacts + report-b.yaml} (new)
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/{design + leg-h1-fixed.ts (coordinator G1/G2 fixes) + execution artifacts + report-execution-h-decay-3.yaml} (new)
+  - work/2026-11-winbox-attributes/proof/i3-handler-tail-census/{report.yaml,fragment.yaml} (new)
+  - work/2026-11-winbox-attributes/proof/i-reviewer/{report.yaml,reconstruction-r1,r2,r3.yaml} (new)
+  - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/{census.ts,report.yaml,step-*.jsonl} (new)
   - work/2026-11-winbox-attributes/handoff.yaml (this file)
 slices:
-  done: [H0a, H0b, H-reviewer, integrate-readonly, H1-tooling, H1-execute, H1-integrate, H2-execute, H2-integrate, H3-execute, H3-integrate]
+  done: [I1-design, I2-design-fix, I3-census, I-reviewer, integrate-readonly, I1-B-execute, H-decay-3-execute, census-1a-execute, integrate-all]
   in_progress: []
-  queued: []
-h0a_record:
+  queued: [thread-5-piggyback (approved-deferred), tail-census-1b (qos-config/pfc), future-families (modem-pair/board-info/user-tail/sys2-residue/gated-pair), H-decay-3-rerun-on-decaying-spike, U1-custom-script-set-leg]
+i1_record:
   complete: true
-  verdict: "DESIGN-COMPLETE (offline, zero router contact) — executed via H1"
-  evidence_root: work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/
-  proven: [P-h0a-timing-order-only, P-h0a-disambiguation, P-h0a-session-per-read, P-h0a-explain-4-pass]
-  disproven: [D-h0a-artifact-durations]
-  unresolved: [U-g3-32-mechanism (narrowed by H1, see h1_record), U-h0a-tooling-timestamp (CLOSED: leg-h1.ts --t0-ms built), U-h0a-tooling-persistent (CLOSED: ladder mode built; idle death bounds it)]
-  writes: 0
-h0b_record:
+  verdict: "COMPLETE 2w+0r of 2w+0r (Option B main-VRF, user-approved; Option A 6w sheeted not executed) — self-offset DISPROVEN (row *2 f6=0, predicted 1); VRF-key survives; restore EQUAL"
+  evidence_root: work/2026-11-winbox-attributes/proof/i1-h2-self-offset/
+  proven: [P-i1b-self-offset-dead]
+  unresolved: [U-h2-vrf-native-rowid (still open, untouched)]
+  spend: { approved: "2w+0r core, 3w ceiling", spent: "2w+0r", vm: g4beta5 }
+  integration: "f6 role finer-point CLOSED + 1 evidence; fixture 7.26beta5-f6-self-offset.json (1); f6-self-offset.test.ts (4)"
+h_decay_3_record:
   complete: true
-  verdict: "OWNER CONFIRMED + 0xfd002a NEGATIVE (static, zero router contact)"
-  evidence_root: work/2026-11-winbox-attributes/proof/H0b-fd002a-owner-static/
-  proven: [P-H0b-1 owner net, P-H0b-2 zero refs, P-H0b-3 no fd switch, P-H0b-4 16 sites resolved]
-  disproven: [D-H0b-1 ownership unverified, D-H0b-2 referenced in net]
-  unresolved: [U-H0b-fd002a-identity, U-H0b-dynamic-construction]
-  correction: "F-raw accounting: 31 OFFSETS / 22 distinct values (reviewer-confirmed, coordinator re-verified); H0b report unedited, correction lives in handoff history"
-  writes: 0
-reviewer_record:
+  verdict: "COMPLETE 2w+0r of 2w+0r — outcome A3 STABLE-UNTESTABLE (spike flat-1 R0a..R5 + 54 keep-alive samples/300s TIER 1, async=0 everywhere; negative control flat-0/async=0); H-decay-3 stays UNTESTED by outcome design; Q1 annex STOOD DOWN; restore clean"
+  evidence_root: work/2026-11-winbox-attributes/proof/i2-decay-backlog/
+  proven: [P-hdecay3-stable-second-sample (stability-at-1 modal: 2/4 timed samples), P-hdecay3-negcontrol-clean, P-i2-adjunct-route-scope (design, carried)]
+  unresolved: [U-h1-32-mechanism (H-decay-3 still untested — needs a decaying spike; variable-gauge consistent; multi-step one-shot + history-gating open), U-h1-q1-dip (annex stood down; needs a decaying spike)]
+  live_validation: "L1 PASS (write-through growth observed) / L2 partial-ledger-full (console sampled only — LESSON: tee console to file) / L3 PASS (keep-alive gaps <=10s) / L4 PASS (single session pair) / L5 PASS (330/330 valid) / L6 N/A"
+  spend: { approved: "2w+0r", spent: "2w+0r", vm: ws21 }
+  integration: "unknown-20-32 role/notes + 1 evidence; fixture 7.25-getcount-20-32-h-decay-3.json (9); h-decay-3-stable.test.ts (4)"
+thread_5_record:
+  complete: false
+  verdict: "APPROVED-DEFERRED by user (yes but defer) — sheet stands for piggyback on the next filter-write leg; 0 spent"
+  evidence_root: work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-thread-5-adjunct.yaml
+  spend: { approved: "deferred", spent: "0w+0r" }
+census_1a_record:
   complete: true
-  verdict: "R1 AGREE all claims; R2 AGREE + 1 exact verdict-unaffecting discrepancy (F-raw); blindness session-log-verified"
-  evidence: [work/2026-11-winbox-attributes/proof/H-reviewer/report.yaml]
-h1_record:
-  complete: true
-  verdict: "COMPLETE 3w+0r of 3w+0r — per-add transient PROVEN (re-spike), read-disturbance DEAD, fixed-curve DEAD, f15/f206 decoupled, idle-death bound, mechanism narrowed-not-closed"
-  evidence_root: work/2026-11-winbox-attributes/proof/H1-decay/
-  tooling_built: "leg-h1.ts (timestamped capture + persistent ladder + bounded drain + watch; read-only); sanitize.ts (control envelopes)"
-  proven: [P-h1-respike, P-h1-nodecay-spike1, P-h1-graded-decay, P-h1-f15f206-decoupled, P-h1-idle-death, P-h1-async-silence]
-  disproven: [D-h1-read-disturbance, D-h1-fixed-curve, D-h1-churn-only]
-  unresolved: [U-h1-32-mechanism (variable-gauge / multi-step-one-shot / history-gating survive; announce-backlog UNTESTED), U-h1-q1-dip, U-h1-f15f206-role]
-  tooling_lessons: "flush captures incrementally (lost R0a-R2 rx bytes); console-report async counts per rung; keep persistent gaps <20s (idle death ~24-30s)"
-  spend: { approved: "3w+0r", spent: "3w+0r", vm: ws21 }
-  integration: "unknown-20-32 role evolved (TIME-VARYING PER-ADD TRANSIENT) + H1 notes + 1 evidence; fixture 7.25-getcount-20-32-h1.json (10); 2032-timing-audit.test.ts +6 (12 total)"
-h2_record:
-  complete: true
-  verdict: "COMPLETE 10w+0r of 10w+0r — f6=ROWID PROVEN (VRF .id 0/1/2 exact), flag DEAD, interface-rowid excluded, restore exact"
-  evidence_root: work/2026-11-winbox-attributes/proof/H2-f6/
-  proven: [P-h2-f6-rowid, P-h2-iface-excluded, P-h2-bridge-carrier]
-  disproven: [D-h2-f6-flag]
-  unresolved: [U-h2-self-offset (+2w decider designed: 2nd address in VRF1), U-h2-vrf-native-rowid]
-  spend: { approved: "10w+0r", spent: "10w+0r", vm: g4beta5 }
-  integration: "ip-address f6 role evolved (ROWID PROVEN) + 1 evidence; fixture 7.26beta5-f6-rowid.json (3); f6-rowid.test.ts (4)"
-h3_record:
-  complete: true
-  verdict: "COMPLETE 2w+0r of 3w+0r (1w returned) — rejected add consumes EXACTLY ONE rowid; G1 4-gap explained; restore clean"
-  evidence_root: work/2026-11-winbox-attributes/proof/H3-rowid-gap/
-  proven: [P-h3-reject-consumes, P-h3-g1-gap-explained, P-h3-count-vs-id]
-  disproven: [D-h3-no-consume]
-  unresolved: []
-  spend: { approved: "3w+0r", spent: "2w+0r", vm: ws21 }
-  integration: "filter-20-3 H3 notes + 1 evidence; rowid-gap.test.ts (4, control-plane pins, no fixture)"
+  verdict: "COMPLETE 0w+0r — defconf gating + 3-version identity; QoS 114/115 gating + v6-absent PROVEN; 2 NEW handlers catalogued (120/121); U1 version-diff EXHAUSTED"
+  evidence_root: work/2026-11-winbox-attributes/proof/i4-tail-census-exec/
+  proven: [P-i4-defconf-gating (GET-only all versions; GETCOUNT=0xFFFFFFFF on 7.x, countless on v6), P-i4-qos-v7-only (0xfe0002 all verbs on v6), P-i4-qos-wrap (GETALL 1-row wrap; GETOBJ->0xfe0004 puzzle), P-i4-120-121-new (identical rows 7.25+beta4)]
+  unresolved: [U1-defconf-field-split (version axis exhausted; needs custom-script-set write leg), U2-qos-populated-shapes (needs switch hardware), U4b-114-115-getobj-selector (NEW: obj=1 rejected — read-only selector matrix next), U-siblings-v6 (NEW: 116/117/120/121 on v6 untested), U-120-121-purpose (NEW: both role-open)]
+  spend: { approved: "0w+0r + boot", spent: "0w+0r", vms: [winbox-beta4, ws21, ws3c6] }
+  integration: "defconf/114/115 notes + 3 evidence; NEW unknown-20-120/121 entries (+11 unknown-* fields) + 2 evidence; fixture 7.26beta4-qos-120-121.json (2); tail-census-1a.test.ts (6)"
 budgets_approved_vs_spent:
-  H0a: { approved: "0w+0r", spent: "0w+0r" }
-  H0b: { approved: "0w+0r", spent: "0w+0r" }
-  H-reviewer: { approved: "0w+0r", spent: "0w+0r" }
+  I1-design: { approved: "0w+0r", spent: "0w+0r" }
+  I2-design-fix: { approved: "0w+0r", spent: "0w+0r" }
+  I3-census: { approved: "0w+0r", spent: "0w+0r" }
+  I-reviewer: { approved: "0w+0r", spent: "0w+0r" }
   integrate-readonly: { approved: "0w+0r", spent: "0w+0r" }
-  H1-tooling: { approved: "0w+0r", spent: "0w+0r" }
-  H1-decay-mechanism: { approved: "3w+0r", spent: "3w+0r", vm: ws21, result: "complete=true, per-add transient + read-disturbance dead + decoupling + idle bound; restore clean; integrated" }
-  H2-f6-rowid-flag: { approved: "10w+0r", spent: "10w+0r", vm: g4beta5, result: "complete=true, f6=rowid PROVEN flag dead; restore exact; integrated" }
-  H3-rowid-gap: { approved: "3w+0r", spent: "2w+0r", vm: ws21, result: "complete=true, reject-consume-1 + G1 gap explained; 1w returned; restore clean; integrated" }
+  I1-B-main-variant: { approved: "2w+0r core, 3w ceiling", spent: "2w+0r", vm: g4beta5, result: "complete=true, self-offset dead; restore EQUAL; integrated" }
+  H-decay-3: { approved: "2w+0r", spent: "2w+0r", vm: ws21, result: "complete=true, A3 stable-untestable + Q-stand-down; restore clean; integrated" }
+  thread-5: { approved: "deferred", spent: "0w+0r", result: "not executed per user defer" }
+  census-1a: { approved: "0w+0r + boot", spent: "0w+0r", vms: [winbox-beta4, ws21, ws3c6], result: "complete=true, 2 new handlers + gating matrices; integrated" }
+  TOTAL: { approved: "4w+0r + 0w census + 1 defer", spent: "4w+0r" }
 counts_now:
-  handlers: 48
-  fields: "334 (174/160) unchanged"
-  confidence: "288 (150/135/3) unchanged"
-  evidence: "580->584 (H0b +1, H1 +1, H2 +1, H3 +1; raw-count verified)"
-  tests: "352/0 -> 372/0 across 57 files (+6 timing-audit, +4 f6-rowid, +4 rowid-gap, +6 H1-curve... i.e. +20 total)"
+  handlers: "48 -> 50"
+  fields: "334 (174/160) -> 348 (177/171)"
+  handlers_with_fields: "29 -> 33 (queued-phase '17 without fields' prose still true: 50-33=17)"
+  confidence: "288 (150/135/3) UNCHANGED BY CONVENTION (frozen since 550508e; phases update evidence only)"
+  evidence: "584 -> 591 (+1 f6, +1 20-32, +5 census)"
+  revision_history: "72 unchanged (no belief corrections this phase)"
+  tests: "372/0 -> 390/0 across 61 files (+4 promotion, +4 self-offset, +4 h-decay-3, +6 census)"
   lint: "lint:ci green (exit 0)"
 vm_state:
   all_stopped: true
-  checked: "quickchr list at H3 close: 15 machines, all STOPPED"
-  baselines_restored: "H1 clean (5-menu zero + native zeros); H2 exact-equality clean (3/3 EQUAL); H3 clean (5-menu zero + native zeros)"
+  detail: "15 machines, ALL STOPPED (twin1/2/4/3, centrs-btest, twin-app, ws3c6, ws19-2nic, ws20, ws21, winbox-beta4, twin-zt, e3-beta4, g4beta, g4beta5). NOTE: 7.25-x86-1 (running, not mine, at read-only handoff) is GONE from quickchr list — NOT stopped/removed by this session (only list/start/stop on g4beta5, ws21, winbox-beta4, ws3c6 were run); external removal presumed."
+  baselines_restored: "I1-B EQUAL (cmp x3 + native shape); H-decay-3 clean (5-menu zero + native zeros); census read-only (no state touched)"
   assignments_next: {}
-phase_g_history:
-  closed: "2026-11-02, committed at 45c09de + pushed; handoff-record commit 1ddbc20"
-  counts_at_close: "handlers 48, fields 334 (174/160), confidence 288 (150/135/3), evidence 580, tests 352/0, lint:ci green"
-  prior_handoff: "full Phase G + Phase H read-only records in git history (1ddbc20:work/2026-11-winbox-attributes/handoff.yaml and session handoffs)"
+tooling_lessons_new:
+  - "Ladder console MUST be tee'd to a file (L2 console-side unverifiable when piped through tail; ledger saved us)"
+  - "v6 native sessions need the explicit --host/--port/--user/--pass path (resolveQuickchr requires rest-api auth); harness fix: fall back to winbox-port + inspect credentials"
+  - "cspell: fixture filenames + record ids must avoid unknown tokens (no file-local headers in JSON); wire-verbatim values go to GLOSSARY.txt (mainb/wps precedent); rename early"
+  - "Rung-vs-keepalive record alignment needs ledger windows + order-aware assignment (back-to-back R0a/R0b/R1 cluster)"
 continuation_decision:
-  decision: "FRESH agent for the next phase (handler-field tail)"
-  clause_a_no_compaction: "HELD (no compaction or summarization this session)"
-  clause_b_citable: "HELD (all H budgets/VM-state/evidence-paths/counts directly citable from working notes)"
-  clause_c_green: "HELD (gates 372/0 + lint:ci green, handoff written)"
-  doubt_invoked: "YES — session is long (3 workers + reviewer + 3 leg executions + integrations); the next program (17/43 zero-field handlers, 19 unknown-*, 296 bindings) is unscoped and needs fresh per-leg approvals regardless; clean handoff makes a fresh coordinator strictly better. Per the brief: in any doubt, STOP + recommend fresh."
-  resume_commit: "5ecfb0d (Phase H committed; tree clean)"
-next_action: "PHASE H COMPLETE. Commit decision belongs to the user (all work uncommitted by design). Fresh coordinator for the handler-field tail starts at the resume commit: read this handoff + attribute-discovery-plan.md + triage state, scope batch 1 (suggested: H2-style single-question legs first — U-h2-self-offset +2w decider is the cheapest open item — then handler-family census workers per the Phase E pattern), and STOP for fresh per-leg yes before any writes."
+  decision: "FRESH agent for the next phase (1b + future families + deferred thread-5 + decaying-spike re-run)"
+  clause_a_no_compaction: "HELD (no compaction this session)"
+  clause_b_citable: "HELD (all budgets/VM-state/evidence-paths/counts citable from proof dirs + this handoff)"
+  clause_c_green: "HELD (gates 390/0 + lint:ci green, handoff written)"
+  doubt_invoked: "YES — session is very long (3 workers + reviewer + read-only integration + 2 write legs + 3-VM census + full integration); remaining queue (1b, 5 future families, deferred thread-5, decaying-spike re-run) is unscoped execution needing fresh per-leg approvals regardless. Per the brief: in any doubt, STOP + recommend fresh."
+  resume_commit: "6708923 + uncommitted Phase I work (do not commit or push without instruction)"
+next_action: "PHASE I COMPLETE. Commit decision belongs to the user (all work uncommitted by design). Fresh coordinator starts at 6708923 + this handoff: queue is thread-5-piggyback (sheet stands), tail-census-1b (qos-config/pfc plans in I3 report), future families, H-decay-3 re-run on a decaying spike (consider 2nd in-session add as decaying host), U1 custom-script-set leg. Fresh per-leg yes required before any writes."

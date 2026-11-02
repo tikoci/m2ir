@@ -1,0 +1,83 @@
+# cspell:ignore rowid rowids getall vrf vrfs i1vrf1 i1vrf1a i1vrf1b ether1 ether2 h2vrf1 g4vrf quickchr centrs ndjson jsonl proplist deenslave unmappable precheck substeps oneline parameterizes unenslaved
+# I1 DESIGN report (worker I1). OFFLINE — no VM start, no router contact.
+# Decider leg for U-h2-self-offset. Awaiting per-leg yes; NOT executed.
+complete: false
+date: 2026-11-02
+worker: I1
+leg: I1-h2-self-offset
+design_inputs:
+  commit: 6708923
+  tree: clean (verified `git log --oneline -1`; nothing committed by I1)
+  open_item: "U-h2-self-offset (H2 report.yaml): f6 == address-own-rowid-minus-1 fits H2's 3 points (addr *1/*2/*3 -> 0/1/2) numerically; VRF-key needs zero offset"
+  canonical_readonly: "profiles/winbox-ipc/gui-handlers.yaml ip-address f6 entry (READ, never edited)"
+  discipline_ref: "attribute-discovery-plan.md §C experiment sequence (baseline, one-property stimulus, restore)"
+evidence:
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/report.yaml
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/leg-sheet.md
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-W1-template.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-W2-template.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-W3-template.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-W4-template.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-W5-template.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-W6-template.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-R-vrf-print.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-R-addr-print.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-R-bridge-print.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-R-resource-print.json
+unresolved:
+  - id: U-h2-self-offset
+    claim: "f6 == address-own-rowid-minus-1 vs f6 == containing-VRF-.id — THIS LEG DECIDES (contrast pair, see outcome_table)"
+  - id: U-h2-vrf-native-rowid
+    claim: "untouched by this leg (no native VRF-table read in the catalog); still open after I1 either way"
+counting_rule: "H2/F-vlan rule: EVERY accepted control add/set/remove counts 1w; reads (control retrieve + native GETALL) 0w; rejected adds 0w BUT consume exactly one rowid each (H3 P-h3-reject-consumes) — hence every .id is live-resolved from the add's ret + control read-back, never assumed from append order or reuse. VM start/stop 0r (r counts RouterOS reboots; none planned; H2/G4 precedent 0r with start+stop)."
+budget:
+  discriminating_pair: "W3 (2nd VRF1 address add) + W4 (its remove) = +2w — the brief's +2w target covers exactly this pair"
+  full_leg: "6w+0r core (W1-W6), 9w+0r ceiling with restore-retry contingency (1 counted retry per remove, S6 only)"
+  itemized:
+    - { step: W1-vrf-add, writes: 1, why: "setup: H2 restored exact, so VRF1 must be rebuilt (single add carries interfaces=ether2; no extra set)" }
+    - { step: W2-addr1-add, writes: 1, why: "setup + evidence row r1: first VRF1 address (also breaks the H2 lockstep if N != M1-1)" }
+    - { step: W3-addr2-add, writes: 1, why: "DISCRIMINATING add: second VRF1 address" }
+    - { step: W4-rm-addr2, writes: 1, why: "discriminating teardown (newest-first, H2 R-order precedent)" }
+    - { step: W5-rm-addr1, writes: 1, why: "setup teardown" }
+    - { step: W6-rm-vrf, writes: 1, why: "setup teardown, VRF last (H2 R-order precedent)" }
+  target_note: "The brief's +2w assumed H2-mid-state (VRF *1 alive, addr high-water consumed). H2 completed WITH removes (restore PASS), so the start state is restored baseline: +4w of setup/setup-teardown is unavoidable under the stated counting rule. The literal f6=1-vs-3 prediction is likewise mid-state arithmetic; the sheet parameterizes predictions on live-resolved N/M1/M2 (reuse observed G4+H2 both landing VRF *1 + addr *2, but bridge *4-then-*5 counter-evidences global reuse — anchor on nothing)."
+vm:
+  name: g4beta5
+  routeros: "7.26beta5"
+  arch: x86
+  network: user, socket::g4b5-link
+  interface: "ether2 (spare; H2 B1/B4 precedent; verified unenslaved at B0: /ip/vrf shows main only)"
+  ports: "resolved live at execution from `quickchr list` (P0); numeric values redacted per H2 sanitization rule"
+  start_state: STOPPED (I1 never started it; executor starts at P1)
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute --quickchr g4beta5 --yes (writes; --yes mandatory, writes refuse without it) / centrs retrieve --quickchr g4beta5 (reads, no flag needed)"
+  transport: "unpinned (H2 precedent: writes negotiated native-api, reads rest-api; record actual via from each envelope)"
+  native_via: "proof/G4-beta5-populated/leg-g4.ts read (paged GETALL [16,2]/[16,13]/[20,1]/[20,0]; reused unmodified, H2 precedent)"
+  sanitize_via: "proof/H2-f6/sanitize.ts (control envelopes; reused unmodified, same cross-dir precedent)"
+  explain_policy: "EVERY RouterOS string validated offline pre-send (10/10 pass at design, zero rejections); executor MUST re-run explain with live .ids before W4/W5/W6 (0w, offline) — template *97/*98/*99 validate syntax only and must never be sent"
+baseline_plan:
+  menus: [/ip/vrf, /ip/address, /interface/bridge]
+  version_gate: "/system/resource retrieve (must read 7.26beta5) + leg-g4.ts --allowed-version 7.26beta5"
+  files: [baseline_system_resource.json, baseline_ip_vrf.json, baseline_ip_address.json, baseline_interface_bridge.json, step-B0.jsonl]
+  must_match: "H2-restored shape: vrf {*0:main} count 1; address {*1 10.0.2.15/24 DHCP} count 1; bridge count 0; native [20,1]=1 row (13 keys, f6=0) [20,0]=3 rows (ether1=2 ether2=3 lo=1). Control B0 files must additionally be byte-equal to H2's restored_*.json (drift gate S1)."
+  precedent: "H2 equality-restore (3/3 control files byte-equal data+count; native shape-equal)"
+decision_rule: "PRIMARY is the within-VRF contrast (needs no absolute .ids): both rows stimulus-gated in i1vrf1 -> f6(r1)==f6(r2) kills self-offset (distinct rowids require distinct values); f6(r1)!=f6(r2) kills VRF-key (same VRF requires the same value). Absolute checks (==N / ==own-1) corroborate the survivor per row."
+outcome_table:
+  - observed: "f6(r1)==f6(r2)==N"
+    verdict: "self-offset DISPROVEN; VRF-key survives (P-h2-f6-rowid stands, finer point closed)"
+  - observed: "f6(r1)==f6(r2)==X, X!=N"
+    verdict: "self-offset DISPROVEN; VRF-key DISPROVEN -> NEW UNKNOWN (both dead); restore, report, no extension within cap"
+  - observed: "f6(r1)!=f6(r2), each == own-rowid-minus-1"
+    verdict: "VRF-key DISPROVEN (H2 PROVEN claim needs revision - escalate to coordinator); self-offset survives"
+  - observed: "f6(r1)!=f6(r2), not own-minus-1"
+    verdict: "VRF-key DISPROVEN; self-offset DISPROVEN -> NEW UNKNOWN; restore, report, no extension"
+  - observed: "row identity unmappable (comment/rowid cross-check fails) or predictions coincide on the decision row"
+    verdict: "AMBIGUITY-STOP: take the 0w read anyway as consistency data, restore, report AMBIGUOUS with the numbers. A result, not a failure."
+stop_conditions: [S0-vm-missing-or-running, S1-baseline-drift, S2-version-mismatch, S3-device-rejection, S4-stimulus-gate-fail, S5-native-unmappable, S6-remove-fail-retry-once, S7-tooling-error]
+restore_plan: "W4/W5/W6 (addr M2, addr M1, VRF N — live .ids) + R0 verification: 3 retrieves byte-equal (cmp) vs B0 + native shape ([20,1]=1 row [20,0]=3 rows). Partial-restore substeps defined for stops after W1/W2 (sheet §stops)."
+evidence_tiers:
+  tier1_committed_bytes: "step-W2.jsonl + step-W3.jsonl (decision rows, lossless rx hex+decode) + control-*-read.json (gates) + baseline/restored pairs (trackable via the work/**/proof/**/*.json exception); carved fixture, if any, decided post-execution by the coordinator"
+  tier2_console_observed: "ret values, gate verdicts, cmp result, quickchr list/start/stop console text — quoted in the execution report, not byte evidence"
+considered_alternative: "Main-VRF variant (2nd address on ether1/main: VRF-key -> 0, self-offset -> M-1 != 0) would hit +2w TOTAL with no setup, and both hypotheses are universal over rows so it discriminates in logic. NOT sheeted: the brief explicitly orders the VRF1 stimulus, and a custom-VRF row keeps the stimulus identical in kind to H2's. Coordinator may redirect; that needs a re-sheet, not an edit."
+hypothesis_scope: "ONE discriminating experiment (the contrast pair). No fragment.yaml (fragments are written post-execution from results). H2's f6=ROWID result is not re-proven; B0's f6=0 re-observation is a gate, not a claim."

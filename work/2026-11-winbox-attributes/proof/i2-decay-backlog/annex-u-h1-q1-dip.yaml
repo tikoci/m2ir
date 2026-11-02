@@ -1,0 +1,45 @@
+# cspell:ignore getcount keepalive keepalives rungs undersampled nonmonotonic Nyquist
+# U-h1-q1-dip follow-up: READ-ONLY ANNEX (not a standalone leg).
+# Rides the H-decay-3 spike (I2 leg-h-decay-3.yaml S2); 0w marginal.
+id: I2-annex-q1-dip
+kind: read-only-annex
+status: design-unexecuted
+date: 2026-11-02
+worker: I2
+question: "U-h1-q1-dip: the Q1=1 dip (single committed point between 2s) unexplained: dip-anomaly (one low outlier) vs oscillation-undersampled (periodic dips, one sample caught a trough). One point cannot decide."
+form: annex
+why_annex_not_leg:
+  - "0w marginal vs 2w standalone (add + restore branch for its own spike)"
+  - "a standalone spike may be spike1-like (stable, no dip to resolve): 1 of 3 observed spikes was stable, so a standalone leg wastes 2w with prior ~1/3; the annex spends nothing when the host spike is stable (stands down)"
+  - "the fixed ladder's keepalives ALREADY sample the +60..+120s dip window densely at zero marginal cost (in-session, churn-free); a standalone leg cannot improve on contemporaneous in-window samples"
+  - "churn contamination: dense session-per-read polls must NEVER interleave the H-decay-3 ladder (each open/close draws a CMD_DISCONNECTED pair on the ladder session and destroys the A1/A2 async account); the annex is therefore in-ladder keepalives + post-ladder polls only"
+host: "I2-h-decay-3-announce-backlog S2 spike ladder (same rule, same boot)"
+condition: "EXECUTE only if the host ladder shows decay or nonmonotonic values by R3 (a stable flat spike has no dip to resolve -> annex STANDS DOWN, 0 cost). The R3 (+60s) rung is the decision point: the dip window (+60..+120s) still lies ahead."
+primary Discrimination: "in-ladder K-samples (churn-free, contemporaneous)"
+primary_how:
+  - "run the host S2 ladder with `--keepalive-ms 5000` (instead of the default 15000): keepalive K-samples then land ~every 5s, giving ~12 TIER 1 [20,32] samples across +60..+120s plus rungs R3 (+60s) and R4 (+120s)"
+  - "keepalive verb is the single GETCOUNT [20,32] (leg-h1-fixed.ts keepalive): reads do not disturb the value (H-decay-2 dead), same-session traffic adds zero churn, values print to console + keepalive-K* ledger events"
+  - "no extra commands: the annex IS the host ladder invocation with one flag changed. Exact host command becomes: bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(cat t0.txt) ladder --out step-ladder.jsonl --timing-out timing-ladder.jsonl --keepalive-ms 5000"
+sensitivity: "5s sampling resolves oscillation periods >=10s (Nyquist) across a 60s window (~12 samples); a single low outlier among ~14 in-window points reads as dip-anomaly, >=2 spaced troughs read as oscillation. Periods <10s remain indistinguishable from noise (stated bound, not a failure)."
+secondary: "post-ladder plateau polls (only if primary shows a dip or oscillation)"
+secondary_how:
+  - "after the host ladder session closes (rule STILL present; no remove yet): 4 session-per-read polls at +330s/+360s/+390s/+420s post-t0 (30s spacing keeps each invocation independent; each is its own session so no idle death):"
+  - "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(cat t0.txt) read --out step-D1.jsonl --timing-out timing-D1.jsonl"
+  - "(repeat for D2/D3/D4 at the stated offsets; files step-D2.jsonl .. step-D4.jsonl)"
+  - "purpose: plateau persistence / oscillation-late (NOT the original dip: the window has passed). Tests whether the post-dip value holds, converges, or keeps oscillating."
+  - "4 polls max (bounded; each is churn but the H-decay-3 async account is already closed by then)"
+outcomes:
+  - id: Q-dip-anomaly
+    condition: "exactly one low outlier among ~14 in-window TIER 1 samples, neighbors at plateau"
+    verdict: "dip-anomaly (single-trough event, not periodic)"
+  - id: Q-oscillation
+    condition: ">=2 spaced troughs with a consistent inter-trough interval >=10s"
+    verdict: "oscillation-undersampled (H1's 4 sparse polls aliased it)"
+  - id: Q-neither
+    condition: "in-window samples flat (no dip at all this spike)"
+    verdict: "dip not replicated: dip magnitude/timing varies per add (like spike magnitude/lifetime); U-h1-q1-dip narrows to per-add variability"
+  - id: Q-stand-down
+    condition: "host ladder flat/stable through R3"
+    verdict: "annex stands down (nothing to resolve); 0 spent beyond the host leg"
+budget: { counted_writes: 0, reboots: 0, itemized: "0w marginal in all branches (keepalive flag change + 0w reads); host leg owns the 2w" }
+evidence_tiers: "TIER 1 throughout: K-samples are committed rx bytes with relative ts in step-ladder.jsonl + keepalive-K* ledger events; D-polls are committed step-D*.jsonl + timing-D*.jsonl"

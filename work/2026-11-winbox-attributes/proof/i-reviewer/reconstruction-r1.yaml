@@ -1,0 +1,74 @@
+# cspell:ignore rowid vrf ether1 ether2 h2vrf1 h2vrf2 getall nkeys fvlan fjump
+# R1: blind reconstruction of the U-h2-self-offset decider premise.
+# Sources: proof/H2-f6/ + proof/G4-beta5-populated/ + proof/H3-rowid-gap/ ONLY.
+# Written BEFORE any read of proof/i1-h2-self-offset/.
+reviewer: i-reviewer
+reconstruction: R1-i1-premise
+written: 2026-11-02
+blind: true
+h2_end_state_g4beta5:
+  verdict: restored-exact-byte-equal-to-B0
+  control:
+    - { route: /ip/vrf, objectCount: 1, rows: ["*0:main"] }
+    - { route: /ip/address, objectCount: 1, rows: ["*1:10.0.2.15/24 DHCP ether1"] }
+    - { route: /interface/bridge, objectCount: 0, rows: [] }
+  native: "[20,1]=1 row (rowid 1, f6=0) [20,0]=3 rows (ether1=2 ether2=3 lo=1)"
+  vm: "g4beta5 STOPPED (not removed)"
+  evidence:
+    - work/2026-11-winbox-attributes/proof/H2-f6/restored_ip_vrf.json
+    - work/2026-11-winbox-attributes/proof/H2-f6/restored_ip_address.json
+    - work/2026-11-winbox-attributes/proof/H2-f6/restored_interface_bridge.json
+    - work/2026-11-winbox-attributes/proof/H2-f6/step-restored.jsonl
+    - work/2026-11-winbox-attributes/proof/H2-f6/report.yaml
+fitted_points_verified_from_raw:
+  # reviewer-extracted from step-B0/B4/B5.jsonl rx from=[20,1], 0xfe0002 rows:
+  points:
+    - { addr_rowid: 1, vrf_id: "*0 (main)", f6: 0, nkeys: 13 }
+    - { addr_rowid: 2, vrf_id: "*1 (h2vrf1)", f6: 1, nkeys: 13 }
+    - { addr_rowid: 3, vrf_id: "*2 (h2vrf2)", f6: 2, nkeys: 13 }
+  both_fit:
+    - "VRF-key: f6 == containing VRF .id (0/1/2, zero offset)"
+    - "self-offset: f6 == address-own-rowid-minus-1 (1->0, 2->1, 3->2)"
+  evidence:
+    - work/2026-11-winbox-attributes/proof/H2-f6/step-B0.jsonl
+    - work/2026-11-winbox-attributes/proof/H2-f6/step-B4.jsonl
+    - work/2026-11-winbox-attributes/proof/H2-f6/step-B5.jsonl
+    - work/2026-11-winbox-attributes/proof/H2-f6/control-B4-read.json
+    - work/2026-11-winbox-attributes/proof/H2-f6/control-B5-read.json
+id_allocation_behavior_g4beta5:
+  # ret values from control-*-add.json across two legs on the SAME vm:
+  vrf_reused: "G4 B4 vrf/add ret *1 (removed R2); H2 B1 vrf/add ret *1 again — freed VRF .id REUSED"
+  address_reused: "G4 B5 addr/add ret *2 (removed R1); H2 B4 addr/add ret *2 again — freed address .id REUSED"
+  bridge_monotonic: "G4 B1 bridge/add ret *4 (removed R5); H2 B2 bridge/add ret *5 — bridge .ids NOT reused (monotonic)"
+  reject_consumes_other_table: "H3 (ws21 firewall): one rejected add consumed exactly one rowid (accept landed *2)"
+  consequence: "allocation quirks vary PER TABLE; the self-offset prediction numeral MUST be computed from the read-back .id of the probe row, never assumed"
+  evidence:
+    - work/2026-11-winbox-attributes/proof/G4-beta5-populated/control-B4-add.json
+    - work/2026-11-winbox-attributes/proof/G4-beta5-populated/control-B5-add.json
+    - work/2026-11-winbox-attributes/proof/H2-f6/control-B1-add.json
+    - work/2026-11-winbox-attributes/proof/H2-f6/control-B4-add.json
+    - work/2026-11-winbox-attributes/proof/H2-f6/control-B5-add.json
+    - work/2026-11-winbox-attributes/proof/H3-rowid-gap/report.yaml
+minimal_discriminating_setup:
+  verdict: "baseline alone INSUFFICIENT (VRF1 does not exist at baseline); PARTIAL rebuild required (VRF1 only — no bridge, no VRF2)"
+  steps:
+    - "1. vrf/add name=<fresh> interfaces=ether2 (ether2 free at baseline; H2-B1 pattern proven on this vm)"
+    - "2. addr/add A <addr1>/24 interface=ether2 (lands VRF1 via interface membership; H2-B4 pattern)"
+    - "3. addr/add B <addr2>/24 interface=ether2 COEXISTING with A (distinct host address, same subnet ok)"
+    - "4. control read-back gates after every add (vrf=<fresh> on A and B; record B's actual .id)"
+    - "5. native GETALL [20,1] (leg-g4.ts reuse, read-only); read f6 on the row with B's rowid; [20,1] row count must equal 3"
+    - "6. remove B + A + VRF (.id selectors), restore-verify byte-equality vs B0"
+  why_second_coexisting_address_is_minimal:
+    - "ONE rebuilt address gets *2 (per reuse evidence) -> VRF-key predicts 1 AND self-offset predicts 2-1=1: NOT discriminating"
+    - "TWO coexisting addresses force B.rowid >= 3 (*1 DHCP + A occupy lower .ids) -> predictions diverge under EVERY allocation behavior (reuse or monotonic)"
+    - "no VRF2/bridge needed: discrimination needs only two coexisting rows in ONE VRF with distinct .ids"
+predictions:
+  vrf_key: "f6=1 on B's row UNCONDITIONALLY (VRF1 .id *1)"
+  self_offset: "f6=(B.rowid-1): =2 if B lands *3 (reuse, expected) else 3+ if monotonic — in ALL cases != 1"
+  h2_next_line_numeral: "H2 report 'next' quotes f6=3, which assumes B lands *4 (marginal-on-unrestored-B5-state or no-reuse arithmetic). The ROBUST decider does not assume: it reads back B's .id and compares f6 against BOTH 1 and (rowid-1)."
+  third_outcome: "f6 reads neither 1 nor (rowid-1) -> BOTH dead; report honestly, do not re-fit"
+counted_write_budget:
+  counting_rule_primary: "F-vlan rule (H2/G4 lineage, same vm+tables): EVERY control add/remove counts 1w; reads 0w"
+  budget_fvlan: "6w+0r = vrf/add (1) + addrA/add (1) + addrB/add (1) + 3 removes (3); all reads 0w"
+  budget_fjump: "4w+0r under the F-jump rule (3 adds + 1 restore branch; removes bundled) — for cross-leg comparison only"
+  rebuild_needed: "partial (VRF1 + 2 addrs); full H2 rebuild (bridge+VRF2) NOT needed"

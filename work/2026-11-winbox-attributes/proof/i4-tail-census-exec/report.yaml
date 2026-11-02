@@ -1,0 +1,53 @@
+# cspell:ignore rowid getall getone getobj getcount hscan defconf qos centrs jsonl brkpath notimp unmappable
+# I4 EXECUTION report (coordinator). Tail census 1a, executed live read-only.
+complete: true
+date: 2026-11-02
+worker: coordinator
+leg: I4-tail-census-1a
+verdict: "COMPLETE 0w+0r — defconf gating + 3-version identity; QoS 114/115 gating + v6-absent PROVEN; 2 NEW handlers catalogued ([20,120] 2-row, [20,121] 8-row); U1 version-diff EXHAUSTED (no split)"
+spend: { approved: "0w+0r (read-only census + boot approval)", spent: "0w+0r", machines: [winbox-beta4, ws21, ws3c6] }
+tooling:
+  script: work/2026-11-winbox-attributes/proof/i4-tail-census-exec/census.ts
+  shape: "resolveLabTarget/openSession/correlatedRequest/appendCapture (write-through, ts redacted); verbs getone/getall/getobj(obj=1)/getcount; router-error recorded as data, never thrown; explicit --host/--port/--user/--pass path for v6 (resolveQuickchr needs rest-api auth, absent on 6.49)"
+coverage:
+  - family: 1a-A-defconf
+    reads: ["GETONE [24,8] beta4 (== 7.25 bodies)", "GETONE [24,8] v6 (same 6 fields, reorder, no banner, f5 empty)", "gating GETALL/GETOBJ/GETCOUNT [24,8] all 3 versions (->0xfe0003/->0xfe0003/0xFFFFFFFF on 7.x, no-count on v6)"]
+  - family: 1a-B-qos-profile-map
+    reads: ["GETONE [20,114]/[20,115] beta4 (drift-free vs 7.25)", "gating both 7.x (GETALL 1-row wrap, GETOBJ->0xfe0004, GETCOUNT 1)", "v6 all-verbs ->0xfe0002 (absent, v7-only PROVEN)", "hscan GETONE [20,116]/[20,117]/[20,120]/[20,121] both 7.x (116/117 no-obj, 120/121 more-than-one-obj)", "GETALL/GETOBJ/GETCOUNT [20,120]/[20,121] beta4 + GETALL both 7.25 (identical rows)"]
+proven:
+  - id: P-i4-defconf-gating
+    claim: "defconf is GET-only on all 3 versions (GETALL/GETOBJ->0xfe0003); GETCOUNT=0xFFFFFFFF sentinel on 7.x, countless on v6"
+    tier: "TIER 1 (step-beta4-defconf.jsonl + step-725-gating.jsonl + step-649-defconf.jsonl)"
+  - id: P-i4-qos-v7-only
+    claim: "[20,114]/[20,115] absent on v6 (0xfe0002 all verbs, absent-handler signature) — v7-only PROVEN"
+    tier: "TIER 1 (step-649-qos.jsonl)"
+  - id: P-i4-qos-wrap
+    claim: "114/115 GETALL wraps the singleton as a 1-row list; GETOBJ obj=1 ->0xfe0004 (selector puzzle)"
+    tier: "TIER 1 (step-beta4-qos.jsonl + step-725-gating.jsonl)"
+  - id: P-i4-120-121-new
+    claim: "two uncatalogued QoS-octet lists: [20,120] 2-row default/offline (1 USER field 0x1e=255), [20,121] 8-row (10 USER fields, f7==rowid, f11 climbs-then-absent); identical rows 7.25+beta4"
+    tier: "TIER 1 (step-beta4-qos-siblings2.jsonl + step-725-siblings2.jsonl; rows in fixture)"
+unresolved:
+  - id: U1-defconf-field-split
+    claim: "NARROWED then EXHAUSTED on the version axis: beta4==7.25 bodies, v6 same-6-fields — no split; needs a custom-script-set leg (write leg, future scope)"
+  - id: U2-qos-populated-shapes
+    claim: "CARRIED: CHR shapes still defaults; needs switch hardware"
+  - id: U4b-114-115-getobj-selector
+    claim: "NEW: GETOBJ obj=1 ->0xfe0004 on both — right id, wrong selector or verb unsupported; read-only selector-variant matrix is the next step"
+  - id: U-siblings-v6
+    claim: "NEW: 116/117/120/121 presence on v6 untested (out of 1a plan)"
+  - id: U-120-121-purpose
+    claim: "NEW: both lists catalogued role-open; 120 plausibly a profile selector, 121 plausibly per-priority — unproven; stimulus = QoS config changes on switch hardware"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/census.ts
+  - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/report.yaml
+  - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-beta4-defconf.jsonl
+  - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-beta4-qos.jsonl
+  - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-beta4-qos-siblings.jsonl
+  - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-beta4-qos-siblings2.jsonl
+  - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-725-gating.jsonl
+  - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-725-siblings.jsonl
+  - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-725-siblings2.jsonl
+  - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-649-defconf.jsonl
+  - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-649-qos.jsonl
+  - fixtures/winbox-ipc/7.26beta4-qos-120-121.json

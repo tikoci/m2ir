@@ -1,0 +1,77 @@
+# cspell:ignore rowid getcount getall reqid mangle calea unacked ladder rungs oneshot churn ws3c keepalive keepalives trel msback hdecay nonmonotonic negcontrol untimed rtt
+# H-decay-3 EXECUTION report (coordinator). Announce-backlog leg, executed live.
+complete: true
+date: 2026-11-02
+worker: coordinator
+leg: I2-h-decay-3-announce-backlog
+verdict: "COMPLETE 2w+0r of 2w+0r — outcome A3 STABLE-UNTESTABLE (spike flat-1 R0a..R5 + 54 keep-alive samples/300s, async=0 everywhere; clean negative control); H-decay-3 stays UNTESTED by outcome design; Q1-dip annex STOOD DOWN; fixed ladder validated live L1-L5; restore clean; ws21 stopped"
+counting_rule: "H1 F-jump: S1 add 1w + S3 restore-verify branch 1w; S1 remove bundled 0w; no rejections"
+spend: { approved: "2w+0r", spent: "2w+0r", vm: ws21 }
+gates:
+  - "baseline PASS (5-menu zero + native [20,3]=0 [20,32]=0, GETALL 0 rows complete)"
+  - "S0 negative control CLEAN (7/7 rungs v32=0 async=0, 55 keep-alive samples v32=0 async=0, drain 0, no failures) — A4 not taken"
+  - "S1 add ACCEPTED ret *1 (1w); read-back exactly 1 row forward/accept packets 0 bytes 0"
+  - "counter guard HELD ([20,3]==1 at R5)"
+  - "S3 remove accepted (bundled 0w); 5-menu zero + native zero; restore clean"
+outcome:
+  id: A3-stable-untestable
+  condition: "spike (R0a=1) + NO decay across R0a..R5 (all v32=1: 7 rung rx + 54 K-samples over 300s, TIER 1) + async=0 on every rung/keepalive/drain + negative control clean"
+  verdict: "decay-correlation UNTESTABLE this spike; consistent with H-decay-1 variable-gauge; NO claim for/against H-decay-3"
+  curve: "R0a@12s=1 R0b=1 R1=1 R2@30s=1 R3@60s=1 R4@120s=1 R5@300s=1 (ladder started ~12s post-t0: S1 read-back + spawn gap; R0a/R0b/R1 back-to-back)"
+annex_q1_dip:
+  decision: Q-stand-down
+  reason: "host ladder flat/stable through R3 — no dip to resolve; 0 spent beyond the host leg. Dip needs a decaying spike (a future H-decay-3 re-run on a non-stable spike)."
+  attachment_note: "coordinator attached the annex (S2 --keepalive-ms 5000, matched S0 shape) under the per-leg yes: 0w, brief-requested U-h1-q1-dip coverage, conditional stand-down honored"
+live_validation_L1_L6:
+  - "L1 write-through PASS (mid-S0 spot-check: step file at 166 lines while running; both step files complete post-run)"
+  - "L2 per-rung account PARTIAL-ledger-full (7/7 rung-end + 55/54 keepalive ledger events with counts; console sampled via tail only — full console was piped, not persisted; LESSON: tee console to a file on future legs)"
+  - "L3 keepalive cadence PASS (max inter-keepalive-event gap 10.0s incl. rung-traffic windows; true idle never exceeded ~5s+rtt; session alive 300s+)"
+  - "L4 no-reconnect PASS (exactly 1 open/1 close pair per ladder)"
+  - "L5 post-run replay PASS (all 330 step records valid JSON with decode ok)"
+  - "L6 death drill N/A (no rung failed; A6 not taken)"
+proven:
+  - id: P-h-decay-3-stable-second-sample
+    claim: "stability-at-1 is now the modal spike shape (2/4 timed samples: H1 spike1 + this leg; vs 1 graded + 1 decay-to-0)"
+    tier: "TIER 1 (step-ladder.jsonl rx bytes + timing ledger; rung rows in fixture)"
+    evidence: [step-ladder.jsonl, timing-ladder.jsonl, step-negative-control.jsonl, timing-negative-control.jsonl, control-S1-read.json]
+  - id: P-h-decay-3-negative-control-clean
+    claim: "matched-traffic ladder with no stimulus draws zero async and flat-0 (churn model holds for the idle case)"
+    tier: "TIER 1"
+    evidence: [step-negative-control.jsonl, timing-negative-control.jsonl]
+unresolved:
+  - id: U-h1-32-mechanism
+    claim: "CARRIED: H-decay-3 announce-backlog STILL untested (needs a decaying spike); variable-gauge consistent; multi-step one-shot + history-gating open"
+    next: "re-run H-decay-3 on a future spike; if stable again, consider a second in-session add (H1 spike2 decayed) as the decaying host"
+  - id: U-h1-q1-dip
+    claim: "CARRIED: dip needs a decaying spike; annex design stands, attach to the next decaying-spike run"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/report-execution-h-decay-3.yaml
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h-decay-3.yaml
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/annex-u-h1-q1-dip.yaml
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/explain-add-h-decay-3.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/explain-rm.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/explain-rm-live.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-base-firewall-filter.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-base-firewall-nat.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-base-firewall-raw.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-base-firewall-mangle.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-base-firewall-calea.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/step-M0.jsonl
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/timing-M0.jsonl
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/step-negative-control.jsonl
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/timing-negative-control.jsonl
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-S1-add.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-S1-read.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/t0.txt
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/step-ladder.jsonl
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/timing-ladder.jsonl
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-S1-rm.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-restored-filter.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-restored-nat.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-restored-raw.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-restored-mangle.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/control-restored-calea.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/step-restored.jsonl
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/timing-restored.jsonl
+  - fixtures/winbox-ipc/7.25-getcount-20-32-h-decay-3.json

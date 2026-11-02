@@ -1,0 +1,51 @@
+# cspell:ignore rowid getall vrf i1mainb ether1 centrs jsonl cmp precheck substeps oneshot
+# I1-B EXECUTION report (coordinator). Main-VRF decider leg, executed live.
+# Option A (VRF1 6w) sheeted but NOT executed per user approval of Option B.
+complete: true
+date: 2026-11-02
+worker: coordinator
+leg: I1-h2-self-offset-B
+verdict: "COMPLETE 2w+0r of 2w+0r (ceiling 3w unneeded) — self-offset DISPROVEN (row *2 reads f6=0, predicted 1); VRF-key survives; restore EQUAL; g4beta5 stopped"
+counting_rule: "H2/F-vlan: W1 add 1w + W2 remove 1w; all reads 0w; no rejections"
+spend: { approved: "2w+0r core, 3w ceiling", spent: "2w+0r", vm: g4beta5 }
+gates:
+  - "S0 pre-flight PASS (g4beta5 existed STOPPED)"
+  - "S2 version gate PASS (7.26beta5)"
+  - "S1 drift gate PASS (3 control files byte-equal vs H2 restored_*.json; native [20,1]=1 row f6=0 13 keys, [20,0]=3 rows)"
+  - "W1 add ACCEPTED ret *2 (M=2, M-1=1 vs VRF-key 0)"
+  - "STIMULUS GATE PASS (row *2: interface=ether1, vrf=main)"
+  - "S5 mappable (comment i1mainb + rowid 2 == numeric M)"
+  - "S6 not triggered (remove accepted first try)"
+  - "R0 RESTORE_EQUAL (cmp x3 + native [20,1]=1 row [20,0]=3 rows)"
+decision:
+  observed: "f6(rowid=1, dhcp)==0 AND f6(rowid=2, i1mainb)==0, same GETALL, 13-key rows"
+  outcome_row: "f6(r2)==f6(dhcp)==0 -> self-offset DISPROVEN; VRF-key survives"
+proven:
+  - id: P-i1b-self-offset-dead
+    claim: "f6 is NOT address-own-rowid-minus-1: second main row (*2) reads 0 where self-offset predicted 1; VRF-key (0 for main) holds on both rows of one GETALL"
+    tier: "TIER 1 (step-W1b.jsonl rx bytes + control-W1b-read.json gate)"
+    evidence: [step-W1b.jsonl, control-W1b-add.json, control-W1b-read.json]
+unresolved:
+  - id: U-h2-vrf-native-rowid
+    claim: "still open (no native VRF-table read in the catalog); untouched by this leg either way"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/report-b.yaml
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/leg-sheet-main-b.md
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-W1b-design.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-W2b-template.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-W1b-live.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/explain-W2b-live.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/baseline_b_system_resource.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/baseline_b_ip_vrf.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/baseline_b_ip_address.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/baseline_b_ip_bridge.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/step-B0b.jsonl
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/control-W1b-add.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/control-W1b-read.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/step-W1b.jsonl
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/control-W2b-rm.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/restored_b_ip_vrf.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/restored_b_ip_address.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/restored_b_ip_bridge.json
+  - work/2026-11-winbox-attributes/proof/i1-h2-self-offset/step-restored-b.jsonl
+  - fixtures/winbox-ipc/7.26beta5-f6-self-offset.json

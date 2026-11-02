@@ -1,0 +1,315 @@
+{
+  "ok": true,
+  "data": {
+    "input": {
+      "bytes": 82,
+      "normalized": false,
+      "truncated": false,
+      "positionMap": [
+        {
+          "analyzed": {
+            "start": 0,
+            "end": 82
+          },
+          "originalUtf16": {
+            "start": 0,
+            "end": 82
+          }
+        }
+      ]
+    },
+    "verdict": "pass",
+    "canonical": {
+      "mode": "structured",
+      "path": "/ip/firewall/filter",
+      "verb": "add",
+      "args": {
+        "chain": "forward",
+        "action": "accept",
+        "protocol": "udp",
+        "comment": "i2-t5-udp"
+      },
+      "queries": [],
+      "writeShaped": true
+    },
+    "structure": {
+      "statementCount": 1,
+      "statements": [
+        {
+          "id": "s0",
+          "span": {
+            "start": 0,
+            "end": 82
+          },
+          "resolution": "resolved",
+          "kind": "command",
+          "command": {
+            "path": "/ip/firewall/filter",
+            "verb": "add",
+            "args": {
+              "chain": "forward",
+              "action": "accept",
+              "protocol": "udp",
+              "comment": "i2-t5-udp"
+            }
+          },
+          "arguments": {
+            "read": true,
+            "tokens": [
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 24,
+                  "end": 37
+                },
+                "name": "chain",
+                "value": "forward",
+                "valueSpan": {
+                  "start": 30,
+                  "end": 37
+                },
+                "text": "chain=forward"
+              },
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 38,
+                  "end": 51
+                },
+                "name": "action",
+                "value": "accept",
+                "valueSpan": {
+                  "start": 45,
+                  "end": 51
+                },
+                "text": "action=accept"
+              },
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 52,
+                  "end": 64
+                },
+                "name": "protocol",
+                "value": "udp",
+                "valueSpan": {
+                  "start": 61,
+                  "end": 64
+                },
+                "text": "protocol=udp"
+              },
+              {
+                "kind": "attribute",
+                "span": {
+                  "start": 65,
+                  "end": 82
+                },
+                "name": "comment",
+                "value": "i2-t5-udp",
+                "valueSpan": {
+                  "start": 73,
+                  "end": 82
+                },
+                "text": "comment=i2-t5-udp"
+              }
+            ],
+            "queries": [],
+            "positional": []
+          },
+          "contextCertain": true,
+          "ev": "e4",
+          "transport": {
+            "classification": "api-candidate",
+            "basis": "Q8 tested add as PUT on CHR 7.23.2 and 7.24rc2",
+            "rest": {
+              "method": "PUT",
+              "path": "/rest/ip/firewall/filter",
+              "body": {
+                "chain": "forward",
+                "action": "accept",
+                "protocol": "udp",
+                "comment": "i2-t5-udp"
+              }
+            },
+            "centrs": "centrs api '<router>' '/ip/firewall/filter' -X PUT -f 'chain=forward' -f 'action=accept' -f 'protocol=udp' -f 'comment=i2-t5-udp'",
+            "ev": "e8"
+          }
+        }
+      ],
+      "blocks": [],
+      "containsWrite": true,
+      "subcommands": [],
+      "ev": "e6"
+    },
+    "symbols": {
+      "occurrences": []
+    },
+    "values": {
+      "occurrences": [
+        {
+          "id": "v0",
+          "span": {
+            "start": 30,
+            "end": 37
+          },
+          "tokenSpan": {
+            "start": 24,
+            "end": 37
+          },
+          "kind": "attribute",
+          "name": "chain",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        },
+        {
+          "id": "v1",
+          "span": {
+            "start": 45,
+            "end": 51
+          },
+          "tokenSpan": {
+            "start": 38,
+            "end": 51
+          },
+          "kind": "attribute",
+          "name": "action",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        },
+        {
+          "id": "v2",
+          "span": {
+            "start": 61,
+            "end": 64
+          },
+          "tokenSpan": {
+            "start": 52,
+            "end": 64
+          },
+          "kind": "attribute",
+          "name": "protocol",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        },
+        {
+          "id": "v3",
+          "span": {
+            "start": 73,
+            "end": 82
+          },
+          "tokenSpan": {
+            "start": 65,
+            "end": 82
+          },
+          "kind": "attribute",
+          "name": "comment",
+          "quoted": false,
+          "facts": {
+            "shapeHints": {
+              "values": [
+                "str"
+              ],
+              "ev": "e9"
+            }
+          }
+        }
+      ]
+    },
+    "spans": [],
+    "diagnostics": [],
+    "evidence": [
+      {
+        "id": "e0",
+        "source": "canonicalizer",
+        "probe": "canonicalizeExecuteCommand",
+        "basis": "direct",
+        "outcome": "ok"
+      },
+      {
+        "id": "e1",
+        "source": "canonicalizer",
+        "probe": "analyzeCoordinates",
+        "basis": "direct",
+        "outcome": "ok"
+      },
+      {
+        "id": "e4",
+        "source": "canonicalizer",
+        "probe": "resolveVerbs",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e6",
+        "source": "canonicalizer",
+        "probe": "containsWrite",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e8",
+        "source": "canonicalizer",
+        "probe": "classifyExplainTransport",
+        "basis": "heuristic",
+        "outcome": "ok"
+      },
+      {
+        "id": "e9",
+        "source": "canonicalizer",
+        "probe": "valueShapeHints",
+        "basis": "heuristic",
+        "outcome": "ok"
+      }
+    ],
+    "runtimeAcceptance": "not-proven"
+  },
+  "warnings": [],
+  "tips": [
+    {
+      "code": "tip/explain-offline-only",
+      "message": "No router was given, so this is the canonicalizer's reading alone.",
+      "fix": "Add a router (`centrs explain <router> '<input>'`) for read-only parse, highlight and argument-name evidence; `--schema` and `--complete` then describe paths and complete at the cursor.",
+      "detailsUrl": "https://tikoci.github.io/centrs/tips/tip/explain-offline-only"
+    }
+  ],
+  "meta": {
+    "target": {},
+    "via": null,
+    "settings": {
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      }
+    },
+    "validation": {
+      "enabled": false
+    },
+    "operation": {
+      "command": "explain",
+      "mode": "offline",
+      "statementCount": 1,
+      "verdict": "pass"
+    }
+  }
+}

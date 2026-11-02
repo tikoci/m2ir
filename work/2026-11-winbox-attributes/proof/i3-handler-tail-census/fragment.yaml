@@ -1,0 +1,37 @@
+# cspell:ignore rowid u32 getall getone markname dbrd sys2 defconf qos pfc wps unproven
+# I3 proposed gui-handlers.yaml fragment. Coordinator integrates; I3 edits nothing canonical.
+fragment_for: profiles/winbox-ipc/gui-handlers.yaml
+promotion_ready:
+  - target: boot-flags-24-10.fields
+    action: add namespace-user entries f1/f2 (meanings PROVEN by first-party code + live legs)
+    lines:
+      - '    fields:'
+      - '      namespace-user:'
+      - '        1: { name: disable-smp-flag, tcode: bool, role: "exists(/rw/DISABLE_SMP): literal open() probe in sys2 slot-9 0x805719e; v7 F, v6 F" }'
+      - '        2: { name: enable-x86-64-flag, tcode: bool, role: "exists(/rw/ENABLE_X86_64): literal open() probe in sys2 slot-9 0x805719e; v7 F, v6 T (x86_64-flag era drift)" }'
+    evidence_to_attach:
+      - source: code
+        ref: "RouterOS v7 sys2 slot-9 0x805719e (open-path probes + bit-29 leg); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+      - source: sample
+        ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-24-10.json; singleton batch bit-29 leg ev/7.25-getone-24-10-bit29.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16/§25"
+    rationale: "field meanings are proven twice over (literal paths in code + live values on both versions); no open question remains except the nested-0xfe001d shape, already recorded in the entry role text"
+  - target: unknown-20-134.fields
+    action: add row-id + namespace-session mark-name (shape PROVEN by live insert fixture; mirrors sibling registries)
+    lines:
+      - '    fields:'
+      - '      row-id: { namespace: session, field: 1 }'
+      - '      namespace-session:'
+      - '        16: { name: mark-name, tcode: string, role: "0xfe0010: ''no-mark'' default + one row per M2 f137 insert (m2mark1 fixture); same factory class as [20,13]/[20,14]" }'
+    evidence_to_attach:
+      - source: sample
+        ref: "live CHR interrogation (f137 batch, 7.25): M2 SETOBJ proof ev/7.25-getall-20-134-m2mark1.json (second row inserts, 0x89 echo); see work/2026-10-chr-extraction/ws3c-prober-findings.md §39"
+      - source: code
+        ref: "RouterOS v7 net one-factory build 0x8056724 for 13/14/134; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §8"
+    rationale: "row shape {0xfe0001, 0xfe0010} is live-proven including insert + echo; the entry keeps status identified with the DRIVER as the remaining open item (unchanged)"
+not_proposed:
+  - what: "default-config [24,8] field split (f2/f3/f4/f5/f6 vs script/caps/wps-sync/custom)"
+    reason: "bodies suggest the split but nothing proves it (report.yaml U1); version-diff or custom-script-set leg first"
+  - what: "any QoS / modem / dbrd field entries"
+    reason: "CHR shapes are defaults/empty; Rosetta names are candidates only and no numeric mapping is proven (report.yaml U2/U3)"
+  - what: "any role-open singleton/list fields (24-14, 24-16, 13-5, 2-1, 13-9, 13-6, 13-8, 20-124, 20-32)"
+    reason: "meanings unknown (report.yaml U4-U8); unknown-* entries would add no information beyond the raw shapes already in entry role text"

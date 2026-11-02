@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*1",
+      "action": "accept",
+      "bytes": "0",
+      "chain": "forward",
+      "comment": "i2-hdecay3",
+      "dynamic": "false",
+      "invalid": "false",
+      "packets": "0"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "via": "rest-api",
+    "operation": {
+      "kind": "data",
+      "objectCount": 1,
+      "path": "/ip/firewall/filter"
+    }
+  }
+}

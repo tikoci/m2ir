@@ -1,0 +1,388 @@
+{
+	"provenance": {
+		"report": "H-decay-3 announce-backlog leg, 2026-11-02 (ws21 7.25 x86, 2w+0r of 2): outcome A3 stable-untestable",
+		"routeros_version": "7.25",
+		"route": "[20,32] spike curve: R0a..R5 all v32=1, async=0; negative control all v32=0, async=0",
+		"note": "Sanitized M2 hex plus decoded entries only: no hosts, ports, or credentials. Full rungs + 54+55 keep-alive samples: proof/i2-decay-backlog/step-ladder.jsonl + step-negative-control.jsonl with timing ledgers."
+	},
+	"records": [
+		{
+			"id": "getcount-20-32-h-decay-3-spike-r0a-rx",
+			"role": "H-decay-3 spike R0a [20,32] GETCOUNT",
+			"source": "proof/i2-decay-backlog/step-ladder.jsonl rx seq 3 (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h-decay-3-spike-r0b-rx",
+			"role": "H-decay-3 spike R0b [20,32] GETCOUNT",
+			"source": "proof/i2-decay-backlog/step-ladder.jsonl rx seq 11 (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0907",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 7,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 7
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h-decay-3-spike-r1-rx",
+			"role": "H-decay-3 spike R1 [20,32] GETCOUNT",
+			"source": "proof/i2-decay-backlog/step-ladder.jsonl rx seq 19 (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff090b",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 11,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 11
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h-decay-3-spike-r2-rx",
+			"role": "H-decay-3 spike R2 [20,32] GETCOUNT",
+			"source": "proof/i2-decay-backlog/step-ladder.jsonl rx seq 33 (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0912",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 18,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 18
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h-decay-3-spike-r3-rx",
+			"role": "H-decay-3 spike R3 [20,32] GETCOUNT",
+			"source": "proof/i2-decay-backlog/step-ladder.jsonl rx seq 51 (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff091b",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 27,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 27
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h-decay-3-spike-r4-rx",
+			"role": "H-decay-3 spike R4 [20,32] GETCOUNT",
+			"source": "proof/i2-decay-backlog/step-ladder.jsonl rx seq 81 (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff092a",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 42,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 42
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h-decay-3-spike-r5-rx",
+			"role": "H-decay-3 spike R5 [20,32] GETCOUNT",
+			"source": "proof/i2-decay-backlog/step-ladder.jsonl rx seq 159 (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09010600ff0951",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 81,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 81
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h-decay-3-neg-r0a-rx",
+			"role": "H-decay-3 neg R0a [20,32] GETCOUNT",
+			"source": "proof/i2-decay-backlog/step-negative-control.jsonl rx seq 3 (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09000600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getcount-20-32-h-decay-3-neg-r5-rx",
+			"role": "H-decay-3 neg R5 [20,32] GETCOUNT",
+			"source": "proof/i2-decay-backlog/step-negative-control.jsonl rx seq 161 (from [20,32])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020014000000200000001c00ffa001000e006d73672d70726f78792d372e32350300ff09021900fe09000600ff0952",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 32],
+			"reqId": 82,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 32]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xfe0019",
+					"tcode": "0x9",
+					"value": 0
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 82
+				}
+			]
+		}
+	]
+}

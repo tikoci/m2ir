@@ -1,0 +1,71 @@
+# cspell:ignore rowid getcount getall reqid mangle calea unacked ladder rungs oneshot newflag churn ws3c subnano trel msback respike nodecay undersampled keepalive
+# R2: blind reconstruction of the FIXED-ladder requirement list.
+# Sources: proof/H1-decay/ + proof/H0a-2032-decay-design/ ONLY.
+# Written BEFORE any read of proof/i2-decay-backlog/.
+reviewer: i-reviewer
+reconstruction: R2-i2-requirements
+written: 2026-11-02
+blind: true
+defects_to_fix:
+  - id: D1-end-of-run-flush-only
+    location: "proof/H1-decay/leg-h1.ts:255-261 (captures flushed to --out ONLY after the run completes; nothing in finally)"
+    loss: "idle death at the R3 attempt threw -> step-ladder.jsonl NEVER written; R0a-R2 rx bytes + ladder-window async LOST (values survive console-only = TIER 2)"
+    evidence:
+      - work/2026-11-winbox-attributes/proof/H1-decay/leg-h1.ts
+      - work/2026-11-winbox-attributes/proof/H1-decay/timing-ladder.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/report.yaml
+    requirement: "REQ-F1: incremental per-rung append (every rung persisted before the next sleep); flush pending captures in the close path even on throw"
+  - id: D2-empty-capture-creates-no-file
+    location: "leg-h1.ts flush loop writes per-record; zero records -> out file never created"
+    loss: "step-watch15.jsonl is CITED as evidence (report watch-negative-control + P-h1-async-silence) but ABSENT on disk (verified: 13 step files, no step-watch*.jsonl); the 15s negative control is ledger-only, not rx-committed"
+    evidence:
+      - work/2026-11-winbox-attributes/proof/H1-decay/leg-h1.ts
+      - work/2026-11-winbox-attributes/proof/H1-decay/timing-watch15.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/report.yaml
+    requirement: "REQ-F2: ALWAYS create the out file (even with zero records; write a summary/trailer record); NEVER cite a missing file as evidence"
+  - id: D3-schedule-violates-idle-bound
+    location: "leg-h1.ts:221-229 rungs R3@60s R4@120s R5@300s (gaps 30/60/180s)"
+    bound: "P-h1-idle-death: idle WinBox sessions die after ~24-30s with no traffic (2 samples, TIER 1 ledgers: ladder death in (+30s,+60s] per timing-ladder.jsonl; watch death at +25.5s/24s-idle per timing-watch.jsonl)"
+    evidence:
+      - work/2026-11-winbox-attributes/proof/H1-decay/leg-h1.ts
+      - work/2026-11-winbox-attributes/proof/H1-decay/timing-ladder.jsonl
+      - work/2026-11-winbox-attributes/proof/H1-decay/timing-watch.jsonl
+    requirement: "REQ-F3: persistent-session inter-traffic gaps MUST be <20s (H1's own bound-derived rule); any rung past the bound MUST be session-per-read or carry keepalive traffic; schedules exceeding the bound without mitigation are REJECT"
+  - id: D4-no-per-rung-async-console-counts
+    location: "leg-h1.ts:185-187 console.log prints rung VALUES (how TIER 2 survived) but no asyncSeen count per rung"
+    loss: "ladder-window async count unrecoverable (not in console, not in ledger, rx lost)"
+    evidence:
+      - work/2026-11-winbox-attributes/proof/H1-decay/leg-h1.ts
+    requirement: "REQ-F4: per-rung asyncSeen count to console AND timing ledger (belt-and-braces with REQ-F1)"
+  - id: D5-watch-mode-same-flush-gap
+    location: "watch subcommand shares the end-of-run flush; 300s watch died at +25.5s"
+    evidence:
+      - work/2026-11-winbox-attributes/proof/H1-decay/leg-h1.ts
+      - work/2026-11-winbox-attributes/proof/H1-decay/timing-watch.jsonl
+    requirement: "REQ-F5: bounded watches (<=15s committed-green) with incremental persistence; long watches need keepalive or segmentation"
+must_keep:
+  - "REQ-K1: timestamped capture (--t0-ms, relative +ms ts, timing ledger) — H0a U-h0a-tooling-timestamp closure; G3-gap must not regress"
+  - "REQ-K2: G3-comparable 4-leg read shape (GETCOUNT [20,3]+[20,32], GET [20,17], paged GETALL [20,3])"
+  - "REQ-K3: churn ledger (session open/close + rung starts with tRelMs) — H-decay-5 control"
+  - "REQ-K4: bounded drains with picked-up counts in the ledger (H1: 2s drains read-mode, 5s ladder/watch default)"
+  - "REQ-K5: read-only native tooling (no native write verb; 0w by construction)"
+  - "REQ-K6: every rung value rx-committed or explicitly tier-flagged; TIER-2-only rungs forbidden as decay evidence"
+h_decay_3_test_needs:
+  design_source: "H0a design (c) passive rider + H1 U-h1-32-mechanism (announce-backlog UNTESTED: ladder async lost; 11 drains + 15s watch all async=0 in stability periods only)"
+  must_observe_to_decide:
+    - "O1: per-rung [20,32] values WITH timestamps spanning add->decay->converged on ONE spike"
+    - "O2: EVERY async record in the window persisted with host timestamps, INCLUDING between reads (session-per-read gaps hide traffic — the G3 gap)"
+    - "O3: SYS_REQID-matched CMD_DISCONNECTED pair detection: leg A TO=[] FROM=[0xff0003,slot] + leg B TO=[] FROM=[2,slot] policy-1, slot=(ctr<<8)|6; per pair: arrival t-t0, slot/ctr advance, leg sizes; any non-pair async flagged novel"
+    - "O4: churn ledger (every session open/close timestamped) + decay window inside ONE persistent session (gaps <20s per REQ-F3) so intermediate reads add ZERO churn"
+    - "O5: negative control: equal-duration no-stimulus session draws zero pairs, RX-COMMITTED (REQ-F2: file must exist)"
+  decision_rule:
+    supported_if: "pairs arrive coincident with decay steps (value drops when pairs arrive; pair count or ctr advance scales with spike magnitude) on a churn-free persistent session"
+    dead_if: "decay completes with ZERO async on a churn-free persistent session with a clean rx-committed negative control (also kills H-decay-5 as the decay driver)"
+    confounded_if: "session-per-read ladder only (pairs-per-read documents churn, NOT correlation — report as confounded per H0a)"
+  evidence:
+    - work/2026-11-winbox-attributes/proof/H0a-2032-decay-design/report.yaml
+    - work/2026-11-winbox-attributes/proof/H1-decay/report.yaml
+open_threads_fixed_ladder_should_serve:
+  - "plateau-2 convergence: longer window on a fresh spike (H1 next)"
+  - "Q1-dip class: denser polls +60..+120s (H1 next)"
+  - "magnitude history-gating (1-vs-4 unexplained) stays OPEN regardless"

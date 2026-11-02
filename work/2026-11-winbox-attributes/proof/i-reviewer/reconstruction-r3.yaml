@@ -1,0 +1,49 @@
+# cspell:ignore getone hscan qos pfc txq txman vlan chr aholder mqtt
+# R3: blind independent census of the QoS handler pair [20,114]+[20,115].
+# Sources: ws3c/ev/ transcripts (JSON read directly) + profiles/winbox-ipc/*.yaml
+# (READ ONLY) + ~/.rosetta/*.db (READ ONLY) + ws3c-prober-findings.md.
+# Written BEFORE any read of proof/i3-handler-tail-census/.
+reviewer: i-reviewer
+reconstruction: R3-i3-qos-pair-census
+written: 2026-11-02
+blind: true
+routes:
+  - { sys_to: [20, 114], process: "0x14 (net)", cmd: GET_ONE }
+  - { sys_to: [20, 115], process: "0x14 (net)", cmd: GET_ONE }
+transcript_coverage_verified_by_reading_json:
+  files:
+    - file: work/2026-10-chr-extraction/ws3c/ev/7.25-getone-20-114.json
+      shape: "GET_ONE reply, 17 entries: sys keys (0xff0001/ff0002/ff001c/ff0003=2/ff0006=2) + 0xfe-family (0xfe0007=T 0xfe0008=T 0xfe000a=F 0xfe000d=T 0xfe0029=F 0xfe0010='default') + 6 USER fields {0x23=T, 0x03=0, 0x07=1, 0x08=0, 0x01=0, 0x02=0} all tcode 0x1/0x9"
+    - file: work/2026-10-chr-extraction/ws3c/ev/7.25-getone-20-115.json
+      shape: "GET_ONE reply, 11 entries: 0xfe-ONLY (same 0xfe-family + 0xfe0010='default'); ZERO user fields"
+    - file: work/2026-10-chr-extraction/ws3c/ev/7.25-hscan-20-hi.txt
+      lines: "[line 19] [20,114] status=undefined nfields=17 user={35:bool_true 3:u8 7:u8 8:u8 1:u8 2:u8} — MATCHES the getone JSON (0x23=35); [line 20] [20,115] status=undefined nfields=11 user={} — MATCHES (0xfe-only)"
+  getall_getcount: "NONE in ev/ for 114/115 (filename + content grep over 290 files: only the two getone JSONs + hscan-20-hi.txt mention them)"
+  v6_coverage: "NONE: 6.49-hscan-20.txt spans [20,0..95] only — 114/115 out of scan range. Status: UNTESTED-on-v6 from transcripts (not proven-v7-only by transcript absence alone)"
+wire_shapes:
+  - handler: [20, 114]
+    summary: "single-object GET_ONE reply; 0xfe-family singleton + 6 small user fields (1 bool + 5 u8, values 0/0/1/0/0/0 with 0x23 true)"
+  - handler: [20, 115]
+    summary: "single-object GET_ONE reply; pure 0xfe defaults carrier, no user payload at all"
+schema_entries_read_only:
+  - entry: "profiles/winbox-ipc/gui-handlers.yaml qos-profile-20-114"
+    role_claim: "v7-only QoS profile holder: AHolder('/nova/store/net/qos/profile') at +0x90, member of the 8-handler QoS composite (ctor 0x8190e3e; siblings 115/116/117/120/121/122/126); live 0xfe-defaults (0xfe0010='default') are CHR-absent QoS defaults"
+    status_confidence: "identified-chr-absent / observed-only"
+  - entry: "profiles/winbox-ipc/gui-handlers.yaml qos-map-20-115"
+    role_claim: "v7-only QoS map holder: AHolder('/nova/store/net/qos/map') at +0x1a0, same composite; live 0xfe-only defaults (0xfe0010='default', no USER fields) are CHR-absent QoS defaults"
+    status_confidence: "identified-chr-absent / observed-only"
+static_grounding_prior_phase:
+  - "ws3c-prober-findings.md §25: QoS octet — one 0x870 composite (ctor 0x8190e3e) with 8 AHolder members (122=config +0x0, 114=profile +0x90, 115=map +0x1a0, 116=map-vlan, 117=map-ip, 121=txq, 120=txman, 126=pfc); §16 '0xfe-family' = QoS profile/map defaults; CHR-absent (no QoS menu/hardware)"
+  - "ws3c-prober-findings.md §16: 114/115/126 family shapes + NEW 0xfe vocabulary (0xfe0029/bool F, 0xfe000d/bool T re-sighted); 115 is 0xfe-only"
+  - "ws3c-prober-findings.md §10: WS-3C prober first sighting; §18: perturbation-negative (identity/timezone/filter/user move nothing)"
+rosetta_candidates_candidate_only:
+  docs_prose:
+    - "page 15 'Quality of Service': switch-chip QoS profile/map/port-relation prose (candidate CONTEXT, not a wire join)"
+    - "section 'Understanding Port, Profile, and Map relation' mentions '/in/eth/sw/qos/map/ip' TEXTUALLY in prose"
+  command_tree: "ZERO switch-QoS menu paths in schema_nodes (no %qos% dir paths; no qos-trust; no qos profile/map menus). QoS-named properties are mqtt/nv2/wifi ONLY (will-qos, qos, nv2-qos, qos-classifier) — unrelated namespaces."
+  verdict: "CANDIDATE-ONLY: docs prose corroborates profile/map as real switch-QoS concepts, but NO command-tree node exists to join on; per the no-CLI-spelling-join boundary NO numeric mapping is derivable from Rosetta. Any I3 claim of a Rosetta numeric join is REJECT unless it cites an exact schema_nodes path."
+  db: "~/.rosetta/ros-help-0.12.0.db queried READ-ONLY (mode=ro)"
+pair_relation:
+  - "114 (profile) + 115 (map) are adjacent members of the same 8-handler composite; both carry 0xfe0010='default' CHR-absent defaults"
+  - "shape contrast is the pair's salient wire fact: 114 carries 6 user fields, 115 carries none"
+  - "sibling context in hscan: 116/117/120/121 read errno 0xfe0006 (8-field errors), 122/126 read live — the octet is NOT uniformly GET_ONE-live on CHR"

@@ -1,0 +1,94 @@
+# cspell:ignore rowid getall getcount fasttrack tarpit udp icmp rowids unsets posthoc unrestorable
+# Thread-5 adjunct-field discrimination: COMBINED WRITE-LEG SHEET (design only).
+# Targets the G1 enumerate-only adjuncts (0x0b/0x16/0x194 protocol matchers +
+# 0x1c6 fasttrack flag). PIGGYBACK RECOMMENDED over standalone (see value).
+id: I2-thread-5-adjunct
+kind: write-leg-sheet
+status: design-unexecuted
+date: 2026-11-02
+worker: I2
+background:
+  - "G1 M8 (tarpit, protocol=tcp row): row carries 0x16=false (bool PRESENT-but-false), 0x194=true, 0x0b=6 (u32; 6 = the TCP protocol number). Single sample; absent on all non-protocol rows (accept/jump rows carry none of the triple)."
+  - "G1 M9 (fasttrack row): row carries 0x1c6=true. Cleared on action-exit (G1 reversal); f91-like lifecycle."
+  - "G1 adjunct classes: STICKY (f41, 0xfd002a) vs CLEARED-ON-EXIT (f91, 0x1c6) vs PERSISTENT matchers (0x16/0x194/0x0b retained after tarpit exit)."
+  - "H0b bonus scouting (zero verdict weight, raw counts in net 7.25 x86): $0x16=120 (mixed forms), $0x194=4 (all push), $0xb=216 (mixed), $0x1c6=3 (all push). $0x194/$0x1c6 are rare enough for static attribution WITHOUT live work; $0x16/$0xb are far too common as small-int immediates to attribute statically (live variation is the only path for those two)."
+  - "Route-scope warning: bare 0x16/0x0b keys ALSO appear in [20,17] GET replies (G1 baselines: 0x16=true, 0x0b=18000) with different values. ALL thread-5 reads MUST scope to GETALL [20,3] row payloads (seq-7 rx, req 5); [20,17] values are a different namespace and must never be mixed in."
+vm:
+  name: ws21
+  routeros: "7.25"
+  arch: x86
+  network: user, socket::ws21-a, socket::ws21-b
+  ports: "resolve live at execution from `quickchr list`; numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute --quickchr ws21 --yes (writes) / centrs retrieve --quickchr ws21 (reads)"
+  native_via: "proof/i2-decay-backlog/leg-h1-fixed.ts read (session-per-read 4-leg shape; row payloads in the seq-7 GETALL rx). No ladder: no timing question here."
+counting_rule: "H1 F-jump rule: each control add/set = 1w; +1 per restore-verify branch; per-cell removes bundled 0w; rejected adds/sets 0w; ALL native reads 0w; quickchr start/stop 0r"
+experiments:
+  - id: T5-a-protocol-vary
+    field_group: "matcher triple (0x0b value mapping + 0x16/0x194 gating)"
+    question: "is 0x0b the IP protocol number (6=tcp observed once), and do 0x16/0x194 track any-protocol vs tcp-only?"
+    cells:
+      - cell: "protocol=udp add"
+        stimulus: "/ip/firewall/filter/add chain=forward action=accept protocol=udp comment=i2-t5-udp"
+        explain: explain-add-udp.json
+        read: "leg-h1-fixed.ts read -> row payload: record 0x0b/0x16/0x194 presence + values"
+        predicts: "0x0b=17 if protocol-number; 0x16/0x194 presence decides any-protocol gating"
+        writes: 1
+      - cell: "protocol=icmp add (prior cell removed first, bundled 0w)"
+        stimulus: "/ip/firewall/filter/add chain=forward action=accept protocol=icmp comment=i2-t5-icmp"
+        explain: explain-add-icmp.json
+        read: "leg-h1-fixed.ts read -> row payload"
+        predicts: "0x0b=1 if protocol-number (third point: 6/17/1 pins the mapping)"
+        writes: 1
+    stop: "a bare-protocol add rejected (tarpit-needed-protocol analog in reverse) -> that cell is 0w rejection=data; continue with the surviving cell(s)"
+  - id: T5-b-posthoc-protocol
+    field_group: "matcher triple (stored-at-add vs computed)"
+    question: "does `set protocol=` on a plain row grow the triple post-hoc (computed/join) or only adds carry it (stored)? And does clearing the protocol clear the triple (vs fd002a-sticky)?"
+    host_row: "one plain accept row (add, 1w), triple verified ABSENT at first read"
+    steps:
+      - step: "set protocol=tcp"
+        stimulus: "/ip/firewall/filter/set numbers=<.id> protocol=tcp"
+        explain: explain-set-protocol.json
+        predicts: "triple appears post-hoc -> computed; stays absent -> stored-at-add"
+        writes: 1
+      - step: "clear protocol (attempt `set numbers=<.id> protocol=`)"
+        explain: explain-set-protocol-clear.json
+        predicts: "triple clears -> cleared-on-unset; triple persists -> sticky/persistent (matches G1 tarpit-exit retention)"
+        writes: 1
+        fallback: "if the clear form is device-REJECTED (passes offline explain but runtime may refuse): rejection = data (0w); INSTEAD `set numbers=<.id> protocol=udp` (1w, same explain family as T5-a adds): 0x0b 6->17 change still decides computed-vs-stored"
+    budget_note: "2-3w depending on the clear-form runtime verdict"
+  - id: T5-c-fasttrack-set
+    field_group: "0x1c6 gating (single experiment on this field)"
+    question: "does `set action=fasttrack-connection` on a plain row grow 0x1c6 post-hoc (action-computed), and does exit re-clear (G1 M9 reversal replicated)?"
+    host_row: "RIDES T5-b's row (marginal sets only, no new add): set action=fasttrack-connection (1w) -> read 0x1c6 -> set action=accept (1w) -> read 0x1c6 (expect cleared)"
+    explains: [explain-set-fasttrack.json, explain-set-accept.json]
+    caveat: "fasttrack add/set may spawn the G1 'special dummy' builtin rows (device side effect): record row-count delta; dummies are unrestorable-by-design (cannot remove builtin) -> restore PARTIAL possible, report honestly as G1 did"
+    writes: 2
+  - id: T5-restore
+    steps: "remove host row(s) (bundled 0w) + 5-menu control verify + native zero read + stop VM"
+    commands:
+      - "centrs execute --quickchr ws21 --yes '/ip/firewall/filter/remove numbers=<host-.id>' > control-T5-rm.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-restored-filter.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/nat' > control-restored-nat.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/raw' > control-restored-raw.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/mangle' > control-restored-mangle.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/calea' > control-restored-calea.json"
+      - "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(date +%s%3N) read --out step-restored.jsonl --timing-out timing-restored.jsonl"
+      - "quickchr stop ws21"
+    remove_id_note: "<host-.id> is the literal ret from the experiment's add (remove each experiment cell row; T5-a cells are removed before the next cell is added)"
+    writes: 1
+budgets:
+  standalone: "T5-a (2) + T5-b (1 add + 1 set + 1 clear-or-vary = 3) + T5-c (2, rides T5-b row) + restore branch (1) = 8w+0r"
+  piggyback: "T5-b+T5-c ride ANY host leg that leaves a plain filter row present: marginal 4-5w (sets only, host owns add+restore). T5-a needs its own adds (2w marginal) and rides any leg with spare add budget. RECOMMENDED: piggyback; do not boot standalone for adjuncts."
+marginal_value_honest:
+  - "0x0b: HIGHEST in this sheet (one confirming pair 17/1 turns a single-sample hint into a 3-point protocol-number mapping) but the prize is ONE field name; zero [20,32] mechanism weight."
+  - "0x16: MEDIUM (present-but-false on tcp is genuinely odd; the udp/icmp vary decides protocol-discriminating vs constant-adjunct). Static path hopeless (120 sites); live is the only route."
+  - "0x194: LOW-MEDIUM (presence-only bool; T5-a confirms any-protocol gating at best). Static attribution tractable without live work (4 push sites) -> live adds little beyond gating."
+  - "0x1c6: LOW (lifecycle already known cleared-on-exit; 3 push sites -> static attribution needs no live work; T5-c only confirms action-computed vs add-stored). Acceptable as a near-zero-value rider; not worth standalone writes."
+  - "OVERALL: 3-4 field names, orthogonal to the Phase I [20,32] decay question. Standalone 8w is disproportionate. RECOMMENDATION: piggyback T5-b+T5-c (sets-only) on the next filter-write leg with a live row; run T5-a only with spare add budget; otherwise DEFER to the handler-field-tail phase. Low value alone is the finding for 0x1c6/0x194."
+stop_conditions:
+  - "any add/set rejected -> 0w, rejection is data, continue with surviving cells"
+  - "row payload missing the expected row (.id drift) -> STOP, verify control surface, report"
+  - "restore PARTIAL via fasttrack dummies -> report as G1 did (device design, not failure)"
+evidence_tiers: "TIER 1 throughout: committed GETALL row rx bytes (seq-7) per cell + control read-backs. No timing question, no TIER 2."

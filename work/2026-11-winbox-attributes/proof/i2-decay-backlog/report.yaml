@@ -1,0 +1,94 @@
+# cspell:ignore rowid getcount getall reqid mangle calea unacked ladder rungs oneshot churn ws3c keepalive keepalives fasttrack tarpit udp icmp hdecay trel msback undersampled oneline
+# I2 Phase I worker report: ladder fix + decay/adjunct designs (OFFLINE, zero router contact).
+proof: "I2 decay-backlog: leg-h1.ts ladder defects FIXED offline (leg-h1-fixed.ts: write-through capture, per-rung async console+ledger, keepalive-sliced waits) + H-decay-3 write-leg sheet (2w+0r) + Q1-dip read-only annex (0w) + thread-5 adjunct sheet (8w standalone / 4-5w piggyback); 9/9 offline explains pass; 0 executed"
+worker: I2
+date: 2026-11-02
+head: "6708923"
+complete: true
+verdict: "DESIGN-COMPLETE + TOOLING-FIXED: nothing executed (VM stopped, zero contact); all four brief tasks sheeted; fixed ladder validated offline only (typecheck, biome, build, help/dry-run smokes)"
+scope: "H-decay-3 announce-backlog (untested H1 residue) + U-h1-q1-dip + thread-5 adjuncts (0x1c6/0x16/0x194/0x0b); filter family; ws21 7.25 designs; 0 private verbs"
+lab_contact: "ZERO. No VM boot/start/stop, no quickchr, no centrs sends, no probes, 0 executed, budget spent 0w+0r. `centrs explain` used OFFLINE (no router argument, no --quickchr/--host) on 9 proposed commands; 9/9 pass, 0 rejections."
+tooling_fix:
+  source: work/2026-11-winbox-attributes/proof/H1-decay/leg-h1.ts
+  output: work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts
+  defects_fixed:
+    - id: F1-end-of-run-flush
+      defect: "leg-h1.ts buffered all captures in memory and flushed to --out only after session close; the H1 ladder throw (idle death in the 30s R2->R3 gap) skipped the flush and lost ALL rung rx bytes (H1 idle-death-1)"
+      fix: "write-through onCapture: every record appended to --out at capture with ts relativized at write; the end-of-run loop is deleted (summary only). A mid-run throw loses nothing committed."
+    - id: F2-silent-rungs
+      defect: "leg-h1.ts printed async counts only for the final drain; rung async was tagged but never counted, so a dead run left no rung-level async account"
+      fix: "fourLeg returns {v32, asyncN, records}; every rung prints v32+async+records to console AND appends a rung-*-end ledger event; keepalives log keepalive-K* events the same way"
+    - id: F3-idle-death
+      defect: "bare inter-rung sleeps of 20-180s; H1 proved idle sessions die ~24-30s (2 samples)"
+      fix: "slicedWait splits waits into <=15s slices (default --keepalive-ms 15000, hard refusal at >=20000) with a same-session single-GETCOUNT [20,32] keepalive between slices: zero churn, doubles as TIER 1 K-sample curve data. --no-keepalive preserved for repro-only runs."
+  extra_hardening:
+    - "per-rung try/catch: rung-*-failed ledger event with the committed-so-far count, then stop WITHOUT reconnect (a reconnect is churn and would confound the H-decay-3 async account); remaining scale falls back to session-per-read `read` invocations"
+    - "RUNGS table shared between --dry-run and the live ladder so the plan cannot drift"
+    - "--help (exit 0) and --dry-run (ladder schedule + keepalive plan as JSON, verdict OK/UNSAFE, exit 0/1) both run with zero router contact (dry-run exits before resolveLabTarget)"
+  offline_validation:
+    - "biome check --write: clean, no fixes applied"
+    - "bun run lint:typecheck (tsc --noEmit): exit 0"
+    - "bun build leg-h1-fixed.ts --target bun: 11 modules bundled"
+    - "--help smoke: exit 0, usage printed"
+    - "--dry-run smoke (keepalive): verdict OK all idle slices <20s, exit 0; (--no-keepalive): verdict UNSAFE, exit 1; no files created, no router contact"
+    - "H1 source untouched: git diff on proof/H1-decay/ empty"
+  live_validation_deferred: "L1-L6 checklist in leg-h-decay-3.yaml fixed_script_live_validation (write-through growth, rung console+ledger match, keepalive cadence vs --dry-run plan, single session pair, replayBytes decode, death-drill bytes) — must be executed by the H-decay-3 leg, not claimed here"
+designs:
+  - id: I2-h-decay-3-announce-backlog
+    file: leg-h-decay-3.yaml
+    kind: write-leg sheet
+    budget: 2w+0r
+    summary: "fresh spike + fixed ladder in ONE persistent session (zero intermediate churn) with per-rung async; matched-traffic ladder negative control BEFORE the add; 6 outcomes (A1 supported / A2 dead / A3 stable-untestable / A4 ambiguity-stop / A5 spike-absent / A6 partial); TIER 1 by construction (write-through)"
+  - id: I2-annex-q1-dip
+    file: annex-u-h1-q1-dip.yaml
+    kind: read-only annex (NOT a leg)
+    budget: 0w marginal
+    summary: "rides the H-decay-3 spike: --keepalive-ms 5000 gives ~12 TIER 1 in-window samples across +60..+120s (resolves oscillation periods >=10s); conditional post-ladder D-polls for plateau/oscillation-late; stands down on a stable host spike. Annex because 0w, no wasted spike, and interleaved polls would contaminate the host async account."
+  - id: I2-thread-5-adjunct
+    file: leg-thread-5-adjunct.yaml
+    kind: write-leg sheet (piggyback recommended)
+    budget: "8w+0r standalone / 4-5w piggyback (sets-only riders)"
+    summary: "T5-a protocol-vary adds (udp/icmp: 0x0b=17/1 pins protocol-number; 0x16/0x194 gating) + T5-b post-hoc set/clear (computed-vs-stored, with vary-fallback if clear rejects) + T5-c fasttrack set/exit (0x1c6 action-computed). Honest marginal value: 0x0b high-single-field, 0x16 medium, 0x194/0x1c6 LOW (static attribution needs no live work); overall orthogonal to decay; recommend piggyback-or-defer."
+proven:
+  - id: P-i2-explain-9-pass
+    claim: "all 9 proposed control strings pass offline `centrs explain` (add-hdecay3, rm *1 shape, print, add-udp, add-icmp, set-protocol, set-protocol-clear, set-fasttrack, set-accept); 0 rejections; runtime acceptance NOT proven (offline canonicalizer only, same caveat as H0a P-h0a-explain-4-pass)"
+    evidence: [explain-add-hdecay3.json, explain-rm.json, explain-print-filter.json, explain-add-udp.json, explain-add-icmp.json, explain-set-protocol.json, explain-set-protocol-clear.json, explain-set-fasttrack.json, explain-set-accept.json]
+  - id: P-i2-ladder-fix-offline
+    claim: "leg-h1-fixed.ts demonstrably fixes F1 (write-through: no end-of-run flush exists) + F2 (per-rung async console+ledger) + F3 (keepalive slices <20s, hard refusal >=20000) by code inspection; biome + typecheck + build + help/dry-run smokes all green"
+    evidence: [leg-h1-fixed.ts]
+  - id: P-i2-adjunct-route-scope
+    claim: "G1 step rx shows bare 0x16/0x0b keys in BOTH [20,17] GET replies (0x16=true, 0x0b=18000 in baselines) and [20,3] GETALL row payloads (tarpit row: 0x16=false, 0x194=true, 0x0b=6): thread-5 reads must scope to GETALL row payloads only, or [20,17] values corrupt the mapping"
+    evidence: [../G1-f40-matrix/step-M8.jsonl, ../G1-f40-matrix/step-M9.jsonl]
+disproven: []
+unresolved:
+  - id: U-h1-32-mechanism
+    claim: "CARRIED FORWARD: H-decay-3 still untested (this worker executed nothing); H-decay-3 leg sheeted at 2w+0r, needs per-leg yes"
+    next: "coordinator schedules I2-h-decay-3-announce-backlog on ws21"
+  - id: U-h1-q1-dip
+    claim: "CARRIED FORWARD: dip-anomaly vs oscillation-undersampled undecided; annex sheeted at 0w marginal on the H-decay-3 spike"
+    next: "coordinator attaches I2-annex-q1-dip to the H-decay-3 execution (keepalive-ms 5000 variant)"
+  - id: U-thread-5-adjunct
+    claim: "CARRIED FORWARD: 0x0b/0x16/0x194/0x1c6 semantics still enumerate-only; sheeted with honest low-value finding for 0x194/0x1c6"
+    next: "coordinator piggybacks T5-b+T5-c on the next filter-write leg or defers to handler-field-tail"
+blocked:
+  - id: B-i2-needs-leg-yes
+    claim: "all designs unexecuted paper; execution needs the user's explicit per-leg yes in-session plus coordinator VM scheduling (ws21 7.25, currently STOPPED)"
+    next: "coordinator presents the sheets; this worker executed nothing"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/report.yaml
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h-decay-3.yaml
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/annex-u-h1-q1-dip.yaml
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-thread-5-adjunct.yaml
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/explain-add-hdecay3.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/explain-rm.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/explain-print-filter.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/explain-add-udp.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/explain-add-icmp.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/explain-set-protocol.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/explain-set-protocol-clear.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/explain-set-fasttrack.json
+  - work/2026-11-winbox-attributes/proof/i2-decay-backlog/explain-set-accept.json
+owned_path: work/2026-11-winbox-attributes/proof/i2-decay-backlog/
+forbidden_paths_edited: none
+git_commands_run: ["git log --oneline -1", "git status --short", "git diff --stat -- proof/H1-decay/"]
