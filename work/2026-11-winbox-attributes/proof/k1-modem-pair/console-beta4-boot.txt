@@ -1,0 +1,9 @@
+cspell:ignore quickchr winbox centrs qemu kvm booted
+● e3-beta4 started
+  Version: 7.26beta4 (x86)
+  Network: user
+  Ports:   http:9220 https:9221 ssh:9222 api:9223 api-ssl:9224 winbox:9225
+  REST:    http://admin@127.0.0.1:9220
+  SSH:     ssh admin@127.0.0.1 -p 9222
+  WinBox:  127.0.0.1:9225
+○ e3-beta4 stopped

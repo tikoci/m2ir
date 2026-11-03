@@ -1,0 +1,245 @@
+{
+	"provenance": {
+		"report": "Phase K residue census, 2026-11-02 (winbox-beta4/e3-beta4/g4beta 7.26beta4 x86, 0w): GET-only gating + drift-free re-proofs on [24,35]/[20,107]/[2,1]/[13,5]",
+		"routeros_version": "7.26beta4",
+		"route": "[24,35]/[20,107]/[2,1]/[13,5] GETONE/GETALL rx (GET-only gating, 0xFFFFFFFF sentinel per step files)",
+		"note": "Sanitized M2 hex plus decoded entries only: no hosts, ports, or credentials."
+	},
+	"records": [
+		{
+			"id": "getone-24-35-beta4-rx",
+			"role": "K2 [24,35] GETONE (bare-SYS-only empty)",
+			"source": "proof/k2-board-info/step-beta4-24-35.jsonl rx seq 1 (from [24,35])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020018000000230000001c00ffa0010013006d73672d70726f78792d372e323662657461340300ff09020600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24, 35],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24, 35]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "getall-24-35-beta4-rx",
+			"role": "K2 [24,35] GETALL (0xfe0003 NOTIMP)",
+			"source": "proof/k2-board-info/step-beta4-24-35.jsonl rx seq 3 (from [24,35])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020018000000230000001c00ffa0010013006d73672d70726f78792d372e323662657461340800ff080300fe000300ff09020400ff09020600ff0903",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [24, 35],
+			"reqId": 3,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [24, 35]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 3
+				}
+			]
+		},
+		{
+			"id": "getall-20-107-beta4-rx",
+			"role": "K1 [20,107] GETALL (0xfe0003 NOTIMP, not wrap)",
+			"source": "proof/k1-modem-pair/step-beta4-107-gating.jsonl rx seq 1 (from [20,107])",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000006b0000001c00ffa0010013006d73672d70726f78792d372e323662657461340800ff080300fe000300ff09020400ff09020600ff0902",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 107],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 107]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646147
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				}
+			]
+		},
+		{
+			"id": "getone-2-1-beta4-rx",
+			"role": "K4 [2,1] GETONE ({2:u32 0x2000000})",
+			"source": "proof/k4-sys2-residue/step-beta4-sys2-residue.jsonl rx seq 17 (from [2,1])",
+			"hex": "4d320100ff880200000000000b0000000200ff88020002000000010000001c00ffa0010013006d73672d70726f78792d372e323662657461340300ff090202000008000000020600ff090a",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [2, 1],
+			"reqId": 10,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [2, 1]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x8",
+					"value": 33554432
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 10
+				}
+			]
+		},
+		{
+			"id": "getone-13-5-beta4-rx",
+			"role": "K3 [13,5] GETONE ({[],F,T,1,0})",
+			"source": "proof/k3-user-tail/step-beta4-13-5-13-9.jsonl rx seq 1 (from [13,5])",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000050000001c00ffa0010013006d73672d70726f78792d372e32366265746134050000880000010000000200000104000009010300ff09020600ff09020300000900",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 5],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 5]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.26beta4"]
+				},
+				{
+					"key": "0x000005",
+					"tcode": "0x88",
+					"value": []
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x0",
+					"value": false
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x1",
+					"value": true
+				},
+				{
+					"key": "0x000004",
+					"tcode": "0x9",
+					"value": 1
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 0
+				}
+			]
+		}
+	]
+}

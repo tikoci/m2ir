@@ -1,0 +1,123 @@
+# cspell:ignore rowid getall getone getobj getcount getf7 getonly jsonl multiset notimp unknownid sim lte chr winbox quickchr centrs rosetta cliref reqid u32 prefilter hscan objid brkpath defconf usb1 syscap apn mtu wwan aholder defconfparam unprobed k1 j1 vms esim keepalive
+# K1 EXECUTION report (Phase K worker, modem-pair leg). Read-only census + static scoping.
+complete: true
+date: 2026-11-02
+worker: K1
+leg: K1-modem-pair
+verdict: "COMPLETE 0w+0r — 107 drift-free + GET-only both 7.x; 61 f7 matrix 14/14 miss both 7.x; private-5 static-only, sheeted"
+scope: "modem-pair read-only census (I3 future-modem-pair split): sim-settings-20-107 [20,107] + modem-aux-20-61 [20,61]; 10 CANDIDATE properties (lte/settings 7 + lte row 3); 1 private verb ([20,61] private 5, static + dispatch evidence only, never sent live)"
+live_contact:
+  kind: "read-only GET-family only: GETONE + GETALL/GETOBJ/GETCOUNT gating + GET-with-f7 string variants"
+  vms: ["ws21 (7.25)", "e3-beta4 (7.26beta4)"]
+  not_done: "no SET/ADD/REMOVE, no VM config changes, no reboots, no private commands live, no v6 leg (coordinator scope)"
+  end_state: "both owned VMs stopped; all 15 lab machines stopped; no other machine touched"
+inputs:
+  git_head: 53649dc
+  scope_doc: work/2026-11-winbox-attributes/proof/i3-handler-tail-census/report.yaml (modem-pair split + U3/U8)
+  pattern: work/2026-11-winbox-attributes/proof/j1-tail-census-7x/census.ts (copied, never modified)
+  schema: profiles/winbox-ipc/gui-handlers.yaml entries sim-settings-20-107 + modem-aux-20-61 (read-only)
+  transcripts: work/2026-10-chr-extraction/ws3c/ev/7.25-getone-20-107.json + ev/7.25-getone-20-61-f7.json + ev/7.25-hscan-20-hi.txt
+  fixtures: fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-neg-20-61.json + fixtures/winbox-ipc/7.16-neg-20-61-lte.json
+  static_notes: work/2026-10-chr-extraction/ws3c-prober-findings.md §24 (slot-7 pre-filter + policy vocab) + §25 (107 AHolder) + work/2026-11-winbox-attributes/proof/F0b-slot19/report.yaml (dispatch)
+  rosetta:
+    db_path: ~/.rosetta/ros-help-0.12.0.db
+    db_sha256: eee457411defe95c7a8111c89866dd5066a790ce2ffda46a37664c459515aae3
+    db_bytes: 415490048
+    release_tag: v0.12.0
+    schema_version: "12"
+    source_commit: 6b6397d7739a563b894f9b07f7ac2f6b1ad7f4bf
+    built_at: 2026-10-30T21:34:20.911Z
+    cliref_manual_version: "7.26"
+    access: "sqlite3 -readonly only; hash re-verified full-length this session, matches I3"
+    caveat: "Rosetta names/types below are CANDIDATES only. No numeric mapping is claimed from any CLI-spelling join."
+drift:
+  - id: D-k1-107-no-drift
+    verdict: no-drift
+    detail: "GETONE programmatic multiset diff (key+tcode+value, banner excluded) vs ev/7.25-getone-20-107.json: 0/0 on 7.25, 0/0 on beta4. Only version-varying byte is the proxy banner (msg-proxy-7.25 vs msg-proxy-7.26beta4), expected, not drift."
+  - id: D-k1-61-no-drift
+    verdict: no-drift
+    detail: "f7=lte1/foo legs replicate the ev miss shape key-identically (7-key SYS-only, errno UNKNOWNID) on both 7.x; beta4 == 7.25 on all 7 variants. Consistent with the neg-20-61 fixtures (no 7.25->beta4 gating change)."
+census:
+  - handler: sim-settings-20-107
+    route: [20, 107]
+    wire_shape: "GETONE 18 USER fields both 7.x: bools 0x0e/0x11/0x12/0x13/0x0a all F; u32c 4=1, 9=0, 0x0b=3, 0x0d=0, 0x0f=120, 0x10=0, 0x14=5, 1=0; u32 8=0xFFFFFFFF; strings 0x0c/0x15/7 empty, 5='firmware'"
+    gating: "GETALL->0xfe0003 NOTIMP, GETOBJ obj=1->0xfe0003 NOTIMP, GETCOUNT->ok + 0xfe0019=0xFFFFFFFF (both 7.x, modulo banner)"
+    rosetta_candidates:
+      menu: interface/lte/settings
+      status: candidate
+      confirmed_present_at_7-26: [sim-slot, sim-link, mode, firmware-path, info-polling-interval, link-recovery-timer, external-antenna]
+      menu_total: 12
+      out_of_scope: [esim-channel, log-dir, log-file-count, log-filter-file, external-antenna-selected]
+  - handler: modem-aux-20-61
+    route: [20, 61]
+    wire_shape: "GET f7 matrix 14/14 miss both 7.x: errno 0xfe0004 UNKNOWNID from=[20,61], 7-key SYS-only shape, 0 USER fields, no total, no errstr"
+    variants: ["'' (empty string, encodes as zero-length 0x21)", "lte1 (control, known miss)", "foo (control, known miss)", "usb1 (USB-id style)", "1-1 (USB-topology style)", "/usb/1 (path style)", "00000001 (serial style)"]
+    gating_prior: "GETALL/GETOBJ/GETCOUNT already pinned by the neg-20-61 fixtures all versions; not re-probed (brief scope is the f7 matrix)"
+    rosetta_candidates:
+      menu: interface/lte
+      status: candidate
+      confirmed_present_at_7-26: [pin, sms-protocol, network-mode]
+      menu_total: 16
+proven:
+  - id: P-k1-107-drift-free
+    claim: "[20,107] GETONE byte-shape (key+tcode+value) identical on 7.26beta4 and 7.25 vs ev/7.25-getone-20-107.json: 18 USER fields pinned (bools 0x0e/0x11/0x12/0x13/0x0a=F; 4=1, 9=0, 0x0b=3, 0x0d=0, 0x0f=120, 0x10=0, 0x14=5, 1=0; 8=0xFFFFFFFF; 0x0c/0x15/7 empty, 5='firmware')"
+    tier: "TIER 1 (step-725-107-getone.jsonl + step-beta4-107-getone.jsonl; programmatic multiset diff vs ev baseline)"
+  - id: P-k1-107-getonly
+    claim: "[20,107] is GET-only on both 7.x (GETALL/GETOBJ->0xfe0003 NOTIMP, same signature as defconf and qos-config-20-122); GETCOUNT=0xFFFFFFFF sentinel in 0xfe0019, no row count"
+    tier: "TIER 1 (step-725-107-gating.jsonl + step-beta4-107-gating.jsonl)"
+  - id: P-k1-61-f7-matrix
+    claim: "[20,61] f7 matrix 14/14 miss on both 7.x (empty string + lte1 + foo + 4 non-name-key styles): every variant ->0xfe0004 UNKNOWNID from=[20,61] in the same 7-key SYS-only shape (0 USER fields); empty string and non-name keys behave exactly as the known-miss controls"
+    tier: "TIER 1 (step-725-61-f7.jsonl + step-beta4-61-f7.jsonl)"
+  - id: P-k1-candidates-present
+    claim: "all 10 I3 candidates confirmed present in Rosetta 7.26 pulls (names/types only): lte/settings 7 of 12 + lte row 3 of 16 — presence only, every name stays CANDIDATE (no numeric mapping)"
+    tier: "static (console-static-rosetta.txt; db hash re-verified)"
+disproven:
+  - id: D-k1-61-f7-empty-distinct
+    claim: "f7='' is NOT a distinct path: the empty string encodes as a zero-length 0x21 string (wire tail 0700002100, not a bare GET) and misses byte-identically to lte1/foo"
+  - id: D-k1-107-wrap-family
+    claim: "[20,107] does NOT join the 114/115/126 wrap family: GETALL->NOTIMP (not a 1-row wrap), GETCOUNT=0xFFFFFFFF (not 1) — it is GET-only like 122, not wrap like 114/115/126"
+unresolved:
+  - id: U3-107-wire-field-count
+    claim: "CARRIED: which of the 18 USER wire fields (if any) carries which lte/settings candidate is still unproven; the count mismatch (18 wire vs 12 menu) stands — this census pins shapes, not meanings"
+  - id: U8-61-hit-condition
+    claim: "NARROWED, not closed: the non-name-key axis is now tested on CHR-absent for 4 styles + empty (all miss), but {registered-modem-needed} still stands — a hit may need a registered modem with SIM (the 7.16 leg's SIM-absent/running=false confound is untouched) and untested key styles remain beyond the 4 probed"
+  - id: U-k1-61-private-5-role
+    claim: "NEW: [20,61] private-5 role UNKNOWN — pre-filter-claimed (static) with undecoded targets (see private_verb_static); live probing needs the sheeted write leg, not a read-only census"
+private_verb_static:
+  verb: "[20,61] private 5 (small-int SYS_CMD=5 to route [20,61]; 'slot-19' is v6 dispatch vocabulary)"
+  sent_live: false
+  static_claim: "slot-7 pre-filter 0x812e00c claims private cmds 5/6/7 + the 0x3e8-0x404 field-id range (29 cmds -> 12 jump targets, undecoded modem control plane); ctor policy vocab 29 field ids in 4 mask classes (findings §24)"
+  dispatch_grounding: "F0b proves v7 out-of-range SYS_CMD routes DEFAULT -> slot 24 cmdUnknown (the v6 DEFAULT->slot-19 model does NOT transfer); the [20,61] slot-7 pre-filter runs first and claims 5, so 5 reaches a handler-local path whose targets remain undecoded"
+  why_not_read_only_safe: "small-int private verbs elsewhere include setters and notifies (rbbios SYS_CMD=5 notify; net-0 private cmds 2-12 unknown; commands.yaml slot-19-private) — a claimed-but-undecoded opcode must not be sent on a read-only budget"
+write_leg_proposal:
+  title: "[20,61] private-5 single-probe leg (PROPOSAL ONLY — needs fresh per-leg yes, not executed)"
+  budget: "1w+0r (one SYS_CMD=5 request; zero config writes; VM start/stop excluded)"
+  vm: "ws21 (7.25) or e3-beta4 (7.26beta4), exactly one, stopped before and after"
+  baseline: "CHR-absent f7 matrix already pinned (this report); capture a fresh bare-GET miss immediately before as the session control"
+  steps: ["open native session (existing census.ts session path)", "send ONE SYS_CMD=5 request to [20,61] with empty extra fields; lossless jsonl capture", "send the bare-GET control again; close session", "classify reply: hit shape vs error errno vs timeout (each is data)"]
+  stop_conditions: ["any reply that suggests state change (proposal pauses for review, no follow-up)", "transport incomplete (stop, report)", "VM boot failure after 2 bounded tries (stop, report)"]
+  proves: "whether private-5 answers at all on CHR-absent and with what shape/errno — role identification needs follow-up design, not this leg"
+evidence:
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/census.ts
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/report.yaml
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/step-725-107-getone.jsonl
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/step-725-107-gating.jsonl
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/step-725-61-f7.jsonl
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/step-beta4-107-getone.jsonl
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/step-beta4-107-gating.jsonl
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/step-beta4-61-f7.jsonl
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/console-ws21-boot.txt
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/console-ws21-census.txt
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/console-beta4-boot.txt
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/console-beta4-census.txt
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/console-static-rosetta.txt
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/console-biome.txt
+spend: { approved: "0w+0r (read-only census + boot approval)", spent: "0w+0r", machines: [ws21, e3-beta4], boots: "2 starts + 2 stops, first-try each" }
+tooling:
+  script: work/2026-11-winbox-attributes/proof/k1-modem-pair/census.ts
+  shape: "J1 census.ts copy + --f7 repeatable flag (GET with request field-7 string variants, empty string supported) + getf7 verb; resolveLabTarget/openSession/correlatedRequest/appendCapture (write-through, ts redacted); router-error recorded as data, never thrown; no SET/ADD/REMOVE/private path exists (0w by construction)"
+  validation: "bunx biome check --write clean; usage + getf7-guard paths verified offline (no live contact)"
+async_note: "every step file holds exact tx/rx correlated pairs only (getone 2, gating 6, f7-matrix 14 records); every rx reqId-matches its tx; zero async/keepalive records captured — no separation judgment was needed beyond reqId correlation"
+vm_state: "ws21 + e3-beta4 each started once, stopped after their legs; quickchr list: 15/15 STOPPED; winbox-beta4/ws3c6/other lab machines never touched"
+tiers_note: "every proven[] live claim above is TIER 1 (committed rx bytes in the cited step jsonl). No TIER 2 (console-observed) values are presented as rx-committed; console output was used only as a live progress signal."

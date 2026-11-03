@@ -1,0 +1,127 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*1",
+      "address": "10.0.2.2",
+      "group": "full",
+      "name": "admin",
+      "radius": "false",
+      "via": "rest-api",
+      "when": "2026-11-02 23:42:04"
+    },
+    {
+      ".id": "*2",
+      "group": "full",
+      "name": "admin",
+      "radius": "false",
+      "via": "api",
+      "when": "2026-11-02 23:42:04"
+    },
+    {
+      ".id": "*7",
+      "address": "10.0.2.2",
+      "group": "read",
+      "name": "k3synth",
+      "radius": "false",
+      "via": "rest-api",
+      "when": "2026-11-02 23:43:28"
+    },
+    {
+      ".id": "*8",
+      "group": "read",
+      "name": "k3synth",
+      "radius": "false",
+      "via": "api",
+      "when": "2026-11-02 23:43:28"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "target": {
+      "host": "127.0.0.1",
+      "port": 9120,
+      "baseUrl": "http://127.0.0.1:9120/rest",
+      "source": {
+        "kind": "cli",
+        "key": "host"
+      },
+      "sources": {
+        "host": {
+          "kind": "cli",
+          "key": "host"
+        },
+        "port": {
+          "kind": "cli",
+          "key": "port"
+        }
+      }
+    },
+    "via": "rest-api",
+    "settings": {
+      "via": {
+        "kind": "default",
+        "key": "via"
+      },
+      "host": {
+        "kind": "cli",
+        "key": "host"
+      },
+      "port": {
+        "kind": "cli",
+        "key": "port"
+      },
+      "timeoutMs": {
+        "kind": "default",
+        "key": "timeout"
+      },
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      },
+      "validate": {
+        "kind": "default",
+        "key": "validate"
+      },
+      "username": {
+        "kind": "env",
+        "key": "CENTRS_USERNAME"
+      },
+      "password": {
+        "kind": "env",
+        "key": "CENTRS_PASSWORD"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "source": "live /console/inspect request=child",
+      "result": "passed",
+      "stages": [
+        {
+          "stage": "device",
+          "source": "live /console/inspect request=child",
+          "result": "passed"
+        }
+      ]
+    },
+    "operation": {
+      "kind": "data",
+      "objectCount": 4,
+      "request": {
+        "path": "/user/active",
+        "attributes": [],
+        "allAttributes": false,
+        "listAttributes": false,
+        "validate": true,
+        "verbose": false,
+        "timeoutMs": 10000,
+        "format": "json"
+      },
+      "auth": {
+        "username": "k3synth",
+        "passwordProvided": true
+      }
+    }
+  }
+}

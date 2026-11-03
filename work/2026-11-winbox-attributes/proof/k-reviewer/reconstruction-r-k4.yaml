@@ -1,0 +1,47 @@
+# cspell:ignore getone getall getobj getcount notimp jsonl reqid u32c chfont sys2 rosetta cliref vtable aholder sanitize tab rodata binutils seqs prereads readelf cstr num getonly macwinbox
+# R-K4 (BLIND reconstruction). Written BEFORE opening any k4 proposer file
+# (report.yaml / fragment.yaml). Static pre-reads below were recorded from the
+# cited source CLASSES before any k4 file was opened. Comparison post-read.
+reconstruction: R-K4
+target: k4-sys2-residue beta4 drift + gating (3 routes) + holder-pinning + kill-list static checks
+method: "Entry-by-entry comparison of K4 rx records against ev/{6.49,7.25}-getone-{24-14,24-16,2-1}.json.
+  Static: independent read of sys2-handler-tables.md (what it does/does not say about 14/16),
+  routerboard-hunt.md chfont lead, gui-handlers.yaml residue roles (read-only), my own
+  sqlite3 -readonly Rosetta console/settings pull (hash re-verified), and my own
+  strings+readelf VA computation for /nova/store/chfont in both sys2 binaries.
+  No k4 proposer file opened before verdict."
+raw_inputs:
+  - { file: proof/k4-sys2-residue/step-beta4-sys2-residue.jsonl, sha256_16: 1201b98c21e9b7b5, seqs_used: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] }
+  - { file: proof/k4-sys2-residue/step-725-sys2-residue.jsonl, sha256_16: bc6eee37f374d81f, seqs_used: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] }
+  - { file: proof/k4-sys2-residue/census.ts, sha256_16: 5122148cba4de9c6, note: "verbatim J1 census.ts apart from header comment (diff: 2 header lines only)" }
+  - { file: proof/k4-sys2-residue/console-725-census.txt, note: "all 3 routes: getone ok (8/7/6 fields), getall/getobj ERR 16646147, getcount ok fields=6; 24 records" }
+  - { file: proof/k4-sys2-residue/console-beta4-census.txt, note: "identical to 7.25" }
+  - { file: work/2026-10-chr-extraction/ws3c/ev/7.25-getone-24-14.json, sha256_16: 48f217ac7c485d51 }
+  - { file: work/2026-10-chr-extraction/ws3c/ev/7.25-getone-24-16.json, sha256_16: ca97590e70a7b786 }
+  - { file: work/2026-10-chr-extraction/ws3c/ev/7.25-getone-2-1.json, sha256_16: 35c5baaa9cdce441 }
+static_prereads:
+  sys2_handler_tables: "v6 sys2 registers IDs {0,1,2,5,6,7,8,9,10,12,14,15,16,23,24,25,31} — 14 AND 16 ARE registered (factory vtables, 'vtable TBD'); file carries NO holder-name/string-VA claims for 14/16 and does NOT cover process 2 ([2,1] out of scope). v7 census: minus {5,6,9} plus {33,35,36,38} (+live [24,34])."
+  chfont_lead: "routerboard-hunt.md section 7 last-stone check: 'sys2 handler 0x10 (decimal 16): vtable 0x808f178 (derived over AHolder base), holder name /nova/store/chfont (console font), slot 9 = shared PLT getter. Not routerboard.' gui-handlers.yaml unknown-24-16 role cites it as '(v6 says /nova/store/chfont — console font, unconvinced as the M2 role)'. findings section 10: '[24,16] {1:2,2:10} (v6 said chfont — unconvinced)'. findings section 9: mproxy (2): [2,1]={2:u32 0x2000000} identical both."
+  chfont_string_vas_mine: "v6 sys2: file off 0x466b4 + .rodata(Addr 0x808e2c0, Off 0x462c0) => VA 0x808e6b4. v7 sys2: file off 0x3ee65 + .rodata(Addr 0x8086000, Off 0x3e000) => VA 0x8086e65. String present in BOTH binaries (presence only; holder-to-handler binding is the hunt's claim, not re-derived here)."
+  rosetta_console_settings_mine: "db hash eee457411defe95c7a8111c89866dd5066a790ce2ffda46a37664c459515aae3 re-verified; console/settings @7.26 = EXACTLY 3 fields: sanitize-names bool Argument, log-script-errors bool Argument, tab-width num Argument. Wire [24,16] = {f1:u32c 2, f2:u32c 10} (two u32, zero bools): type-shape MISMATCH vs 2-bools+1-num menu (supports a kill; recorded as shape evidence, not a mapping proof)."
+independent_verdict:
+  drift:
+    r24_14: "NONE: 7.25 seq1 8 entries identical to ev baseline (f8=F, f9=T, f15=0); beta4 seq1 identical modulo proxy string"
+    r24_16: "NONE: 7.25 seq9 7 entries identical to ev baseline (f1=2, f2=10); beta4 seq9 identical modulo proxy string"
+    r2_1: "NONE: 7.25 seq17 6 entries identical to ev baseline (f2=33554432=0x2000000 full u32 tcode 0x8); beta4 seq17 identical modulo proxy string"
+    v6_crosscheck: "ev/6.49 baselines carry the SAME user values on all 3 routes (minus the v7-only 0xff001c key): 3-version user-payload stability"
+  gating: "ALL 3 routes x BOTH versions are GET-only: GETALL -> 0xFE0003, GETOBJ obj=1 -> 0xFE0003, GETCOUNT -> ok + 0xFFFFFFFF (beta4 seqs 3/5/7, 11/13/15, 19/21/23; 7.25 same seqs; all replies handler-level from the full route)"
+  roles: "all 3 remain role-open on live evidence alone; any role/holder-pin claim must rest on the static cites (checked post-read against the pre-reads above)"
+post_read_comparison:
+  files_opened_after_reconstruction: [proof/k4-sys2-residue/report.yaml, proof/k4-sys2-residue/fragment.yaml]
+  verdict: agree
+  item_checks:
+    - { claim: "D-k4 drift x3 + P-k4-getonly-all (18 gating replies)", verdict: agree, detail: "matches my entry-by-entry comparisons on all 3 routes x both versions; 18 = 3x3x2 gating replies confirmed" }
+    - { claim: "S-k4-health-holder (6 VAs/sites)", verdict: agree, detail: "INDEPENDENTLY VERIFIED: strings /nova/store/health at v6 VA 0x808e656 + v7 VA 0x8086e0e (cstr reads); addHandler+id at v6 0x8053416 ($0xe) + v7 0x805ca60 ($0xe); vtables v6 0x808ee78 + v7 0x808cd10 (movl sites); slot9 = shared AHolder::cmdGet (v6 0x8051ee0 / v7 0x8051600, PLT-resolved)" }
+    - { claim: "S-k4-chfont-holder (extends hunt section 7 to registration)", verdict: agree, detail: "VERIFIED: strings at v6 0x808e6b4 + v7 0x8086e65 (match my blind pre-computation exactly); vtable v6 0x808f178 matches hunt section 7; addHandler+id v6 0x80535a5 ($0x10) + v7 0x805cbfb ($0x10); AHolder ctor adjacent; slot9 shared cmdGet" }
+    - { claim: "S-k4-mproxy-holder (+ Store::set seed @0x804e32e)", verdict: agree, detail: "VERIFIED: strings at v6 0x8057def + v7 0x8058569; addHandler+id v6 0x804e39f ($0x1) + v7 0x8056b52 ($0x1); vtables 0x8057ef8/0x8058c58; slot9 = AHolder::cmdGet PLT (v6 0x804d710 / v7 0x804dca0, both PLT-resolved); Store::set slot-0 call @0x804e32e confirmed (push $0x0 + Store::set PLT)" }
+    - { claim: "S-k4-chfont-screen-record + S-k4-mproxy-macwinbox-record (libumsg.so)", verdict: agree, detail: "VERIFIED byte-exact: file 0x77460 = {0x709d0,6, 0x709d7,0x16} with 'chfont' + '/system/console/screen' (22 chars); file 0x787ac = {0x712de,0xf, 0x712ee,0x1b} with 'mproxy-settings' + '/tool/mac-server/mac-winbox' (27 chars); sibling sample strings present in the same bank" }
+    - { claim: "X-k4-console-settings-mapping kill (type-count + menu)", verdict: agree, detail: "console/settings pull matches my blind query exactly (3 fields); type-count kill sound (0 bools on wire); menu kill rests on the verified libumsg record; precision note (store-CONFIRMED, menu-mapping dead) is accurate" }
+    - { claim: "S-k4-screen-enum-correlation (hypothesis, sheeted not promoted)", verdict: agree, detail: "screen enums match my Rosetta query exactly ({25:2,40:1,50:0},{never:0,1min:1,10min:10,60min:60}); correctly flagged unproven; fragment omits it" }
+    - { claim: "N-k4-* negatives", verdict: agree, detail: "writer census reproduced (v6: sys2-only for both strings; v7: sys2 + libumsg.so); board-fn @0x8056250 confirmed (bool 8/9 inserts + 2x isBoardNamePrefix + RB1100AHx2/RB1100Hx2 strings); health-fn log shape confirmed. handlers.ts '841-insn' is a method citation (count not reproduced; substance follows from the PLT import) — noted, not load-bearing." }
+    - { claim: "fragment.yaml notes + omits", verdict: agree, detail: "all cited VAs verified above; screen mapping correctly omitted; no field names claimed" }

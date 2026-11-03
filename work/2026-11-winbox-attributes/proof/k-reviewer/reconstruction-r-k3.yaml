@@ -1,0 +1,52 @@
+# cspell:ignore getone getall getobj getcount getf1 notimp unknownid jsonl reqid nosuchuser u32arr seqs undercounted overbroad
+# R-K3 (BLIND reconstruction). Written BEFORE opening any k3 proposer file
+# (report.yaml / fragment.yaml / stimulus-hunt-sheets.yaml). Comparison appended post-read.
+reconstruction: R-K3
+target: k3-user-tail beta4 drift (4 routes) + [13,5]/[13,9] gating + [13,6] variant coverage
+method: "Entry-by-entry comparison of K3 rx records against ev/7.25-getone-13-{5,9}.json,
+  ev/7.25-getone-13-6-admin.json, and fixtures {7.25,7.26beta4}-user-family.json
+  (records user-family-get-13-5-bare-rx, get-13-6-{admin,nosuchuser}-rx,
+  getall/getcount-13-8-rx). Gating families decided against the J1 GET-only
+  signature. [13,6] coverage inventoried from the capture verbs + census.ts
+  --f1 shape (single-value only). No k3 proposer file opened before verdict."
+raw_inputs:
+  - { file: proof/k3-user-tail/step-beta4-13-5-13-9.jsonl, sha256_16: 7872bcf157e108b9, seqs_used: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] }
+  - { file: proof/k3-user-tail/step-beta4-13-6.jsonl, sha256_16: a453ab4cd98a13c1, seqs_used: [0, 1, 2, 3] }
+  - { file: proof/k3-user-tail/step-725-13-6.jsonl, sha256_16: 9f62b0555f22fc4a, seqs_used: [0, 1, 2, 3] }
+  - { file: proof/k3-user-tail/step-beta4-13-8.jsonl, sha256_16: 68675556f0a6c4e9, seqs_used: [0, 1, 2, 3] }
+  - { file: proof/k3-user-tail/census.ts, sha256_16: 56a9feda5575330e, note: "getf1 = CMD_GET + encStr(1,f1); ONE --f1 value per run (single string, not a list)" }
+  - { file: proof/k3-user-tail/console-beta4-13-5-13-9.txt, note: "[13,5] getone ok fields=10, getall/getobj ERR 16646147, getcount ok fields=6; [13,9] getone ok fields=7, same gating" }
+  - { file: proof/k3-user-tail/console-beta4-13-6.txt, note: "getf1 ok fields=5; getone ERR 16646150 'no user name provided'" }
+  - { file: proof/k3-user-tail/console-725-13-6.txt, note: "identical to beta4" }
+  - { file: proof/k3-user-tail/console-beta4-13-8.txt, note: "getall ok fields=7; getcount ok fields=6" }
+  - { file: work/2026-10-chr-extraction/ws3c/ev/7.25-getone-13-5.json, sha256_16: 8a193308073d0a6e, note: "10-entry baseline {f5=[],f1=F,f2=T,f4=1,f3=0}" }
+  - { file: work/2026-10-chr-extraction/ws3c/ev/7.25-getone-13-9.json, sha256_16: 63b28a49ed8d8647, note: "7-entry baseline {f1=0,f2=0}" }
+  - { file: work/2026-10-chr-extraction/ws3c/ev/7.25-getone-13-6-admin.json, sha256_16: 43c4baa0f50414e2, note: "5-entry SYS-only EMPTY-miss baseline" }
+  - { file: fixtures/winbox-ipc/7.26beta4-user-family.json, sha256_16: fa5d723baf94ae4d, note: "[13,5] bare rx; [13,6] admin+nosuchuser rx (BOTH EMPTY miss); [13,8] getall 1-row + getcount total 1" }
+  - { file: fixtures/winbox-ipc/7.25-user-family.json, sha256_16: 18a9fe40f35b85f9, note: "same [13,6] admin+nosuchuser EMPTY pair on 7.25" }
+independent_verdict:
+  drift_beta4:
+    r13_5: "NONE: seq1 = 10 entries identical to ev baseline incl order (f5=[]u32arr, f1=F, f2=T, f4=1, ff0003=2, ff0006=2, f3=0 trailing); also matches beta4-user-family get-13-5-bare-rx modulo reqId echo (2 vs 28)"
+    r13_9: "NONE: seq9 = {ff0003=2, f1=0, f2=0} identical to ev baseline modulo proxy string + reqId echo (6 vs 2)"
+    r13_6_admin: "NONE: beta4 seq1 + 7.25 seq1 both 5-entry SYS-only EMPTY, identical to ev admin baseline modulo proxy string"
+    r13_8: "NONE: beta4 GETALL seq1 = 1 row {0xfe0001=0, 0xfe0010='default'} total 1; GETCOUNT seq3 total 1 — identical to beta4-user-family getall/getcount-13-8-rx modulo reqId echo"
+  gating:
+    r13_5: "GET-only: GETALL seq3 -> 0xFE0003, GETOBJ obj=1 seq5 -> 0xFE0003, GETCOUNT seq7 -> ok + 0xFFFFFFFF (all from [13,5])"
+    r13_9: "GET-only: GETALL seq11 -> 0xFE0003, GETOBJ seq13 -> 0xFE0003, GETCOUNT seq15 -> ok + 0xFFFFFFFF (all from [13,9])"
+  r13_6_coverage:
+    tested_live: "exactly 2 variants x 2 versions: f1='admin' -> EMPTY success (5 SYS entries); bare GET -> FAILED 0xFE0006 (16646150) + errstr 'no user name provided'"
+    admin_sole_variant: false
+    sole_evidence: "admin is NOT the sole read-only variant: queue-3 fixtures ALREADY contain f1='nosuchuser' GETs on all 3 versions (incl 7.26beta4-user-family get-13-6-nosuchuser-rx = SYS-only EMPTY, byte-shape identical to admin modulo reqId echo 30 vs 29). K3 did not re-run nosuchuser (census.ts takes a single --f1; captures show only admin + bare). Any 'admin is sole' claim is contradicted by the fixtures; at most 'admin is the sole variant K3 re-ran' holds."
+    bare_errstr: "0xff0009='no user name provided' with errno 0xFE0006 on BOTH versions (beta4 seq3, 7.25 seq3) — errstr stable across versions"
+post_read_comparison:
+  files_opened_after_reconstruction: [proof/k3-user-tail/report.yaml, proof/k3-user-tail/fragment.yaml, proof/k3-user-tail/stimulus-hunt-sheets.yaml]
+  verdict: agree-with-3-minor-discrepancies
+  item_checks:
+    - { claim: "D-k3 drift x4 (no-drift all routes)", verdict: agree, detail: "matches my entry-by-entry comparisons; error-census get-13-9-bare-rx verified {0,0} both 7.x (reqIds 37/38); getall-13-9 -> 0xFE0003 confirms the GETALL re-proof framing" }
+    - { claim: "P-k3-13-5-gating + P-k3-13-9-gating-extended (GET-only; 13-9 GETOBJ/GETCOUNT NEW)", verdict: agree, detail: "matches my seqs; 13-5 gating wholly NEW, 13-9 GETALL re-proof + GETOBJ/GETCOUNT new — novelty claims accurate" }
+    - { claim: "P-k3-13-6-miss-both-7x + P-k3-13-8-singleton (wire data)", verdict: agree, detail: "admin EMPTY + bare 0xFE0006/'no user name provided' both versions; 13-8 singleton + total 1 — all match my rx readings" }
+    - { claim: "async_separation '24 records, 12 tx'", verdict: discrepancy-minor, detail: "actual total is 28 records / 14 tx (wc -l: 16+4+4+4). One 4-record file undercounted. Substance holds: all 28 records are correlated tx/rx pairs, 0 orphan rx, no async (verified by full read)." }
+    - { claim: "sheets total_budget counted_writes 11", verdict: discrepancy-minor, detail: "per-hunt budgets sum to 12 (1+2+2+3+2+2), not 11. Per-hunt budgets themselves are coherent (VM/baseline/steps/restore/stops each); bound <=2/field holds (2/2/1/1)." }
+    - { claim: "'no other read-only f1 variant exists' (report line 54 + fragment 13-6 note)", verdict: discrepancy-wording, detail: "Overbroad as written: nosuchuser IS a read-only f1 variant (queue-3 fixtures, all 3 versions, EMPTY miss — verified in 7.25/7.26beta4-user-family.json). Report variants_note (line 55) correctly re-scopes to 'existing usernames only = {admin}' and discloses nosuchuser-not-rerun, but the fragment note drops the scope — integrated verbatim it would plant a false sentence in the schema. Fix: 'sole existing-username variant re-proven; nosuchuser (read-only, fixtures) not re-run'." }
+    - { claim: "sole-/user-row + 2-active-sessions grounding (report live_contact + fragment 13-9 note)", verdict: flag-tier-gap, detail: "No control-*.json in the proof dir: the 'admin sole /user row' and '2 active admin sessions' REST reads are asserted without committed evidence (plausible — default CHR + all prior baselines agree — but uncommitted). The sessions-active NOT-session-count corroboration and the sole-user premise inherit this gap. Recommend: commit the REST reads or soften to 'per uncommitted REST read'." }
+    - { claim: "H-13-6-B [13,7] SET-precedent grounding", verdict: agree, detail: "verified: gui-handlers [13,7] documents SET-overwrites-whole-record + key-only create + delete-via-SET refuted + orphan-by-design; fixture 7.25-set-13-7-overwrite.json carries the A1-A5 legs" }

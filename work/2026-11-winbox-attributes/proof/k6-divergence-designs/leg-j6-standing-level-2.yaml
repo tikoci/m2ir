@@ -1,0 +1,169 @@
+# cspell:ignore rowid getcount getall reqid mangle calea unacked ladder rungs oneshot churn ws21 keepalive keepalives asyncs trel msback hdecay nonmonotonic negcontrol untimed respike nodecay centrs jsonl
+# U-j6-standing-level-2 DISCRIMINATOR (design only, unexecuted).
+# J6 spike2 settled at plateau 2 (58 samples, +30..+300s) with 1 rule
+# present -- a single sample. This sheet tests whether the plateau is a
+# per-rule standing level: a 2-rule leg (plateau-N scaling) plus a
+# rule-removed leg (step-down with rules remaining). 3w+0r on ws21 7.25.
+# Needs the user's per-leg yes; K6 seeks neither approval nor scheduling.
+id: K6-j6-standing-level-2
+kind: write-leg-sheet
+status: design-unexecuted
+date: 2026-11-02
+worker: K6
+question: "U-j6-standing-level-2: is J6's plateau-2 a per-rule standing level (plateau = 2N rules), a history-magnitude coincidence (per-add transient floors), or something else (cumulative/session-gated)?"
+record_standing: "J6 outcome B2-DECAY-ZERO-ASYNC (spike2 4/4/3/2-plateau, async=0 everywhere; H-decay-3 + churn-artifact DEAD; single-step one-shot DEAD in TIER 1) STANDS. The plateau-2 observation (58 samples, single-sample, recorded-not-promoted) is the input, not a re-proof target. J6 L1 lesson carried: the mid-run write-through check is a SHEETED step here (explicit, per ladder), executed not assumed."
+models:
+  - id: M-standing
+    claim: "per-rule standing level: the settled value equals 2 per present rule (plateau = 2N)."
+    predicts: "S1 (1 rule) plateaus at 2 (J6 replication); S2 (2 rules) re-spikes then plateaus at 4; S3 (remove one, 1 left) STEPS DOWN to 2 with a rule still present; S4 (remove last) zeroes."
+  - id: M-history
+    claim: "history-magnitude: each add is an independent per-add transient with its own magnitude and lifetime; plateaus do not scale with N and removal does not step (removal either zeroes the floor as in the J6 S1 zero-gate, or leaves decay clocks running)."
+    predicts: "S2 plateau is N-independent (whatever the 2nd add's clock lands on: 2 again, 1-stable modal, or 0-decay); S3 shows NO clean step to a nonzero floor with 1 rule left (either 0 or unchanged-decay)."
+  - id: M-cumulative
+    claim: "cumulative/session-gated: the floor reflects cumulative adds (or session state), not current membership."
+    predicts: "S2 floor rises on the 2nd add; S3 removal does NOT step it down (floor persists with 1 rule left at the 2-add level)."
+definitions:
+  re_spike: "first post-add rung (R0a) strictly above the pre-add floor, TIER 1."
+  plateau_confirmed: "R3=R4=R5=N (+60..+300s) AND every keepalive sample in +60..+300s equals N (J6 plateau-2 evidence shape: R3/R4 + K9..K19 all 2)."
+  step_down: "post-removal reads settle strictly below the pre-removal plateau AND hold across the last 3 session-per-reads spaced >=30s."
+  stable_at: "flat R0a..R5 at one value (H1-spike1 / H-decay-3-A3 shape)."
+vm:
+  name: ws21
+  routeros: "7.25"
+  arch: x86
+  why: "same host AND version as J6: plateau-2 was a ws21 observation, so the scaling test controls host/version."
+  network: user, socket::ws21-a, socket::ws21-b
+  ports: "resolve live at execution from `quickchr list` (J6 line; re-resolve, never hardcode); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute --quickchr ws21 --yes (writes) / centrs retrieve --quickchr ws21 (reads); every string explained offline pre-send, outputs saved as explain-*.json"
+  native_via: "proof/i2-decay-backlog/leg-h1-fixed.ts ladder (S0/S1/S2, write-through capture, per-rung async console+ledger, keepalive-sliced waits; J6-validated L1-L5) + read (S3 watch, session-per-read with H1 precedent; churn-artifact is DEAD so churn is safe)"
+  console_tee_required: "tee BOTH ladder consoles to files (console-S0.txt, console-S1.txt, console-S2.txt): J6 L2-full precedent."
+counting_rule: "H1 F-jump rule: each control add/set = 1w; +1 per restore-verify branch; per-cell removes bundled 0w; rejected adds/sets 0w; ALL native reads 0w; quickchr start/stop 0r"
+budget: { counted_writes: 3, reboots: 0, itemized: "add1 (1) + add2 (1) + restore-verify branch (1); removes bundled; S0/S1/S2 ladders + S3 watch + restore reads all 0w; 3w+0r fixed, no extension, no improvised re-spike" }
+baseline_snapshot:
+  verdict_required: PASS
+  control_commands:
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-base-firewall-filter.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/nat' > control-base-firewall-nat.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/raw' > control-base-firewall-raw.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/mangle' > control-base-firewall-mangle.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/calea' > control-base-firewall-calea.json"
+  control_expect: "0 rows in all five menus"
+  native_command: "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms <now-ms> read --out step-base.jsonl --timing-out timing-base.jsonl"
+  native_expect: "[20,3]=0 [20,32]=0, GETALL [20,3] 0 rows complete"
+  fail_action: "STOP: baseline not empty. Do not proceed; report."
+steps:
+  - tag: S0-negative-control
+    why: "matched-traffic floor control FIRST (J6 precedent); re-verifies the zero floor in this boot before any stimulus. 0w."
+    stimulus: NONE
+    commands:
+      - "T0NEG=$(date +%s%3N); bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $T0NEG ladder --out step-negcontrol.jsonl --timing-out timing-negcontrol.jsonl --keepalive-ms 5000 2>&1 | tee console-S0.txt"
+    keepalive_note: "--keepalive-ms 5000 MATCHES the S1/S2 ladder shape (matched-traffic control)."
+    expect: "all rungs [20,3]=0 [20,32]=0; every rung async=0; every keepalive async=0; final drain async=0"
+    evidence: [step-negcontrol.jsonl, timing-negcontrol.jsonl, console-S0.txt]
+    writes: 0
+    mid_run_check: "SHEETED (J6 L1 lesson): while the ladder runs, execute `wc -l step-negcontrol.jsonl` after R0a console output and record the count; it must GROW past R0b. If the file stays empty past R0b, STOP the run (tooling failure, not science)."
+    fail_action: "S0 nonzero or async>0 -> record as an AMBIGUITY NOTE and CONTINUE (this leg is about N-scaling, not async; a shifted floor is data, unlike the J3 B6 stop which was async-specific)."
+  - tag: S1-add1-ladder
+    why: "1-rule plateau base: replicates the J6 plateau-2 shape (or records what this boot's 1-rule floor actually is) as the scaling denominator."
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=k6-s-rule1"
+    commands:
+      - "centrs execute --quickchr ws21 --yes '/ip/firewall/filter/add chain=forward action=accept comment=k6-s-rule1' > control-S1-add.json"
+      - "T0=$(date +%s%3N); echo $T0 > t0-S1.txt"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-S1-read.json"
+      - "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(cat t0-S1.txt) ladder --out step-S1.jsonl --timing-out timing-S1.jsonl --keepalive-ms 5000 2>&1 | tee console-S1.txt"
+    read_back: "MANDATORY: exactly 1 row forward/accept, packets 0 bytes 0; ret .id recorded (THAT .id is removed in S3)."
+    counter_guard: "[20,3]==1 at every S1 rung; trip -> STOP ladder, S4, report guard-trip."
+    speed_note: "pre-stage the ladder command; read-back then ladder back-to-back (target R0a <+10s post-t0; J3 start-latency precedent)."
+    expect: "rungs R0a/R0b/R1/R2/R3/R4/R5 + K-samples; plateau-1 verdict per the definitions (M-standing predicts plateau 2)."
+    rebase_rule: "if plateau-1 = P1 != 2, the S2 scaling test RE-BASES: M-standing predicts plateau-2 = 2xP1 (1->2; 0-> M-standing DEAD-in-boot, S2/S3 continue for membership-tracking generally). The ratio is computed in THIS boot, never against J6's 2."
+    evidence: [control-S1-add.json, control-S1-read.json, t0-S1.txt, step-S1.jsonl, timing-S1.jsonl, console-S1.txt]
+    writes: 1
+    mid_run_check: "SHEETED (J6 L1 lesson): execute `wc -l step-S1.jsonl` after R0a and record the count; must GROW past R0b or STOP (tooling failure)."
+    fail_action: "read-back disagrees -> STOP stimulus-invalid, S4, report. Rung-*-failed -> PARTIAL (committed rungs TIER 1) + session-per-read fallback at remaining offsets (J3 B7 precedent)."
+  - tag: S2-add2-ladder
+    why: "the discriminating read: 2nd add on top of a live 1-rule floor. Re-spike + plateau-N decide scaling."
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=k6-s-rule2"
+    commands:
+      - "centrs execute --quickchr ws21 --yes '/ip/firewall/filter/add chain=forward action=accept comment=k6-s-rule2' > control-S2-add.json"
+      - "T0=$(date +%s%3N); echo $T0 > t0-S2.txt"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-S2-read.json"
+      - "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(cat t0-S2.txt) ladder --out step-S2.jsonl --timing-out timing-S2.jsonl --keepalive-ms 5000 2>&1 | tee console-S2.txt"
+    read_back: "MANDATORY: exactly 2 rows (k6-s-rule1 + k6-s-rule2), packets 0 bytes 0; rule2 ret .id recorded."
+    counter_guard: "[20,3]==2 at every S2 rung; trip -> STOP ladder, S4, report guard-trip."
+    speed_note: "as S1 (target R0a <+10s post-t0)."
+    expect: "re-spike verdict + plateau verdict (M-standing predicts plateau 4, i.e. 2x plateau-1; M-history predicts an N-independent floor; M-cumulative predicts a raised floor)."
+    evidence: [control-S2-add.json, control-S2-read.json, t0-S2.txt, step-S2.jsonl, timing-S2.jsonl, console-S2.txt]
+    writes: 1
+    mid_run_check: "SHEETED (J6 L1 lesson): execute `wc -l step-S2.jsonl` after R0a and record the count; must GROW past R0b or STOP (tooling failure)."
+    fail_action: "as S1. No zero-gate between S1 and S2 by design (S2 NEEDS rule 1 present)."
+  - tag: S3-remove-rule1-watch
+    why: "rule-removed leg: remove rule 1 with rule 2 present. A step-down to a nonzero floor with rules remaining is the M-standing signature; no-step (persist or zero) favors M-cumulative/M-history."
+    stimulus: "remove the rule-1 .id (bundled 0w)"
+    commands:
+      - "centrs execute --quickchr ws21 --yes '/ip/firewall/filter/remove numbers=<RULE1-.id>' > control-S3-rm.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-S3-read.json"
+      - "for OFF in 10 30 60 120 180: sleep to +OFFs post-removal; bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(date +%s%3N) read --out step-S3-<OFF>.jsonl --timing-out timing-S3-<OFF>.jsonl"
+    read_back: "MANDATORY after remove: exactly 1 row (k6-s-rule2); removal of the WRONG row (rule2 gone) -> STOP, S4, report row-error."
+    counter_guard: "[20,3]==1 at every S3 read; trip -> STOP watch, S4, report guard-trip."
+    expect: "5 session-per-reads (+10/+30/+60/+120/+180s); step-down verdict per the definitions (M-standing predicts settle at plateau-1, i.e. 2; M-cumulative predicts persist at the 2-add floor; M-history predicts 0-or-unchanged-decay)."
+    evidence: [control-S3-rm.json, control-S3-read.json, step-S3-*.jsonl, timing-S3-*.jsonl]
+    writes: 0
+    fail_action: "read-back disagrees -> STOP, S4, report."
+  - tag: S4-remove-rule2-restore-verify
+    stimulus: "remove the rule-2 .id (bundled 0w) + 5-menu control verify + native zero read"
+    commands:
+      - "centrs execute --quickchr ws21 --yes '/ip/firewall/filter/remove numbers=<RULE2-.id>' > control-S4-rm.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-restored-filter.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/nat' > control-restored-nat.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/raw' > control-restored-raw.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/mangle' > control-restored-mangle.json"
+      - "centrs retrieve --quickchr ws21 '/ip/firewall/calea' > control-restored-calea.json"
+      - "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms $(date +%s%3N) read --out step-restored.jsonl --timing-out timing-restored.jsonl"
+    expect: "CLEAN (J6 precedent: accept rules spawn no dummies): 0 rows all five menus both surfaces; GETALL [20,3] 0 rows complete"
+    evidence: [control-S4-rm.json, control-restored-filter.json, control-restored-nat.json, control-restored-raw.json, control-restored-mangle.json, control-restored-calea.json, step-restored.jsonl, timing-restored.jsonl]
+    writes: 1
+    fail_action: "restore-verify fail -> non-sheet recovery, recorded honestly, never silently re-run."
+  - tag: S5-stop-vm
+    commands: ["quickchr stop ws21"]
+    writes: 0
+stop_conditions:
+  - "baseline not empty (control or native) -> STOP before S0"
+  - "S1/S2/S3 read-back disagrees (row missing/wrong/traffic nonzero) -> STOP, S4, report stimulus-invalid"
+  - "counter guard trip ([20,3] != 1/2/1 in S1/S2/S3) -> STOP the ladder/watch, S4, report guard-trip"
+  - "timestamp capture failure (ts redacted with --t0-ms set, or ledger missing rung starts) -> STOP: scale lost, fix tooling, do not publish untimed rungs as timed"
+  - "non-monotonic values (dip-then-rise) -> RECORD and CONTINUE (H1 Q1-dip precedent)"
+  - "plateau unconfirmed at R5 (still decaying) -> NOT a stop: record R5 + keepalive trend as T-partial input, CONTINUE to the next step; NO ladder extension, no improvised re-spike"
+  - "S1-plateau-0 (G3-style decay-to-zero) -> NOT a stop: M-standing dead-in-boot, S2/S3 CONTINUE for membership-tracking generally"
+outcomes:
+  - id: T-standing
+    condition: "S1 plateau P1 (any value incl. non-2) AND S2 plateau = 2xP1 AND S3 steps down to P1 with 1 rule left AND S4 zeroes"
+    verdict: "M-standing SUPPORTED: the plateau is a per-rule standing level (2/rule in the J6 boot; ratio re-based in this boot)."
+  - id: T-history
+    condition: "S2 plateau is N-independent (equals P1, or 1-stable modal, or 0-decay -- not 2xP1) AND S3 shows no clean step to a nonzero floor (0 or unchanged-decay)"
+    verdict: "M-history SUPPORTED: plateaus are per-add transient floors, not rule-count functions. M-standing DEAD; U-h1-32-mechanism stays internal (variable-gauge vs multi-step vs history-magnitude)."
+  - id: T-cumulative
+    condition: "S2 floor rises on the 2nd add AND S3 removal does NOT step it down (persists at the 2-add floor with 1 rule left)"
+    verdict: "M-cumulative SUPPORTED: the floor tracks cumulative adds (or session state), not current membership. Decisive against M-standing (which requires the step) and against pure M-history clocks (which deny the rise-then-persist shape)."
+  - id: T-s1-modal
+    condition: "S1 reads stable-1 (modal shape: H1 spike1 + H-decay-3 A3) instead of plateau-2"
+    verdict: "J6 plateau-2 NOT replicated in this boot (3rd stability sample if flat-1). Scaling test re-bases (M-standing predicts S2 plateau 2); the T-standing/T-history/T-cumulative verdicts evaluate on the re-based ratio, and the non-replication is recorded as a per-boot-variability sample."
+  - id: T-s1-zero
+    condition: "S1 decays to 0 with the rule present (G3 shape)"
+    verdict: "M-standing DEAD-in-boot (a per-rule level cannot read 0 with 1 rule present). S2/S3 still discriminate membership-tracking generally: any N-dependence (rise on add2, move on remove1) vs none."
+  - id: T-partial
+    condition: "plateau unconfirmed at R5 in S1 or S2 (still decaying), or rung-*-failed (session death)"
+    verdict: "PARTIAL: committed rungs are TIER 1; trend recorded; no claim beyond the committed window. Rung death is a third idle sample (after H1 idle-death-1/2)."
+  - id: T-s0-dirty
+    condition: "S0 draws nonzero values or any async with no rule stimulus"
+    verdict: "AMBIGUITY NOTE (not a stop): floor shifted in this boot; scaling verdicts evaluate on in-boot deltas (S2-vs-S1, S3-vs-S2), never on absolute values."
+evidence_tiers: "TIER 1 throughout: control read-backs + committed rx bytes (step-*.jsonl write-through) + timing ledgers (rung events, keepalive-K*, drain) + tee'd consoles. No TIER 2 by construction."
+fixed_script_live_validation:
+  - "L1 write-through: `wc -l step-<S0,S1,S2>.jsonl` EXECUTED after R0a per ladder and the count RECORDED (J6 lesson: sheeted step, not assumed)"
+  - "L2 per-rung account FULL: every rung has a console line (v32+async+records) in the TEE'D console file AND a rung-*-end ledger event with matching counts"
+  - "L3 keepalive cadence: keepalive-K* ledger events space <=10s across every inter-rung gap at 5s setting"
+  - "L4 no-reconnect: exactly one session-open/session-close pair per ladder invocation in the ledger"
+  - "L5 post-run replay: every record in step-*.jsonl decodes via replayBytes (no truncated lines from a mid-append death)"
+  - "L6 death drill (only if T-partial-via-death): the rung-*-failed ledger event exists AND all pre-death rungs are byte-complete in the step file"
+spend: { counted_writes: 3, reboots: 0, cap_note: "3w+0r fixed; no extension, no re-spike improvised" }

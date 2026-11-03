@@ -1,0 +1,131 @@
+# cspell:ignore getall getone getobj getcount rowid centrs quickchr winbox webfig twin3 g4beta aaa thirteenth nosuchuser
+# K3 stimulus-hunt sheets (Phase K, user-tail). DESIGNED ONLY — none executed, zero writes spent.
+# Each hunt needs a fresh per-leg yes from the user before any coordinator executes it.
+# Convention: a "counted write" = one centrs execute --yes / M2 SET / client prefs change; reboots counted separately.
+sheets:
+  - id: H-13-6-A
+    targets: [U6-13-6-population-path]
+    question: "Does a real WinBox client session create a [13,6] UserPrefs record for the login user?"
+    vm: twin3
+    version: "7.25"
+    why_this_vm: "7.25 is the version with the deepest [13,6]/[13,7] evidence (dual-mode + queue-3 legs)"
+    baseline_snapshot:
+      - "GET [13,6] f1=admin (expect EMPTY miss)"
+      - "centrs retrieve /user (expect 1 row admin)"
+    steps:
+      - "1. Record baseline (above)."
+      - "2. Open ONE WinBox 4.x client session as admin against twin3; change exactly one per-user client pref (e.g. a column/layout pref); close the session cleanly."
+      - "3. GET [13,6] f1=admin on the lab session: HIT (populated record) vs still-EMPTY-miss."
+    budget: { counted_writes: 1, write_kind: "one client-side pref change (client-native write, not M2 SET)", reboots: 0 }
+    restore:
+      - "If a record was created and a delete path exists (REMOVE/RESET probe, max 1 extra write with fresh yes): delete, re-read to confirm EMPTY miss."
+      - "If no delete path: record orphan-persistence as a finding and destroy/recreate the disposable VM; re-verify EMPTY miss on the fresh VM."
+    stop_conditions:
+      - "HIT on step 3 -> STOP SUCCESS (U6 population path = WinBox client write; record the populated shape)."
+      - "Client cannot be driven to change a per-user pref (headless blocker) -> STOP, report blocker."
+      - "2 client sessions (1 retry with fresh yes) without a record -> STOP, client-write-driver DEAD for this pref."
+  - id: H-13-6-B
+    targets: [U6-13-6-population-path]
+    question: "Does the proven [13,7] M2 SET whole-record pattern create a [13,6] record under a synthetic selector?"
+    vm: twin3
+    version: "7.25"
+    why_this_vm: "SET-overwrite-whole-record is live-proven on [13,7] on 7.25 (queue-3 item 3); same version, sibling handler, synthetic selector"
+    baseline_snapshot:
+      - "GET [13,6] f1=k3-synth-6 (expect EMPTY miss)"
+      - "centrs retrieve /user (expect 1 row admin; synthetic selector must never appear)"
+    steps:
+      - "1. Record baseline (above)."
+      - "2. M2 SET on [13,6] {f1=k3-synth-6} key-only create (1 write); GET f1=k3-synth-6 read-back on main + fresh EC-SRP5 sessions."
+      - "3. If key-only took: M2 SET {f1,f2,f3} full-record overwrite (1 write); GET read-back; REST /user re-read (expect zero pref keys, per the [13,7] no-REST-surface finding)."
+    budget: { counted_writes: 2, write_kind: "M2 SET (CMD_SET 0xfe000e)", reboots: 0 }
+    restore:
+      - "Attempt SET-form removal (max 1 extra write with fresh yes); [13,7] precedent says delete-via-SET is refuted — expect orphan."
+      - "If orphan persists: record orphan-by-design candidate and destroy/recreate the disposable VM; re-verify EMPTY miss on the fresh VM."
+    stop_conditions:
+      - "Populated record on any read-back -> STOP SUCCESS (U6 population path includes M2 SET; record shape + reply field order)."
+      - "SET -> NOTIMP/FAILED with no record -> STOP, record [13,6] write gating (contrast with [13,7] SET-ok)."
+      - "Orphan persists after restore attempts -> STOP, record orphan finding (do not burn further writes)."
+  - id: H-13-8-A
+    targets: [U7-13-8-identity]
+    question: "Does group add/remove move the [13,8] singleton-'default' registry (row count, row-ids, or names)?"
+    vm: g4beta
+    version: 7.26beta4
+    why_this_vm: "beta4 is the freshest 7.x; [13,8] shape is version-identical so any 7.x discriminates — g4beta keeps twin3 free"
+    baseline_snapshot:
+      - "GETALL [13,8] (expect 1 row {id 0, 'default'} + total 1)"
+      - "GETCOUNT [13,8] (expect total 1 in 0xfe0019)"
+      - "centrs retrieve /user/group (expect 3 rows read/write/full)"
+    steps:
+      - "1. Record baseline (above)."
+      - "2. centrs execute --yes '/user/group/add name=k3synth policy=read' (1 write); GETALL + GETCOUNT [13,8]."
+      - "3. centrs execute --yes '/user/group/remove k3synth' (1 write); GETALL + GETCOUNT [13,8]."
+    budget: { counted_writes: 2, write_kind: "centrs execute --yes (/user/group add + remove)", reboots: 0 }
+    restore:
+      - "Step 3 IS the restore; verify /user/group back to 3 rows and GETALL back to the singleton."
+      - "If remove fails: report PARTIAL restore, do not improvise further writes."
+    stop_conditions:
+      - "Row count/shape moves on step 2 or 3 -> STOP SUCCESS (group-driver LIVE; record the exact delta)."
+      - "No movement after add+remove -> STOP, group-driver DEAD for [13,8]."
+  - id: H-13-8-B
+    targets: [U7-13-8-identity]
+    question: "Do aaa/radius toggles move the [13,8] singleton registry?"
+    vm: g4beta
+    version: 7.26beta4
+    why_this_vm: "same VM as H-13-8-A (sequential legs, shared baseline); no peer/hardware needed for aaa toggles"
+    baseline_snapshot:
+      - "GETALL [13,8] (expect singleton)"
+      - "centrs retrieve /user/aaa (record verbatim)"
+    steps:
+      - "1. Record baseline (above)."
+      - "2. centrs execute --yes '/user/aaa/set use-radius=yes' (1 write); GETALL [13,8]."
+      - "3. centrs execute --yes '/user/aaa/set use-radius=no accounting=yes' (1 write); GETALL [13,8]."
+      - "4. centrs execute --yes '/user/aaa/set accounting=no' (1 write); GETALL [13,8]; re-read /user/aaa."
+    budget: { counted_writes: 3, write_kind: "centrs execute --yes (/user/aaa set x3)", reboots: 0 }
+    restore:
+      - "Step 4 IS the restore; verify /user/aaa byte-matches baseline and GETALL is the singleton."
+    stop_conditions:
+      - "Shape moves on any step -> STOP SUCCESS (aaa-driver LIVE; record which toggle moved it)."
+      - "No movement after all toggles -> STOP, aaa-toggle-driver DEAD for [13,8] (radius-server rows remain untested — needs a peer, out of scope)."
+  - id: H-13-5-A
+    targets: [U-k3-13-5-role]
+    question: "Does user add/remove or session count move any of the [13,5] {f5,f1,f2,f4,f3} fields?"
+    vm: twin3
+    version: "7.25"
+    why_this_vm: "[13,5] is version-identical everywhere; twin3 spreads load off g4beta"
+    baseline_snapshot:
+      - "GET [13,5] (expect {[],F,T,1,0})"
+      - "centrs retrieve /user (expect 1 row) + /user/active (record count)"
+    steps:
+      - "1. Record baseline (above)."
+      - "2. centrs execute --yes '/user/add name=k3synth group=read password=REDACTED' (1 write); GET [13,5]; /user/active."
+      - "3. Hold an extra simultaneous session (second centrs retrieve as k3synth is a login, not a write); GET [13,5]."
+      - "4. centrs execute --yes '/user/remove k3synth' (1 write); GET [13,5]; /user + /user/active."
+    budget: { counted_writes: 2, write_kind: "centrs execute --yes (/user add + remove); extra session is a login, not a counted write", reboots: 0 }
+    restore:
+      - "Step 4 IS the restore; verify /user back to 1 row and GET [13,5] back to {[],F,T,1,0}."
+    stop_conditions:
+      - "Any field moves -> STOP SUCCESS (discriminate: user-row-driven vs session-driven by which step moved it)."
+      - "No movement after add + extra session + remove -> STOP, user/session-driver DEAD for [13,5]."
+  - id: H-13-9-A
+    targets: [U-k3-13-9-role]
+    question: "Do aaa/radius toggles or session count move the [13,9] {f1,f2} pair off {0,0}?"
+    vm: g4beta
+    version: 7.26beta4
+    why_this_vm: "K3 already holds beta4 {0,0}-with-sessions-active evidence on g4beta; same VM keeps the comparison tight"
+    baseline_snapshot:
+      - "GET [13,9] (expect {0,0})"
+      - "centrs retrieve /user/active (record count) + /user/aaa (record verbatim)"
+    steps:
+      - "1. Record baseline (above)."
+      - "2. Hold 2 simultaneous sessions vs 1 (logins, not writes); GET [13,9] under each count."
+      - "3. centrs execute --yes '/user/aaa/set use-radius=yes accounting=yes' (1 write); GET [13,9]."
+      - "4. centrs execute --yes '/user/aaa/set use-radius=no accounting=no' (1 write); GET [13,9]; re-read /user/aaa."
+    budget: { counted_writes: 2, write_kind: "centrs execute --yes (/user/aaa set x2); session holds are logins, not counted writes", reboots: 0 }
+    restore:
+      - "Step 4 IS the restore; verify /user/aaa byte-matches baseline and GET [13,9] back to {0,0}."
+    stop_conditions:
+      - "f1 or f2 moves off 0 -> STOP SUCCESS (record which step moved which field)."
+      - "No movement after session sweep + aaa toggles -> STOP, session/aaa-toggle-driver DEAD for [13,9]."
+bound_check: "13-6: 2 hunts (H-13-6-A/B); 13-8: 2 hunts (H-13-8-A/B); 13-5: 1 hunt (H-13-5-A); 13-9: 1 hunt (H-13-9-A) — <=2 per field"
+total_budget_if_all_approved: { counted_writes: 12, client_sessions: 1, reboots: 0 } # coordinator-corrected per K-reviewer R-K3 (was 11; 1+2+2+3+2+2=12)
+execution_rule: "coordinator executes only with a fresh per-leg user yes per hunt; stop at the first SUCCESS or DEAD verdict per field and re-scope before running the sibling hunt"

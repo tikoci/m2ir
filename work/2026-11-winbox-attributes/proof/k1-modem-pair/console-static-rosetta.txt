@@ -1,0 +1,104 @@
+cspell:ignore rosetta cliref lte simlink simslot rows unmapped sqlite readonly jsonl amm fts docsize esim num
+=== K1 static leg: Rosetta lte/lte-settings pulls (names/types only, sqlite3 -readonly) ===
+--- db file ---
+-rw-r--r-- 1 amm0bot amm0bot 415490048 Nov  2 14:37 /home/amm0bot/.rosetta/ros-help-0.12.0.db
+--- db hash (full-length re-verify) ---
+eee457411defe95c7a8111c89866dd5066a790ce2ffda46a37664c459515aae3  /home/amm0bot/.rosetta/ros-help-0.12.0.db
+--- meta tables ---
+callouts                     devices_fts              properties_fts_docsize
+callouts_fts                 devices_fts_config       properties_fts_idx
+callouts_fts_config          devices_fts_data         ros_versions
+callouts_fts_data            devices_fts_docsize      schema_migrations
+callouts_fts_docsize         devices_fts_idx          schema_node_presence
+callouts_fts_idx             dude_images              schema_nodes
+changelogs                   dude_pages               sections
+changelogs_fts               dude_pages_fts           skill_references
+changelogs_fts_config        dude_pages_fts_config    skills
+changelogs_fts_data          dude_pages_fts_data      skills_fts
+changelogs_fts_docsize       dude_pages_fts_docsize   skills_fts_config
+changelogs_fts_idx           dude_pages_fts_idx       skills_fts_data
+cliref_entries               glossary                 skills_fts_docsize
+cliref_entry_schema_links    hardware_catalog         skills_fts_idx
+cliref_field_inspect_links   page_table_cells         video_segments
+cliref_fields                page_table_rows          video_segments_fts
+cliref_flags                 page_tables              video_segments_fts_config
+cliref_pages                 pages                    video_segments_fts_data
+cliref_standard              pages_fts                video_segments_fts_docsize
+cliref_trees                 pages_fts_config         video_segments_fts_idx
+command_versions             pages_fts_data           videos
+commands                     pages_fts_docsize        videos_fts
+db_meta                      pages_fts_idx            videos_fts_config
+device_aliases               properties               videos_fts_data
+device_overview              properties_fts           videos_fts_docsize
+device_test_results          properties_fts_config    videos_fts_idx
+devices                      properties_fts_data
+--- db_meta ---
+docs_manual_version|7.26
+command_versions_expected|67
+cliref_manual_version|7.26
+hardware_catalog_source|manual.mikrotik.com/hardware + mikrotik.com/product (B-0017)
+hardware_catalog_built_at|2026-10-30T21:32:33.230Z
+hardware_catalog_matrix_snapshot|2026-10-29
+release_tag|v0.12.0
+built_at|2026-10-30T21:34:20.911Z
+source_commit|6b6397d7739a563b894f9b07f7ac2f6b1ad7f4bf
+schema_version|12
+--- manual versions present ---
+7.24
+7.25
+7.26
+=== interface/lte/settings @7.26 (names/types only) ===
+          name                            raw_type                     field_kind
+-------------------------  --------------------------------------  ------------------
+mode                       enum (auto | serial | mbim | user)      Argument
+esim-channel               enum (auto | at)                        Argument
+firmware-path              string                                  Argument
+log-dir                    file                                    Argument
+log-file-count             num                                     Argument
+log-filter-file            file                                    Argument
+info-polling-interval      num                                     Argument
+link-recovery-timer        num                                     Argument
+sim-slot                   enum                                    Argument
+sim-link                   enum                                    Argument
+external-antenna           enum (auto | main | div | both | none)  Argument
+external-antenna-selected  enum (main | div | both | none | none)  Read-only Argument
+=== interface/lte @7.26 (names/types only) ===
+     name                  raw_type                  field_kind
+--------------  -------------------------------  ------------------
+name            string                           Argument
+
+mtu             num                              Argument
+
+master          iface_enum                       Argument
+
+pin             string                           Argument
+
+apn-profiles    enum                             Argument
+
+apn-profile     enum                             Argument
+
+modem-init      string                           Argument
+
+operator        string                           Argument
+
+allow-roaming   bool                             Argument
+
+sms-read        bool                             Argument
+
+sms-protocol    enum (mbim | at | qmi | auto)    Argument
+
+network-mode    multi { array-id, network: enum  Argument
+                 }
+
+band            multi { array-id, band: enum     Argument
+                 }
+
+nr-band         multi { array-id, nr-band: enum  Argument
+                 }
+
+default-name    string                           Read-only Argument
+
+advertised-mtu  num                              Read-only Argument
+=== counts ===
+interface/lte|16
+interface/lte/settings|12

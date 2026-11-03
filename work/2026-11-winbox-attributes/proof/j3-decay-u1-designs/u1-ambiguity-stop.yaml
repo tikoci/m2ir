@@ -1,13 +1,15 @@
-# cspell:ignore rowid getall getone getobj getcount defconf cliref wps etherboot netinstall subdirs precheck jsonl brkpath notimp multis rsc CPE PTP efault onfiguration flashfig netinstalled unpriceable unrestorable unsettable
+# cspell:ignore rowid getall getone getobj getcount defconf cliref wps etherboot netinstall subdirs precheck jsonl brkpath notimp multis rsc CPE PTP efault onfiguration flashfig netinstalled unpriceable unrestorable unsettable acs tr069 filetype readback
 # U1 custom-script-set STIMULUS HUNT (static, offline). Verdict: AMBIGUITY STOP.
 # U1-defconf-field-split asks which of f2/f3/f4/f5/f6 carries which of
 # {script, caps-mode-script, wps-sync-mode-script, custom-script}. The version
 # axis is EXHAUSTED (I4: beta4==7.25 bodies, v6 same-6-fields). This sheet hunts
 # a CHR stimulus that moves one body independently. Finding: NONE EXISTS on CHR.
-# The only documented writer is netinstall script-file at install time
-# (etherboot reinstall: infeasible on CHR, out of write-leg scope). No CLI
-# setter exists on any tracked version; reset executes but does not rewrite
-# bodies; no other menu references custom-script. 0w+0r spent. Design only.
+# The sole CLI-read-back-visible documented writer is netinstall script-file
+# at install time (etherboot reinstall: infeasible on CHR, out of write-leg
+# scope). TR-069 is a second documented writer with a different read-back
+# path (S7; non-discriminating for the U1 split). No CLI setter exists on
+# any tracked version; reset executes but does not rewrite bodies; no other
+# menu references custom-script. 0w+0r spent. Design only.
 id: J3-u1-custom-script-stimulus-hunt
 kind: ambiguity-stop
 status: design-complete-stopped
@@ -33,7 +35,7 @@ menus_checked:
   - menu: /system/default-configuration (+ subdirs)
     result: "NO WRITER. Verbs are export/get/print ONLY on every tracked version (command_versions 7.10.2+; inspect 7.25+7.26beta4, 83 nodes, presence identical both versions). All 4 fields Read-only Argument in all 3 manuals. Minor source discrepancy noted: cliref documents 4 subdirs (incl. wps-sync-mode-script) while the inspect/command tree carries 3 (caps-mode-script, custom-script, script); no writer in either source. Queries Q1/Q2/Q3/Q5/Q6/Q7/Q10/Q15/Q21/Q22b."
   - menu: "/tool/netinstall (server: add/set/reset/devices/install/settings)"
-    result: "SOLE DOCUMENTED WRITER, INFEASIBLE on CHR. script-file arg: 'Allows installation of a custom default configuration script on the device during installation. This replaces the RouterOS-supplied default configuration script. See /system/default-configuration/custom-script/print.' (netinstall-package docs; same prose as 'Configure Script' in netinstall-windows/linux docs). Requires etherboot reinstall OF THE TARGET: CHR boots a disk image under QEMU (no etherboot path), and a reinstall is destructive and out of write-leg scope. Queries Q6-netinstall-lead/Q11c/Q14/Q16/Q18/Q20."
+    result: "SOLE CLI-READ-BACK-VISIBLE DOCUMENTED WRITER, INFEASIBLE on CHR (wording corrected per J-reviewer R3; was 'sole documented writer'). script-file arg: 'Allows installation of a custom default configuration script on the device during installation. This replaces the RouterOS-supplied default configuration script. See /system/default-configuration/custom-script/print.' (netinstall-package docs; same prose as 'Configure Script' in netinstall-windows/linux docs). Requires etherboot reinstall OF THE TARGET: CHR boots a disk image under QEMU (no etherboot path), and a reinstall is destructive and out of write-leg scope. Queries Q6-netinstall-lead/Q11c/Q14/Q16/Q18/Q20. (TR-069 is a second documented writer with a different read-back path; see S7.)"
   - menu: /system/reset-configuration
     result: "NOT A WRITER. Args: keep-users, keep-apps, no-defaults, caps-mode, wps-sync-mode, skip-backup, force-v6-to-v7-configuration-upgrade, shutdown, run-after-reset(file). Reset EXECUTES the stored scripts (incl. a netinstalled custom script) after purging config; run-after-reset runs a separate .rsc FILE. Nothing rewrites defconf bodies. Queries Q12/Q24/Q25."
   - menu: branding/custom-packages path
@@ -77,6 +79,12 @@ candidates_assessed:
     stimulus: "branding install / file write / unknown menu rewriting defconf bodies"
     would_prove: "would discriminate only if a writer were found; none was (Q8/Q9/Q26 negative; no file-path evidence exists for defconf, unlike the [24,10] /rw/ precedent which is a different handler)."
     verdict: NONE-FOUND
+  - id: S7-tr069-vendor-filetype
+    stimulus: "TR-069 Download RPC with vendor FileType 'X MIKROTIK Factory Configuration File' (documented second writer; J-reviewer R3 find, added by the Phase K coordinator)"
+    source: "Rosetta `pages` id 214 (TR-069 doc, https://manual.mikrotik.com/docs/management-tools/tr-069), section 'RouterOS default configuration change (X MIKROTIK Factory Configuration File)': 'This vendor-specific FileType allows the change of the RouterOS default configuration script that is executed when /system/reset-configuration ... is executed.' J3's literal-term searches (Q16 '%custom-script%', Q26 branding co-mention) structurally missed it — the page uses 'default configuration script' / 'Factory Configuration File' vocabulary, never the literal 'custom-script'."
+    readback_caveat: "The same page warns a TR-069-changed script 'will not be displayed by /system/default-configuration/print ... as it is the case if that script is altered with the Netinstall tool' — TR-069 writes a slot that does NOT surface in the same CLI read path as the netinstall custom-script."
+    would_prove: "NOTHING about the U1 split: no CLI read-back exists for the TR-069-written slot, so a marker body cannot be observed per wire field. Needs ACS infrastructure (not a CHR write leg) on top."
+    verdict: EXISTS-BUT-NON-DISCRIMINATING
 verdict: AMBIGUITY-STOP
 verdict_detail: "NO stimulus exists on CHR that moves one defconf body independently. The version axis (I4) and the stimulus axis (this hunt) are both exhausted. This is a RESULT, not a failure: U1-defconf-field-split stays open with the negative evidence below as its bound. Reopen only on: (a) hardware-netinstall leg (out of scope), (b) coordinator explicitly authorizing the S4 native-SET micro-probe against J3's recommendation, or (c) new static evidence (v6 CLI reference, binary file-path lead)."
 would_reopen:

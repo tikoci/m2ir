@@ -1,0 +1,2 @@
+cspell:ignore biome
+Checked 1 file in 15ms. No fixes applied.

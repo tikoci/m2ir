@@ -1,0 +1,18 @@
+cspell:ignore winbox quickchr getone getall getobj getcount brkpath notimp qos dbrd lighttpd ws19 ws20 ws21 twin centrs btest g4beta g4b5 rosetta cliref multiset reqid dgram mcast rowid
+   │ Name                              │ Version   │ Arch  │ Network                              │ Ports                                                                      │ PID    
+───┼───────────────────────────────────┼───────────┼───────┼──────────────────────────────────────┼────────────────────────────────────────────────────────────────────────────┼────────
+ ○ │ twin1                             │ 7.26beta3 │ x86   │ user                                 │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      
+ ○ │ twin2                             │ 7.26beta3 │ x86   │ user                                 │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      
+ ○ │ twin4                             │ 7.26beta3 │ x86   │ user                                 │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      
+ ○ │ twin3                             │ 7.25      │ x86   │ user                                 │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      
+ ○ │ centrs-btest-client-1793164337485 │ 7.25      │ x86   │ user                                 │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED btest:REDACTED │ —      
+ ○ │ twin-app                          │ 7.26beta3 │ x86   │ user                                 │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      
+ ○ │ ws3c6                             │ 6.49.23   │ x86   │ user                                 │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      
+ ○ │ ws19-2nic                         │ 7.25      │ x86   │ user, socket::ws19-link              │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      
+ ○ │ ws20                              │ 7.25      │ x86   │ user, socket::ws20-link              │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      
+ ○ │ ws21                              │ 7.25      │ x86   │ user, socket::ws21-a, socket::ws21-b │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      
+ ○ │ winbox-beta4                      │ 7.26beta4 │ x86   │ user                                 │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      
+ ○ │ twin-zt                           │ 7.25      │ arm64 │ user                                 │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      
+ ○ │ e3-beta4                          │ 7.26beta4 │ x86   │ user                                 │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      
+ ● │ g4beta                            │ 7.26beta4 │ x86   │ user, socket::g4-link                │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ REDACTED
+ ○ │ g4beta5                           │ 7.26beta5 │ x86   │ user, socket::g4b5-link              │ http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED            │ —      

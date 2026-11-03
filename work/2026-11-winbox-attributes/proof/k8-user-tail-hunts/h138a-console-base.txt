@@ -1,0 +1,4 @@
+cspell:ignore getall getone getobj getcount getf1 rowid centrs quickchr winbox aaa nosuchuser synth
+census [13,8] getall: ok fields=7 statusWord=null
+census [13,8] getcount: ok fields=6 statusWord=null
+census: records=4 out=h138a-step-base.jsonl

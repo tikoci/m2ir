@@ -1,0 +1,54 @@
+# cspell:ignore getone getall getobj getcount getf7 notimp unknownid jsonl reqid u32c multiset lte usb fts rosetta cliref esim mbim qmi iface enums seqs getonly
+# R-K1 (BLIND reconstruction). Written BEFORE opening any k1 proposer file
+# (report.yaml / fragment.yaml). Comparison appended post-read.
+reconstruction: R-K1
+target: k1-modem-pair [20,107] drift + gating family; [20,61] f7 tally
+method: "Entry-by-entry comparison of step rx records against ev/7.25-getone-20-107.json
+  (key/tcode/value/order) and against fixtures 7.25/7.26beta4-neg-20-61.json.
+  Gating family decided against the J1-published signatures (P-j1-122-getonly:
+  GETALL/GETOBJ->0xFE0003 + GETCOUNT=0xFFFFFFFF; wrap-family: GETALL 1-row wrap
+  + GETOBJ->0xFE0004 + GETCOUNT=1), verified against j1 step-725-122.jsonl seq 3
+  bytes. No k1 proposer file opened before this verdict was written."
+raw_inputs:
+  - { file: proof/k1-modem-pair/step-725-107-getone.jsonl, sha256_16: 009463c7f5344c3e, seqs_used: [0, 1] }
+  - { file: proof/k1-modem-pair/step-725-107-gating.jsonl, sha256_16: 774abdc09b2b0a27, seqs_used: [0, 1, 2, 3, 4, 5] }
+  - { file: proof/k1-modem-pair/step-beta4-107-getone.jsonl, sha256_16: 657dad231d345e55, seqs_used: [0, 1] }
+  - { file: proof/k1-modem-pair/step-beta4-107-gating.jsonl, sha256_16: 60b4f1de588494e7, seqs_used: [0, 1, 2, 3, 4, 5] }
+  - { file: proof/k1-modem-pair/step-725-61-f7.jsonl, sha256_16: 572ae09f5ad2cf8e, seqs_used: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13] }
+  - { file: proof/k1-modem-pair/step-beta4-61-f7.jsonl, sha256_16: f105f628264e0640, seqs_used: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13] }
+  - { file: proof/k1-modem-pair/census.ts, sha256_16: 1279915f24cf40e8, note: "getf7 = CMD_GET + encStr(7,s); 0w by construction; private verb unreachable" }
+  - { file: proof/k1-modem-pair/console-ws21-census.txt, note: "107 getone ok fields=23; getall/getobj ERR 16646147; getcount ok fields=6; 7x f7 ERR 16646148" }
+  - { file: proof/k1-modem-pair/console-beta4-census.txt, note: "identical outcome pattern to ws21" }
+  - { file: proof/k1-modem-pair/console-static-rosetta.txt, note: "db hash eee45741... re-verified; lte/settings@7.26 = 12 fields incl esim-channel/log-dir/log-file-count/log-filter-file/external-antenna-selected; lte@7.26 = 16 fields" }
+  - { file: work/2026-10-chr-extraction/ws3c/ev/7.25-getone-20-107.json, sha256_16: db9fd3809d7201de, note: "23-entry baseline" }
+  - { file: fixtures/winbox-ipc/7.25-neg-20-61.json, sha256_16: 2e0977d301dc25fe, note: "GET bare/f7=lte1/f7=foo/f999 -> 0xFE0004; GETALL/GETOBJ -> 0xFE0003; GETCOUNT ok + 0xFFFFFFFF" }
+  - { file: fixtures/winbox-ipc/7.26beta4-neg-20-61.json, sha256_16: e673b33d72d4edd2, note: "same matrix on beta4" }
+independent_verdict:
+  r107_drift:
+    verdict: drift-free
+    detail_725: "step-725-107-getone seq1 = 23 entries, key/tcode/value/order IDENTICAL to ev/7.25-getone-20-107.json (incl 0xff0006=2, f5='firmware', f8=0xFFFFFFFF, 0x0f=120)"
+    detail_beta4: "step-beta4-107-getone seq1 identical to the 7.25 baseline except 0xff001c=['msg-proxy-7.26beta4'] (transport banner, not handler state); all 18 USER fields identical"
+  r107_gating:
+    matrix_725: "GETALL seq1 -> 0xFE0003 (16646147) from [20,107]; GETOBJ obj=1 seq3 -> 0xFE0003; GETCOUNT seq5 -> ok + 0xfe0019=0xFFFFFFFF"
+    matrix_beta4: "identical (seq1/seq3 -> 0xFE0003; seq5 -> 0xFFFFFFFF)"
+    family: GET-only
+    family_evidence: "GETALL/GETOBJ->0xFE0003 NOTIMP + GETCOUNT=0xFFFFFFFF sentinel + GET singleton matches P-j1-122-getonly exactly (j1 step-725-122.jsonl seq3 shows the same 0xff0008=16646147 envelope from [20,122]); NOT wrap-family (no 1-row GETALL wrap, no GETCOUNT=1)"
+  r61_f7_tally:
+    variants: ["", "lte1", "foo", "usb1", "1-1", "/usb/1", "00000001"]
+    outcome_725: "7/7 ROUTER-ERROR 0xFE0004 (16646148) from [20,61] (rx seqs 1,3,5,7,9,11,13)"
+    outcome_beta4: "7/7 ROUTER-ERROR 0xFE0004 (16646148) from [20,61] (rx seqs 1,3,5,7,9,11,13)"
+    total: "14/14 negative, handler-level replies, no errstr"
+    vs_baseline: "lte1/foo re-proven negative on both versions (match neg-20-61 fixtures byte-shape modulo reqId); NEW variants this leg: empty-string f7 (differs from baseline bare-GET which carries NO f7), usb1, 1-1, /usb/1, 00000001 — all negative with the identical envelope"
+    hit_condition: "still unproven; U8-61-hit-condition stands (registered-modem vs non-name-key still confounded; no hit observed)"
+post_read_comparison:
+  files_opened_after_reconstruction: [proof/k1-modem-pair/report.yaml, proof/k1-modem-pair/fragment.yaml]
+  verdict: agree
+  item_checks:
+    - { claim: "D-k1-107-no-drift + P-k1-107-drift-free", verdict: agree, detail: "0/0 diffs both 7.x, banner-only variance — matches my entry-identical finding (23 entries, order included)" }
+    - { claim: "P-k1-107-getonly + D-k1-107-wrap-family", verdict: agree, detail: "GET-only (GETALL/GETOBJ->0xFE0003, GETCOUNT=0xFFFFFFFF), explicitly not wrap — matches my J1-signature comparison" }
+    - { claim: "P-k1-61-f7-matrix (14/14 miss, 7-key SYS-only, 0xFE0004)", verdict: agree, detail: "matches my tally: 7 variants x 2 versions, rx seqs 1/3/5/7/9/11/13 both files, errno 16646148, 7 keys each" }
+    - { claim: "D-k1-61-f7-empty-distinct (zero-length 0x21 tail 0700002100)", verdict: agree, detail: "tx seq0 hex tail verified 0700002100 in both f7 files; rx misses match lte1/foo modulo reqId echo" }
+    - { claim: "P-k1-candidates-present (7 of 12 + 3 of 16)", verdict: agree, detail: "verified against console-static-rosetta.txt: all 7 lte/settings + all 3 lte names present; totals 12/16 match" }
+    - { claim: "U8 narrowed (4 non-name styles + empty, modem confound stands)", verdict: agree, detail: "variant inventory usb1/1-1//usb/1/00000001 + empty confirmed in captures; no hit observed" }
+    - { claim: "private_verb_static (slot-7 0x812e00c claims 5/6/7; F0b v7 DEFAULT->slot-24)", verdict: agree, detail: "slot-7 cite matches findings section 24 verbatim; F0b L4-default-target verified in F0b report.yaml lines 64-71 (DEFAULT @0x377dd call *0x60 = slot 24 cmdUnknown; v6 slot-19 model does NOT transfer). Private-5 never sent live: census.ts has no private path (verified by read)." }
+    - { claim: "fragment.yaml notes + omits", verdict: agree, detail: "18-field pin list counts to 18 and matches rx values; no candidate promotion; private-5/v6 correctly omitted" }

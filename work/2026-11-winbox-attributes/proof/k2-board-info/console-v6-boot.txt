@@ -1,0 +1,9 @@
+cspell:ignore winbox quickchr getone getall getobj getcount brkpath notimp qos dbrd lighttpd ws19 ws20 ws21 twin centrs btest g4beta g4b5 rosetta cliref multiset reqid dgram mcast rowid
+● ws3c6 started
+  Version: 6.49.23 (x86)  boot-only: no REST, no provisioning
+  Network: user
+  Ports:   http:REDACTED https:REDACTED ssh:REDACTED api:REDACTED api-ssl:REDACTED winbox:REDACTED
+  API:     127.0.0.1:REDACTED  (native API, user admin)
+  SSH:     ssh admin@REDACTED-HOST -p REDACTED
+  WinBox:  127.0.0.1:REDACTED
+○ ws3c6 stopped

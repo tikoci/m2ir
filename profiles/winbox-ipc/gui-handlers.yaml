@@ -1330,9 +1330,25 @@ handlers:
     cmd: GET_ONE
     role: "v7-only modem SIM-settings holder: AHolder('sim_settings') + defconf 'ModemSIMSlots'. Live thin defaults (field 5 = 'firmware', 15 = 120, 20 = 5, 11 = 3, 8 = 0xFFFFFFFF) are SIM-slot defaults on a modem-less CHR."
     confidence: observed-only
+    notes: |
+      Verb gating (K1 census, both 7.x): GET-only —
+      GETALL/GETOBJ -> 0xfe0003 (NOTIMP, same signature
+      as default-config and qos-config-20-122, not the
+      114/115/126 wrap family); GETCOUNT = 0xFFFFFFFF
+      sentinel in 0xfe0019 (no row count). Beta4 GETONE
+      is drift-free vs 7.25 (18 USER fields pinned).
+      v6 -> 0xfe0002 on all four verbs (K0 v6-overflow leg,
+      process-level SYS-only reply from [20]) — v7-only
+      PROVEN, not assumed. No field meaning is proven —
+      all lte/settings names stay candidates. Populated
+      rows still need modem hardware.
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25): shape in ev/7.25-hscan-20-hi.txt; see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (K1 modem-pair census, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (GET-only, GETCOUNT 0xFFFFFFFF, no drift) — work/2026-11-winbox-attributes/proof/k1-modem-pair/{census.ts,step-beta4-107-getone.jsonl,step-beta4-107-gating.jsonl,step-725-107-getone.jsonl,step-725-107-gating.jsonl}"
+      - source: sample
+        ref: "live CHR interrogation (K0 v6-overflow, 6.49.23, 2026-11-02, 0w): uniform 0xfe0002 BRKPATH all four verbs (v7-only) — work/2026-11-winbox-attributes/proof/k0-v6-overflow/{census.ts,step-v6-107.jsonl}"
       - source: sample
         ref: "live CHR interrogation (mask-leg batch, 7.25): full dump ev/7.25-getone-20-107.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
@@ -1750,9 +1766,23 @@ handlers:
     cmd: GET_ONE
     role: "unknown singleton, raw shape {8:F, 9:T, 15:0} — byte-identical both versions"
     confidence: observed-only
+    notes: |
+      Residue census (K4, 0w): GETONE {8:F, 9:T, 15:0} is
+      drift-free across 6.49.23/7.25/7.26beta4. Verb gating
+      (both 7.x): GET-only — GETALL/GETOBJ -> 0xfe0003
+      (NOTIMP, same signature as default-config); GETCOUNT =
+      0xFFFFFFFF sentinel (no row count). Static: AHolder
+      /nova/store/health both versions (v6 addHandler
+      0x8053416/vt 0x808ee78; v7 0x805ca60/vt 0x808cd10).
+      Role still open; health-store code is an emptiness
+      check only, no CLI pairing record found.
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (K4 sys2-residue census, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (drift-free, GET-only, GETCOUNT 0xFFFFFFFF) — work/2026-11-winbox-attributes/proof/k4-sys2-residue/{census.ts,step-beta4-sys2-residue.jsonl,step-725-sys2-residue.jsonl}"
+      - source: code
+        ref: "sys2 AHolder /nova/store/health both versions (v6 0x8053416/vt 0x808ee78/str 0x808e656; v7 0x805ca60/vt 0x808cd10/str 0x8086e0e); see work/2026-11-winbox-attributes/proof/k4-sys2-residue/report.yaml S-k4-health-holder"
       - source: sample
         ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-24-14.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
 
@@ -1761,11 +1791,31 @@ handlers:
     status: role-open
     process-id: 0x18
     cmd: GET_ONE
-    role: "unknown singleton, raw shape {1:2, 2:10} — byte-identical both versions (v6 says /nova/store/chfont — console font, unconvinced as the M2 role)"
+    role: "unknown singleton, raw shape {1:2, 2:10} — byte-identical both versions (AHolder /nova/store/chfont confirmed both versions; field meanings still open)"
     confidence: observed-only
+    notes: |
+      Residue census (K4, 0w): GETONE {1:2, 2:10} (both
+      u32c) is drift-free across 6.49.23/7.25/7.26beta4.
+      Verb gating (both 7.x): GET-only — GETALL/GETOBJ ->
+      0xfe0003 (NOTIMP); GETCOUNT = 0xFFFFFFFF sentinel.
+      Static: AHolder /nova/store/chfont both versions
+      (v6 0x80535a5/vt 0x808f178; v7 0x805cbfb/vt
+      0x808d0d0). console/settings mapping KILLED: the menu
+      is {sanitize-names:bool, log-script-errors:bool,
+      tab-width:number} (zero bools on the wire) and the
+      chfont store statically pairs with
+      /system/console/screen (v7 libumsg.so record), a
+      different menu. Screen-enum fit ({line-count 25:2,
+      blank-interval 10min:10} vs {1:2, 2:10}) is an
+      UNPROVEN correlation — discriminating leg sheeted,
+      no field names claimed.
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
+      - source: sample
+        ref: "live CHR interrogation (K4 sys2-residue census, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (drift-free, GET-only, GETCOUNT 0xFFFFFFFF) — work/2026-11-winbox-attributes/proof/k4-sys2-residue/{census.ts,step-beta4-sys2-residue.jsonl,step-725-sys2-residue.jsonl}"
+      - source: code
+        ref: "sys2 AHolder /nova/store/chfont both versions (v6 0x80535a5/vt 0x808f178/str 0x808e6b4; v7 0x805cbfb/vt 0x808d0d0/str 0x8086e65); v7 libumsg.so chfont -> /system/console/screen record (file 0x77460); see work/2026-11-winbox-attributes/proof/k4-sys2-residue/report.yaml S-k4-chfont-holder, S-k4-chfont-screen-record, X-k4-console-settings-mapping"
       - source: sample
         ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-24-16.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
 
@@ -1812,9 +1862,24 @@ handlers:
       identical all 3 versions modulo banner/reqid —
       {f5/0x88=[], f1/0x0=F, f2/0x1=T, f4/0x9=1, f3/0x9=0},
       with f3 sorting AFTER the SYS keys in reply order.
+      K3 beta4 gating (2026-11-02, 0w): GETALL + GETOBJ(obj=1)
+      -> 0xfe0003 NOTIMP from=[13,5]; GETCOUNT -> ok +
+      0xFFFFFFFF in 0xfe0019/0x8 (sentinel, no row count).
+      GETONE shape drift-free vs all-version baselines.
+      Role still OPEN; stimulus hunt sheeted, not executed.
+      Hunt executed (K8 H-13-5-A, 7.25, 2w): user add (no-
+      password form rejected 'missing =password='; re-sent
+      with a synthetic lab password) + k3synth session hold
+      + remove move NO field — shape stays {[],F,T,1,0}
+      under 4 active sessions. User/session-driver DEAD.
+      Restore clean (1 user, shape back).
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9/§10"
+      - source: sample
+        ref: "live CHR interrogation (K3 read-only census, 7.26beta4, 2026-11-02): GETONE drift-check + GETALL/GETOBJ/GETCOUNT gating — work/2026-11-winbox-attributes/proof/k3-user-tail/step-beta4-13-5-13-9.jsonl"
+      - source: sample
+        ref: "live CHR interrogation (K8 H-13-5-A write leg, twin3 7.25, 2026-11-02, 2w+0r): user add/remove + session hold move nothing (user/session-driver DEAD); clean restore — work/2026-11-winbox-attributes/proof/k8-user-tail-hunts/{h135a-step-base.jsonl,h135a-step-added.jsonl,h135a-step-session.jsonl,h135a-step-restored.jsonl,h135a-control-add.json,h135a-control-rm.json}"
       - source: sample
         ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-13-5.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
       - source: sample
@@ -1827,9 +1892,25 @@ handlers:
     cmd: GET_ONE
     role: "unknown singleton, raw shape {2:u32 0x2000000} (identical both versions)"
     confidence: observed-only
+    notes: |
+      Residue census (K4, 0w): GETONE {2:u32 0x2000000}
+      (full-u32 tcode 0x08) is drift-free across
+      6.49.23/7.25/7.26beta4. Verb gating (both 7.x):
+      GET-only — GETALL/GETOBJ -> 0xfe0003 (NOTIMP);
+      GETCOUNT = 0xFFFFFFFF sentinel. Static: AHolder
+      /nova/store/mproxy-settings both versions (v6 mproxy
+      0x804e39f/vt 0x8057ef8; v7 0x8056b52/vt 0x8058c58);
+      the store statically pairs with
+      /tool/mac-server/mac-winbox (v7 libumsg.so record).
+      Single-bitmask meaning unprovable statically;
+      toggle leg sheeted, no field name claimed.
     evidence:
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25); see work/2026-10-chr-extraction/ws3c-prober-findings.md §9/§10"
+      - source: sample
+        ref: "live CHR interrogation (K4 sys2-residue census, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (drift-free, GET-only, GETCOUNT 0xFFFFFFFF) — work/2026-11-winbox-attributes/proof/k4-sys2-residue/{census.ts,step-beta4-sys2-residue.jsonl,step-725-sys2-residue.jsonl}"
+      - source: code
+        ref: "mproxy AHolder /nova/store/mproxy-settings both versions (v6 0x804e39f/vt 0x8057ef8/str 0x8057def; v7 0x8056b52/vt 0x8058c58/str 0x8058569); v7 libumsg.so mproxy-settings -> /tool/mac-server/mac-winbox record (file 0x787ac); see work/2026-11-winbox-attributes/proof/k4-sys2-residue/report.yaml S-k4-mproxy-holder + mac-winbox pairing record"
       - source: sample
         ref: "live CHR interrogation (mask-leg batch, both versions): full dumps ev/{6.49,7.25}-getone-2-1.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §16"
 
@@ -1872,9 +1953,23 @@ handlers:
     cmd: GET_ONE
     role: "v7-only sys2 daughterboard holder: AHolder('/nova/store/sys2-dbrd'); empty on CHR (no daughterboard) -> the live empty-data (bare-SYS-only success). GETALL -> NOTIMP live (GET-only, rbbios-1/2 class). LEAD: [24,35] on hardware may serve board info (routerboard thread)."
     confidence: observed-only
+    notes: |
+      Verb gating (K2 census, 2026-11-02): fully GET-only
+      on 7.26beta4 — GETALL/GETOBJ -> 0xfe0003 (NOTIMP;
+      GETOBJ is verb-unsupported here, not the wrap-family
+      id-miss); GETCOUNT = 0xFFFFFFFF sentinel (same
+      GET-only signature as [20,122]). Beta4 GETONE is
+      drift-free vs 7.25 (bare-SYS-only, zero USER fields).
+      v6 GETONE -> 0xfe0002 BRKPATH from [24]: v7-only
+      registration verified live. Static: system/routerboard
+      carries 9 read-only names but no dbrd-specific menu
+      exists, so all 9 stay guesses. Populated rows need
+      real hardware WITH a daughterboard.
     evidence:
       - source: code
         ref: "RouterOS v7 sys2 addHandler census (18 sites incl. 35); see work/2026-10-chr-extraction/sys2-handler-tables.md (v7 census)"
+      - source: sample
+        ref: "live CHR interrogation (K2 board-info census, 2026-11-02, 0w): GETONE + full gating on 7.26beta4 (empty, drift-free, GETALL/GETOBJ->NOTIMP, GETCOUNT 0xFFFFFFFF) + v6 BRKPATH — work/2026-11-winbox-attributes/proof/k2-board-info/{census.ts,step-beta4-24-35.jsonl,step-v6-24-35.jsonl}"
       - source: sample
         ref: "live CHR interrogation (census batch, 7.25): full dump ev/7.25-getone-24-35.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §17"
       - source: sample
@@ -1947,9 +2042,54 @@ handlers:
     cmd: GET_ONE
     role: "unknown holder gated on an interface-ids selector: GETCOUNT -> FAILED 0xfe0006 + 0xff0009 'no INTERFACE_IDS' from the full route (both 7.x); GET -> FAILED selector-required shape (prior hscan). Present, not further identifiable read-only."
     confidence: observed-only
+    notes: |
+      Static decode (K5, v7 net 7.25 x86, sha256
+      4dfdc32ac9979b8ab86478dab601b79444875f936f7ff1b6b132553a565f6e7c,
+      2026-11-02, static-only — live confirmation pending):
+      slot-7 dispatch 0x8115872 of handler-124 vtable
+      0x81c0514 (ctor 0x8111ce6, addHandler(0x7c) at
+      0x805e293). INTERFACE_IDS selector = request field
+      1005 (0x3ed), tcode u32_array; empty-or-absent ->
+      failedMsg('no INTERFACE_IDS') (sole xref to the
+      literal at VA 0x81a0bbf). Values are [20,0]
+      interface row-ids (per-id lookup 0x8062ce8 is the
+      same fn the v7 [20,0] GETOBJ path calls with the
+      0xfe0001 key). Validation ladder: unresolvable ->
+      'no device'; entry type (+0x60) != 0x47 (71 = veth)
+      -> '<name> is not veth'; no veth device -> 'no veth
+      device'; overlap-set (+0x78) mismatch -> 99-char
+      container-overlap error. Verb dispatch on raw cmd:
+      1 -> netns-ensure path (nsCreate, MUTATING); 2 ->
+      private builder + empty success; every standard verb
+      (GET/GETALL/GETOBJ/GETCOUNT) -> NOTIMP 0xfe0003, but
+      only AFTER gate+validation pass (so GET-family best
+      case is NOTIMP, never rows). Slot-7 reads exactly
+      two request fields (1005 + bool 1008, the latter only
+      in the cmd==1 path); 0xfe0001/start/count are
+      ignored. Handler is v7-only (v6 net lacks all 124
+      strings + has no addHandler(0x7c)). Subsystem
+      context: veth type 71 registered immediately before
+      addHandler(0x7c), sibling handler 130 (sub-object)
+      immediately after — container/veth overlap+netns
+      manager.
+      Live confirmation (K7 matrix, 7.25, 2026-11-02, 0w):
+      14/14 pre-registered predictions hit. 1005=[2] ->
+      'ether1 is not veth'; 1005=[1] -> 'lo is not veth';
+      [1,2] fires row-1 first (array order); [999999]/[0]
+      -> 'no device'; explicit empty array == absent ('no
+      INTERFACE_IDS'); single-u32 and off-by-one-field
+      (1004/1006) stay gated; 1008=false changes nothing;
+      GETALL/GETOBJ/GET agree with GETCOUNT (0xfe0001
+      ignored). U4 live-confirmed at ladder level;
+      full-validation NOTIMP still untested (needs
+      pre-existing veth).
     evidence:
       - source: sample
         ref: "live CHR interrogation (E3-R read-only census, 7.25 + 7.26beta4, 2026-11-02): GETCOUNT FAILED + errstr — work/2026-11-winbox-attributes/proof/E3-R-census/{step-7.25-census.jsonl,step-7.26beta4-census.jsonl}"
+      - source: code
+        ref: "RouterOS v7 net handler-124 slot-7 0x8115872 (1005/u32array gate + row-id validation ladder + raw-cmd dispatch), vtable 0x81c0514, addHandler(0x7c) 0x805e293, veth-type-71 + sibling-130 adjacency; see work/2026-11-winbox-attributes/proof/k5-gated-pair/report.yaml"
+      - source: sample
+        ref: "live CHR interrogation (K7 124-matrix, ws21 7.25, 2026-11-02, 0w): G8+G1-G7+B1-B4 selector matrix, 14/14 predictions hit — work/2026-11-winbox-attributes/proof/k7-124-matrix-exec/{census-124.ts,step-124-g8.jsonl,step-124-g1.jsonl,step-124-g2.jsonl,step-124-g3.jsonl,step-124-g4.jsonl,step-124-g5.jsonl,step-124-g6.jsonl,step-124-g7a.jsonl,step-124-g7b.jsonl,step-124-g7c.jsonl,step-124-b1.jsonl,step-124-b2a.jsonl,step-124-b2b.jsonl,step-124-b3.jsonl,step-124-b4.jsonl}"
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 7.25): GET -> FAILED in ev/7.25-hscan-20-hi.txt"
       - source: sample
@@ -2419,9 +2559,27 @@ handlers:
       width follows the 0x09 wire family per the ip-address
       unknown-6 precedent, not u8); 7.x GETALL -> NOTIMP
       from=[13,9]; v6 GET + GETALL -> BRKPATH from=[13].
+      K3 beta4 gating extension (2026-11-02, 0w): GETALL ->
+      0xfe0003 NOTIMP re-proven; GETOBJ(obj=1) -> 0xfe0003
+      NOTIMP (first probe); GETCOUNT -> ok + 0xFFFFFFFF in
+      0xfe0019/0x8 (first probe). GETONE {0,0} drift-free
+      with 2 active admin sessions present — further
+      corroboration of NOT-session-count. Role still OPEN;
+      stimulus hunt sheeted, not executed.
+      Hunt executed (K8 H-13-9-A, 7.26beta4, 2w):
+      use-radius + accounting toggles (both axes off the
+      verbatim baseline) move NO field — aaa-toggle-driver
+      DEAD. Session sweep could not vary the count (2->2
+      incl. a ping-hold attempt), so the session axis is
+      INCONCLUSIVE, not dead. Restore clean (aaa
+      byte-matches baseline, {0,0} back).
     evidence:
       - source: sample
         ref: "live CHR interrogation (identity batch, both versions): ev/7.25-getone-13-9.json + v6/v7 user-census hscans; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: sample
+        ref: "live CHR interrogation (K3 read-only census, 7.26beta4, 2026-11-02): GETONE drift-check + gating extension — work/2026-11-winbox-attributes/proof/k3-user-tail/step-beta4-13-5-13-9.jsonl"
+      - source: sample
+        ref: "live CHR interrogation (K8 H-13-9-A write leg, g4beta 7.26beta4, 2026-11-02, 2w+0r): aaa toggles move nothing (aaa-toggle-driver DEAD); session-count invariant (INCONCLUSIVE); clean restore — work/2026-11-winbox-attributes/proof/k8-user-tail-hunts/{h139a-step-base.jsonl,h139a-step-toggled.jsonl,h139a-step-restored.jsonl,h139a-control-set1.json,h139a-control-set2.json}"
       - source: sample
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GET/GETALL transcripts, f1/f2 on tcode 0x09 — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json"
     revision-history:
@@ -2609,11 +2767,44 @@ handlers:
     process-id: 0x0d
     process-ref: "./processes.yaml 0x0d (user)"
     cmd: GET_ONE
-    role: "UserPrefs record — the WinBox side (store /nova/store/user/prefs/; vtable 0x8059eb8; SET logs 'UserPrefs::cmdSet'). Username-selected AAAA-map lookup; miss = EMPTY success, not unknown-id (admin + nosuchuser selectors miss 6/6: 2 selectors x 3 versions). admin has NO record here. Bare GET (no f1 selector) -> FAILED + 0xff0009 'no user name provided'; GETALL + GETOBJ -> NOTIMP."
+    role: "UserPrefs record — the WinBox side (store /nova/store/user/prefs/; vtable 0x8059eb8; SET logs 'UserPrefs::cmdSet'). Username-selected AAAA-map lookup; miss = EMPTY success, not unknown-id (admin + nosuchuser selectors miss 6/6: 2 selectors x 3 versions). Fresh-CHR admin has NO record. Bare GET (no f1 selector) -> FAILED + 0xff0009 'no user name provided'; GETALL + GETOBJ -> NOTIMP. Live SET proven (7.25): key-only create + full {f1,f2,f3} overwrite take; a single-record map returns its record for ANY f1."
     confidence: observed-only
+    fields:
+      namespace-user:
+        1: { name: username, tcode: string, role: "map key (key-only SET creates {f1}; echoed in read-back)" }
+        2: { name: prefs-blob, tcode: string, role: "settable opaque string ('k3-blob-a' took); parsed-or-opaque UNKNOWN" }
+        3: { name: unknown-3, tcode: u32, role: "settable u32 (7 took); meaning UNKNOWN" }
+    set:
+      cmd: { value: 0xfe000e, name: CMD_SET, ref: "./std-commands.yaml 0xfe000e" }
+      scope: "username-keyed AAAA-map on [13,6]; request carries the f1 selector plus the record to write (key-only create + full overwrite both took; replace-vs-patch unproven — no shrink leg)"
+      ack: "bare SYS-only success (5-field), no USER fields — status-ok-proves-nothing, read back after SET"
+      versions: ["7.25"]
+    notes: |
+      K3 miss-shape re-proof (2026-11-02, 0w): f1=admin EMPTY
+      miss (SYS-only success) on 7.25 + 7.26beta4; bare GET
+      FAILED 0xfe0006 + 'no user name provided' verbatim
+      both versions. No positive shape anywhere. The
+      nosuchuser variant stays covered by the queue-3
+      fixtures (not re-run). Population path still OPEN;
+      hunts sheeted, not executed.
+      Live SET proven (K8 H-13-6-B, 7.25, 2w): M2 SET {f1}
+      key-only create took (6-entry read-back {f1}); M2
+      SET {f1,f2,f3} full overwrite took (8-entry read-back,
+      reply field order 3,2,1). Prefs have no REST surface
+      (/user stays 1 row, synthetic never appears). Single-
+      record any-f1: with one record present, f1=admin AND
+      f1=never-created-zz both return it (selector-ignored
+      vs miss-to-first-fallback needs a two-record leg).
+      Restore by VM recreate (orphan persists; SET-removal
+      untested — needs fresh yes). WinBox-client path
+      parked for future tooling design.
     evidence:
       - source: sample
         ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getone-13-6-admin.json (empty); see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+      - source: sample
+        ref: "live CHR interrogation (K3 read-only census, 7.25 + 7.26beta4, 2026-11-02): f1=admin miss + bare-GET re-proof — work/2026-11-winbox-attributes/proof/k3-user-tail/step-{725,beta4}-13-6.jsonl"
+      - source: sample
+        ref: "live CHR interrogation (K8 H-13-6-B write leg, twin3 7.25, 2026-11-02, 2w+0r): M2 SET key-only create + full overwrite take; any-f1 single-record return; VM-recreate restore — work/2026-11-winbox-attributes/proof/k8-user-tail-hunts/{set-136.ts,h136b-step-set-key.jsonl,h136b-step-read-key.jsonl,h136b-step-set-full.jsonl,h136b-step-read-full.jsonl,h136b-step-admin-unaffected.jsonl,h136b-step-never-seen.jsonl}"
       - source: sample
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): admin/nosuchuser empty-miss legs — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-user-family.json"
       - source: sample
@@ -2698,9 +2889,24 @@ handlers:
     cmd: GET_ALL
     role: "unknown singleton-list — one row ({id 0, 0xfe0010 'default'}) + total 1, all 3 versions; GETCOUNT total 1 in the version slot (v6 0xfe0014, 7.x 0xfe0019)"
     confidence: observed-only
+    notes: |
+      K3 singleton re-proof (2026-11-02, 0w): GETALL 1 row
+      {id 0, 'default'} + total 1, GETCOUNT total 1 in
+      0xfe0019 — drift-free on 7.26beta4. Identity still
+      OPEN; user/aaa default-group spelling temptation
+      stays rejected. Hunts sheeted, not executed.
+      Hunt executed (K8 H-13-8-A, 7.26beta4, 2w): group
+      add/remove moves NO row or count (still 1 row {id
+      0,'default'}, total 1). Group-driver DEAD; aaa
+      half (H-13-8-B) sheeted but unapproved. Restore
+      clean (3 groups, singleton back).
     evidence:
       - source: sample
         ref: "live CHR interrogation (dual-mode batch, 7.25): ev/7.25-getall-13-8.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §19"
+      - source: sample
+        ref: "live CHR interrogation (K3 read-only census, 7.26beta4, 2026-11-02): GETALL + GETCOUNT drift-check — work/2026-11-winbox-attributes/proof/k3-user-tail/step-beta4-13-8.jsonl"
+      - source: sample
+        ref: "live CHR interrogation (K8 H-13-8-A write leg, g4beta 7.26beta4, 2026-11-02, 2w+0r): group add/remove moves nothing (group-driver DEAD); clean restore — work/2026-11-winbox-attributes/proof/k8-user-tail-hunts/{h138a-step-base.jsonl,h138a-step-added.jsonl,h138a-step-restored.jsonl,h138a-control-add.json,h138a-control-rm.json}"
       - source: sample
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GETALL/GETCOUNT on all versions — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-user-family.json"
 
@@ -2746,9 +2952,23 @@ handlers:
       hardware-confounded. First 7.16.2 + mipsbe + real-hardware
       transcripts; proxy banner msg-proxy-7.16.2 (see sys-keys.yaml
       0xff001c).
+      Read-only f7-selector matrix (K1 census, both 7.x, 14/14
+      miss): empty string + lte1 + foo + 4 non-name-key styles
+      (usb1, 1-1, /usb/1, 00000001) all -> 0xfe0004 UNKNOWNID
+      from=[20,61] in the same 7-key SYS-only shape (0 USER
+      fields, no total, no errstr). The empty string encodes
+      as a zero-length field-7 string (not a bare GET) and
+      misses exactly like the named controls. The non-name-key
+      axis is narrowed on CHR-absent only — a hit may still
+      need a registered modem with SIM (7.16 leg confound
+      untouched). Private verb 5 stays static-only (claimed
+      by the slot-7 pre-filter, targets undecoded); a
+      single-probe leg is sheeted, not executed.
     evidence:
       - source: code
         ref: "RouterOS v7 net handler-61 construction (store 'net/modem_aux' at 0x805dc54, addHandler 0x3d at 0x805dc8e); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: sample
+        ref: "live CHR interrogation (K1 modem-pair census, 2026-11-02, 0w): f7 matrix {empty, lte1, foo, usb1, 1-1, /usb/1, 00000001} all-miss on 7.26beta4/7.25 — work/2026-11-winbox-attributes/proof/k1-modem-pair/{census.ts,step-beta4-61-f7.jsonl,step-725-61-f7.jsonl}"
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): GET/GETOBJ/GETALL gating matrix; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
       - source: code

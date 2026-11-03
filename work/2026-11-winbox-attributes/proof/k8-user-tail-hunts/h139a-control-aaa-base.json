@@ -1,0 +1,100 @@
+{
+  "ok": true,
+  "data": {
+    "accounting": "true",
+    "default-group": "read",
+    "exclude-groups": "",
+    "interim-update": "0s",
+    "use-radius": "false"
+  },
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "target": {
+      "input": "g4beta",
+      "host": "127.0.0.1",
+      "port": 9230,
+      "baseUrl": "http://127.0.0.1:9230/rest",
+      "identity": "g4beta",
+      "source": {
+        "kind": "provider",
+        "key": "quickchr:g4beta"
+      },
+      "sources": {
+        "host": {
+          "kind": "provider",
+          "key": "quickchr:g4beta"
+        },
+        "port": {
+          "kind": "provider",
+          "key": "quickchr:g4beta"
+        }
+      }
+    },
+    "via": "rest-api",
+    "settings": {
+      "via": {
+        "kind": "default",
+        "key": "via"
+      },
+      "host": {
+        "kind": "provider",
+        "key": "quickchr:g4beta"
+      },
+      "port": {
+        "kind": "provider",
+        "key": "quickchr:g4beta"
+      },
+      "timeoutMs": {
+        "kind": "default",
+        "key": "timeout"
+      },
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      },
+      "validate": {
+        "kind": "default",
+        "key": "validate"
+      },
+      "username": {
+        "kind": "provider",
+        "key": "quickchr:g4beta:username"
+      },
+      "password": {
+        "kind": "provider",
+        "key": "quickchr:g4beta:password"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "source": "live /console/inspect request=child",
+      "result": "passed",
+      "stages": [
+        {
+          "stage": "device",
+          "source": "live /console/inspect request=child",
+          "result": "passed"
+        }
+      ]
+    },
+    "operation": {
+      "kind": "data",
+      "objectCount": 1,
+      "request": {
+        "path": "/user/aaa",
+        "attributes": [],
+        "allAttributes": false,
+        "listAttributes": false,
+        "validate": true,
+        "verbose": false,
+        "timeoutMs": 10000,
+        "format": "json"
+      },
+      "auth": {
+        "username": "admin",
+        "passwordProvided": true
+      }
+    }
+  }
+}

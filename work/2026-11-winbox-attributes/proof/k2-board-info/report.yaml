@@ -1,0 +1,112 @@
+# cspell:ignore rowid getall getone getobj getcount brkpath notimp unknownid dbrd sys2 cliref jsonl reqid multiset winbox quickchr
+# K2 EXECUTION report (Phase K worker, board-info family). Read-only census + static scoping, live on CHR.
+complete: true
+date: 2026-11-02
+worker: K2
+leg: K2-board-info-census
+verdict: "COMPLETE 0w+0r — beta4 emptiness re-proved + drift-free; full gating (GETALL/GETOBJ->NOTIMP, GETCOUNT 0xFFFFFFFF); v6 BRKPATH verified (v7-only); static pull confirms 9 CANDIDATE names + no dbrd menu"
+scope: "handler dbrd-holder-24-35 [24,35] only (I3 future-board-info split); 9 system/routerboard read-only candidates, all flagged CANDIDATE, no numeric mapping claimed; 0 private verbs"
+live_contact:
+  mode: read-only
+  machines: [winbox-beta4, ws3c6]
+  versions: ["7.26beta4", "6.49.23"]
+  verbs_run: ["GETONE [24,35] on 7.26beta4 + 6.49.23", "GETALL/GETOBJ/GETCOUNT [24,35] on 7.26beta4"]
+  excluded: ["SET/ADD/REMOVE (no such path in census.ts)", "VM config changes", "reboots", "any non-owned machine"]
+inputs:
+  git_head: 53649dc
+  git_head_subject: "winbox-ipc Phase J: tail census 1b + U4b closed, thread-5 adjuncts, H-decay-3 B2 dead (407/0, lint:ci green)"
+  tree: "clean except pre-existing untracked work/2026-11-romon/ (not mine, untouched)"
+  schema: profiles/winbox-ipc/gui-handlers.yaml (read-only; dbrd-holder-24-35 entry re-read, not edited)
+  scope_source: work/2026-11-winbox-attributes/proof/i3-handler-tail-census/report.yaml (board-info split)
+  pattern_source: work/2026-11-winbox-attributes/proof/j1-tail-census-7x/census.ts (copied verbatim into this dir, J1 original untouched)
+  baseline: work/2026-10-chr-extraction/ws3c/ev/7.25-getone-24-35.json
+  rosetta:
+    db_path: ~/.rosetta/ros-help-0.12.0.db
+    db_sha256: eee457411defe95c7a8111c89866dd5066a790ce2ffda46a37664c459515aae3
+    db_bytes: 415490048
+    release_tag: v0.12.0
+    schema_version: "12"
+    source_commit: 6b6397d7739a563b894f9b07f7ac2f6b1ad7f4bf
+    built_at: 2026-10-30T21:34:20.911Z
+    cliref_manual_version: "7.26"
+    access: "sqlite3 -readonly only; full hash re-verified this session, matches I3"
+    caveat: "Rosetta names/types below are CANDIDATES only. No numeric mapping is claimed from any CLI-spelling join."
+drift:
+  - id: D-k2-entry-stable
+    verdict: no-drift
+    detail: "dbrd-holder-24-35 at 53649dc still has no fields block and still carries the v7-only/GET-only/CHR-empty role; profiles/ tree clean."
+  - id: D-k2-getall-transcript
+    verdict: no-drift-promotion
+    detail: "Prior GETALL->NOTIMP evidence was transcript-less ('single-session observation'); this census commits it to step-beta4-24-35.jsonl. Same verdict, stronger evidence."
+  - id: D-k2-v6-port-resolution
+    verdict: method-note
+    detail: "quickchr inspect ws3c6 --json carries no winbox service entry on the v6 boot-only target (services: rest-api/native-api/ssh only), so the WinBox port was resolved live from quickchr list output (J2 precedent), passed via --host/--port/--user/--pass, and redacted from all committed tees. No numeric ports in report prose."
+census:
+  - handler: dbrd-holder-24-35
+    route: [24, 35]
+    cmd: GET_ONE
+    status: identified-chr-empty
+    wire_shape_beta4: "GETONE ok: 5 SYS entries, zero USER fields; multiset-identical to ev/7.25-getone-24-35.json modulo msg-proxy version string. GETALL->0xfe0003 NOTIMP. GETOBJ obj=1->0xfe0003 NOTIMP (verb-unsupported, NOT id-miss). GETCOUNT ok: 0xfe0019=0xFFFFFFFF sentinel."
+    wire_shape_v6: "GETONE->0xfe0002 BRKPATH from [24] (process-level), SYS-only, no msg-proxy key. v7-only registration verified live."
+    transcripts: ["step-beta4-24-35.jsonl (8 records, reqIds 2-5 correlated, no async traffic)", "step-v6-24-35.jsonl (2 records, reqId 2 correlated, no async traffic)"]
+    transcript_gaps_closed: ["7.26beta4 leg (was gap)", "6.49 leg (was gap, BRKPATH now verified not assumed)", "GETOBJ/GETCOUNT gating cells (were untested everywhere)"]
+    rosetta_candidates:
+      menu: system/routerboard
+      status: weak
+      reason: "Daughterboard info plausibly surfaces board fields, but no dbrd-specific menu exists in cliref entries/fields or schema_nodes paths; all 9 read-only fields are guesses at best. settings submenu is settable boot config, out of scope for this read-only holder."
+      fields:
+        - { name: routerboard, kind: Read-only Argument, type: bool }
+        - { name: board-name, kind: Read-only Argument, type: string }
+        - { name: model, kind: Read-only Argument, type: string }
+        - { name: revision, kind: Read-only Argument, type: string }
+        - { name: serial-number, kind: Read-only Argument, type: string }
+        - { name: firmware-type, kind: Read-only Argument, type: string }
+        - { name: minimum-firmware, kind: Read-only Argument, type: string }
+        - { name: current-firmware, kind: Read-only Argument, type: string }
+        - { name: upgrade-firmware, kind: Read-only Argument, type: string }
+    blockers: ["needs real hardware WITH a daughterboard; CHR legs re-prove emptiness + version scope only (this result)"]
+proven:
+  - id: P-k2-beta4-empty-drift-free
+    claim: "[24,35] GETONE on 7.26beta4 is bare-SYS-only (5 entries, zero USER fields), multiset-identical to the 7.25 baseline modulo the msg-proxy version string"
+    tier: "TIER 1 (step-beta4-24-35.jsonl seq 1; programmatic multiset diff in console-beta4-diff.txt)"
+  - id: P-k2-gating-full
+    claim: "[24,35] is fully GET-only on 7.26beta4: GETALL->0xfe0003 NOTIMP, GETOBJ obj=1->0xfe0003 NOTIMP (verb-unsupported, unlike the 114/115 wrap family's id-miss), GETCOUNT=0xFFFFFFFF sentinel (same GET-only signature as [20,122])"
+    tier: "TIER 1 (step-beta4-24-35.jsonl seq records 3/5/7)"
+  - id: P-k2-v6-brkpath
+    claim: "[24,35] GETONE on 6.49.23 -> 0xfe0002 BRKPATH from [24] (process-level, SYS-only): v7-only registration PROVEN, I3 transcript gap closed"
+    tier: "TIER 1 (step-v6-24-35.jsonl seq 1)"
+  - id: P-k2-static-scope
+    claim: "Rosetta 0.12.0 system/routerboard carries exactly the 9 read-only fields I3 listed, and no dbrd/daughterboard menu exists in cliref entries, cliref fields, or schema_nodes paths — all 9 stay CANDIDATE, none promoted"
+    tier: "TIER 1 (console-static-rosetta.txt; names/types only)"
+disproven: []
+unresolved:
+  - id: U-k2-populated-shape
+    claim: "CARRIED (README-parked hardware item): the populated [24,35] row shape is unobservable on CHR by construction; needs real RouterBOARD hardware WITH a daughterboard"
+  - id: U-k2-candidate-mapping
+    claim: "CARRIED: all 9 system/routerboard name candidates remain unmapped to wire TLVs — no numeric association is claimed or claimable from this census"
+evidence:
+  - "beta4 full matrix (GETONE empty + GETALL/GETOBJ NOTIMP + GETCOUNT sentinel): step-beta4-24-35.jsonl (8 correlated records, zero async traffic)"
+  - "v6 BRKPATH envelope: step-v6-24-35.jsonl (2 correlated records, zero async traffic)"
+  - "programmatic drift diff vs 7.25 baseline: console-beta4-diff.txt (multiset-identical modulo version, 0 USER fields both)"
+  - "Rosetta static pull (names/types only, db hash verified): console-static-rosetta.txt"
+  - "census tool (J1 copy, biome-clean): census.ts"
+  - "console tees (ports redacted): console-beta4-boot.txt, console-beta4-census.txt, console-v6-boot.txt, console-v6-census.txt, console-vm-list-mid.txt, console-vm-list-final.txt, console-biome.txt"
+  - "promotion fragment (notes + evidence only, no field entries): fragment.yaml"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/k2-board-info/report.yaml
+  - work/2026-11-winbox-attributes/proof/k2-board-info/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/k2-board-info/census.ts
+  - work/2026-11-winbox-attributes/proof/k2-board-info/step-beta4-24-35.jsonl
+  - work/2026-11-winbox-attributes/proof/k2-board-info/step-v6-24-35.jsonl
+  - work/2026-11-winbox-attributes/proof/k2-board-info/console-beta4-boot.txt
+  - work/2026-11-winbox-attributes/proof/k2-board-info/console-beta4-census.txt
+  - work/2026-11-winbox-attributes/proof/k2-board-info/console-beta4-diff.txt
+  - work/2026-11-winbox-attributes/proof/k2-board-info/console-v6-boot.txt
+  - work/2026-11-winbox-attributes/proof/k2-board-info/console-v6-census.txt
+  - work/2026-11-winbox-attributes/proof/k2-board-info/console-vm-list-mid.txt
+  - work/2026-11-winbox-attributes/proof/k2-board-info/console-vm-list-final.txt
+  - work/2026-11-winbox-attributes/proof/k2-board-info/console-static-rosetta.txt
+  - work/2026-11-winbox-attributes/proof/k2-board-info/console-biome.txt
+spend: { approved: "0w+0r", spent: "0w+0r", machines: [winbox-beta4, ws3c6] }
+vm_state: "winbox-beta4 + ws3c6 each started once, stopped after their legs; both STOPPED at end (verified in console-vm-list-final.txt). Non-owned machines observed running mid/final (sibling workers) were never touched."
+tiers_note: "Every proven[] claim is TIER 1 (committed rx bytes in the cited step jsonl, or committed read-only query output). Console output was used only as a live progress signal."

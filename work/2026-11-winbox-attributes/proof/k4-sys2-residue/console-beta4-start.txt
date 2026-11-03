@@ -1,0 +1,8 @@
+cspell:ignore winbox datagram uncapped quickchr ether
+● winbox-beta4 started
+  Version: 7.26beta4 (x86)
+  Network: user
+  Ports:   http:9200 https:9201 ssh:9202 api:9203 api-ssl:9204 winbox:9205
+  REST:    http://admin@127.0.0.1:9200
+  SSH:     ssh admin@127.0.0.1 -p 9202
+  WinBox:  127.0.0.1:9205

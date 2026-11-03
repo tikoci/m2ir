@@ -1,0 +1,114 @@
+{
+	"provenance": {
+		"report": "Phase K K7 124-matrix, 2026-11-02 (ws21 7.25 x86, 0w): bare GETCOUNT gate + G1 ladder hit",
+		"routeros_version": "7.25",
+		"route": "[20,124] GETCOUNT rx (G8 bare + G1 1005=[2])",
+		"note": "Sanitized M2 hex plus decoded entries only: no hosts, ports, or credentials."
+	},
+	"records": [
+		{
+			"id": "getcount-20-124-bare-rx",
+			"role": "G8 bare GETCOUNT (no INTERFACE_IDS gate)",
+			"source": "proof/k7-124-matrix-exec/step-124-g8.jsonl rx seq 1 (from [20,124])",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007c0000001c00ffa001000e006d73672d70726f78792d372e32350800ff080600fe000300ff09020400ff09020600ff09020900ff21106e6f20494e544552464143455f494453",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 124],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 124]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646150
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0009",
+					"tcode": "0x21",
+					"value": "no INTERFACE_IDS"
+				}
+			]
+		},
+		{
+			"id": "getcount-20-124-id2-rx",
+			"role": "G1 GETCOUNT 1005=[2] (ether1 is not veth ladder hit)",
+			"source": "proof/k7-124-matrix-exec/step-124-g1.jsonl rx seq 1 (from [20,124])",
+			"hex": "4d320100ff880200000000000b0000000200ff880200140000007c0000001c00ffa001000e006d73672d70726f78792d372e32350800ff080600fe000300ff09020400ff09020600ff09020900ff2112657468657231206973206e6f742076657468",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [20, 124],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [20, 124]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0008",
+					"tcode": "0x8",
+					"value": 16646150
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0004",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0009",
+					"tcode": "0x21",
+					"value": "ether1 is not veth"
+				}
+			]
+		}
+	]
+}

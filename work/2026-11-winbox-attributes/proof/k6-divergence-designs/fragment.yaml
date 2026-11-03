@@ -1,0 +1,12 @@
+# cspell:ignore rowid getall getcount fasttrack
+# K6 fragment: EMPTY BY DESIGN (proposal file, not an edit).
+# K6 is an offline experiment-design worker: its two leg sheets are
+# UNEXECUTED and its third deliverable is a hardware-block catalog note.
+# Designs promote nothing until executed -- no field meaning, no confidence
+# change, no notes text is proposed here. The coordinator (or a future
+# integration step after execution) drafts fragments from execution reports,
+# not from these sheets.
+fragment_for: none
+scope: k6-divergence-designs (designs only, unexecuted)
+empty: true
+proposes: []

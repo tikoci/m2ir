@@ -1,0 +1,10 @@
+cspell:ignore getone getall getobj getcount getf1
+census [13,5] getone: ok fields=10 statusWord=null
+census [13,5] getall: ROUTER-ERROR errno=16646147 errstr=null
+census [13,5] getobj: ROUTER-ERROR errno=16646147 errstr=null
+census [13,5] getcount: ok fields=6 statusWord=null
+census [13,9] getone: ok fields=7 statusWord=null
+census [13,9] getall: ROUTER-ERROR errno=16646147 errstr=null
+census [13,9] getobj: ROUTER-ERROR errno=16646147 errstr=null
+census [13,9] getcount: ok fields=6 statusWord=null
+census: records=16 out=step-beta4-13-5-13-9.jsonl

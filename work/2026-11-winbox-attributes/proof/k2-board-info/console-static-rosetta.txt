@@ -1,0 +1,95 @@
+cspell:ignore winbox quickchr getone getall getobj getcount brkpath notimp qos dbrd lighttpd ws19 ws20 ws21 twin centrs btest g4beta g4b5 rosetta cliref multiset reqid dgram mcast rowid etherboot preboot booter routerboot amm
+K2 static leg: Rosetta system/routerboard pull (names/types only, read-only)
+eee457411defe95c7a8111c89866dd5066a790ce2ffda46a37664c459515aae3  /home/amm0bot/.rosetta/ros-help-0.12.0.db
+-rw-r--r-- 1 amm0bot amm0bot 415490048 Nov  2 14:37 /home/amm0bot/.rosetta/ros-help-0.12.0.db
+--- db_meta:
+Parse error in 3rd command line argument: no such column: release_tag
+  SELECT release_tag, schema_version, source_commit, built_at FROM db_meta;
+         ^--- error here
+CREATE TABLE db_meta (
+    key   TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  );
+--- manual versions:
+7.24
+7.25
+7.26
+--- db_meta kv:
+docs_manual_version|7.26
+command_versions_expected|67
+cliref_manual_version|7.26
+hardware_catalog_source|manual.mikrotik.com/hardware + mikrotik.com/product (B-0017)
+hardware_catalog_built_at|2026-10-30T21:32:33.230Z
+hardware_catalog_matrix_snapshot|2026-10-29
+release_tag|v0.12.0
+built_at|2026-10-30T21:34:20.911Z
+source_commit|6b6397d7739a563b894f9b07f7ac2f6b1ad7f4bf
+schema_version|12
+--- routerboard entries (all manual versions):
+7.24|dude/ros/routerboard|Directory|dude
+7.24|system/routerboard|Settings Directory|
+7.24|system/routerboard/mode-button|Settings Directory|
+7.24|system/routerboard/reset-button|Settings Directory|
+7.24|system/routerboard/settings|Settings Directory|
+7.24|system/routerboard/upgrade|Command|
+7.24|system/routerboard/usb|Settings Directory|
+7.24|system/routerboard/usb/power-reset|Command|
+7.24|system/routerboard/wps-button|Settings Directory|
+7.25|dude/ros/routerboard|Directory|dude
+7.25|system/routerboard|Settings Directory|
+7.25|system/routerboard/mode-button|Settings Directory|
+7.25|system/routerboard/reset-button|Settings Directory|
+7.25|system/routerboard/settings|Settings Directory|
+7.25|system/routerboard/upgrade|Command|
+7.25|system/routerboard/usb|Settings Directory|
+7.25|system/routerboard/usb/power-reset|Command|
+7.25|system/routerboard/wps-button|Settings Directory|
+7.26|dude/ros/routerboard|Directory|dude
+7.26|system/routerboard|Settings Directory|
+7.26|system/routerboard/mode-button|Settings Directory|
+7.26|system/routerboard/reset-button|Settings Directory|
+7.26|system/routerboard/settings|Settings Directory|
+7.26|system/routerboard/upgrade|Command|
+7.26|system/routerboard/usb|Settings Directory|
+7.26|system/routerboard/usb/power-reset|Command|
+7.26|system/routerboard/wps-button|Settings Directory|
+--- system/routerboard fields (7.26, names/types only):
+routerboard|bool|Read-only Argument
+board-name|string|Read-only Argument
+model|string|Read-only Argument
+revision|string|Read-only Argument
+serial-number|string|Read-only Argument
+firmware-type|string|Read-only Argument
+minimum-firmware|string|Read-only Argument
+current-firmware|string|Read-only Argument
+upgrade-firmware|string|Read-only Argument
+--- dbrd/daughterboard search (entries):
+--- dbrd/daughterboard search (fields):
+--- dbrd search (schema_nodes paths):
+(end)
+--- settings submenu names (scope check, not candidates):
+auto-upgrade|Argument
+baud-rate|Argument
+boot-delay|Argument
+init-delay|Argument
+enter-setup-on|Argument
+boot-device|Argument
+preboot-etherboot|Argument
+preboot-etherboot-server|Argument
+etherboot-port|Argument
+boot-os|Argument
+regulatory-domain-ce|Argument
+cpu-mode|Argument
+cpu-frequency|Argument
+memory-frequency|Argument
+memory-data-rate|Argument
+preferred-architecture|Argument
+boot-protocol|Argument
+enable-jumper-reset|Argument
+force-backup-booter|Argument
+silent-boot|Argument
+disable-pci|Argument
+gpio-function|Argument
+protected-routerboot|Argument
+reformat-hold-button|Argument
+reformat-hold-button-max|Argument

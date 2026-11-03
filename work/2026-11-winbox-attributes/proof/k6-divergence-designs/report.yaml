@@ -1,0 +1,81 @@
+# cspell:ignore rowid getcount getall getone getobj reqid mangle calea ladder rungs oneshot churn ws21 keepalive keepalives asyncs hdecay jsonl centrs qos txq txman vlan pfc brkpath hscan defconf fanout anyproto posthoc unsets llms oneline
+# K6 worker report (Phase K, offline designs -- NO live contact).
+# Three divergence designs: the J5 0x1c6 add-vs-set/protocol-state
+# discriminator (2 sub-legs, 7w+0r cap), the J6 standing-level-2 scaling
+# leg (2-rule + rule-removed, 3w+0r), and the 120/121 hardware-block
+# catalog note (no CHR leg). Execution of the write legs needs the user's
+# per-leg yes; K6 does not have it and does not ask for it.
+complete: true
+date: 2026-11-02
+worker: K6
+live_contact: none
+scope: "three design sheets, 0 candidates, 0 private verbs (brief scope)"
+inputs:
+  git_head: 53649dc
+  git_head_subject: "winbox-ipc Phase J: tail census 1b + U4b closed, thread-5 adjuncts, H-decay-3 B2 dead (407/0, lint:ci green)"
+  tree: "HEAD 53649dc; pre-existing untracked work dirs present (romon, k0-k3); sibling k1-k5 proof dirs never read per brief"
+  read_first:
+    - AGENTS.md, README.md, DESIGN.md, llms.txt
+    - .github/instructions/routeros-grounding.instructions.md (applies to work/**)
+    - work/2026-11-winbox-attributes/attribute-discovery-plan.md
+    - work/2026-11-winbox-attributes/handoff.yaml
+    - work/2026-11-winbox-attributes/proof/j5-thread-5-exec/report.yaml
+    - work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/report.yaml
+    - work/2026-11-winbox-attributes/proof/G1-f40-matrix/report.yaml
+    - profiles/winbox-ipc/gui-handlers.yaml entries filter-20-3 fields 11/22/404/454 + unknown-20-32 + unknown-20-120/121 (READ-ONLY)
+    - fixtures/winbox-ipc/7.25-filter-thread5.json
+    - fixtures/winbox-ipc/7.25-getcount-20-32-j6-rerun.json
+  slice_inputs:
+    - work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/leg-h-decay-3-rerun.yaml (sheet format + ladder precedent)
+    - work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/report.yaml (design-worker report precedent)
+    - work/2026-11-winbox-attributes/proof/j5-thread-5-exec/leg-thread-5-exec.yaml (exact control strings + counting precedent)
+    - work/2026-11-winbox-attributes/proof/i4-tail-census-exec/report.yaml + step-beta4-qos-siblings.jsonl + step-beta4-qos-siblings2.jsonl (120/121 7.x verb matrix)
+    - work/2026-11-winbox-attributes/proof/j2-v6-tail-census/report.yaml (120/121 v6 uniform-0xfe0002)
+    - fixtures/winbox-ipc/7.26beta4-qos-120-121.json (pinned 7.x GETALL rows)
+    - work/2026-10-chr-extraction/ws3c-prober-findings.md section 25 (QoS-octet static leads: 120=qos/txman, 121=qos/txq)
+designs:
+  - design: K6-j5-0x1c6-discriminator
+    file: work/2026-11-winbox-attributes/proof/k6-divergence-designs/leg-j5-0x1c6-discriminator.yaml
+    verdict: "DESIGN-COMPLETE, UNEXECUTED. 2x2 discriminator: leg A adds fasttrack direct with-protocol first (udp, exact J5 mirror) + bare (G1 replication control) with a conditional within-row fallback set; leg B sets fasttrack on a no-protocol row. Pre-registered: H-verb (add=TRUE/set=FALSE), H-proto (absent=TRUE/present=FALSE), H-interaction (FALSE only at set+proto), H-regime (A2-non-replication branch). Budgets: A 3w+0r (+1w conditional), B 3w+0r, combined 7w+0r cap; ws21 7.25; per-sub-leg zero baseline with 0r recycle between (J5 dummy-fanout + power-cycle precedent); restore PARTIAL-expected then FULL via 0r recycle. Occupancy recorded-but-uncontrolled (G1 M9 TRUE read at N=3 rows, J5 T5-c FALSE read at N=2 rows, dummy present in both — coordinator-corrected per K-reviewer R-K6)."
+  - design: K6-j6-standing-level-2
+    file: work/2026-11-winbox-attributes/proof/k6-divergence-designs/leg-j6-standing-level-2.yaml
+    verdict: "DESIGN-COMPLETE, UNEXECUTED. 3w+0r fixed on ws21 7.25: S0 matched negative control + S1 1-rule ladder (plateau-1 base, re-bases the ratio if != 2) + S2 2-rule ladder (re-spike + plateau-N) + S3 remove-one session-per-read watch (step-down with rules remaining) + S4 restore-verify (CLEAN expected, accept rules spawn no dummies). Pre-registered: M-standing (plateau=2N + step-down), M-history (N-independent floors, no clean step), M-cumulative (rise-then-persist, no step). J6 L1 lesson: mid-run write-through check is an explicit sheeted step per ladder. Counter guards 1/2/1; plateau/step-down/re-spike defined verbatim; no extension on partial."
+  - design: K6-120-121-catalog
+    file: work/2026-11-winbox-attributes/proof/k6-divergence-designs/note-120-121-hardware-block.yaml
+    verdict: "COMPLETE as written (catalog note, not a leg). Consolidates catalogued shapes only: 7.x verb matrix (GETONE 'more than one obj'; GETALL 2/8 rows; GETCOUNT 2/8; GETOBJ success) + row shapes (120 default/offline + 0x1e=255; 121 8-row f7/f9/f10/f11/f13/f15/f19/f30/f32/f33) from I4 steps + fixture; v6 uniform 0xfe0002 all verbs (J2); static leads 120=qos/txman 121=qos/txq (findings section 25). Records a source correction (error-census fixtures do NOT cover 120/121) and the hardware-blocked verdict with the exact hardware stimulus required. No CHR legs sheeted."
+proven:
+  - id: P-k6-0x1c6-confound-statement
+    claim: "The J5/G1 0x1c6 split is a two-axis confound with exactly two missing cells: observed (add, no-protocol)=TRUE (G1 M9) and (set, protocol=udp)=FALSE (J5 T5-c); missing (add, protocol) and (set, no-protocol). Table occupancy is a third uncontrolled axis (G1 M9 read TRUE at N=3 rows; J5 T5-c read FALSE at N=2 rows; dummy present in both — coordinator-corrected per K-reviewer R-K6)."
+    evidence: [work/2026-11-winbox-attributes/proof/G1-f40-matrix/report.yaml, work/2026-11-winbox-attributes/proof/j5-thread-5-exec/report.yaml]
+  - id: P-k6-plateau-scaling-test-shape
+    claim: "The standing-level-2 question reduces to an in-boot ratio test (plateau-2-rules vs plateau-1-rule) plus a removal step-down read with rules remaining: the J6 S1 zero-gate (removal of the only rule zeroed a nonzero transient) already shows removal moves the value, so the open question is whether it SCALES, not whether removal matters."
+    evidence: [work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/report.yaml]
+  - id: P-k6-120-121-verb-matrix
+    claim: "The 7.x [20,120]/[20,121] verb matrix is fully catalogued from committed evidence: GETONE self-reports 'more than one obj' on both; GETALL returns 2/8 rows (totals 2/8); GETCOUNT returns 2/8; GETOBJ obj=1 succeeds. v6 returns uniform 0xfe0002 on all four verbs on both routes (0 deviations / 8 verbs on the 120/121 pair; 24 is the whole J2 matrix — coordinator-corrected per K-reviewer R-K6)."
+    evidence: [work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-beta4-qos-siblings.jsonl, work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-beta4-qos-siblings2.jsonl, fixtures/winbox-ipc/7.26beta4-qos-120-121.json, work/2026-11-winbox-attributes/proof/j2-v6-tail-census/report.yaml]
+  - id: P-k6-error-census-correction
+    claim: "The error-census fixtures (6.49/7.25/7.26beta4-error-census.json) cover [24,17], [20,1], [13,9], [13,6], [13,7], [20,125], [999,1] only -- neither [20,120] nor [20,121] appears. The 7.x 120/121 shapes live in the I4 steps + the QoS fixture, not the error census."
+    evidence: [fixtures/winbox-ipc/7.25-error-census.json, fixtures/winbox-ipc/7.26beta4-error-census.json, fixtures/winbox-ipc/6.49-error-census.json]
+unresolved:
+  - id: U-j5-0x1c6-value-divergence
+    claim: "SHEETED (leg-j5-0x1c6-discriminator.yaml, 7w+0r cap): needs the user's per-leg yes. No execution, no contact."
+  - id: U-j6-standing-level-2
+    claim: "SHEETED (leg-j6-standing-level-2.yaml, 3w+0r fixed): needs the user's per-leg yes. No execution, no contact."
+  - id: U-120-121-purpose
+    claim: "HARDWARE-BLOCKED (note-120-121-hardware-block.yaml): stays role-open; opens only on a hardware leg with the recorded stimulus. No CHR leg exists."
+  - id: U2-qos-populated-shapes
+    claim: "CARRIED since I4: CHR shapes still defaults; needs switch hardware."
+evidence:
+  - work/2026-11-winbox-attributes/proof/k6-divergence-designs/leg-j5-0x1c6-discriminator.yaml
+  - work/2026-11-winbox-attributes/proof/k6-divergence-designs/leg-j6-standing-level-2.yaml
+  - work/2026-11-winbox-attributes/proof/k6-divergence-designs/note-120-121-hardware-block.yaml
+  - work/2026-11-winbox-attributes/proof/k6-divergence-designs/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/k6-divergence-designs/report.yaml
+spend: { total: "0w+0r", counted_writes: 0, reboots: 0, note: "offline designs: no VMs touched, no RouterOS commands of any kind (not even reads); no quickchr/centrs invocations" }
+scope_check: "2 discriminating write-leg sheets (0x1c6 2x2 + standing-level scaling) + 1 catalog note (no CHR legs). 0 candidates, 0 private verbs. Within scope; J5/J6 records preserved (designs discriminate on new cells, re-prove nothing as primary)."
+fragment:
+  file: work/2026-11-winbox-attributes/proof/k6-divergence-designs/fragment.yaml
+  proposes: "EMPTY -- designs promote nothing until executed; stated explicitly in the file."
+forbidden_paths_edited: none
+owned_path: work/2026-11-winbox-attributes/proof/k6-divergence-designs/
+git_commands_run: ["git log --oneline -3", "git status --short"]

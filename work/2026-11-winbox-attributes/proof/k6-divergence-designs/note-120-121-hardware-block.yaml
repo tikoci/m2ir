@@ -1,0 +1,81 @@
+# cspell:ignore rowid getall getone getobj getcount qos txq txman vlan pfc brkpath hscan defconf jsonl quickchr
+# U-120-121-purpose CATALOG NOTE (complete as written; hardware-blocked).
+# Consolidates the ALREADY-CATALOGUED [20,120]/[20,121] shapes from the I4
+# 7.x census, the J2 v6 census, and the committed fixtures. No CHR stimulus
+# leg is sheeted: CHR has no switch chip and no QoS menu, so CHR shapes are
+# defaults-only (U2-qos-populated-shapes, carried since I4). The exact
+# stimulus a hardware leg would need is recorded below for a future
+# hardware phase. Catalog only; no new claim, no execution.
+id: K6-120-121-catalog
+kind: catalog-note
+status: complete
+date: 2026-11-02
+worker: K6
+question: "U-120-121-purpose: what are the [20,120]/[20,121] lists for? (Consolidation only -- purpose stays role-open.)"
+catalog:
+  route_20_120:
+    sys_to: [20, 120]
+    version_scope: "v7-only: live on 7.25 + 7.26beta4 (identical rows); absent on 6.49.23 (J2)."
+    role_open: "QoS-octet 2-row list: row 0 'default', row 1 'offline' with comment 'Use this for permanently disconnected ports'; one USER field (0x1e = 255 both rows). Purpose UNKNOWN -- plausibly a profile selector, unproven."
+    verb_matrix_7x:
+      source: "I4 tail census 1a (winbox-beta4 7.26beta4 + ws21 7.25, 0w)"
+      GETONE_0xfe000d: "self-reports 'more than one obj' (0xff0008=0xfe0006, 0xff0003=2, 0xff0004=2, 0xff0009 errstr)"
+      GETALL_0xfe0004: "2 rows, total 2"
+      GETOBJ_0xfe0002_obj1: "success (returns the offline row)"
+      GETCOUNT_0xfe0015: "2"
+    row_shape:
+      row_0: "rowid 0, name 'default' (0xfe0010); USER 0x1e=255 (u32c); fe cols 0xfe0007=T 0xfe0008=T 0xfe000a=F 0xfe000d=T 0xfe0029=F"
+      row_1: "rowid 1, name 'offline' (0xfe0010) + comment 'Use this for permanently disconnected ports' (0xfe0009); USER 0x1e=255; same fe cols"
+    v6_shape:
+      source: "J2 v6 tail census (ws3c6 6.49.23, 0w)"
+      all_four_verbs: "0xfe0002 uniform (ERROR_BRKPATH errno 16646146, errstr null; from=[20] process-level; no total, no banner, zero USER keys; 0xff0003=2/0xff0004=2) -- absent-handler signature, rx byte-identical to the 114/115 precedent at equal request ids"
+  route_20_121:
+    sys_to: [20, 121]
+    version_scope: "v7-only: live on 7.25 + 7.26beta4 (identical rows); absent on 6.49.23 (J2)."
+    role_open: "QoS-octet 8-row list: ids 0-7, ten USER fields, no name column. Purpose UNKNOWN -- 8 rows suggest a per-priority table, unproven."
+    verb_matrix_7x:
+      source: "I4 tail census 1a (winbox-beta4 7.26beta4 + ws21 7.25, 0w)"
+      GETONE_0xfe000d: "self-reports 'more than one obj' (same envelope as [20,120])"
+      GETALL_0xfe0004: "8 rows, total 8"
+      GETOBJ_0xfe0002_obj1: "success"
+      GETCOUNT_0xfe0015: "8"
+    row_shape:
+      ids: "rowids 0-7; f7 mirrors the row id (u32c)"
+      u32_fields: "f9=0 all rows; f10=1/1/1/2/2/2/0/0 across rows 0-7; f11=1/2/3/3/4/5/absent/absent; f30(0x1e)=255 all rows (u32c t=0x09)"
+      bool_fields: "f13 false on row 0, true on rows 1-7; f15/f19(0x13)/f32(0x20)/f33(0x21) false on all rows"
+      fe_cols: "0xfe0008=T 0xfe000a=F 0xfe000d=F 0xfe0029=F on all rows"
+    v6_shape:
+      source: "J2 v6 tail census (ws3c6 6.49.23, 0w)"
+      all_four_verbs: "0xfe0002 uniform (same BRKPATH envelope as [20,120]) -- absent-handler signature; 0 deviations / 8 verbs on the 120/121 pair (24 is the whole J2 matrix — coordinator-corrected per K-reviewer R-K6)"
+static_leads:
+  - lead: "QoS-octet composite: one 0x870 composite (ctor 0x8190e3e) with 8 AHolder members -- 122=qos/config, 114=qos/profile, 115=qos/map, 116=qos/map-vlan, 117=qos/map-ip, 121=qos/txq, 120=qos/txman, 126=qos/pfc."
+    source: "RouterOS v7 net decode; work/2026-10-chr-extraction/ws3c-prober-findings.md section 25"
+    reading: "120 = txman (transmit-manager) store, 121 = txq (transmit-queue) store -- STATIC store-name leads only. The live rows above are the CHR-absent defaults of those stores ('CHR-absent (no QoS menu/hardware)', same section)."
+    limit: "store names suggest direction (manager-vs-queue), not field semantics; no per-field static referent is catalogued for either route."
+source_correction:
+  note: "The K6 brief pointed at 'error-census/getcount fixtures' for the 7.x 120/121 shapes. Verified offline: the error-census fixtures (6.49/7.25/7.26beta4-error-census.json) cover routes [24,17], [20,1], [13,9], [13,6], [13,7], [20,125], [999,1] -- NEITHER covers [20,120]/[20,121]. The actual catalogued 7.x sources are the I4 step JSONLs + the QoS fixture below; this note consolidates from those."
+  actual_7x_sources:
+    - "work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-beta4-qos-siblings.jsonl (GETONE both routes)"
+    - "work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-beta4-qos-siblings2.jsonl (GETALL/GETOBJ/GETCOUNT both routes)"
+    - "work/2026-11-winbox-attributes/proof/i4-tail-census-exec/step-725-siblings2.jsonl (7.25 row-identical)"
+    - "fixtures/winbox-ipc/7.26beta4-qos-120-121.json (2 pinned GETALL rows)"
+  v6_source: "work/2026-11-winbox-attributes/proof/j2-v6-tail-census/step-649-siblings.jsonl + report.yaml (P-j2-siblings-v6-absent)"
+verdict:
+  status: "hardware-blocked (no CHR leg sheeted)"
+  why:
+    - "CHR has no switch chip and exposes no QoS configuration menu (findings section 25: 'CHR-absent (no QoS menu/hardware)'); the live 7.x rows above are defaults-only."
+    - "Populated shapes need QoS configuration stimulus that CHR cannot provide (U2-qos-populated-shapes, carried since I4 through J2)."
+    - "A CHR write leg would spend budget re-reading defaults; the discriminator needs hardware."
+  hardware_stimulus_required:
+    device: "RouterBOARD (or CHR-adjacent switch-chip hardware) exposing the QoS configuration surface for the qos/txman and qos/txq stores"
+    stimulus: "populate QoS configuration (profiles, maps, tx-queue entries), varying tx-manager-side config and tx-queue-side config INDEPENDENTLY across at least two cells"
+    reads: "GETALL [20,120] + [20,121] after each cell (0w reads); the discriminating read is non-default rows (or row-count/field movement) tracking the varied side"
+    predicts: "120-row movement under tx-manager config varies (txman lead) vs 121-row movement under queue config varies (txq lead); joint movement fails to discriminate the composite"
+    budget_shape: "a future hardware phase prices this; no budget is sheeted here (no CHR leg exists to price against)"
+  not_sheeted: "No CHR leg sheets for this item by design (brief scope). Purpose (U-120-121-purpose) stays role-open."
+unresolved_carried:
+  - id: U-120-121-purpose
+    claim: "CARRIED role-open: 120 plausibly a profile selector (static: txman store), 121 plausibly a per-priority table (static: txq store) -- both unproven live. Opens only on a hardware leg with the stimulus above."
+  - id: U2-qos-populated-shapes
+    claim: "CARRIED since I4: CHR shapes still defaults; needs switch hardware."
+spend: { counted_writes: 0, reboots: 0, note: "catalog consolidation from committed evidence; zero live contact" }

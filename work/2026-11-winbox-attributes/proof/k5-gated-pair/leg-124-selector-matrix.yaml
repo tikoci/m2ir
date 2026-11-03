@@ -1,0 +1,200 @@
+# cspell:ignore rowid getall getcount getobj getone getobjbare reqid jsonl veth netns u32 tcode errstr errstrs ifindex looper unexecuted precheck centrs quickchr ws21 vms keepalive notimp brkpath subtable unmapped untimed
+# [20,124] SELECTOR-MATRIX READ-LEG SHEET (design only, unexecuted).
+# Tests the statically proven INTERFACE_IDS selector live: request field
+# 1005 (u32array of [20,0] row-ids) + the 5-errstr validation ladder +
+# verb-indifference. 0w+0r future cost, ~16 native reads, one VM session.
+# Needs coordinator scheduling + named-VM assignment. This worker seeks neither.
+id: K5-leg-124-selector-matrix
+kind: read-leg-sheet
+status: design-unexecuted
+date: 2026-11-02
+worker: K5
+question: "U4-124-selector-encoding: static analysis says the INTERFACE_IDS selector is request field 1005 (u32array of [20,0] row-ids) with a 5-errstr ladder and NOTIMP-after-validation on standard verbs. Does live 7.25 agree?"
+record_standing: "[20,124] bare GETCOUNT+GETALL+GETOBJ -> FAILED 'no INTERFACE_IDS' both 7.x (E2-R/E3-R) + hscan GET FAILED STAYS the record. This leg does not re-prove it except as control G8; it tests selector-carrying requests."
+static_grounding:
+  report: work/2026-11-winbox-attributes/proof/k5-gated-pair/report.yaml
+  selector: "request field 1005 (0x3ed), tcode u32_array; empty-or-absent -> 'no INTERFACE_IDS' (P-static-1)"
+  id_semantics: "[20,0] interface row-ids via shared lookup 0x8062ce8 (P-static-3); ifindex hypothesis dead"
+  ladder: "'no INTERFACE_IDS' -> 'no device' -> '<name> is not veth' -> 'no veth device' -> 99-char overlap error (P-static-4)"
+  dispatch: "standard verbs -> NOTIMP only after full validation; cmd 1 mutates (nsCreate), cmd 2 private (P-static-5)"
+  inventory: "slot-7 reads ONLY 1005 + 1008; 0xfe0001/start/count ignored (P-static-6)"
+  scope: "v7-only registration (P-static-7); grounding binary is 7.25"
+route_scope_rule: "all reads in this design target [20,124] row payloads (here: error replies) ONLY. No variant reads [20,17], [20,0], or any other route. Row-id literals come from PRIOR cited evidence (see value_grounding), never from new reads. Zero SHEETED-NOT-EXECUTABLE entries on route-scope grounds (H4 dead, N9)."
+value_grounding:
+  - "id 2 = ether1 row-id (7.x default CHR): dual-grounded (§8 s-matrix fit row ids {lo:1, ether1:2, bridge:5} + E2-R [20,1] f5/f10=2 iface rowid)"
+  - "id 1 = lo row-id (7.x): single-grounded (§8 s-matrix fit). G2 treats the NAME echo as the check, not the assumption."
+  - "999999 = nonexistent id (no interface table that large on CHR; miss path certain)"
+  - "0 = row-id zero (J4 precedent: 126 singleton row-id 0; [20,0] has no row 0)"
+vm:
+  name: TBD-coordinator-assigns
+  placeholder: true
+  suggested: "ws21-class 7.25 x86, default interfaces (ether1 + lo, no veth, no containers)"
+  routeros: "7.25 ONLY (static grounding is the 7.25 binary; 7.26beta4 repeat is follow-up U-k5-beta4-drift, not this leg)"
+  arch: x86
+  network: "user (no L2 stimulus needed; all variants are request-shape-only)"
+  ports: "resolve live at execution from `quickchr list`; numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  base: "work/2026-11-winbox-attributes/proof/j1-tail-census-7x/census.ts (read-only, 0w by construction: no SET/ADD/REMOVE path exists)"
+  extension_needed: "one small flag mirroring --obj: --ids <csv> -> extra [encU32Array(1005, ids)] (+ --u32-1005 <n> for B1 wrong-tcode + --bool-1008 <0|1> for G6). encU32Array EXISTS in ws3c/m2.ts; buildRequest appends extras after the envelope (probe.ts). No codec work."
+  capture: "lossless jsonl via appendCapture (ts redacted); correlated request/reply; console log of errno+errstr per variant"
+  control_via: "none (no CLI/REST control needed: predictions are static, not control-relative)"
+counting_rule: "ALL native reads 0w; quickchr start/stop 0r; no writes exist in this design"
+budget: { counted_writes: 0, reboots: 0, native_reads: "~16 (8 control+grounded + 4 blind + 3 verb-indifference + 1 spare-contingency)", form: "0w+0r" }
+baseline_snapshot:
+  verdict_required: PASS
+  native_command: "bun <extended-census> --quickchr <vm> --allowed-version 7.25 --out step-k5-base.jsonl --route 20,124 --verbs getcount (bare, = G8)"
+  native_expect: "FAILED errno=0xfe0006 (16646150) errstr 'no INTERFACE_IDS' from=[20,124]"
+  fail_action: "STOP: leg VM not in the known state (version/population drift). Do not run variants; report."
+restore:
+  needed: false
+  reason: "read-only by construction (census.ts has no write path; cmd 1/2 excluded in X2/X3). No state is created, so no restore step exists."
+  tripwire: "if ANY variant reply shows success-path evidence (rows, empty success, or a netns side-effect hint), STOP + report: the GET-family-never-succeeds model (P-static-5) is broken and netns state may exist. Do not run further variants."
+variants:
+  - id: G8-baseline-reproof
+    verb: GETCOUNT
+    extra: "none (bare)"
+    prediction: "FAILED 0xfe0006 + 'no INTERFACE_IDS' (standing-fact re-proof on the leg VM)"
+    proves: "leg VM exhibits the known behavior; control for all later variants"
+    falsifies_on_deviation: "leg validity (STOP, do not interpret later rows)"
+  - id: G1-ether1-id
+    verb: GETCOUNT
+    extra: "1005 = u32array [2]"
+    prediction: "FAILED 0xfe0006 + 'ether1 is not veth' (name echo may differ if row 2 is renamed; ANY '<X> is not veth' counts)"
+    proves: "gate passage + id resolution + type check; U4 live-confirmed at ladder level"
+    falsifies_on_deviation:
+      - "'no INTERFACE_IDS' -> H1 falsified live (selector-field hypothesis wrong; STOP, re-open U4)"
+      - "'no device' -> row-id mapping drift (id 2 unresolvable; STOP, escalate: contingency sweep C1)"
+      - "NOTIMP/success -> type-check model broken (STOP, static re-analysis)"
+  - id: G2-lo-id
+    verb: GETCOUNT
+    extra: "1005 = u32array [1]"
+    prediction: "'lo is not veth' (or 'no device' if the single-grounded lo=1 mapping is wrong on this VM)"
+    proves: "second ladder point; the NAME echo (not the assumption) identifies row 1"
+    falsifies_on_deviation: "same ladder as G1 (any non-ladder outcome STOPS the leg)"
+  - id: G3-id-pair-order
+    verb: GETCOUNT
+    extra: "1005 = u32array [1,2]"
+    prediction: "'<row-1-name> is not veth' (loop checks ids in array order; first id fires first)"
+    proves: "array iteration + order (loop, not set); multi-id encoding accepted"
+  - id: G4-nonexistent-id
+    verb: GETCOUNT
+    extra: "1005 = u32array [999999]"
+    prediction: "FAILED + 'no device'"
+    proves: "lookup-miss path distinct from the gate (gate passed, resolution failed)"
+  - id: G5-empty-array
+    verb: GETCOUNT
+    extra: "1005 = u32array [] (explicit empty, distinct encoding from absent)"
+    prediction: "'no INTERFACE_IDS' (gate checks emptiness begin==end, not presence)"
+    proves: "gate semantics (empty == absent)"
+    conditional: "requires empty-array M2 encoding support in the harness; if it cannot be encoded, DROP with reason (not a failure)"
+  - id: G6-bool-1008-ignored
+    verb: GETCOUNT
+    extra: "1005 = u32array [2] + 1008 = bool false"
+    prediction: "identical to G1 ('<X> is not veth'; 1008 read only in cmd==1 path)"
+    proves: "verb-path separation (GET-family ignores 1008)"
+    falsifies_on_deviation: "any G1-divergence STOPS the leg (path analysis wrong)"
+  - id: G7a-getall-indifference
+    verb: GETALL
+    extra: "1005 = u32array [2]"
+    prediction: "identical outcome to G1 (slot-7 ignores start/count; single-funnel structure)"
+    proves: "verb-indifference on selector-carrying requests (bare-request indifference is standing fact)"
+  - id: G7b-getobj-indifference
+    verb: GETOBJ
+    extra: "0xfe0001 = u32 0 + 1005 = u32array [2]"
+    prediction: "identical outcome to G1 (0xfe0001 never read)"
+    proves: "H3 dead live (obj-id irrelevant)"
+  - id: G7c-get-indifference
+    verb: GET
+    extra: "1005 = u32array [2]"
+    prediction: "identical outcome to G1 (hscan-verb parity with a selector)"
+    proves: "verb-indifference complete across the GET family"
+  - id: B1-wrong-tcode
+    blind: true
+    verb: GETCOUNT
+    extra: "1005 = single u32 2 (encU32, NOT array)"
+    prediction: "most likely 'no INTERFACE_IDS' (type mismatch -> default empty); honest odds: tolerant-coercion outcome ('is not veth') unlikely but would be informative"
+    proves: "encoding strictness of the gate"
+  - id: B2-off-by-one-field
+    blind: true
+    verb: GETCOUNT
+    extra: "1004 = u32array [2] (then, if still gated, 1006 = u32array [2]; 2 requests)"
+    prediction: "'no INTERFACE_IDS' on both (wrong field = gate still sees empty 1005)"
+    proves: "field-id exactness; any ladder outcome here means field-id drift (discovery STOP)"
+  - id: B3-row-zero
+    blind: true
+    verb: GETCOUNT
+    extra: "1005 = u32array [0]"
+    prediction: "'no device' ([20,0] has no row 0; J4 row-0 precedent does not transfer)"
+  - id: B4-duplicate-id
+    blind: true
+    verb: GETCOUNT
+    extra: "1005 = u32array [2,2]"
+    prediction: "'ether1 is not veth' (first-id check fires; no duplicate-elimination exists statically)"
+  - id: C1-contingency-id-sweep
+    contingency: true
+    run_if: "G1 returns 'no device' (row-id mapping drift suspected)"
+    verb: GETCOUNT
+    extra: "1005 = u32array [N] for N in 1..8, one request each (bounded; still [20,124]-reads-only, route scope held)"
+    prediction: "each N returns either 'no device' (unresolvable) or '<name> is not veth' (resolves; NAME echo harvests the mapping without any [20,0] read)"
+    proves: "recovers the leg without widening route scope; any NOTIMP = full-validation surprise (STOP)"
+    cap: "8 requests max; stop early on first '<name> is not veth' unless the executor wants the full map (coordinator call)"
+excluded:
+  - id: X1-veth-hit
+    status: CONDITIONAL-ON-PREEXISTING-VETH
+    reason: "full-validation (NOTIMP) needs ids that are all veth with uniform +0x78; default CHR has no veth and creating one is a WRITE (0w budget). Executable ONLY if the leg VM already has a veth (verify by NAME echo from C1/G-ladder, never by a new-route read)."
+    prediction_if_executable: "GETCOUNT + 1005=[<veth ids>] -> NOTIMP 0xfe0003, no errstr (proves the full chain incl. the second table pass)"
+  - id: X2-private-cmd-1-2
+    status: OUT-OF-SCOPE
+    reason: "family has 0 private verbs; cmd 1 performs nsCreate+open+fd-store (MUTATION, violates 0w); cmd 2 undecoded (U-k5-mode2-reply-shape). Future private-verb batch owns these with a write budget."
+  - id: X3-bool-1008-on-cmd1
+    status: OUT-OF-SCOPE
+    reason: "1008 is read only in the cmd==1 path (X2); unreachable read-only."
+  - id: X4-17-derived-values
+    status: NOT-NEEDED
+    reason: "zero variants need [20,17]-derived values (H4 dead, N9). No SHEETED-NOT-EXECUTABLE entries exist in this design."
+  - id: X5-writes
+    status: FORBIDDEN
+    reason: "no SET/ADD/REMOVE anywhere; no VM config changes; census base has no write path."
+interpretation_tree:
+  - on: "G8 != 'no INTERFACE_IDS'"
+    then: "STOP (leg-invalid). Report the deviation; run nothing further."
+  - on: "G1/G2 = '<name> is not veth'"
+    then: "SELECTOR WIRED (U4 live-confirmed at ladder level). Name echo cross-checks the row-id mapping. Continue through G7, then blind B1-B4."
+  - on: "G1 = 'no device'"
+    then: "STOP grounded variants; run contingency C1 (bounded, in-scope). If C1 harvests a resolving id, RE-RUN G1-shape with it as the new G1 and continue; else AMBIGUITY STOP (mapping unrecoverable read-only)."
+  - on: "any grounded variant = NOTIMP (0xfe0003, no errstr)"
+    then: "STOP (model break: type-check unexpectedly passed). Static re-analysis required; blind variants NOT authorized (their predictions assume the ladder)."
+  - on: "any variant = errstr outside the 5-known set"
+    then: "DISCOVERY STOP: capture lossless, report, do not chase (no follow-up sweep authorized in this leg)."
+  - on: "any variant = success shape (rows / empty success / count slot)"
+    then: "TRIPWIRE (see restore.tripwire): STOP + report; P-static-5 broken."
+  - on: "G1..G7 all 'no INTERFACE_IDS' (fails closed)"
+    then: "FALSIFICATION STOP (see failure_mode_analysis): H1 falsified live. Verify tx-hex + version + from-route, then close U4 as live-blocked (static proof stands)."
+  - on: "transport error / timeout / async anomaly"
+    then: "STOP per harness rules; report as incomplete (not as a result)."
+stop_conditions:
+  - "control G8 fails (leg-invalid)"
+  - "NOTIMP-or-success on non-veth ids (model break / tripwire)"
+  - "new errstr outside the 5-known set (discovery stop: capture, report, no chase)"
+  - "all-closed falsification (H1 dead live; verify-then-close per failure_mode_analysis)"
+  - "any transport error, timeout, or async anomaly (incomplete, not a result)"
+  - "budget cap: ~16 requests + 8 contingency; no extension, no improvised re-runs"
+failure_mode_analysis:
+  all_closed_meaning: "if every selector-carrying variant still returns 'no INTERFACE_IDS', the live 7.25 behavior does not respond to 1005/u32array as the static decode predicts: H1 is FALSIFIED at live level (the static proof itself stands until re-audited)."
+  ranked_causes:
+    - "(a) harness encoding bug: extras not actually transmitted (CHECK FIRST: verify 1005/u32array bytes in tx hex)"
+    - "(b) version/build drift: leg VM build != grounding binary build (verify RouterOS build string)"
+    - "(c) vtable-pairing error: 0x81c0514 wrongly attributed to handler 124 (re-audit ctor pairing)"
+    - "(d) routing: request reached a different handler (verify from=[20,124] on every rx)"
+    - "(e) encoding strictness: compact-vs-full u32array form rejected (ONE pre-registered follow-up encoding variant, not an open sweep)"
+  ambiguity_stop: "if tx-hex correct + version verified + from=[20,124] verified and STILL all-closed -> STOP. U4 stays CARRIED (static proof stands, live confirmation blocked). No further blind sweep authorized (bounded-blind already spent). An ambiguity stop is a result, not a failure."
+evidence_to_capture:
+  - "step-k5-matrix.jsonl (lossless tx/rx per variant, ts redacted)"
+  - "console-matrix.txt (errno+errstr per variant id)"
+  - "future fixture (coordinator promotes: sanitized M2 hex + decoded entries for G1 + G8 minimum, fixtures/winbox-ipc/)"
+followups_not_in_this_leg:
+  - "7.26beta4 repeat (U-k5-beta4-drift): same matrix, fresh VM, after 7.25 confirms"
+  - "X1 veth-hit leg (needs pre-existing veth or a write-budget provisioning leg)"
+  - "X2/X3 private cmd 1/2 legs (private-verb batch with write budget + netns-restore plan)"
+  - "U-k5-130-sibling-role + U-k5-mode2-reply-shape (future family/private-verb batches)"

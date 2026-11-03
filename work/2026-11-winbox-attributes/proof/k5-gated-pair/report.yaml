@@ -1,0 +1,169 @@
+# cspell:ignore rowid getall getcount getobj getone reqid jsonl veth netns u32 tcode errstr ifindex rodata vtable ctor dtor objdump xrefs novabin looper amap subtable prefilter undecoded errstrs ifindexes typeobj vtables addhandler notimp brkpath unexecuted redacted getobjbare unmapped llms
+# K5 gated-pair selector design (Phase K, offline). Coordinator integrates; K5 edits nothing canonical.
+# Scope: unknown-20-124 ONLY. [20,32] mechanism work is out of scope and untouched.
+# Inputs: commit 53649dc + gui-handlers.yaml (read-only) + fixtures + v7 net binary (read-only static).
+complete: true
+worker: K5
+scope: "static grounding hunt for the [20,124] INTERFACE_IDS selector + read-only selector-matrix design (future leg sheet)"
+live_contact: none
+inputs:
+  git_head: 53649dc
+  git_head_subject: "winbox-ipc Phase J: tail census 1b + U4b closed, thread-5 adjuncts, H-decay-3 B2 dead (407/0, lint:ci green)"
+  tree: clean
+  required_reading:
+    - AGENTS.md
+    - README.md
+    - DESIGN.md
+    - llms.txt
+    - .github/instructions/routeros-grounding.instructions.md
+    - .github/instructions/descriptive-prose-file-names.instructions.md
+    - .github/instructions/directory-agents.instructions.md
+    - .github/instructions/cspell-glossary.instructions.md
+    - .github/instructions/scratch-directory.instructions.md
+    - .github/instructions/linting.instructions.md
+    - work/2026-11-winbox-attributes/attribute-discovery-plan.md
+    - work/2026-11-winbox-attributes/handoff.yaml
+    - work/2026-11-winbox-attributes/proof/i3-handler-tail-census/report.yaml
+    - profiles/winbox-ipc/gui-handlers.yaml (unknown-20-124 + modem-aux-20-61 + neighbor-discovery-settings entries, READ-ONLY)
+    - fixtures/winbox-ipc/7.25-getcount-20-17-124.json
+    - fixtures/winbox-ipc/7.26beta4-getcount-20-17-124.json
+    - work/2026-10-chr-extraction/net-bridge2-handler-tables.md
+    - work/2026-10-chr-extraction/handlers.ts
+    - work/2026-10-chr-extraction/fields.ts
+    - work/2026-10-chr-extraction/ws3c/probe.ts (buildRequest + encodeExtras)
+    - work/2026-10-chr-extraction/ws3c/m2.ts (encU32Array)
+    - work/2026-10-chr-extraction/ws3c-prober-findings.md (§24 [20,61] selector precedent)
+    - work/2026-11-winbox-attributes/proof/E2-R-census/report.yaml (slot-124-failed-errstr claim)
+    - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/census.ts (reusable --obj selector-matrix shape)
+    - test/profiles/winbox-ipc/getcount-20-17-124.test.ts (anchor assertions)
+  static_binary:
+    path: ~/.local/share/m2ir/extractions/root-7.25/nova/bin/net
+    sha256: 4dfdc32ac9979b8ab86478dab601b79444875f936f7ff1b6b132553a565f6e7c
+    arch: x86
+    version: 7.25
+    hash_note: "matches the H0b-cited v7 net hash; same binary the repo already cites"
+    v6_control: ~/.local/share/m2ir/extractions/root-6.49.23/nova/bin/net
+    v6_control_sha256: bea0195e1511e556a868ad379e5f4c6cf2c48d8bb944bcdcbc3091c72223d6d2
+    disassembly: "objdump -d --no-show-raw-insn (435735 lines, regenerable scratch; durable evidence is binary+sha+addresses, not the scratch path)"
+standing_facts_built_on:
+  - "present but selector-gated: GETCOUNT+GETALL+GETOBJ -> FAILED 'no INTERFACE_IDS' both 7.x (E2-R); hscan GET FAILED (ws3c)"
+  - "error-only shape: errno 0xfe0006 + 0xff0009 errstr; no positive shape; no ev/ file (I3)"
+  - "U4-124-selector-encoding open at I3 (selector field id/encoding unknown)"
+  - "NOT re-proven here per brief; the static hunt starts from them"
+static_leads:
+  - id: P-static-1-selector-field-proven
+    claim: "INTERFACE_IDS selector = request field 1005 (0x3ed), tcode u32_array. Empty-or-absent -> failedMsg('no INTERFACE_IDS')."
+    method: "sole-xref decode: 'no INTERFACE_IDS' literal at file offset 1412031 (VA 0x81a0bbf, 16 chars + NUL, verified by byte dump) has exactly ONE xref in v7 net: mov $0x81a0bbf,%eax at 0x8115899, inside function 0x8115872 which first executes get<u32array>(request, 0x3ed) and branches to failedMsg iff begin==end."
+    addresses: { function: "0x8115872", gate_get: "0x811587e-0x8115887", empty_branch: "0x8115895-0x8115897", failed_msg_call: "0x81158aa" }
+  - id: P-static-2-slot-registration-proven
+    claim: "0x8115872 is slot 7 (dispatch override) of the handler-124 vtable 0x81c0514, installed by ctor 0x8111ce6, registered via addHandler(0x7c) at 0x805e293 (malloc 0x16c + ctor + addHandler, handlers.ts pattern)."
+    method: "binary-wide pointer scan: exactly ONE pointer to 0x8115872 exists (file offset 0x178530 = VA 0x81c0530, .rodata); ctor 0x8111ce6 installs vtable 0x81c0514 (movl at 0x8111cfb); 0x81c0530 - 0x81c0514 = slot 7. Slot 7 = dispatch per the v6/v7 slot map (slots 0-12 align). No direct call to 0x8115872 exists (vtable-only reach)."
+    addresses: { vtable: "0x81c0514", slot7_ptr: "0x81c0530", ctor: "0x8111ce6", add_handler: "0x805e293" }
+  - id: P-static-3-id-semantics-rowids
+    claim: "1005 values are [20,0] interface row-ids (same key space as GETOBJ 0xfe0001), NOT kernel ifindexes."
+    method: "shared-lookup-fn proof: per-id validation calls 0x8062ce8 (edx=id, table from 0x81d0678+0x5b4). The same 0x8062ce8 is called by the v7 [20,0] slot-7 dispatch GETOBJ path (0x8068376) with edx = get<u32>(msg, 0xfe0001) after the flags==5 check (0x806834c-0x8068372), missing -> miss path, hit -> row-core 0x8064f1a + replyMessage. Same fn + same table + same key role = same key space."
+    addresses: { lookup_fn: "0x8062ce8", iface_table: "0x81d0678+0x5b4", getobj_use: "0x8068362-0x8068376", handler124_use: "0x81158da-0x81158ef" }
+  - id: P-static-4-validation-ladder
+    claim: "per-id validation ladder with 4 further errstrs after the gate: NULL -> 'no device' (0x819fc50, len 9); entry+0x60 != 0x47 -> '<name> is not veth' (suffix 0x81a0b31, name from entry+0x24); entry+0x19c == NULL -> 'no veth device' (0x81a0b3e, len 14); +0x78 mismatch across the set -> 99-char overlap error (0x81a0bd0). A second table pass re-checks membership (0x806bd66) with the same 99-char error."
+    method: "linear decode of 0x81158d0-0x81159fa; all 5 literals dumped from .rodata by VA->offset arithmetic and verified."
+    literals:
+      - "no INTERFACE_IDS (0x81a0bbf, 16)"
+      - "no device (0x819fc50, 9)"
+      - " is not veth (0x81a0b31, 12, suffix)"
+      - "no veth device (0x81a0b3e, 14)"
+      - "same set of overlapping interfaces must be used for different containers that run at the same time (0x81a0bd0, 99)"
+  - id: P-static-5-verb-dispatch
+    claim: "slot-7 third arg = raw cmd (v7 [20,0] dispatch 0x80682ec switches raw 0xfe00xx values, same convention). cmd==1 -> netns-ensure path (MUTATING: nsCreate + open + fd store at entry+0x78); cmd==2 -> 0x8112ac4 + empty success reply; ALL other cmds (every standard verb incl. GET/GETALL/GETOBJ/GETCOUNT) -> errorMsg(0xfe0003) = NOTIMP, but only AFTER gate+validation pass."
+    method: "decode of 0x81159fa + 0x8115cb9 + 0x8115ce8 (errorMsg(0xfe0003) = NOTIMP per handler-tables §1); mode-1 nsCreate/open/fd-store at 0x8115a0e-0x8115bf9; mode-2 at 0x8115cc2-0x8115ce6."
+    consequence: "GET-family best-case live outcome on a fully-valid selector is NOTIMP (proves full validation passage); errstr-ladder outcomes prove partial passage. No GET-family verb can return rows on this handler."
+  - id: P-static-6-request-field-inventory-complete
+    claim: "the whole slot-7 function (0x8115872-0x8115d31) reads exactly TWO request fields: 1005 (u32array, the gate) and 1008/0x3f0 (bool, default 1, read ONLY in the cmd==1 path at 0x8115a0e-0x8115a19: netns-create flavor flag)."
+    method: "exhaustive grep for message get/has/insert/ix accessors over the function range: 2 hits, both characterized. 0xfe0001 is NEVER read (GETOBJ obj-id ignored); GETALL start/count never read (verb-indifference is structural)."
+  - id: P-static-7-v7-only
+    claim: "handler 124 is v7-only (static version scope)."
+    method: "v6 net binary: 'INTERFACE_IDS', 'is not veth', 'overlapping interfaces' all ABSENT (grep -a); v6 net disassembly: 7 push-$0x7c sites, ZERO feed addHandler (each checked +9 lines). v7 net: full registration + strings present."
+  - id: P-static-8-subsystem-context
+    claim: "124 is the container/veth overlap+netns manager: veth interface-type 0x47=71 (literal 'veth' at 0x81a0b39) is registered immediately before addHandler(0x7c) in one init region (0x805e1e7-0x805e2ae); sibling handler 0x82=130 (sub-object at obj+0x88, vtable 0x81c05c0) is registered immediately after. Type code 71 = veth is a new datum (absent from the §8 registry incl. live-only codes)."
+    addresses: { type_register: "0x805e208-0x805e213", add_124: "0x805e293", add_130: "0x805e2ae", sub_vtable: "0x81c05c0" }
+    scope_note: "[20,130] is context only; it is OUT of K5 scope (124 ONLY) and gets no variants."
+hypotheses:
+  - id: H1-selector-1005-u32array
+    verdict: proven-static
+    support: "P-static-1 (sole gate) + P-static-6 (inventory complete). Live confirmation pending (matrix G1/G2)."
+  - id: H2-bool-1008-adjunct
+    verdict: proven-static-limited
+    support: "P-static-6: read only in cmd==1 path (mode-1 netns flavor). NOT a gate; GET-family ignores it (matrix G6 proves the ignore). No live leg can reach its read path without private cmd 1 (excluded)."
+  - id: H3-fe0001-as-selector
+    verdict: dead
+    support: "P-static-6: 0xfe0001 never read by slot-7. The [20,61]-era habit of trying obj-ids does not apply."
+  - id: H4-17-derived-values
+    verdict: dead
+    support: "P-static-3 (selector takes [20,0] row-ids via the shared lookup) + N9 ([20,17] offers no id-like values). No variant needs [20,17]; route-scope rule satisfiable with zero sheeted entries."
+  - id: H5-f7-string-a-la-61
+    verdict: dead
+    support: "P-static-6: no string-field reads anywhere in the slot-7 function. The [20,61] f7-string shape does not transfer."
+negatives:
+  - id: N1-handler-tables-docs
+    searched: "net-bridge2-handler-tables.md + sys2-handler-tables.md (regex 124|0x7c|INTERFACE_IDS)"
+    found: "nothing (one 0x7c struct-offset mention in sys2, unrelated). No 124 lead exists in the table docs."
+  - id: N2-extraction-tools
+    searched: "handlers.ts + fields.ts (full read)"
+    found: "v6-oriented on-demand tools with no canned 124 content; the v7 work here used objdump + pointer scans directly (method recorded, tools unmodified)."
+  - id: N3-findings-doc
+    searched: "ws3c-prober-findings.md (regex handler-124|124|INTERFACE_IDS over 124-adjacent terms)"
+    found: "no 124 static section; only the §24 [20,61] precedent (used for compare/contrast) and hscan presence lines."
+  - id: N4-direct-callers
+    searched: "full v7 net disassembly for call-target 0x8115872"
+    found: "none: vtable-only reach (forced the pointer-scan method that found vtable 0x81c0514)."
+  - id: N5-errstr-xrefs
+    searched: "full v7 net disassembly for 0x81a0bbf/0x81a0bc2"
+    found: "exactly ONE xref (0x8115899): single emitter, no alternate 'no INTERFACE_IDS' path."
+  - id: N6-extra-request-fields
+    searched: "message accessors over 0x8115872-0x8115d31"
+    found: "only 1005 + 1008 (P-static-6). No hidden third selector."
+  - id: N7-v6-scope
+    searched: "v6 net binary strings + v6 disassembly addHandler sites"
+    found: "no 124 strings, no addHandler(0x7c) (P-static-7). v6 leg would be BRKPATH; none designed."
+  - id: N8-rosetta-menu
+    searched: "not re-searched (I3 established no menu lead; brief forbids re-proof)"
+    found: "carried: no CLI menu lead; container/veth CLI (/interface/veth, /container) names values, not the numeric selector."
+  - id: N9-17-value-source
+    searched: "neighbor-discovery-settings schema entry (114-field map, f79 string only) + P-static-3"
+    found: "no id-like value on [20,17]; selector provably takes [20,0] row-ids. H4 dead; zero SHEETED-NOT-EXECUTABLE entries needed."
+  - id: N10-binary-sweep
+    searched: "all binaries under root-7.25/nova/bin/* for INTERFACE_IDS"
+    found: "only `net` hit. Provenance complete at net .rodata + net .text (lib sweep unnecessary: literal + sole xref both in net)."
+precedent_compare_20_61_vs_20_124:
+  shared: "both are v7 net selector-gated handlers with slot-7 involvement; both motivated a read-only request-extra matrix; both pair a CHR-absent resource (modem / veth+container) with negative-only live legs."
+  contrasts:
+    - "selector SHAPE: 61 = request f7 STRING (modem key, store->lookup); 124 = request f1005 U32-ARRAY (row-ids, validation ladder). The 61 precedent predicted 'selector in extras' but no field detail transferred (H5 dead)."
+    - "miss SIGNAL: 61 = UNKNOWNID 0xfe0004, no errstr; 124 = FAILED via failedMsg + errstr ladder (5 distinct strings). 124's ladder is far more discriminating per request."
+    - "verb STRUCTURE: 61 = slot-9 cmdGet + slot-7 pre-filter for other cmds, unhandled verbs = base NOTIMP; 124 = SINGLE slot-7 funnel for all verbs, standard verbs -> explicit NOTIMP only after validation (P-static-5)."
+    - "positive SHAPE: 61 has one (0x411 nested / 0x3fa array) gated on hardware; 124 has NO GET-family positive shape at all (best case NOTIMP) — the matrix proves wiring, never rows."
+    - "hardware GATE: 61 needs a registered modem for a hit; 124 needs pre-existing veth interfaces for full-validation (NOTIMP) — both CHR-absent by default, but 124's PARTIAL ladder ('is not veth' with name echo) is reachable on a stock CHR with plain ether/lo ids."
+unresolved:
+  - id: U4-124-selector-encoding
+    status: carried-narrowed
+    detail: "statically ANSWERED (1005/u32array/row-ids + ladder + dispatch, P-static-1..6); live CONFIRMATION pending. Closes when matrix G1 (or G2) returns the predicted '<name> is not veth' errstr, or re-opens if the matrix fails closed (see failure-mode analysis in leg-124-selector-matrix.yaml)."
+  - id: U-k5-mode2-reply-shape
+    status: new-open
+    detail: "cmd==2 path calls 0x8112ac4 then replies empty success; 0x8112ac4 undecoded (bounded stop: private verb, out of scope). A future private-verb batch owns it; no GET-family prediction depends on it."
+  - id: U-k5-130-sibling-role
+    status: new-open
+    detail: "handler 130 (sub-object of the 124 object, vtable 0x81c05c0) undecoded; context only, out of K5 scope. Flagged so a future family batch does not re-derive the pairing."
+  - id: U-k5-beta4-drift
+    status: new-open
+    detail: "static grounding is the 7.25 binary; 7.26beta4 live behavior matches on bare requests (standing facts) but selector-wiring drift is untested. Matrix runs 7.25 ONLY by budget; beta4 repeat is an explicit follow-up, not an assumption."
+evidence:
+  - "v7 net static decode: slot-7 0x8115872 gate + ladder + dispatch (this report: static_leads[]; method: objdump + pointer scan + .rodata dumps, regenerable)"
+  - "errstr literal provenance: 5 literals at VA with sole-xref proof (P-static-4/5, N5)"
+  - "row-id semantics: shared-lookup-fn proof via v7 [20,0] GETOBJ path (P-static-3)"
+  - "v7-only registration: v6 double-negative (P-static-7, N7)"
+  - "future-leg sheet: leg-124-selector-matrix.yaml (variant table + pre-registered predictions + interpretation tree + stops)"
+  - "promotion fragment: fragment.yaml (static-only notes + evidence proposals)"
+spend: { writes: 0, reboots: 0, form: 0w+0r }
+budgets: { approved: "0w+0r (design only)", spent: "0w+0r", live_contact: none }
+deliverables:
+  - work/2026-11-winbox-attributes/proof/k5-gated-pair/report.yaml
+  - work/2026-11-winbox-attributes/proof/k5-gated-pair/leg-124-selector-matrix.yaml
+  - work/2026-11-winbox-attributes/proof/k5-gated-pair/fragment.yaml

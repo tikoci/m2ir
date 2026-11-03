@@ -1,0 +1,14 @@
+# cspell:ignore rowid brkpath getcount
+# K0 proposed gui-handlers.yaml fragment. Coordinator integrates.
+fragment_for: profiles/winbox-ipc/gui-handlers.yaml
+promotion_ready:
+  - target: sim-settings-20-107.notes
+    action: append v7-only version-scope sentence + evidence ref
+    lines:
+      - '      v7-only (K0, 2026-11-02, 0w): v6 GETONE+GETALL+GETOBJ+GETCOUNT all -> 0xfe0002 BRKPATH, process-level SYS-only reply from [20]; both 7.x drift-free per K1.'
+    evidence_to_attach:
+      - source: sample
+        ref: "live CHR interrogation (K0 v6-overflow, 6.49.23): uniform-BRKPATH matrix step-v6-107.jsonl (8 records) — work/2026-11-winbox-attributes/proof/k0-v6-overflow/"
+not_proposed:
+  - what: "any [20,107] field entries"
+    reason: "meanings unproven (U3 carried); CHR shapes are defaults, Rosetta names are candidates only"

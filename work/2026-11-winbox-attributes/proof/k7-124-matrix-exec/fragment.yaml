@@ -1,0 +1,19 @@
+# cspell:ignore rowid getcount getall getobj getone notimp veth u32array errstr
+# K7 proposed gui-handlers.yaml fragment. Coordinator integrates.
+fragment_for: profiles/winbox-ipc/gui-handlers.yaml
+promotion_ready:
+  - target: unknown-20-124.notes
+    action: append live-confirmation paragraph (U4 closed at ladder level)
+    lines:
+      - '      Live confirmation (K7 matrix, 7.25, 2026-11-02, 0w): 14/14'
+      - '      pre-registered predictions hit. 1005=[2] -> ''ether1 is not'
+      - '      veth''; 1005=[1] -> ''lo is not veth''; [1,2] fires row-1'
+      - '      first (array order); [999999]/[0] -> ''no device''; explicit'
+      - '      empty array == absent (''no INTERFACE_IDS''); single-u32 and'
+      - '      off-by-one-field (1004/1006) stay gated; 1008=false changes'
+      - '      nothing; GETALL/GETOBJ/GET agree with GETCOUNT (0xfe0001'
+      - '      ignored). U4 live-confirmed at ladder level; full-validation'
+      - '      NOTIMP still untested (needs pre-existing veth).'
+    evidence_to_attach:
+      - source: sample
+        ref: "live CHR interrogation (K7 124-matrix, ws21 7.25, 2026-11-02, 0w): G8+G1-G7+B1-B4 selector matrix, 14/14 predictions hit — work/2026-11-winbox-attributes/proof/k7-124-matrix-exec/{census-124.ts,step-124-g8.jsonl,step-124-g1.jsonl,step-124-g2.jsonl,step-124-g3.jsonl,step-124-g4.jsonl,step-124-g5.jsonl,step-124-g6.jsonl,step-124-g7a.jsonl,step-124-g7b.jsonl,step-124-g7c.jsonl,step-124-b1.jsonl,step-124-b2a.jsonl,step-124-b2b.jsonl,step-124-b3.jsonl,step-124-b4.jsonl}"

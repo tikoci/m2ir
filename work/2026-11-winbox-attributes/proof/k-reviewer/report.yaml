@@ -1,0 +1,27 @@
+# cspell:ignore getone getall getobj getcount getf7 getf1 notimp unknownid brkpath jsonl reqid unblinding unblinded rosetta cliref chfont fasttrack tarpit keepalives nosuchuser dbrd u32c llms overbroad
+# Phase K blind reviewer report (K-reviewer). Reconstructions R-K0..R-K6 were
+# written BEFORE any k* proposer file was opened; comparisons appended post-read.
+complete: true
+worker: K-reviewer
+scope: "Phase K blind review: R-K0 spot-check + R-K1..R-K4 live-capture reconstructions + R-K5/R-K6 design-vs-cited-evidence consistency"
+live_contact: none
+inputs:
+  git_head: 53649dc
+  git_head_subject: "winbox-ipc Phase J: tail census 1b + U4b closed, thread-5 adjuncts, H-decay-3 B2 dead (407/0, lint:ci green)"
+blind_audit: "PASS (self-statement, verifiable via session log): read order was (1) AGENTS.md/README.md/DESIGN.md/llms.txt/instructions/plan/handoff/i3-report, (2) k0-k4 step-*.jsonl + console-*.txt + census.ts + ev/fixtures/prior-phase baselines + static pre-reads (sys2-handler-tables.md, routerboard-hunt.md, findings, net-bridge2, E2-R/E3-R/G1/H1/J2/J3/J5/J6 reports, Rosetta sqlite3 -readonly, local extraction strings), (3) wrote all 7 reconstruction-*.yaml + this report skeleton, (4) ONLY THEN opened k* report/fragment/leg/sheet files. No live contact at any point (no VM boot, no router CLI/REST/WinBox)."
+per_slice:
+  - { slice: R-K0, verdict: agree, note: "v6 [20,107] uniform 0xFE0002 process-level, all 4 verbs — exact match" }
+  - { slice: R-K1, verdict: agree, note: "[20,107] drift-free + GET-only; [20,61] 14/14 f7-miss; candidates/static cites verified" }
+  - { slice: R-K2, verdict: agree, note: "[24,35] beta4 empty/drift-free + GET-only + v6 BRKPATH; static scope verified" }
+  - { slice: R-K3, verdict: agree-with-3-minor-discrepancies, note: "wire data all agree; D1: record count 24 vs actual 28; D2: sheet budget total 11 vs actual 12; D3: 'no other read-only f1 variant' overbroad (nosuchuser exists in fixtures) + sole-user/sessions grounding uncommitted (no control file)" }
+  - { slice: R-K4, verdict: agree, note: "drift+gating agree; all 6 holder string-VAs + 6 addHandler sites + 6 vtables + 6 slot-9=cmdGet + 2 libumsg records + Rosetta pulls independently verified" }
+  - { slice: R-K5, verdict: agree, note: "all 8 P-static claims verified against v7 net (gate/xref/vtable/shared-lookup/ladder/dispatch/inventory/v7-only/veth-71); money prediction 0w-reachable under all 3 pre-committed criteria" }
+  - { slice: R-K6, verdict: agree-with-2-citation-discrepancies, note: "designs sound: 2x2 separation, G1-state assumption supported, L1 carried, J6 shapes faithful, 120-121 consolidation exact, error-census correction verified. D1: 'J5 single-row' misstates step-T5c-ft.jsonl (2 rows); D2: '(0 deviations / 24 verbs)' wrongly scoped to 2 routes (24 = whole J2 matrix; 120/121 = 8)" }
+evidence:
+  - "reconstructions: work/2026-11-winbox-attributes/proof/k-reviewer/reconstruction-r-k{0,1,2,3,4,5,6}.yaml (blind method + hashed inputs + independent verdicts + post-read item checks)"
+  - "live inputs re-read: k0/k1/k2/k3/k4 step-*.jsonl (sha16 pinned per reconstruction) + console-*.txt + census.ts"
+  - "baselines: ev/7.25-getone-{20-107,24-35,13-5,13-9,13-6-admin,24-14,24-16,2-1}.json + ev/6.49 residue/user shapes + fixtures {7.25,7.26beta4}-{neg-20-61,user-family}.json + {6.49,7.25,7.26beta4}-error-census.json + 7.26beta4-qos-120-121.json"
+  - "static binaries (offline, local extractions): v7 net sha256 4dfdc32a... (matches H0b-cited hash) + v6 net bea0195e...; v6/v7 sys2 + mproxy + v7 libumsg.so; Rosetta db eee45741... via sqlite3 -readonly"
+  - "prior-phase reports re-read: E2-R, E3-R, F0b, G1 (+step-M9.jsonl, control-M9-read.json), H1 (+timing-ladder.jsonl), J1 (+step-725-122.jsonl), J2, J3 (+rerun sheet), J5 (+step-T5c-ft.jsonl), J6, I3, I4 (+qos-siblings steps), findings sections 8/9/10/16/24/25, net-bridge2 section 8, sys2-handler-tables.md, routerboard-hunt.md section 7, handlers.ts"
+unresolved: []
+spend: { approved: "0w+0r", spent: "0w+0r" }

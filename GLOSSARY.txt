@@ -528,6 +528,7 @@ QMI # Qualcomm MSM Interface (LTE modem protocol)
 NEWLINK # netlink NEWLINK message (interface creation events)
 netlink # Linux netlink socket family
 +Netlink # capitalized netlink (sentence-initial in findings prose)
+netns # Linux network namespace (ip-netns); the [20,124] cmd==1 path creates one per veth set (K5 static decode, gui-handlers.yaml)
 STP # Spanning Tree Protocol (bridge)
 ussd # Unstructured Supplementary Service Data (LTE/modem)
 RMW # read-modify-write (store field update pattern)

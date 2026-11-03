@@ -1,0 +1,3 @@
+cspell:ignore getcount getall getobj getone errstr veth
+census [20,124] getobj: ROUTER-ERROR errno=16646150 errstr="ether1 is not veth"
+census: records=2 out=step-124-g7b.jsonl

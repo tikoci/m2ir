@@ -1,0 +1,15 @@
+cspell:ignore getall getone getobj getcount getf7 jsonl winbox census quickchr
+census [20,107] getone: ok fields=23 statusWord=null
+census: records=2 out=step-beta4-107-getone.jsonl
+census [20,107] getall: ROUTER-ERROR errno=16646147 errstr=null
+census [20,107] getobj: ROUTER-ERROR errno=16646147 errstr=null
+census [20,107] getcount: ok fields=6 statusWord=null
+census: records=6 out=step-beta4-107-gating.jsonl
+census [20,61] getf7 f7="": ROUTER-ERROR errno=16646148 errstr=null
+census [20,61] getf7 f7="lte1": ROUTER-ERROR errno=16646148 errstr=null
+census [20,61] getf7 f7="foo": ROUTER-ERROR errno=16646148 errstr=null
+census [20,61] getf7 f7="usb1": ROUTER-ERROR errno=16646148 errstr=null
+census [20,61] getf7 f7="1-1": ROUTER-ERROR errno=16646148 errstr=null
+census [20,61] getf7 f7="/usb/1": ROUTER-ERROR errno=16646148 errstr=null
+census [20,61] getf7 f7="00000001": ROUTER-ERROR errno=16646148 errstr=null
+census: records=14 out=step-beta4-61-f7.jsonl

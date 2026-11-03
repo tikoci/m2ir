@@ -148,7 +148,7 @@ seed files.
 
 ## Coverage in numbers (inexact, counted 2026-11-02)
 
-Counted from the YAML in this directory, the 249 live transcripts in
+Counted from the YAML in this directory, the 290 live transcripts in
 `work/2026-10-chr-extraction/ws3c/ev/`, and the Rosetta database
 (`ros-help` 0.12.0, manuals 7.24–7.26) behind tikoci/restraml. Treat the
 ratios as scale indicators, not exact percentages: nobody has a total
@@ -161,8 +161,8 @@ count of nova TLVs, because field numbering is local to each handler.
 | STD commands / errors named | 23 / 13 |
 | Process entries catalogued | 41 |
 | GUI handlers catalogued | 50 |
-| Handlers with at least one field mapped | 33 of 50 |
-| Handler field entries mapped | 352 (178 named, 174 `unknown-*`) |
+| Handlers with at least one field mapped | 34 of 50 |
+| Handler field entries mapped | 355 (180 named, 175 `unknown-*`) |
 | Distinct TLV keys seen in live transcripts | 278 |
 | Menu bindings in the v7 registry (HD table) | 296 (98 menus) |
 | Distinct CLI command-tree nodes in restraml | 43,189 |
@@ -174,7 +174,7 @@ How to read this:
 - The **envelope is essentially complete**: the 51 SYS/STD keys, 23
   commands, and 13 errors cover the shared machinery every handler
   uses, drained from the Cisco-Talos enum and then corrected live.
-- **Per-handler config fields are the long tail.** 352 mapped field
+- **Per-handler config fields are the long tail.** 355 mapped field
   entries is under 1% of restraml's 37,240 CLI args. That ratio is
   only a proxy — CLI args and nova fields are not 1:1 (args share
   fields, some fields have no CLI arg) — but it gives the right
@@ -187,7 +187,7 @@ How to read this:
   (80 of 80) actually appears in the live transcripts. The gap is
   handlers and fields never probed, not keys invented on paper.
 - Quality counts: 288 confidence-tagged entries (150 documented,
-  135 observed-only, 3 inferred), 603 evidence references, and 72
+  135 observed-only, 3 inferred), 623 evidence references, and 72
   kept revision-history entries recording beliefs live work corrected.
 
 The CLI-reference total includes repeated records across three manual
@@ -219,7 +219,7 @@ The full still-open list, with evidence counts, is the tail of
 The CHR-capable portion can start now; individual hardware-dependent fields
 may still need separate equipment. The
 [attribute and verb discovery plan](../../work/2026-11-winbox-attributes/attribute-discovery-plan.md)
-is the agent execution entrypoint. It covers the 17 catalogued handlers
+is the agent execution entrypoint. It covers the 16 catalogued handlers
 without fields, unknown entries, additional registry bindings, and native
 configuration operations useful to UIs and `centrs explain`.
 

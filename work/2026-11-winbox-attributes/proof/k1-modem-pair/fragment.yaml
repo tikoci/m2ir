@@ -1,0 +1,40 @@
+# cspell:ignore rowid getall getone getobj getcount getf7 jsonl notimp unknownid sim lte chr winbox rosetta cliref objid qos usb1 k1 j1
+# K1 proposed fragment (Phase K, modem-pair leg). Coordinator integrates; K1 edits nothing canonical.
+# Proposes: notes + evidence for sim-settings-20-107 (drift-free + GET-only gating) and
+# modem-aux-20-61 (f7-matrix negatives incl. empty + non-name keys). Omits: everything
+# unproven (all field-name candidates, private-5 live behavior, v6 legs).
+proposals:
+  - handler: sim-settings-20-107
+    add_notes: |
+      Verb gating (K1 census, both 7.x): GET-only — GETALL/GETOBJ ->
+      0xfe0003 (NOTIMP, same signature as default-config and
+      qos-config-20-122, not the 114/115/126 wrap family);
+      GETCOUNT = 0xFFFFFFFF sentinel in 0xfe0019 (no row count).
+      Beta4 GETONE is drift-free vs 7.25 (18 USER fields pinned:
+      bools 0x0e/0x11/0x12/0x13/0x0a=F; 4=1, 9=0, 0x0b=3, 0x0d=0,
+      0x0f=120, 0x10=0, 0x14=5, 1=0; 8=0xFFFFFFFF; 0x0c/0x15/7
+      empty, 5='firmware'). No field meaning is proven — all
+      lte/settings names stay candidates. Populated rows still
+      need modem hardware.
+    add_evidence:
+      - source: sample
+        ref: "live CHR interrogation (K1 modem-pair census, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (GET-only, GETCOUNT 0xFFFFFFFF, no drift) — work/2026-11-winbox-attributes/proof/k1-modem-pair/{census.ts,step-beta4-107-getone.jsonl,step-beta4-107-gating.jsonl,step-725-107-getone.jsonl,step-725-107-gating.jsonl}"
+  - handler: modem-aux-20-61
+    add_notes: |
+      Read-only f7-selector matrix (K1 census, both 7.x, 14/14
+      miss): empty string + lte1 + foo + 4 non-name-key styles
+      (usb1, 1-1, /usb/1, 00000001) all -> 0xfe0004 UNKNOWNID
+      from=[20,61] in the same 7-key SYS-only shape (0 USER
+      fields, no total, no errstr). The empty string encodes as
+      a zero-length field-7 string (not a bare GET) and misses
+      exactly like the named controls. The non-name-key axis is
+      narrowed on CHR-absent only — a hit may still need a
+      registered modem with SIM (7.16 leg confound untouched).
+    add_evidence:
+      - source: sample
+        ref: "live CHR interrogation (K1 modem-pair census, 2026-11-02, 0w): f7 matrix {empty, lte1, foo, usb1, 1-1, /usb/1, 00000001} all-miss on 7.26beta4/7.25 — work/2026-11-winbox-attributes/proof/k1-modem-pair/{census.ts,step-beta4-61-f7.jsonl,step-725-61-f7.jsonl}"
+omits:
+  - "all lte/settings + lte field-name candidates for 107/61 (meanings unproven; U3 carried)"
+  - "[20,61] private-5 live behavior (static-claimed, role unknown; sheeted write leg in report.yaml, never sent)"
+  - "107/61 v6 legs (coordinator scope; no v6 contact from K1)"
+  - "no GLOSSARY.txt additions needed: no new protocol terms coined (getf7/usb1 are proof-local)"

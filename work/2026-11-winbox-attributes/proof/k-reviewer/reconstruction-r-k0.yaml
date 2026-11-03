@@ -1,0 +1,32 @@
+# cspell:ignore getone getall getobj getcount brkpath unblinding reqid jsonl seqs
+# R-K0 spot-check (BLIND reconstruction). Written BEFORE opening any k0
+# proposer file (report.yaml / fragment.yaml). Comparison appended post-read.
+reconstruction: R-K0
+target: k0-v6-overflow v6 [20,107] outcome + reply level
+method: "Read step-v6-107.jsonl rx records seq 1/3/5/7 directly (decode.entries
+  + from[] route). Decoded cmd/errno numerics by hand (0xFE0000 base = 16646144).
+  Cross-checked against console-v6-107-census.txt outcome lines. No proposer
+  file opened before this verdict was written."
+raw_inputs:
+  - file: work/2026-11-winbox-attributes/proof/k0-v6-overflow/step-v6-107.jsonl
+    sha256_16: 3df7df1b29bc37cf
+    seqs_used: [0, 1, 2, 3, 4, 5, 6, 7]
+  - file: work/2026-11-winbox-attributes/proof/k0-v6-overflow/census.ts
+    sha256_16: 2dd3184e747ad1dd
+    note: "verb->cmd map: getone=CMD_GET(0xFE000D) getall=0xFE0004 getobj=0xFE0002(obj=1) getcount=0xFE0015; getobj carries 0xfe0001=objId"
+  - file: work/2026-11-winbox-attributes/proof/k0-v6-overflow/console-v6-107-census.txt
+    note: "4x ROUTER-ERROR errno=16646146, records=8"
+independent_verdict:
+  outcomes:
+    - { verb: getone, tx_seq: 0, rx_seq: 1, reqId: 2, errno: 16646146, errno_hex: 0xFE0002 }
+    - { verb: getall, tx_seq: 2, rx_seq: 3, reqId: 3, errno: 16646146, errno_hex: 0xFE0002 }
+    - { verb: getobj_obj1, tx_seq: 4, rx_seq: 5, reqId: 4, errno: 16646146, errno_hex: 0xFE0002 }
+    - { verb: getcount, tx_seq: 6, rx_seq: 7, reqId: 5, errno: 16646146, errno_hex: 0xFE0002 }
+  reply_level: process
+  reply_level_evidence: "all 4 rx records carry from=[20] (single-element process route), NOT from=[20,107]; the process-20 dispatcher answered, the handler did not"
+  reply_shape: "every rx = {0xff0001:[0,11], 0xff0002:[20], 0xff0008:16646146, 0xff0003:2, 0xff0004:2, 0xff0006:reqId}; no 0xff001c proxy key (v6 shape); no errstr"
+  verdict: "v6 [20,107] is ABSENT on all 4 verbs: uniform 0xFE0002 from process level [20]. Consistent with the I3-scope expectation of v6-BRKPATH for a v7-only registration (same envelope class as J2 116/117/120/121 v6 legs)."
+post_read_comparison:
+  files_opened_after_reconstruction: [proof/k0-v6-overflow/report.yaml, proof/k0-v6-overflow/fragment.yaml]
+  verdict: agree
+  detail: "K0 P-k0-107-v7-only (uniform v6 0xFE0002 BRKPATH all 4 verbs, process-level from [20]) matches my reconstruction exactly: rx seqs 1/3/5/7 errno 16646146=0xFE0002, from=[20], SYS-only, errstr null. Fragment proposes only a v7-only note + 1 evidence (no field entries) — consistent with U3-carried. No discrepancy."

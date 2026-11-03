@@ -1,0 +1,25 @@
+# cspell:ignore rowid getall getone getobj getcount brkpath notimp dbrd sys2 cliref
+# K2 proposed fragment (Phase K, board-info). Coordinator integrates; K2 edits nothing canonical.
+# Proposes: notes + evidence for dbrd-holder-24-35 (version scope + emptiness + full gating).
+# Omits: all 9 field-name candidates (meanings unproven) and the populated shape (hardware-blocked).
+proposals:
+  - handler: dbrd-holder-24-35
+    add_notes: |
+      Verb gating (K2 census, 2026-11-02): fully GET-only on
+      7.26beta4 — GETALL/GETOBJ -> 0xfe0003 (NOTIMP;
+      GETOBJ is verb-unsupported here, not the wrap-family
+      id-miss); GETCOUNT = 0xFFFFFFFF sentinel (same
+      GET-only signature as [20,122]). Beta4 GETONE is
+      drift-free vs 7.25 (bare-SYS-only, zero USER fields).
+      v6 GETONE -> 0xfe0002 BRKPATH from [24]: v7-only
+      registration verified live. Static: system/routerboard
+      carries 9 read-only names but no dbrd-specific menu
+      exists, so all 9 stay guesses. Populated rows need
+      real hardware WITH a daughterboard.
+    add_evidence:
+      - source: sample
+        ref: "live CHR interrogation (K2 board-info census, 2026-11-02, 0w): GETONE + full gating on 7.26beta4 (empty, drift-free, GETALL/GETOBJ->NOTIMP, GETCOUNT 0xFFFFFFFF) + v6 BRKPATH — work/2026-11-winbox-attributes/proof/k2-board-info/{census.ts,step-beta4-24-35.jsonl,step-v6-24-35.jsonl}"
+omits:
+  - "all 9 system/routerboard name candidates (board-name/model/revision/serial-number/firmware-type/minimum-firmware/current-firmware/upgrade-firmware/routerboard): unmapped to wire TLVs (U-k2-candidate-mapping)"
+  - "populated [24,35] row shape: needs real hardware WITH a daughterboard (U-k2-populated-shape)"
+  - "no GLOSSARY.txt additions needed: no new protocol terms coined"

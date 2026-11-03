@@ -1,0 +1,68 @@
+# cspell:ignore rowid getcount getall getobj getone brkpath notimp veth netns u32 u32array errstr rodata reqid jsonl seqs vms ws21 dedup
+# K7 [20,124] selector-matrix execution (Phase K, coordinator, 0w).
+# Executes the K5 sheet verbatim: G8 control + G1-G7 grounded + B1-B4 blind.
+complete: true
+worker: K7-coordinator
+scope: "U4-124-selector-encoding live confirmation on 7.25 (K5 sheet, unmodified predictions)"
+live_contact: read-only-matrix
+inputs:
+  git_head: 53649dc
+  sheet: work/2026-11-winbox-attributes/proof/k5-gated-pair/leg-124-selector-matrix.yaml
+  script: work/2026-11-winbox-attributes/proof/k7-124-matrix-exec/census-124.ts (J1 copy + --ids/--ids-field/--u32-1005/--bool-1008; no write path)
+  vm: ws21 (7.25 x86, default interfaces ether1 + lo, no veth, no containers)
+verdict: "COMPLETE 0w+0r — 14/14 predictions hit; U4 LIVE-CONFIRMED at ladder level (SELECTOR WIRED)"
+results:
+  - id: G8-baseline-reproof
+    outcome: "FAILED 0xfe0006 + 'no INTERFACE_IDS' — control PASS, leg valid"
+  - id: G1-ether1-id
+    outcome: "'ether1 is not veth' — MONEY PREDICTION HIT (gate + resolution + type check)"
+  - id: G2-lo-id
+    outcome: "'lo is not veth' — second ladder point; lo=1 mapping confirmed by name echo"
+  - id: G3-id-pair-order
+    outcome: "'lo is not veth' — first-id-first; array iteration order proven"
+  - id: G4-nonexistent-id
+    outcome: "'no device' — lookup-miss distinct from gate"
+  - id: G5-empty-array
+    outcome: "'no INTERFACE_IDS' — empty == absent (explicit empty array encodable, transmitted, gated)"
+  - id: G6-bool-1008-ignored
+    outcome: "'ether1 is not veth', identical to G1 — 1008 ignored on GET path"
+  - id: G7a-getall-indifference
+    outcome: "'ether1 is not veth' — GETALL indifference"
+  - id: G7b-getobj-indifference
+    outcome: "'ether1 is not veth' — 0xfe0001 ignored (H3 dead live)"
+  - id: G7c-get-indifference
+    outcome: "'ether1 is not veth' — verb-indifference complete across GET family"
+  - id: B1-wrong-tcode
+    outcome: "'no INTERFACE_IDS' — gate is encoding-strict (single u32 != array)"
+  - id: B2-off-by-one-field
+    outcome: "'no INTERFACE_IDS' on 1004 + 1006 — field-id exact (no drift)"
+  - id: B3-row-zero
+    outcome: "'no device' — row 0 unresolvable (J4 precedent does not transfer)"
+  - id: B4-duplicate-id
+    outcome: "'ether1 is not veth' — first-id fires, no dedup"
+  - id: C1-contingency-id-sweep
+    outcome: "NOT NEEDED (G1 resolved first try)"
+  - id: X1-veth-hit
+    outcome: "NOT EXECUTABLE (no pre-existing veth on the leg VM; ladder echoes confirm ether1/lo only)"
+verification:
+  - "every tx carries exactly the designed extras (1005/u32array values verified in tx decode; B1 tcode 0x9 single; G6 + 1008=false; G7b + 0xfe0001=0; G8 bare)"
+  - "every rx from=[20,124], errno 0xfe0006, errstr per prediction (15 files x 2 records, all correlated, zero async)"
+  - "route scope held: all reads targeted [20,124]; no [20,17]/[20,0]/other-route read; row-id literals from prior cited evidence only"
+proven:
+  - id: P-k7-selector-wired
+    detail: "U4-124-selector-encoding LIVE-CONFIRMED: request field 1005 u32array of [20,0] row-ids gates the handler; validation ladder ('no device' / '<name> is not veth') responds per id; empty==absent; field-id exact; encoding-strict; GET-family verb-indifferent with 0xfe0001 ignored."
+disproven: []
+unresolved:
+  - id: U-k5-beta4-drift
+    detail: "carried: 7.26beta4 selector-wiring repeat is an explicit follow-up, not assumed."
+  - id: U-k7-full-validation-notimp
+    detail: "new: GET-family NOTIMP-after-full-validation untested live (needs pre-existing veth ids; X1)."
+spend: { approved: "0w+0r", spent: "0w+0r", vms: [ws21], native_reads: 15 }
+vm_end_state: "ws21 stopped after leg; no state created (read-only), no restore needed"
+evidence:
+  - "matrix steps (this leg: step-124-{g8,g1,g2,g3,g4,g5,g6,g7a,g7b,g7c,b1,b2a,b2b,b3,b4}.jsonl, 2 records each)"
+  - "console tees (this leg: console-124-*.txt)"
+  - "tooling (this leg: census-124.ts)"
+fragment:
+  file: work/2026-11-winbox-attributes/proof/k7-124-matrix-exec/fragment.yaml
+  proposes: ["unknown-20-124: live-confirmation note-append + 1 evidence"]

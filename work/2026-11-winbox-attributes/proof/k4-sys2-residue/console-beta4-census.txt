@@ -1,0 +1,14 @@
+cspell:ignore winbox datagram uncapped quickchr ether
+census [24,14] getone: ok fields=8 statusWord=null
+census [24,14] getall: ROUTER-ERROR errno=16646147 errstr=null
+census [24,14] getobj: ROUTER-ERROR errno=16646147 errstr=null
+census [24,14] getcount: ok fields=6 statusWord=null
+census [24,16] getone: ok fields=7 statusWord=null
+census [24,16] getall: ROUTER-ERROR errno=16646147 errstr=null
+census [24,16] getobj: ROUTER-ERROR errno=16646147 errstr=null
+census [24,16] getcount: ok fields=6 statusWord=null
+census [2,1] getone: ok fields=6 statusWord=null
+census [2,1] getall: ROUTER-ERROR errno=16646147 errstr=null
+census [2,1] getobj: ROUTER-ERROR errno=16646147 errstr=null
+census [2,1] getcount: ok fields=6 statusWord=null
+census: records=24 out=work/2026-11-winbox-attributes/proof/k4-sys2-residue/step-beta4-sys2-residue.jsonl

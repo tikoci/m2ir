@@ -1,0 +1,156 @@
+{
+	"provenance": {
+		"report": "Phase K K8 H-13-6-B write leg, 2026-11-02 (twin3 7.25 x86, 2w): M2 SET key-only create + full overwrite + any-f1 return",
+		"routeros_version": "7.25",
+		"route": "[13,6] GET f1-selector rx (synthetic selector k3-synth-6, lab-only)",
+		"note": "Sanitized M2 hex plus decoded entries only: no hosts, ports, or credentials."
+	},
+	"records": [
+		{
+			"id": "get-13-6-key-only-rx",
+			"role": "H-13-6-B key-only read-back ({f1})",
+			"source": "proof/k8-user-tail-hunts/h136b-step-read-key.jsonl rx seq 1 (from [13,6])",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000060000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0902010000210a6b332d73796e74682d36",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 6],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 6]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "k3-synth-6"
+				}
+			]
+		},
+		{
+			"id": "get-13-6-full-rx",
+			"role": "H-13-6-B full read-back ({f3,f2,f1}, order 3,2,1)",
+			"source": "proof/k8-user-tail-hunts/h136b-step-read-full.jsonl rx seq 1 (from [13,6])",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000060000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0902030000090702000021096b332d626c6f622d61010000210a6b332d73796e74682d36",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 6],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 6]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x21",
+					"value": "k3-blob-a"
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "k3-synth-6"
+				}
+			]
+		},
+		{
+			"id": "get-13-6-any-f1-rx",
+			"role": "H-13-6-B any-f1 return (f1=admin tx returns the k3 record)",
+			"source": "proof/k8-user-tail-hunts/h136b-step-admin-unaffected.jsonl rx seq 1 (from [13,6])",
+			"hex": "4d320100ff880200000000000b0000000200ff8802000d000000060000001c00ffa001000e006d73672d70726f78792d372e32350300ff09020600ff0902030000090702000021096b332d626c6f622d61010000210a6b332d73796e74682d36",
+			"cmd": null,
+			"to": [0, 11],
+			"from": [13, 6],
+			"reqId": 2,
+			"entries": [
+				{
+					"key": "0xff0001",
+					"tcode": "0x88",
+					"value": [0, 11]
+				},
+				{
+					"key": "0xff0002",
+					"tcode": "0x88",
+					"value": [13, 6]
+				},
+				{
+					"key": "0xff001c",
+					"tcode": "0xa0",
+					"value": ["msg-proxy-7.25"]
+				},
+				{
+					"key": "0xff0003",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0xff0006",
+					"tcode": "0x9",
+					"value": 2
+				},
+				{
+					"key": "0x000003",
+					"tcode": "0x9",
+					"value": 7
+				},
+				{
+					"key": "0x000002",
+					"tcode": "0x21",
+					"value": "k3-blob-a"
+				},
+				{
+					"key": "0x000001",
+					"tcode": "0x21",
+					"value": "k3-synth-6"
+				}
+			]
+		}
+	]
+}

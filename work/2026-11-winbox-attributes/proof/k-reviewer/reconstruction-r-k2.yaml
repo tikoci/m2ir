@@ -1,0 +1,39 @@
+# cspell:ignore getone getall getobj getcount notimp brkpath unknownid jsonl reqid dbrd daughterboard multiset rosetta cliref routerboard etherboot preboot booter wps unmapped seqs overclaim
+# R-K2 (BLIND reconstruction). Written BEFORE opening any k2 proposer file
+# (report.yaml / fragment.yaml). Comparison appended post-read.
+reconstruction: R-K2
+target: k2-board-info [24,35] beta4 emptiness/drift + gating + v6 outcome
+method: "Entry-by-entry comparison of step-beta4-24-35.jsonl seq1 against
+  ev/7.25-getone-24-35.json; gating verbs read from rx seqs 3/5/7; v6 outcome
+  from step-v6-24-35.jsonl seq1 (from[] route + errno). No k2 proposer file
+  opened before this verdict was written."
+raw_inputs:
+  - { file: proof/k2-board-info/step-beta4-24-35.jsonl, sha256_16: b17852c6036e1dff, seqs_used: [0, 1, 2, 3, 4, 5, 6, 7] }
+  - { file: proof/k2-board-info/step-v6-24-35.jsonl, sha256_16: 2bd4e33d300038cf, seqs_used: [0, 1] }
+  - { file: proof/k2-board-info/census.ts, sha256_16: 2dd3184e747ad1dd, note: "byte-identical to k0 census.ts (same sha)" }
+  - { file: proof/k2-board-info/console-beta4-census.txt, note: "getone ok fields=5; getall/getobj ERR 16646147; getcount ok fields=6" }
+  - { file: proof/k2-board-info/console-v6-census.txt, note: "getone ROUTER-ERROR 16646146" }
+  - { file: proof/k2-board-info/console-beta4-diff.txt, note: "ev 5 vs beta4 5 entries; multiset-identical-modulo-version; USER 0/0; getcount 0xFFFFFFFF" }
+  - { file: proof/k2-board-info/console-static-rosetta.txt, note: "db hash eee45741...; system/routerboard@7.26 = 9 read-only fields (routerboard/board-name/model/revision/serial-number/firmware-type/minimum-firmware/current-firmware/upgrade-firmware); dbrd/daughterboard searches EMPTY (entries+fields+schema_nodes); settings submenu 25 names scope-checked" }
+  - { file: work/2026-10-chr-extraction/ws3c/ev/7.25-getone-24-35.json, sha256_16: 42c6cba3405d1cbe, note: "5-entry SYS-only baseline, 0 USER fields" }
+independent_verdict:
+  beta4_emptiness: "RE-PROVEN empty: seq1 = 5 SYS entries {ff0001, ff0002=[24,35], ff001c, ff0003=2, ff0006=2}, ZERO user fields"
+  drift: "NONE: 5 entries vs baseline 5, identical modulo 0xff001c proxy string (msg-proxy-7.26beta4 vs msg-proxy-7.25)"
+  gating_beta4:
+    matrix: "GETALL seq3 -> 0xFE0003 (16646147) from [24,35]; GETOBJ obj=1 seq5 -> 0xFE0003; GETCOUNT seq7 -> ok + 0xfe0019=0xFFFFFFFF"
+    family: GET-only
+  v6_outcome:
+    verdict: v6-absent
+    evidence: "seq1 from=[24] (process level, NOT [24,35]) errno 16646146=0xFE0002, envelope {ff0001, ff0002=[24], ff0008, ff0003=2, ff0004=2, ff0006=2}, no proxy key"
+    note: "matches the I3 expectation (v7-only registration -> BRKPATH); only GETONE was run on v6 (no v6 gating matrix in evidence)"
+  populated_shape: "still unknown; CHR legs remain negative-only (blocker: real hardware WITH daughterboard stands)"
+post_read_comparison:
+  files_opened_after_reconstruction: [proof/k2-board-info/report.yaml, proof/k2-board-info/fragment.yaml]
+  verdict: agree
+  item_checks:
+    - { claim: "P-k2-beta4-empty-drift-free (5 SYS, 0 USER, multiset-identical)", verdict: agree, detail: "matches my seq1 reading entry-for-entry; diff tee cross-checks (5v5, USER 0/0)" }
+    - { claim: "P-k2-gating-full (GET-only, same signature as [20,122])", verdict: agree, detail: "seqs 3/5 -> 0xFE0003, seq7 -> 0xFFFFFFFF, all from [24,35] — matches" }
+    - { claim: "P-k2-v6-brkpath (0xFE0002 from [24])", verdict: agree, detail: "matches my seq1 reading (process-level, no proxy key)" }
+    - { claim: "P-k2-static-scope (exactly 9 read-only fields; no dbrd menu)", verdict: agree, detail: "verified in console-static-rosetta.txt: 9 fields listed, 3 dbrd searches empty" }
+    - { claim: "no async traffic; reqIds correlated; VMs stopped", verdict: agree, detail: "8+2 records are exact tx/rx pairs (reqIds 2-5, 2); vm-list-final shows winbox-beta4 + ws3c6 stopped" }
+    - { claim: "fragment.yaml notes + omits", verdict: agree, detail: "notes match proven claims; candidates + populated shape correctly omitted; no overclaim" }

@@ -1,0 +1,6 @@
+cspell:ignore winbox quickchr getone getall getobj getcount brkpath notimp qos dbrd lighttpd ws19 ws20 ws21 twin centrs btest g4beta g4b5 rosetta cliref multiset reqid dgram mcast rowid
+census [24,35] getone: ok fields=5 statusWord=null
+census [24,35] getall: ROUTER-ERROR errno=16646147 errstr=null
+census [24,35] getobj: ROUTER-ERROR errno=16646147 errstr=null
+census [24,35] getcount: ok fields=6 statusWord=null
+census: records=8 out=step-beta4-24-35.jsonl

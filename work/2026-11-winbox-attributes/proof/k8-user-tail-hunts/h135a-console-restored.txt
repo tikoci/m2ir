@@ -1,0 +1,3 @@
+cspell:ignore getall getone getobj getcount getf1 rowid centrs quickchr winbox aaa nosuchuser synth
+census [13,5] getone: ok fields=10 statusWord=null
+census: records=2 out=h135a-step-restored.jsonl

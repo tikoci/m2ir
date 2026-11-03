@@ -1,0 +1,57 @@
+# cspell:ignore getall getone getobj getcount notimp brkpath rowid
+# K3 proposed gui-handlers.yaml fragment (Phase K, user-tail). Coordinator integrates; K3 edits nothing canonical.
+# No field entries: all 4 handlers keep role-open status. Proposes notes + evidence lines only.
+# Inputs: commit 53649dc + K3 step jsonl in this dir (TIER 1).
+fragment:
+  - handler: unknown-13-5
+    route: [13, 5]
+    propose:
+      notes_append: |
+        K3 beta4 gating (2026-11-02, 0w+0r): GETALL + GETOBJ(obj=1) ->
+        0xfe0003 NOTIMP from=[13,5]; GETCOUNT -> ok + 0xFFFFFFFF in
+        0xfe0019/0x8 (sentinel, no row count). GETONE shape drift-free
+        vs all-version baselines. Role still OPEN; stimulus hunt
+        sheeted (H-13-5-A), not executed.
+      evidence_add:
+        - source: sample
+          ref: "live CHR interrogation (K3 read-only census, 7.26beta4, 2026-11-02): GETONE drift-check + GETALL/GETOBJ/GETCOUNT gating — work/2026-11-winbox-attributes/proof/k3-user-tail/step-beta4-13-5-13-9.jsonl"
+  - handler: unknown-13-9
+    route: [13, 9]
+    propose:
+      notes_append: |
+        K3 beta4 gating extension (2026-11-02, 0w+0r): GETALL ->
+        0xfe0003 NOTIMP re-proven; GETOBJ(obj=1) -> 0xfe0003 NOTIMP
+        (first probe); GETCOUNT -> ok + 0xFFFFFFFF in 0xfe0019/0x8
+        (first probe). GETONE {0,0} drift-free with 2 active admin
+        sessions present — further corroboration of NOT-session-count.
+        Role still OPEN; stimulus hunt sheeted (H-13-9-A), not executed.
+      evidence_add:
+        - source: sample
+          ref: "live CHR interrogation (K3 read-only census, 7.26beta4, 2026-11-02): GETONE drift-check + gating extension — work/2026-11-winbox-attributes/proof/k3-user-tail/step-beta4-13-5-13-9.jsonl"
+  - handler: user-prefs-13-6
+    route: [13, 6]
+    propose:
+      notes_append: |
+        K3 miss-shape re-proof (2026-11-02, 0w+0r): f1=admin EMPTY
+        miss (SYS-only success) on 7.25 + 7.26beta4 — admin is the
+        SOLE /user row on both VMs, so no other read-only f1 variant
+        exists; bare GET FAILED 0xfe0006 + 'no user name provided'
+        verbatim both versions. No positive shape anywhere.
+        Population path still OPEN (U6); hunts sheeted (H-13-6-A/B),
+        not executed.
+      evidence_add:
+        - source: sample
+          ref: "live CHR interrogation (K3 read-only census, 7.25 + 7.26beta4, 2026-11-02): f1=admin miss + bare-GET re-proof — work/2026-11-winbox-attributes/proof/k3-user-tail/step-{725,beta4}-13-6.jsonl"
+  - handler: unknown-13-8
+    route: [13, 8]
+    propose:
+      notes_append: |
+        K3 singleton re-proof (2026-11-02, 0w+0r): GETALL 1 row
+        {id 0, 'default'} + total 1, GETCOUNT total 1 in 0xfe0019 —
+        drift-free on 7.26beta4. Identity still OPEN (U7); user/aaa
+        default-group spelling temptation stays rejected. Hunts
+        sheeted (H-13-8-A/B), not executed.
+      evidence_add:
+        - source: sample
+          ref: "live CHR interrogation (K3 read-only census, 7.26beta4, 2026-11-02): GETALL + GETCOUNT drift-check — work/2026-11-winbox-attributes/proof/k3-user-tail/step-beta4-13-8.jsonl"
+omits: "all field entries: no handler graduates from role-open on read-only evidence; U6/U7/U-k3-13-5-role/U-k3-13-9-role await coordinator-approved write legs"

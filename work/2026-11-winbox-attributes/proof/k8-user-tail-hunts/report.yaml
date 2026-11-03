@@ -1,0 +1,76 @@
+# cspell:ignore rowid getall getone getobj getcount getf1 brkpath notimp jsonl reqid centrs quickchr winbox aaa nosuchuser synth twin3 g4beta seqs vms webfig orphan
+# K8 user-tail hunts execution (Phase K, coordinator). 4 approved hunts, sequential.
+complete: true
+worker: K8-coordinator
+scope: "H-13-5-A + H-13-6-B (twin3 7.25) + H-13-8-A + H-13-9-A (g4beta 7.26beta4); user-approved per-hunt yes"
+live_contact: write-legs
+inputs:
+  git_head: 53649dc
+  sheets: work/2026-11-winbox-attributes/proof/k3-user-tail/stimulus-hunt-sheets.yaml
+  scripts: work/2026-11-winbox-attributes/proof/k8-user-tail-hunts/{census-hunts.ts (K3 copy),set-136.ts (new M2 SET, CMD_SET 0xfe000e)}
+verdict: "COMPLETE 8w+0r of 8w — 13-6 POPULATED via M2 SET (U6 includes SET) + any-f1-returns-single-record NEW; 13-5 user/session-driver DEAD; 13-8 group-driver DEAD (aaa half unapproved); 13-9 aaa-toggle-driver DEAD, session INCONCLUSIVE (count invariant)"
+hunts:
+  - id: H-13-5-A
+    budget: "2w+0r"
+    spent: "2w+0r"
+    vm: twin3-7.25
+    steps: "baseline {[],F,T,1,0} + 1 user + 2 active; /user/add k3synth (1w; no-password form REJECTED 'missing =password=', re-sent with synthetic lab password, scrubbed to REDACTED in evidence) -> no movement; k3synth login, GET under 4 active sessions -> no movement; /user/remove k3synth (1w) -> restored (1 user, shape back)"
+    verdict: "user/session-driver DEAD for [13,5]"
+    restore: CLEAN
+  - id: H-13-6-B
+    budget: "2w+0r"
+    spent: "2w+0r"
+    vm: twin3-7.25
+    steps: "baseline f1=k3-synth-6 EMPTY miss + 1 user; M2 SET {f1} key-only (1w) -> TOOK (read-back {f1}, 6 entries); M2 SET {f1,f2,f3} full (1w) -> TOOK (read-back {f3=7,f2,f1}, 8 entries, field order 3,2,1); /user still 1 row (synthetic never appears, zero pref keys)"
+    verdict: "STOP SUCCESS — U6 population path INCLUDES M2 SET (sibling-pattern create replicates)"
+    finding_extra: "single-record any-f1-returns-it: f1=admin AND f1=never-created-zz both return the k3-synth-6 record (selector-ignored-or-first-fallback; two-record discrimination needs +1w, NOT spent)"
+    restore: "orphan persists by design (SET-removal needs unapproved +1w); twin3 DESTROYED + RECREATED, EMPTY miss re-verified on fresh VM (f1=k3-synth-6 + f1=admin), VM stopped"
+  - id: H-13-8-A
+    budget: "2w+0r"
+    spent: "2w+0r"
+    vm: g4beta-7.26beta4
+    steps: "baseline singleton {id 0,'default'} + total 1 + 3 groups; /user/group/add k3synth (1w) -> no movement (still 1 row, total 1); /user/group/remove k3synth (1w) -> restored (3 groups, singleton back)"
+    verdict: "group-driver DEAD for [13,8] (H-13-8-B aaa half NOT approved, still open)"
+    restore: CLEAN
+  - id: H-13-9-A
+    budget: "2w+0r"
+    spent: "2w+0r"
+    vm: g4beta-7.26beta4
+    steps: "baseline {0,0} + 2 active + aaa verbatim (accounting ALREADY true — sheet assumed no; adapted: step3 sets use-radius=yes accounting=no to move BOTH axes off baseline, step4 restores verbatim); session sweep FAILED TO VARY count (2->2; extra retrieves reuse rows and the ping-hold client-timed-out at 10s, see h139a-control-ping-hold.stderr.log) -> session axis INCONCLUSIVE, not dead; aaa toggles both axes -> no movement"
+    verdict: "aaa-toggle-driver DEAD for [13,9]; session-driver INCONCLUSIVE (count invariant in this environment)"
+    restore: "CLEAN (aaa byte-matches baseline, {0,0} back)"
+proven:
+  - id: P-k8-136-set-create
+    detail: "M2 SET creates [13,6] records: key-only {f1} took (6-entry read-back) + full {f1,f2,f3} overwrite took (8-entry read-back, order 3,2,1); SET ack is bare SYS-only 5-field (status-ok-proves-nothing holds, reads confirm); /user shows zero pref keys (no REST surface)."
+  - id: P-k8-136-fields
+    detail: "f1 = username map key (string, echoed in read-back); f2 = settable opaque string ('k3-blob-a' took; parsed-or-opaque UNKNOWN); f3 = settable u32 (7 took; meaning UNKNOWN). Replace-vs-patch UNPROVEN (no shrink leg)."
+  - id: P-k8-136-any-f1
+    detail: "With exactly one record present, [13,6] GET returns it for ANY f1 (admin + never-created-zz both return the k3 record). Selector-ignored vs miss-to-first-fallback needs a two-record (+1w) leg."
+  - id: P-k8-135-dead
+    detail: "User-row add/remove + 4-active-session hold move NO [13,5] field: user/session-driver DEAD."
+  - id: P-k8-138-group-dead
+    detail: "Group add/remove moves NO [13,8] row/count: group-driver DEAD."
+  - id: P-k8-139-aaa-dead
+    detail: "use-radius + accounting toggles (both axes off baseline) move NO [13,9] field: aaa-toggle-driver DEAD."
+disproven: []
+unresolved:
+  - id: U6-13-6-population-path
+    detail: "NARROWED (not closed): M2 SET is one population path; WinBox-client path (H-13-6-A) parked for future tooling design per user."
+  - id: U7-13-8-identity
+    detail: "NARROWED: group-driver dead; aaa-driver still open (H-13-8-B sheeted, unapproved)."
+  - id: U-k3-13-5-role
+    detail: "role still open; user/session causes excluded."
+  - id: U-k3-13-9-role
+    detail: "role still open; aaa-toggle cause excluded; session cause inconclusive."
+  - id: U-k8-136-selector-semantics
+    detail: "NEW: selector-ignored vs miss-to-first-fallback (needs two-record +1w leg)."
+  - id: U-k8-136-replace-vs-patch
+    detail: "NEW: whole-record-replace vs patch-add on overwrite (needs shrink leg)."
+  - id: U-k8-136-delete-path
+    detail: "NEW: SET-form removal untested on [13,6] ([13,7] refuted it; needs +1w with fresh yes)."
+spend: { approved: "8w+0r", spent: "8w+0r", vms: [twin3, g4beta] }
+vm_end_state: "twin3 DESTROYED + RECREATED fresh (orphan restore), verified EMPTY miss, STOPPED; g4beta restored clean, STOPPED; all 15 machines stopped"
+evidence:
+  - "hunt steps + controls (this dir: h135a-*, h136b-*, h138a-*, h139a-* step jsonl + control/explain json + console tees)"
+  - "tooling (this dir: census-hunts.ts, set-136.ts)"
+fragment: integrated-directly (coordinator leg: fields f1/f2/f3 + set-block + notes + 4 evidence promoted without a separate fragment file)

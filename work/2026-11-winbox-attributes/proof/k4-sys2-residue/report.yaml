@@ -1,0 +1,164 @@
+# cspell:ignore getall getone getobj getobjbare getcount getonly multiset jsonl brkpath notimp unknownid chfont sys2 cliref rosetta reqid u32c mproxy macwinbox winbox quickchr libumsg sysnote cmanifacecfg detnet keepalive num
+# K4 EXECUTION report (Phase K worker, sys2-residue). Static-first + read-only drift census.
+complete: true
+date: 2026-11-02
+worker: K4
+leg: K4-sys2-residue
+verdict: "COMPLETE 0w+0r — all 3 routes drift-free on 7.26beta4 + GET-only both 7.x; holders pinned both versions (health/chfont/mproxy-settings); console/settings kill-list CLOSED (wrong menu + type-count mismatch); screen-enum correlation stays an unproven hypothesis"
+scope:
+  family: sys2-residue
+  routes: [[24, 14], [24, 16], [2, 1]]
+  shapes:
+    - { route: [24, 14], wire: "{8:F, 9:T, 15:u32c 0}" }
+    - { route: [24, 16], wire: "{1:u32c 2, 2:u32c 10}" }
+    - { route: [2, 1], wire: "{2:u32 0x2000000 (full tcode 0x08)}" }
+live_contact: "read-only 0w+0r — GETONE + GETALL/GETOBJ/GETCOUNT matrix only; no SET/ADD/REMOVE, no VM config changes, no reboots"
+inputs:
+  git_head: 53649dc
+  i3_scope: work/2026-11-winbox-attributes/proof/i3-handler-tail-census/report.yaml (sys2-residue split)
+  j1_pattern: work/2026-11-winbox-attributes/proof/j1-tail-census-7x/census.ts (copied, header-only change, never modified)
+  baselines:
+    - work/2026-10-chr-extraction/ws3c/ev/6.49-getone-24-14.json
+    - work/2026-10-chr-extraction/ws3c/ev/7.25-getone-24-14.json
+    - work/2026-10-chr-extraction/ws3c/ev/6.49-getone-24-16.json
+    - work/2026-10-chr-extraction/ws3c/ev/7.25-getone-24-16.json
+    - work/2026-10-chr-extraction/ws3c/ev/6.49-getone-2-1.json
+    - work/2026-10-chr-extraction/ws3c/ev/7.25-getone-2-1.json
+  static:
+    - work/2026-10-chr-extraction/sys2-handler-tables.md
+    - work/2026-10-chr-extraction/handlers.ts
+    - work/2026-10-chr-extraction/fields.ts
+    - work/2026-10-chr-extraction/routerboard-hunt.md (§7: chfont lead origin)
+    - work/2026-10-chr-extraction/ws3c-prober-findings.md (§9/§10/§16)
+  rosetta:
+    db_path: ~/.rosetta/ros-help-0.12.0.db
+    db_sha256: eee457411defe95c7a8111c89866dd5066a790ce2ffda46a37664c459515aae3
+    db_bytes: 415490048
+    release_tag: v0.12.0
+    access: "sqlite3 -readonly only; hash re-verified full-length this session, matches I3/source-inventory"
+    cliref_manual_version: "7.26"
+drift:
+  - id: D-k4-2414-drift-free
+    verdict: no-drift
+    detail: "Beta4 GETONE [24,14] {8:F(t0), 9:T(t1), 15:0(t9)} identical to BOTH ev baselines (programmatic multiset diff; only reqId echo 0xff0006 + proxy banner vary)"
+  - id: D-k4-2416-drift-free
+    verdict: no-drift
+    detail: "Beta4 GETONE [24,16] {1:2(t9), 2:10(t9)} identical to BOTH ev baselines (same diff method)"
+  - id: D-k4-21-drift-free
+    verdict: no-drift
+    detail: "Beta4 GETONE [2,1] {2:33554432(t8 full u32)} identical to BOTH ev baselines (same diff method)"
+  - id: D-k4-gating-new
+    verdict: new-coverage
+    detail: "GETALL/GETOBJ/GETCOUNT were untested on all 3 routes (no fixture, no E2-R/E3-R coverage): now pinned — GETALL/GETOBJ -> 0xfe0003 NOTIMP, GETCOUNT 0xfe0019 = 0xFFFFFFFF, both 7.x"
+static_leads:
+  - id: S-k4-health-holder
+    polarity: positive
+    claim: "[24,14] = AHolder /nova/store/health, both versions — v6 addHandler @0x8053416 id 0xe, vtable 0x808ee78, holder string VA 0x808e656; v7 addHandler @0x805ca60 id 0xe, vtable 0x808cd10, holder string VA 0x8086e0e; slot 9 = shared AHolder::cmdGet both"
+  - id: S-k4-chfont-holder
+    polarity: positive
+    claim: "[24,16] = AHolder /nova/store/chfont, both versions — v6 addHandler @0x80535a5 id 0x10, vtable 0x808f178, string VA 0x808e6b4 (CONFIRMS routerboard-hunt §7 + extends to registration site); v7 addHandler @0x805cbfb id 0x10, vtable 0x808d0d0, string VA 0x8086e65; slot 9 = shared AHolder::cmdGet both"
+  - id: S-k4-mproxy-holder
+    polarity: positive
+    claim: "[2,1] = AHolder /nova/store/mproxy-settings, both versions — v6 addHandler @0x804e39f id 0x1, vtable 0x8057ef8, string VA 0x8057def, slot 9 = AHolder::cmdGet PLT (Store::set slot-0 seed just before registration @0x804e32e); v7 addHandler @0x8056b52 id 0x1, vtable 0x8058c58, string VA 0x8058569, slot 9 = AHolder::cmdGet PLT @0x804dca0"
+  - id: S-k4-chfont-screen-record
+    polarity: positive
+    claim: "v7 libumsg.so embeds a 16-byte {store, len, cli-path, len} record chfont -> /system/console/screen (file 0x77460: ptr 0x709d0 len 6 + ptr 0x709d7 len 22); record layout verified on 7 independent samples (bridge-portcntrl, cert/settings, command/sysnote -> /system/note, detnet-settings, dhcp/client, mproxy-settings). Struct consumer unidentified (static initializers in .data.rel.ro; generic StoreCord machinery) — data-level association, not a decoded struct type"
+  - id: S-k4-mproxy-macwinbox-record
+    polarity: positive
+    claim: "Same record family: mproxy-settings -> /tool/mac-server/mac-winbox (file 0x787ac: len 15 + len 27). Static lead for [2,1]; NO field mapping claimed (single-bitmask u32 unprovable statically)"
+  - id: S-k4-screen-enum-correlation
+    polarity: hypothesis-unproven
+    claim: "Rosetta 7.26 system/console/screen = {line-count enum (25|40|50) {25:2, 40:1, 50:0}, blank-interval enum (never|1min|10min|60min) {never:0, 1min:1, 10min:10, 60min:60}} vs wire {1:2, 2:10} — CONSISTENT with CHR defaults {25, 10min} IF f1 -> line-count, f2 -> blank-interval. This is a spelling+value join: explicitly NOT proof. Sheeted as SH-k4-2416-screen; no fragment field entry"
+  - id: N-k4-no-store-writers
+    polarity: negative
+    claim: "Searched both extraction trees for health/chfont store writers: v6 chfont/health strings appear ONLY in nova/bin/sys2; v7 only in sys2 + libumsg.so records. No writer binary found (negative is evidence)"
+  - id: N-k4-health-fn-emptiness-only
+    polarity: negative
+    claim: "Function-level check: 'Health store is empty/NOT empty' (v6 fn @0x805f0be; v7 inline @0x8053915) is an emptiness log + virtual call 0x80000005 — no M2 field-id lead; zero direct callers (virtual dispatch)"
+  - id: N-k4-no-health-pairing
+    polarity: negative
+    claim: "Pointer scan: graphing/conf/health (0x70e19) and health-settings (0x72b7c) have NO {store,cli} pairing record (next fields 0/garbage) — their string adjacency to /system/health is coincidence, unlike the 7 verified pairs"
+  - id: N-k4-board-fn-reject
+    polarity: negative
+    claim: "fields.ts bool:8/bool:9 hits in v6 sys2 land in fn @0x8056250 (inserts {8,9,0xe,0x10,0x11,0x12,0xf,0x1ce9,0x1c85}) — function-level check shows isBoardNamePrefix('RB1100AHx2'/'RB1100Hx2') gating + virtual calls: board-specific message, NOT the [24,14] AHolder path (shared getter 0x8051ee0). Field ids are per-handler namespaces; match REJECTED"
+  - id: N-k4-mproxy-u32-zero
+    polarity: negative
+    claim: "fields.ts u32:2 on v6 mproxy disasm: 0 sites — consistent with the data-driven shared getter (no direct inserts anywhere)"
+  - id: N-k4-shared-getter
+    polarity: negative
+    claim: "All three serving getters are the shared data-driven AHolder::cmdGet (handlers.ts: 841-insn getter, zero insert<T> calls) — static field naming is impossible; store contents decide. Negatives N-k4-* + this bound the static leg as exhausted"
+census:
+  - route: [24, 14]
+    beta4: "GETONE {8:F,9:T,15:0} drift-free; GETALL/GETOBJ -> 0xfe0003 NOTIMP (0xff0008=16646147); GETCOUNT 0xfe0019=0xFFFFFFFF"
+    control_725: "identical shapes + gating (same-session ws20 re-read)"
+  - route: [24, 16]
+    beta4: "GETONE {1:2,2:10} drift-free; GETALL/GETOBJ -> 0xfe0003 NOTIMP; GETCOUNT 0xfe0019=0xFFFFFFFF"
+    control_725: "identical shapes + gating (same-session ws20 re-read)"
+  - route: [2, 1]
+    beta4: "GETONE {2:0x2000000 tcode 0x08} drift-free; GETALL/GETOBJ -> 0xfe0003 NOTIMP; GETCOUNT 0xfe0019=0xFFFFFFFF"
+    control_725: "identical shapes + gating (same-session ws20 re-read)"
+traffic_note: "24 records per step file = 12 tx + 12 rx, all request-correlated; zero async/keepalive interleave (correlatedRequest matched every reply)"
+proven:
+  - id: P-k4-2414-drift-free
+    claim: "[24,14] GETONE byte-shape identical on 7.26beta4, 7.25, 6.49.23 ({8:F,9:T,15:0}, tcodes 0x0/0x1/0x9)"
+    tier: "TIER 1 (step-beta4-sys2-residue.jsonl + step-725-sys2-residue.jsonl; programmatic multiset diff vs both ev baselines)"
+  - id: P-k4-2416-drift-free
+    claim: "[24,16] GETONE byte-shape identical on 7.26beta4, 7.25, 6.49.23 ({1:2,2:10}, both u32c tcode 0x9)"
+    tier: "TIER 1 (same step files + diff)"
+  - id: P-k4-21-drift-free
+    claim: "[2,1] GETONE byte-shape identical on 7.26beta4, 7.25, 6.49.23 ({2:0x2000000, full-u32 tcode 0x08})"
+    tier: "TIER 1 (same step files + diff)"
+  - id: P-k4-getonly-all
+    claim: "All three routes are GET-only on both 7.x: GETALL -> 0xfe0003 NOTIMP (selector-free verb, so verb-level non-support is proven without a bare matrix), GETOBJ obj=1 -> 0xfe0003, GETCOUNT = 0xFFFFFFFF sentinel (no row count) — same signature as defconf/122"
+    tier: "TIER 1 (both step files, 18 gating replies)"
+  - id: P-k4-holders-static
+    claim: "Holder identities pinned statically both versions: [24,14] -> /nova/store/health, [24,16] -> /nova/store/chfont, [2,1] -> /nova/store/mproxy-settings (addHandler sites + vtables + string VAs cited in S-k4-*)"
+    tier: "STATIC (binary + disassembly citations; no live dependence)"
+disproven:
+  - id: X-k4-console-settings-mapping
+    claim: "KILL-LIST CLOSED: console/settings {sanitize-names:bool, log-script-errors:bool, tab-width:num} (Rosetta 7.26, sqlite3 -readonly) cannot map to [24,16] {u32c,u32c} — zero bools on the wire (type-count kill) — AND the chfont store statically associates with /system/console/screen, a different menu (menu kill). Precision note: the 'chfont lead' as a STORE association is CONFIRMED (S-k4-chfont-holder); what died is the console/settings MENU mapping"
+unresolved:
+  - id: U-k4-2416-field-split
+    claim: "Whether f1/f2 are line-count/blank-interval (S-k4-screen-enum-correlation) is unproven — needs SH-k4-2416-screen discriminating leg"
+  - id: U-k4-2414-role
+    claim: "Health-holder role open: no CLI pairing record, no writer, emptiness-fn only — needs stimulus hunt (SH-k4-2414-health; likely hardware-blocked on CHR)"
+  - id: U-k4-21-role
+    claim: "mproxy-settings -> mac-winbox lead recorded; single-bitmask u32 meaning unprovable statically — needs SH-k4-21-macwinbox toggle leg"
+perturbation_sheet:
+  note: "PROPOSALS ONLY — nothing below was executed (0w+0r this leg)"
+  sheets:
+    - id: SH-k4-2416-screen
+      target: "[24,16] vs /system/console/screen"
+      steps:
+        - "baseline: GETONE [24,16] x2 + CLI read /system/console/screen (expect {1:2,2:10} vs {25,10min})"
+        - "CLI set line-count=40 -> GETONE (PREDICT f1 2->1 if f1=line-count; f2 unchanged)"
+        - "CLI set blank-interval=never -> GETONE (PREDICT f2 10->0 if f2=blank-interval)"
+        - "reverse both to {25,10min} -> GETONE re-verify {1:2,2:10}; CLI read-back confirm"
+      budget: "4w + reads (console-screen-only, fully reversible, CHR-safe)"
+    - id: SH-k4-2414-health
+      target: "[24,14] health-holder stimulus"
+      steps:
+        - "0w first: CLI /system/health/print on CHR (expect empty — if populated, correlate columns vs {8,9,15})"
+        - "if empty: role is hardware-gated; CLOSE as CHR-blocked (needs RouterBOARD sensors), no writes spent"
+      budget: "0w read-only CLI check, then hardware-blocked"
+    - id: SH-k4-21-macwinbox
+      target: "[2,1] vs /tool/mac-server/mac-winbox"
+      steps:
+        - "baseline: GETONE [2,1] x2 + CLI read (expect {2:0x2000000})"
+        - "CLI toggle allowed-interface-list (e.g. all -> none -> all), GETONE after each (watch f2 bits)"
+        - "if no movement: toggle mac-winbox disabled yes/no, GETONE after each; reverse all"
+      budget: "2-4w + reads (reversible)"
+    - id: SH-k4-getobjbare-optional
+      target: "verb-matrix completion (optional)"
+      steps:
+        - "GETOBJ bare on all 3 routes, either 7.x VM (expect 0xfe0003; P-k4-getonly-all already proven via selector-free GETALL)"
+      budget: "0w; NOT needed for any verdict — lowest priority"
+evidence:
+  - "step-beta4-sys2-residue.jsonl (24 records: GETONE+matrix x3 routes, 7.26beta4)"
+  - "step-725-sys2-residue.jsonl (24 records: same matrix, 7.25 control)"
+  - "census.ts (J1 copy, header-only change, biome clean, verbatim-verified)"
+  - "console-beta4-start.txt, console-beta4-census.txt, console-ws20-start.txt, console-725-census.txt, console-stop.txt (full tees)"
+  - "Rosetta 7.26 pulls (sqlite3 -readonly, db eee45741...): console/settings {sanitize-names:bool, log-script-errors:bool, tab-width:num}; system/console/screen {line-count {25:2,40:1,50:0}, blank-interval {never:0,1min:1,10min:10,60min:60}}; tool/mac-server/mac-winbox {allowed-interface-list:enum}; system/health (telemetry menu, 15+ numeric fields)"
+  - "static VAs: v6 sys2 addHandler 0x8053416/0x80535a5, strings 0x808e656/0x808e6b4, vtables 0x808ee78/0x808f178; v7 sys2 addHandler 0x805ca60/0x805cbfb, strings 0x8086e0e/0x8086e65, vtables 0x808cd10/0x808d0d0; v6 mproxy addHandler 0x804e39f, string 0x8057def, vt 0x8057ef8; v7 mproxy addHandler 0x8056b52, string 0x8058569, vt 0x8058c58; libumsg.so records at file 0x77460/0x787ac (+5 more samples)"
+spend: { approved: "0w+0r", spent: "0w+0r", machines: [winbox-beta4, ws20] }
+vm_state: "winbox-beta4 + ws20 each started once, stopped after their legs; end state verified via quickchr list (15/15 STOPPED); ws3c6 was running under another owner mid-session — never touched"

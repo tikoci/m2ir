@@ -1,0 +1,113 @@
+{
+  "ok": true,
+  "data": [
+    {
+      ".id": "*1",
+      "name": "read",
+      "policy": "local,telnet,ssh,reboot,read,test,winbox,password,web,sniff,sensitive,api,romon,rest-api,!ftp,!write,!policy",
+      "skin": "default"
+    },
+    {
+      ".id": "*2",
+      "name": "write",
+      "policy": "local,telnet,ssh,reboot,read,write,test,winbox,password,web,sniff,sensitive,api,romon,rest-api,!ftp,!policy",
+      "skin": "default"
+    },
+    {
+      ".id": "*3",
+      "name": "full",
+      "policy": "local,telnet,ssh,ftp,reboot,read,write,policy,test,winbox,password,web,sniff,sensitive,api,romon,rest-api",
+      "skin": "default"
+    }
+  ],
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "target": {
+      "input": "g4beta",
+      "host": "127.0.0.1",
+      "port": 9230,
+      "baseUrl": "http://127.0.0.1:9230/rest",
+      "identity": "g4beta",
+      "source": {
+        "kind": "provider",
+        "key": "quickchr:g4beta"
+      },
+      "sources": {
+        "host": {
+          "kind": "provider",
+          "key": "quickchr:g4beta"
+        },
+        "port": {
+          "kind": "provider",
+          "key": "quickchr:g4beta"
+        }
+      }
+    },
+    "via": "rest-api",
+    "settings": {
+      "via": {
+        "kind": "default",
+        "key": "via"
+      },
+      "host": {
+        "kind": "provider",
+        "key": "quickchr:g4beta"
+      },
+      "port": {
+        "kind": "provider",
+        "key": "quickchr:g4beta"
+      },
+      "timeoutMs": {
+        "kind": "default",
+        "key": "timeout"
+      },
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      },
+      "validate": {
+        "kind": "default",
+        "key": "validate"
+      },
+      "username": {
+        "kind": "provider",
+        "key": "quickchr:g4beta:username"
+      },
+      "password": {
+        "kind": "provider",
+        "key": "quickchr:g4beta:password"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "source": "live /console/inspect request=child",
+      "result": "passed",
+      "stages": [
+        {
+          "stage": "device",
+          "source": "live /console/inspect request=child",
+          "result": "passed"
+        }
+      ]
+    },
+    "operation": {
+      "kind": "data",
+      "objectCount": 3,
+      "request": {
+        "path": "/user/group",
+        "attributes": [],
+        "allAttributes": false,
+        "listAttributes": false,
+        "validate": true,
+        "verbose": false,
+        "timeoutMs": 10000,
+        "format": "json"
+      },
+      "auth": {
+        "username": "admin",
+        "passwordProvided": true
+      }
+    }
+  }
+}

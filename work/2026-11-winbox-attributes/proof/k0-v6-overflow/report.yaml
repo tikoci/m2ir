@@ -1,0 +1,35 @@
+# cspell:ignore rowid getall getone getobj getcount brkpath seqs vms
+# K0 v6-overflow (Phase K, coordinator). Wave-1 overflow: the single v6 leg
+# K1 could not run (ws3c6 owned by K2 during wave 1). Read-only, 0w+0r.
+complete: true
+worker: K0-coordinator
+scope: "v6 version-scope close for [20,107] (modem-pair overflow)"
+live_contact: read-only-single-leg
+inputs:
+  git_head: 53649dc
+  tree: clean-plus-wave1-proofs
+  script: work/2026-11-winbox-attributes/proof/k0-v6-overflow/census.ts (J1 copy, unmodified)
+  vm: ws3c6 (6.49.23, explicit-target path, started/stopped this leg)
+census:
+  - route: [20, 107]
+    verbs: { getone: "0xfe0002 BRKPATH", getall: "0xfe0002 BRKPATH", getobj: "0xfe0002 BRKPATH", getcount: "0xfe0002 BRKPATH" }
+    reply_shape: "process-level SYS-only from [20] (not [20,107]): 0xff0001/0xff0002 routes + 0xff0008 errno + reqid echoes; no USER fields, errstr null"
+    records: 8
+    capture: work/2026-11-winbox-attributes/proof/k0-v6-overflow/step-v6-107.jsonl
+proven:
+  - id: P-k0-107-v7-only
+    detail: "[20,107] is v7-only: uniform v6 BRKPATH across all 4 verbs (GETONE+GETALL+GETOBJ+GETCOUNT), process-level reply. Completes K1's both-7.x drift-free census into full 3-version scope."
+disproven: []
+unresolved:
+  - id: U3-107-wire-field-count
+    detail: "carried (K1): 18 USER wire fields vs 12 menu args; excess fields have no candidate."
+  - id: U8-61-hit-condition
+    detail: "carried (K1, narrowed): {registered-modem-needed}; untouched by this leg."
+evidence:
+  - "v6 uniform-BRKPATH matrix (this leg: step-v6-107.jsonl seqs 0-7)"
+  - "console tee (this leg: console-v6-107-census.txt)"
+spend: { approved: "0w+0r", spent: "0w+0r", vms: [ws3c6] }
+vm_end_state: "ws3c6 stopped after leg; all other machines untouched"
+fragment:
+  file: work/2026-11-winbox-attributes/proof/k0-v6-overflow/fragment.yaml
+  proposes: ["sim-settings-20-107: v7-only version-scope note + 1 evidence"]

@@ -1,0 +1,11 @@
+cspell:ignore quickchr winbox centrs qemu kvm booted amm
+  Network socket::ws21-a: unix datagram /home/amm0bot/.local/share/quickchr/networks/ws21-a.0.sock -> /home/amm0bot/.local/share/quickchr/networks/ws21-a.1.sock
+  Network socket::ws21-b: unix datagram /home/amm0bot/.local/share/quickchr/networks/ws21-b.0.sock -> /home/amm0bot/.local/share/quickchr/networks/ws21-b.1.sock
+● ws21 started
+  Version: 7.25 (x86)
+  Network: user, socket::ws21-a, socket::ws21-b
+  Ports:   http:9190 https:9191 ssh:9192 api:9193 api-ssl:9194 winbox:9195
+  REST:    http://admin@127.0.0.1:9190
+  SSH:     ssh admin@127.0.0.1 -p 9192
+  WinBox:  127.0.0.1:9195
+○ ws21 stopped

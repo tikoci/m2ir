@@ -1,117 +1,196 @@
-# cspell:ignore rowid getcount getall getobj getone subtable reqid mvrp tarpit fasttrack gcd unmapped addrlist addsrc adddst h0a h0b vrf oneshot newflag unacked untimed oneline amm lsb dyn omap xfd findall unblind unblinding jbe vaddr sed bitfield bitfields bswap jmp imm fini binutils ctor aoomap hid jcc vtable looper ebtables ebtable iptable novabin libumsg mproxy zombification churn backoff subnano legid novasock unroutable rodata ws3c scanw unblinding unaffecting fraw worktree agentlint foldin unpromoted respike nodecay undersampled rowidgap ladder rungs trel msback h2br h2vrf1 h2vrf2 i1vrf1 i1mainb defconf qos pfc nkeys fvlan fjump keepalive keepalives mqtt cliref nyquist automap precheck unmappable unenslaved parameterizes dscp aholder brkpath notimp m2mark1 markname hdecay negcontrol rtt vms mainb wps obj0 u4b tr069 netinstall getonly cwmp wrap exactmatch j1 j2 j3 j4 j5 j6 pregate populatedness getobjbare multistep reattach readback num anyproto fanout recycle api trap builtin untracked
-# Phase J coordinator handoff, FULL completion (durable handoff rule, attribute-discovery-plan.md).
-# Written 2026-11-02 at FULL completion (read-only + both approved legs executed,
-# integrated, green). Uncommitted by design; do not commit or push without instruction.
-head: 792f43dc8cf3e4ec3d685c0a3578860f24570757
-git_status: "PHASE J COMPLETE, UNCOMMITTED; gates 407/0 + lint:ci green; all VMs stopped; J5 restore PARTIAL-then-FULL (dummies cleared by 0r power-cycle); J6 restore CLEAN"
+# cspell:ignore rowid getcount getall getone getobj getobjbare brkpath notimp unknownid multiset jsonl reqid dbrd sys2 chfont libumsg mproxy macwinbox veth netns u32 u32c u32array errstr rodata vtable ctor objdump xrefs novabin looper subtable prefilter notimp vms ws21 ws20 twin3 g4beta winbox centrs quickchr cliref tr069 acs filetype readback netinstall qos txq txman pfc wps aaa nas synth preseed unblinding nosuchuser webfig webprefs fscaler keepalive keepalives asyncs hdecay oneshot fanout anyproto posthoc unsets ladder rungs trel oneline twiddle wrap qos cisco mikrotik lte sim esim usb1 foo brzail getonly unaffecting seqs
+# Phase K coordinator handoff, APPROVED LEGS EXECUTED (durable handoff rule, attribute-discovery-plan.md).
+# Written 2026-11-02 after executing the 5 user-approved legs (124-matrix 0w +
+# 4 user-tail hunts 8w), integrated, green. Uncommitted by design; do not
+# commit or push without instruction. H-13-6-A parked per user (needs tooling
+# design); 0x1c6/standing-2/K4-sheets/61-private-5/8-B remain unapproved.
+head: 53649dc81fe8f8bebec8b42e2e65ee0dddd03f2d
+git_status: "PHASE K APPROVED LEGS DONE, UNCOMMITTED; gates 421/0 + lint:ci green; all VMs stopped; 8w+0r spent of 8w approved"
 dirty_files:
-  - profiles/winbox-ipc/gui-handlers.yaml (M: read-only 122/126/114/115/120/121/defconf notes + 10ev; J5 filter-20-3 fields 11/22/404/454 + notes + 1ev; J6 unknown-20-32 role/notes + 1ev)
-  - profiles/winbox-ipc/README.md (M: 50 handlers, 33 with fields, 352 entries (178/174), 603 evidence)
-  - README.md (M: 50 handlers, 352 entries)
-  - GLOSSARY.txt (M: +netinstall, +tr069)
-  - test/profiles/winbox-ipc/tail-census-1b.test.ts (new: 7 tests)
-  - test/profiles/winbox-ipc/thread-5-adjunct.test.ts (new: 6 tests)
-  - test/profiles/winbox-ipc/h-decay-3-rerun.test.ts (new: 4 tests)
-  - fixtures/winbox-ipc/7.26beta4-qos-u4b-obj0.json (new: 3 records)
-  - fixtures/winbox-ipc/7.25-filter-thread5.json (new: 6 records)
-  - fixtures/winbox-ipc/7.25-getcount-20-32-j6-rerun.json (new: 9 records)
-  - work/2026-11-winbox-attributes/proof/j1-tail-census-7x/ (new)
-  - work/2026-11-winbox-attributes/proof/j2-v6-tail-census/ (new)
-  - work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/ (new)
-  - work/2026-11-winbox-attributes/proof/j-reviewer/ (new)
-  - work/2026-11-winbox-attributes/proof/j4-126-obj0-close/ (new, coordinator)
-  - work/2026-11-winbox-attributes/proof/j5-thread-5-exec/ (new, coordinator)
-  - work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/ (new, coordinator)
+  - profiles/winbox-ipc/gui-handlers.yaml (M: K0/K1/K2/K3/K4/K5 notes + 15ev; 24-16 role chfont-correction; K7 124 live-confirm + 1ev; K8 13-6 fields f1/f2/f3 + set-block + hunt notes + 4ev)
+  - profiles/winbox-ipc/README.md (M: evidence 603 -> 623; fields 352 -> 355 (180/175); with-fields 33 -> 34; tail queue 17 -> 16; ev transcript count 249 -> 290)
+  - README.md (M: 352 -> 355 field entries)
+  - GLOSSARY.txt (M: +netns)
+  - work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/u1-ambiguity-stop.yaml (M: S7 TR-069 row + sole-writer wording fix)
+  - test/profiles/winbox-ipc/k-residue-census.test.ts (new: 7 tests)
+  - test/profiles/winbox-ipc/k8-user-hunts.test.ts (new: 7 tests)
+  - fixtures/winbox-ipc/7.26beta4-k-residue-gating.json (new: 5 records)
+  - fixtures/winbox-ipc/7.25-get-20-124-selector.json (new: 2 records)
+  - fixtures/winbox-ipc/7.25-set-13-6-populated.json (new: 3 records)
+  - work/2026-11-winbox-attributes/proof/k0-v6-overflow/ (new, coordinator)
+  - work/2026-11-winbox-attributes/proof/k1-modem-pair/ (new)
+  - work/2026-11-winbox-attributes/proof/k2-board-info/ (new)
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/ (new)
+  - work/2026-11-winbox-attributes/proof/k4-sys2-residue/ (new)
+  - work/2026-11-winbox-attributes/proof/k5-gated-pair/ (new)
+  - work/2026-11-winbox-attributes/proof/k6-divergence-designs/ (new)
+  - work/2026-11-winbox-attributes/proof/k-reviewer/ (new)
+  - work/2026-11-winbox-attributes/proof/k7-124-matrix-exec/ (new, coordinator)
+  - work/2026-11-winbox-attributes/proof/k8-user-tail-hunts/ (new, coordinator)
   - work/2026-11-winbox-attributes/handoff.yaml (this file)
 slices:
-  done: [J1-7x-census, J2-v6-census, J3-designs, J-reviewer, J4-obj0-close, integrate-readonly, J5-thread-5-exec, J6-h-decay-3-rerun-exec, integrate-all]
+  done: [K1-modem-pair, K2-board-info, K3-user-tail, K0-v6-overflow, K4-sys2-residue, K5-gated-pair-design, K6-divergence-designs, K-reviewer, reconcile, integrate-readonly, K7-124-matrix-exec, K8-user-tail-hunts, integrate-legs]
   in_progress: []
-  queued: [future-families (modem-pair/board-info/user-tail/sys2-residue/gated-pair), U-120-121-purpose (likely hardware-blocked), U-j5-0x1c6-value-divergence (needs discriminating leg), U-j6-standing-level-2 (needs 2-rule/plateau leg)]
-j1_record:
+  queued: [H-13-6-A-parked (needs WinBox-client tooling design, per user), 0x1c6-discriminator-A/B (unapproved), standing-level-2 (unapproved), H-13-8-B (unapproved), 61-private-5 (unapproved), K4-sheets-after-completion (unapproved), U-120-121-purpose (hardware-blocked, no leg)]
+k1_record:
   complete: true
-  verdict: "COMPLETE 0w+0r — 122 GET-only + drift-free; 126 wrap-family + drift-free; U4b CLOSED (singleton row-id 0, GETOBJ exact-match)"
-  evidence_root: work/2026-11-winbox-attributes/proof/j1-tail-census-7x/
-  proven: [P-j1-122-drift-free, P-j1-122-getonly, P-j1-126-drift-free, P-j1-126-wrap, P-j1-u4b-rowid-zero]
-  disproven: ["114/115 GETOBJ verb-unsupported (0xfe0004 = id-miss)"]
-  unresolved: [U2-qos-populated-shapes (carried)]
-  spend: { approved: "0w+0r", spent: "0w+0r", vms: [winbox-beta4, ws21] }
-j2_record:
+  verdict: "COMPLETE 0w+0r — 107 drift-free + GET-only both 7.x (NOT wrap); 61 f7 matrix 14/14 miss both 7.x; private-5 static-only, 1w probe sheeted"
+  evidence_root: work/2026-11-winbox-attributes/proof/k1-modem-pair/
+  proven: [P-k1-107-drift-free, P-k1-107-getonly, P-k1-61-f7-matrix, P-k1-candidates-present]
+  disproven: [D-k1-61-f7-empty-distinct, D-k1-107-wrap-family]
+  unresolved: [U3-107-wire-field-count (carried), U8-61-hit-condition (narrowed to registered-modem-needed), U-k1-61-private-5-role (new)]
+  spend: { approved: "0w+0r", spent: "0w+0r", vms: [ws21, e3-beta4] }
+k2_record:
   complete: true
-  verdict: "COMPLETE 0w+0r — 122/126 v6-absent PROVEN; U-siblings-v6 CLOSED (116/117/120/121 all 0xfe0002 all verbs); 0 deviations / 24 verbs"
-  evidence_root: work/2026-11-winbox-attributes/proof/j2-v6-tail-census/
-  proven: [P-j2-1b-v7-only, P-j2-siblings-v6-absent]
-  unresolved: [U2-qos-populated-shapes (carried), U-120-121-purpose (carried)]
+  verdict: "COMPLETE 0w+0r — 24-35 beta4 empty drift-free + full gating (GET-only) + v6 BRKPATH verified; 9 names stay guesses, no dbrd menu"
+  evidence_root: work/2026-11-winbox-attributes/proof/k2-board-info/
+  proven: [P-k2-beta4-empty-drift-free, P-k2-gating-full, P-k2-v6-brkpath, P-k2-static-scope]
+  unresolved: [U-k2-populated-shape (hardware-blocked), U-k2-candidate-mapping (carried)]
+  spend: { approved: "0w+0r", spent: "0w+0r", vms: [winbox-beta4, ws3c6] }
+k3_record:
+  complete: true
+  verdict: "COMPLETE 0w+0r — all 4 user-tail drift-free beta4; 13-5 gating NEW; 13-9 gating extended + NOT-session-count corroborated; 13-6 miss re-proven; 13-8 singleton re-proven; 6 hunts sheeted (12w corrected total)"
+  evidence_root: work/2026-11-winbox-attributes/proof/k3-user-tail/
+  proven: [P-k3-13-5-drift-free, P-k3-13-5-gating, P-k3-13-9-drift-free, P-k3-13-9-gating-extended, P-k3-13-6-miss-both-7x, P-k3-13-8-singleton]
+  unresolved: [U6-13-6-population-path (carried, 2 hunts sheeted), U7-13-8-identity (carried, 2 hunts), U-k3-13-5-role (carried, 1 hunt), U-k3-13-9-role (carried, 1 hunt)]
+  spend: { approved: "0w+0r", spent: "0w+0r", vms: [g4beta, twin3] }
+k0_record:
+  complete: true
+  verdict: "COMPLETE 0w+0r (coordinator) — [20,107] v6 uniform BRKPATH all 4 verbs (process-level from [20]); v7-only closed"
+  evidence_root: work/2026-11-winbox-attributes/proof/k0-v6-overflow/
+  proven: [P-k0-107-v7-only]
   spend: { approved: "0w+0r", spent: "0w+0r", vms: [ws3c6] }
-j3_record:
+k4_record:
   complete: true
-  verdict: "COMPLETE 0w+0r offline — H-decay-3 re-run sheeted (EXECUTED as J6); U1 AMBIGUITY STOP (no CLI setter, 26 queries; 'sole writer' corrected to sole CLI-read-back-visible writer per reviewer TR-069 find)"
-  evidence_root: work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/
-  proven: [P-j3-rerun-host-grounded, P-j3-a3-record-standing, P-j3-pregate-rejected-with-reasons, P-j3-no-cli-defconf-writer, P-j3-reset-executes-not-writes, P-j3-u1-both-axes-exhausted]
-  unresolved: [U1-defconf-field-split (STOPPED both axes), U-j3-f1-mode-flag (new), U-j3-v6-defconf-setter (new), U-j3-chr-custom-script-populatedness (new)]
+  verdict: "COMPLETE 0w+0r — all 3 sys2-residue drift-free beta4 + GET-only both 7.x (gating NEW); holders pinned both versions (health/chfont/mproxy-settings); console/settings kill-list CLOSED; screen-enum stays unproven hypothesis"
+  evidence_root: work/2026-11-winbox-attributes/proof/k4-sys2-residue/
+  proven: [P-k4-2414-drift-free, P-k4-2416-drift-free, P-k4-21-drift-free, P-k4-getonly-all, P-k4-holders-static]
+  disproven: [X-k4-console-settings-mapping]
+  unresolved: [U-k4-2416-field-split (4w sheet, preliminary), U-k4-2414-role (0w check then likely hardware-blocked), U-k4-21-role (2-4w sheet, preliminary)]
+  spend: { approved: "0w+0r", spent: "0w+0r", vms: [winbox-beta4, ws20] }
+k5_record:
+  complete: true
+  verdict: "COMPLETE 0w+0r offline — [20,124] selector FULLY DECODED statically (request field 1005 u32array of [20,0] row-ids + 4-rung ladder + raw-cmd dispatch; GET-family best case NOTIMP); matrix sheeted 0w+0r; private cmds excluded (cmd 1 = nsCreate mutation)"
+  evidence_root: work/2026-11-winbox-attributes/proof/k5-gated-pair/
+  proven: [P-static-1-selector-field, P-static-2-slot-registration, P-static-3-rowid-semantics, P-static-4-ladder, P-static-5-verb-dispatch, P-static-6-field-inventory, P-static-7-v7-only, P-static-8-subsystem-context]
+  disproven: [H3-fe0001-as-selector, H4-17-derived-values, H5-f7-string-a-la-61]
+  unresolved: [U4-124-selector-encoding (statically answered, live confirmation pending on matrix G1/G2), U-k5-mode2-reply-shape (new), U-k5-130-sibling-role (new), U-k5-beta4-drift (new)]
+  spend: { approved: "0w+0r", spent: "0w+0r" }
+k6_record:
+  complete: true
+  verdict: "COMPLETE 0w+0r offline — 0x1c6 2x2 discriminator sheeted (A 3w+1w-cond, B 3w, cap 7w); standing-level-2 sheeted (3w fixed); 120/121 hardware-blocked catalog note (no CHR legs); fragment EMPTY by design"
+  evidence_root: work/2026-11-winbox-attributes/proof/k6-divergence-designs/
+  proven: [P-k6-0x1c6-confound-statement, P-k6-plateau-scaling-test-shape, P-k6-120-121-verb-matrix, P-k6-error-census-correction]
+  unresolved: [U-j5-0x1c6-value-divergence (sheeted, needs yes), U-j6-standing-level-2 (sheeted, needs yes), U-120-121-purpose (hardware-blocked), U2-qos-populated-shapes (carried)]
   spend: { approved: "0w+0r", spent: "0w+0r" }
 reviewer_record:
   complete: true
-  verdict: "R1 FULL AGREE / R2 FULL AGREE ON EVIDENCE (+ stale-sentence flag, reconciled) / R3 AGREE rerun-faithful + AGREE U1-stop WITH TR-069 discrepancy (verified, integrated corrected)"
-  evidence_root: work/2026-11-winbox-attributes/proof/j-reviewer/
-  blind_audit: "PASS via session log (reconstructions before first proposer read; only post-read touch = cspell-header edit)"
+  verdict: "R-K0/K1/K2/K4/K5 AGREE; R-K3 agree + 3 minor (28/14 counts, 12w total, f1-variant wording); R-K6 agree + 2 citation (occupancy N=3/N=2, 8-verb scope) — all 5 reconciled by coordinator with markers"
+  evidence_root: work/2026-11-winbox-attributes/proof/k-reviewer/
+  blind_audit: "PASS via session log (all 7 reconstructions lines 2398-2681 before first proposer read line 2741; no unblinding)"
   spend: { approved: "0w+0r", spent: "0w+0r" }
-j4_record:
+reconciliation:
+  - "K3 24/12 -> 28/14 records (verified wc -l; schema-unaffecting, fixed in report with marker)"
+  - "K3 sheets total 11 -> 12w (1+2+2+3+2+2; fixed with marker; presented total is 12)"
+  - "K3 'no other read-only f1 variant' dropped from schema wording (nosuchuser is one, queue-3-covered); sole-row claim dropped (no committed control file)"
+  - "K6 occupancy: G1 M9 TRUE at N=3 (C2+M9+dummy), J5 T5-c FALSE at N=2 (host+dummy), dummy in both (verified G1 M9 N=3 + J5 T5-c 1->2; fixed in sheet + report with markers)"
+  - "K6 24-verb -> 8-verb scope on the 120/121 pair (24 = whole J2 matrix; fixed in note + report with markers)"
+  - "K0 cspell seqs/vms added to header (coordinator file)"
+k7_record:
   complete: true
-  verdict: "COMPLETE 0w+0r (coordinator) — 126 GETOBJ obj=0 HITS; U-j1-126-selector CLOSED"
-  evidence_root: work/2026-11-winbox-attributes/proof/j4-126-obj0-close/
-  proven: [P-j4-126-obj0-hit, P-j4-126-exact-match]
-  spend: { approved: "0w+0r", spent: "0w+0r", vms: [winbox-beta4] }
-j5_record:
+  verdict: "COMPLETE 0w+0r of 0w (user-approved) — 14/14 predictions hit (G8+G1-G7+B1-B4); U4 LIVE-CONFIRMED at ladder level (SELECTOR WIRED); tooling census-124.ts (--ids/--ids-field/--u32-1005/--bool-1008)"
+  evidence_root: work/2026-11-winbox-attributes/proof/k7-124-matrix-exec/
+  proven: [P-k7-selector-wired]
+  unresolved: [U-k5-beta4-drift (carried), U-k7-full-validation-notimp (new, needs pre-existing veth)]
+  spend: { approved: "0w+0r", spent: "0w+0r", vm: ws21 }
+  integration: "unknown-20-124 live-confirmation note-append + 1 evidence; fixture 7.25-get-20-124-selector.json (2)"
+k8_record:
   complete: true
-  verdict: "COMPLETE 8w+0r of 8w+0r (standalone, user-approved) — 0x0b=protocol-number PINNED (6/17/1); triple COMPUTED; 0x16 constant; 0x194 any-protocol; 0x1c6 action-computed FALSE (vs G1 add-TRUE, NEW divergence) + cleared-on-exit replicated; restore PARTIAL (5 builtin dummies) -> FULL after 0r power-cycle"
-  evidence_root: work/2026-11-winbox-attributes/proof/j5-thread-5-exec/
-  proven: [P-j5-0b-proto-num, P-j5-triple-computed, P-j5-0x16-constant, P-j5-0x194-anyproto, P-j5-0x1c6-computed-false, P-j5-0x1c6-cleared-on-exit, P-j5-dummy-fanout]
-  unresolved: [U-j5-0x1c6-value-divergence (NEW: add-vs-set confounded with protocol state), U-j5-triple-unset-clear (NEW: clear-form rejected, untestable via that form)]
-  spend: { approved: "8w+0r standalone", spent: "8w+0r", vm: ws21 }
-  integration: "filter-20-3 fields 11/22/404/454 + notes + 1 evidence; fixture 7.25-filter-thread5.json (6); thread-5-adjunct.test.ts (6)"
-j6_record:
-  complete: true
-  verdict: "COMPLETE 3w+0r of 3w+0r (user-approved) — outcome B2-DECAY-ZERO-ASYNC (TIER 1): spike2 4/4/3/2x58 with async=0 everywhere; H-decay-3 DEAD + churn-artifact DEAD as decay drivers; single-step one-shot DEAD in TIER 1; variable-gauge + multi-step REMAIN; history-gating CONSISTENT (2-vs-4); Q-neither; restore CLEAN"
-  evidence_root: work/2026-11-winbox-attributes/proof/j6-h-decay-3-rerun/
-  proven: [B2-decay-zero-async, B5-3-level (graded-analog), magnitude-different, Q-neither, P-j6-standing-level-2-observed (single-sample, recorded not promoted)]
-  unresolved: [U-h1-32-mechanism (NARROWED to internal: variable-gauge vs multi-step vs history-magnitude), U-h1-q1-dip (stood down again), U-j6-standing-level-2 (NEW)]
-  live_validation: "L1 PASS-by-completion (mid-run wc not executed, noted honestly) / L2 FULL (tee'd) / L3 PASS (54 keepalives, max gap 9996ms) / L4 PASS (one pair) / L5 PASS (all step files parse)"
-  spend: { approved: "3w+0r fixed", spent: "3w+0r", vm: ws21 }
-  integration: "unknown-20-32 role/notes + 1 evidence; fixture 7.25-getcount-20-32-j6-rerun.json (9); h-decay-3-rerun.test.ts (4)"
+  verdict: "COMPLETE 8w+0r of 8w (user-approved per-hunt) — 13-6 POPULATED via M2 SET (U6 includes SET; fields f1/f2/f3 promoted) + any-f1-returns-single-record NEW; 13-5 user/session DEAD; 13-8 group DEAD; 13-9 aaa DEAD + session INCONCLUSIVE (count invariant); twin3 recreated fresh, g4beta clean"
+  evidence_root: work/2026-11-winbox-attributes/proof/k8-user-tail-hunts/
+  proven: [P-k8-136-set-create, P-k8-136-fields, P-k8-136-any-f1, P-k8-135-dead, P-k8-138-group-dead, P-k8-139-aaa-dead]
+  unresolved: [U6-13-6-population-path (narrowed; client path parked per user), U7-13-8-identity (narrowed; 8-B unapproved), U-k3-13-5-role (open, causes excluded), U-k3-13-9-role (open, aaa excluded, session inconclusive), U-k8-136-selector-semantics (new, +1w), U-k8-136-replace-vs-patch (new), U-k8-136-delete-path (new, +1w)]
+  spend: { approved: "8w+0r (H-13-6-B 2w + H-13-8-A 2w + H-13-5-A 2w + H-13-9-A 2w)", spent: "8w+0r", vms: [twin3, g4beta] }
+  integration: "user-prefs-13-6 fields f1/f2/f3 + set-block + notes + 1 evidence; 13-5/13-8/13-9 hunt notes + 3 evidence; fixture 7.25-set-13-6-populated.json (3); k8-user-hunts.test.ts (7)"
 budgets_approved_vs_spent:
-  J1-7x-census: { approved: "0w+0r", spent: "0w+0r", result: "complete, U4b closed; integrated" }
-  J2-v6-census: { approved: "0w+0r", spent: "0w+0r", result: "complete, U-siblings-v6 closed; integrated" }
-  J3-designs: { approved: "0w+0r", spent: "0w+0r", result: "complete, rerun sheeted + U1 stopped; integrated" }
-  J-reviewer: { approved: "0w+0r", spent: "0w+0r", result: "complete, blind PASS, 1 discrepancy resolved" }
-  J4-obj0-close: { approved: "0w+0r", spent: "0w+0r", result: "complete; integrated" }
-  J5-thread-5: { approved: "8w+0r standalone (fresh in-session yes)", spent: "8w+0r", vm: ws21, result: "complete=true, 0x0b pinned + triple computed + 0x1c6 divergence; restore PARTIAL->FULL via 0r cycle; integrated" }
-  J6-h-decay-3-rerun: { approved: "3w+0r fixed (in-session yes)", spent: "3w+0r", vm: ws21, result: "complete=true, B2 H-decay-3 DEAD; restore clean; integrated" }
-  TOTAL: { approved: "11w+0r writes + 0w read-only", spent: "11w+0r" }
+  K0-v6-overflow: { approved: "0w+0r", spent: "0w+0r", result: "complete, 107 v7-only closed; integrated" }
+  K1-modem-pair: { approved: "0w+0r", spent: "0w+0r", result: "complete; integrated" }
+  K2-board-info: { approved: "0w+0r", spent: "0w+0r", result: "complete; integrated" }
+  K3-user-tail: { approved: "0w+0r", spent: "0w+0r", result: "complete, 6 hunts sheeted (12w proposed); integrated" }
+  K4-sys2-residue: { approved: "0w+0r", spent: "0w+0r", result: "complete, kill closed + 3 perturbation sheets preliminary; integrated" }
+  K5-gated-pair: { approved: "0w+0r", spent: "0w+0r", result: "complete, selector decoded + 0w matrix sheeted; integrated (static-only)" }
+  K6-designs: { approved: "0w+0r", spent: "0w+0r", result: "complete, 2 discriminator sheets + hardware-block note; nothing to promote" }
+  K-reviewer: { approved: "0w+0r", spent: "0w+0r", result: "complete, blind PASS, 5 discrepancies all reconciled" }
+  K7-124-matrix: { approved: "0w+0r (in-session yes)", spent: "0w+0r", vm: ws21, result: "complete=true, 14/14 U4 live-confirmed; no restore needed; integrated" }
+  K8-H-13-5-A: { approved: "2w+0r (in-session per-hunt yes)", spent: "2w+0r", vm: twin3, result: "complete=true, user/session-driver DEAD; restore clean; integrated" }
+  K8-H-13-6-B: { approved: "2w+0r (in-session per-hunt yes)", spent: "2w+0r", vm: twin3, result: "complete=true, SET-population + any-f1 NEW; restore via VM RECREATE (orphan by design); integrated" }
+  K8-H-13-8-A: { approved: "2w+0r (in-session per-hunt yes)", spent: "2w+0r", vm: g4beta, result: "complete=true, group-driver DEAD; restore clean; integrated" }
+  K8-H-13-9-A: { approved: "2w+0r (in-session per-hunt yes)", spent: "2w+0r", vm: g4beta, result: "complete=true, aaa DEAD + session INCONCLUSIVE; restore clean (aaa byte-match); integrated" }
+  TOTAL: { approved: "8w+0r writes + 0w read-only", spent: "8w+0r" }
 counts_now:
   handlers: "50 unchanged"
-  fields: "348 (177/171) -> 352 (178/174) (+protocol named, +unknown-22/404/454)"
-  handlers_with_fields: "33 unchanged"
+  handlers_with_fields: "33 -> 34 (+user-prefs-13-6)"
+  fields: "352 (178/174) -> 355 (180/175) (+username, +prefs-blob, +unknown-3 on 13-6)"
   confidence: "288 (150/135/3) UNCHANGED BY CONVENTION (frozen since 550508e)"
-  evidence: "591 -> 603 (+10 read-only, +1 J5, +1 J6)"
-  revision_history: "72 unchanged (closures/corrections inside open notes, not belief revisions)"
-  tests: "390/0 -> 407/0 across 64 files (+7 1b, +6 thread-5, +4 rerun)"
+  evidence: "603 -> 623 (+15 read-only + 5 legs: K7:1, K8:4)"
+  revision_history: "72 unchanged (closures/corrections inside open notes)"
+  tests: "407/0 -> 421/0 across 66 files (+7 k-residue-census, +7 k8-user-hunts)"
   lint: "lint:ci green (exit 0)"
+  glossary: "+netns (K5 [20,124] note)"
 vm_state:
   all_stopped: true
   detail: "15 machines, ALL STOPPED (verified via quickchr list: 15 stopped, 0 running)"
-  baselines_restored: "J5 PARTIAL in-session (5 fasttrack dummies, cannot-remove-builtin) -> FULL after 0r stop/start (0s re-verified); J6 CLEAN (5-menu zero + native zero)"
+  baselines_restored: "K7 no-op (read-only); H-13-5-A/H-13-8-A/H-13-9-A CLEAN (self-restoring steps verified); H-13-6-B via twin3 DESTROY+RECREATE (fresh VM, EMPTY miss re-verified both selectors); g4beta clean"
   assignments_next: {}
-tooling_lessons_new:
-  - "J1 --obj flag + getobjbare verb on census.ts is the reusable selector-matrix shape"
-  - "Reviewer cited Rosetta `pages` ids — coordinator verification must check the table, not just the number"
-  - "Bare `cspell:ignore ...` first line works in .txt evidence files (console tees); precedent: proof-YAML header convention"
-  - "Count method caveat: '+2 constant' assumed 2 expanded-form field entries; J5's expanded f11 makes 3 — true total = single-line 349 + expanded 3 = 352"
-  - "Fasttrack dummies cleared by stop/start power-cycle (0r): J5 PARTIAL -> FULL without touching budgets; ws21 recycled clean for the next leg in the same session"
+pending_legs_for_yes:
+  - leg: H-13-6-A-parked
+    kind: parked-per-user
+    status: "PARKED back to main list: needs WinBox-client tooling designed first, not guessed. Do not re-propose until tooling exists."
+  - leg: K6-0x1c6-A
+    kind: write
+    budget: "3w+0r (+1w conditional)"
+    vm: ws21-7.25
+    status: "sheeted, needs per-leg yes (no yes given)"
+  - leg: K6-0x1c6-B
+    kind: write
+    budget: "3w+0r"
+    vm: ws21-7.25
+    status: "sheeted, needs per-leg yes (no yes given; cap 7w combined with A)"
+  - leg: K6-standing-level-2
+    kind: write
+    budget: "3w+0r fixed"
+    vm: ws21-7.25
+    status: "sheeted, needs per-leg yes (no yes given)"
+  - leg: H-13-8-B
+    kind: write
+    budget: "3w+0r"
+    vm: g4beta-7.26beta4
+    status: "sheeted, needs per-leg yes (no yes given; 8-A came back DEAD so this is now the live U7 half)"
+  - leg: K1-private-5-probe
+    kind: write
+    budget: "1w+0r"
+    vm: ws21-or-e3-beta4-one-only
+    status: "sheeted, needs per-leg yes (no yes given; coordinator default is drop)"
+  - leg: K4-perturbation-sheets
+    kind: write-preliminary
+    budget: "SH-2416-screen 4w, SH-2414-health 0w-check, SH-21-macwinbox 2-4w"
+    status: "PRELIMINARY — needs named-VM/baseline/restore/stop completion before any yes"
+  - leg: U-k8-followups
+    kind: write-unbudgeted
+    status: "NEW from K8: 136-selector-semantics (+1w two-record), 136-replace-vs-patch (shrink leg), 136-delete-path (+1w); all need fresh sheets + fresh yes"
 continuation_decision:
-  decision: "FRESH agent for the next phase (future families + new divergences need scoping + fresh per-leg approvals regardless)"
+  decision: "PHASE K COMPLETE for the approved set; STOP and report, await further direction"
   clause_a_no_compaction: "HELD (no compaction this session)"
-  clause_b_citable: "HELD (all budgets/VM-state/evidence-paths/counts citable from proof dirs + this handoff)"
-  clause_c_green: "HELD (gates 407/0 + lint:ci green, handoff written)"
-  doubt_invoked: "YES — session is very long (3 workers + reviewer + read-only integration + 2 write legs + full integration); remaining queue (5 future families, 0x1c6 divergence, standing-level-2, all unscoped) needs fresh design regardless. Per the brief: in any doubt, STOP + recommend fresh."
-  resume_commit: "792f43d + uncommitted Phase J work (do not commit or push without instruction)"
-next_action: "PHASE J COMPLETE. Commit decision belongs to the user (all work uncommitted by design). Fresh coordinator starts at 792f43d + this handoff: queue is future families (modem-pair/board-info/user-tail/sys2-residue/gated-pair), U-120-121-purpose, U-j5-0x1c6-value-divergence, U-j6-standing-level-2. Fresh per-leg yes required before any writes."
+  clause_b_citable: "HELD (all budgets/VM-state/evidence-paths/counts citable from k-proof dirs + reviewer + this handoff)"
+  clause_c_green: "HELD (gates 421/0 + lint:ci green, handoff written)"
+  doubt_invoked: "NO"
+  resume_commit: "53649dc + uncommitted Phase K work incl. executed legs (do not commit or push without instruction)"
+tooling_lessons_new:
+  - "v6 quickchr inspect carries no winbox service entry (K2 D-k2-v6-port-resolution): resolve the WinBox port live from quickchr list (J2 precedent), redact from tees"
+  - "Fixture JSON must be biome-formatted (compact arrays): run biome check --write on new fixtures before lint:ci"
+  - "Evidence README count uses delta arithmetic (grep -source: undercounts 603 by 6 at baseline); preserve by adding exact per-slice deltas"
+  - "centrs ok:false envelopes go to STDERR (empty stdout .json breaks biome): check the .stderr.log, do not commit empty JSON"
+  - "/user/add REQUIRES password= via API ('missing =password=' trap); use a synthetic lab password and scrub to REDACTED in committed evidence"
+  - "REST session rows reuse, not accumulate, on g4beta (count 2->2); a ping-hold client-times-out at 10s — session-count sweeps need a real hold mechanism"
+  - "Hyphenate step-file stems AND record ids AND fixture ids before first commit (set-key/read-key/never-seen/key-only/any-f1); renames must also fix baked-in tee contents"
+next_action: "PHASE K COMPLETE for the approved set, GREEN, UNCOMMITTED (421/0 + lint:ci). Commit decision belongs to the user. Remaining queue: parked H-13-6-A (tooling design), unapproved 0x1c6-A/B, standing-2, H-13-8-B, 61-private-5, K4-sheets (need completion), U-k8 followups (need sheets). Any further leg needs fresh per-leg yes; approvals in this session do not carry to new legs."

@@ -1,0 +1,18 @@
+# cspell:ignore rowid getall getcount getobj getone reqid jsonl veth netns u32 tcode errstr rodata vtable ctor objdump notimp novabin unexecuted
+# K5 STATIC-ONLY fragment (proposal, not an edit).
+# Coordinator integrates or declines. All wire claims below are statically
+# proven against v7 net (sha256 4dfdc32a...); live confirmation is pending
+# (matrix leg-124-selector-matrix.yaml, unexecuted). No confidence change
+# is proposed: role-open + observed-only stand until a live leg confirms.
+fragment_for: profiles/winbox-ipc/gui-handlers.yaml
+scope: unknown-20-124 [20,124]
+static_only: true
+proposes:
+  - target: unknown-20-124 notes
+    text: "Static decode (K5, v7 net 7.25 x86, sha256 4dfdc32ac9979b8ab86478dab601b79444875f936f7ff1b6b132553a565f6e7c, 2026-11-02): slot-7 dispatch 0x8115872 of handler-124 vtable 0x81c0514 (ctor 0x8111ce6, addHandler(0x7c) at 0x805e293). INTERFACE_IDS selector = request field 1005 (0x3ed), tcode u32_array; empty-or-absent -> failedMsg('no INTERFACE_IDS') (sole xref to the literal at VA 0x81a0bbf). Values are [20,0] interface row-ids (per-id lookup 0x8062ce8 is the same fn the v7 [20,0] GETOBJ path calls with the 0xfe0001 key). Validation ladder: unresolvable -> 'no device'; entry type (+0x60) != 0x47 (71 = veth) -> '<name> is not veth'; no veth device -> 'no veth device'; overlap-set (+0x78) mismatch -> 99-char container-overlap error. Verb dispatch on raw cmd: 1 -> netns-ensure path (nsCreate, MUTATING); 2 -> private builder + empty success; every standard verb (GET/GETALL/GETOBJ/GETCOUNT) -> NOTIMP 0xfe0003, but only AFTER gate+validation pass (so GET-family best case is NOTIMP, never rows). Slot-7 reads exactly two request fields (1005 + bool 1008, the latter only in the cmd==1 path); 0xfe0001/start/count are ignored. Handler is v7-only (v6 net lacks all 124 strings + has no addHandler(0x7c)). Subsystem context: veth type 71 registered immediately before addHandler(0x7c), sibling handler 130 (sub-object) immediately after — container/veth overlap+netns manager. Evidence: work/2026-11-winbox-attributes/proof/k5-gated-pair/report.yaml (P-static-1..8, N1..N10). Live leg sheeted (unexecuted): leg-124-selector-matrix.yaml."
+    confidence_effect: none
+    wire_claim: static-code-only
+  - target: unknown-20-124 evidence
+    text: "source: code; ref: 'RouterOS v7 net handler-124 slot-7 0x8115872 (1005/u32array gate + row-id validation ladder + raw-cmd dispatch), vtable 0x81c0514, addHandler(0x7c) 0x805e293, veth-type-71 + sibling-130 adjacency; see work/2026-11-winbox-attributes/proof/k5-gated-pair/report.yaml'"
+    confidence_effect: none
+    wire_claim: static-code-only

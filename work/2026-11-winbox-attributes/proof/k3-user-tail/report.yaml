@@ -1,0 +1,108 @@
+# cspell:ignore getall getone getobj getcount getf1 jsonl brkpath notimp rowid centrs quickchr winbox twin3 g4beta thirteenth nosuchuser multiset keepalive
+# K3 EXECUTION report (Phase K worker, user-tail). Read-only census + stimulus-hunt SHEETING (designed, not run).
+complete: true
+date: 2026-11-02
+worker: K3
+leg: K3-user-tail-census
+verdict: "COMPLETE 0w+0r — 13-5 drift-free + gating NEW (NOTIMP/NOTIMP/0xFFFFFFFF); 13-9 drift-free + gating extended (GETOBJ/GETCOUNT NEW); 13-6 admin-miss + bare-FAILED re-proven both 7.x; 13-8 singleton re-proven; stimulus batch sheeted (6 hunts, none executed)"
+spend: { approved: "0w+0r (read-only census + boot approval)", spent: "0w+0r", machines: [g4beta, twin3] }
+inputs:
+  git_head: 53649dc
+  git_head_subject: "winbox-ipc Phase J: tail census 1b + U4b closed, thread-5 adjuncts, H-decay-3 B2 dead"
+  tree: "clean except untracked work/2026-11-romon/ (not mine, untouched)"
+  scope_source: work/2026-11-winbox-attributes/proof/i3-handler-tail-census/report.yaml
+  pattern_source: work/2026-11-winbox-attributes/proof/j1-tail-census-7x/census.ts
+  schema_read_only: profiles/winbox-ipc/gui-handlers.yaml
+tooling:
+  script: work/2026-11-winbox-attributes/proof/k3-user-tail/census.ts
+  shape: "J1 census.ts copy + --f1 flag (verb getf1 = CMD_GET + f1 string selector for the [13,6] matrix); resolveLabTarget/openSession/correlatedRequest/appendCapture (write-through, ts redacted); router-error recorded as data, never thrown"
+  validation: "bunx biome check --write clean; usage path prints extended verbs/flags"
+live_contact:
+  - machine: g4beta
+    version: 7.26beta4
+    arch: x86
+    rest_users: ["admin (sole /user row, *1, group full)"]
+    rest_active_sessions: "2 admin rest-api rows at census time (both radius=false)"
+    legs: ["[13,5]+[13,9] GETONE + gating GETALL/GETOBJ/GETCOUNT", "[13,6] f1=admin + bare GET", "[13,8] GETALL + GETCOUNT"]
+  - machine: twin3
+    version: 7.25
+    arch: x86
+    rest_users: ["admin (sole /user row, *1, group full)"]
+    legs: ["[13,6] f1=admin + bare GET"]
+drift:
+  - id: D-k3-13-5-beta4
+    verdict: no-drift
+    detail: "[13,5] GETONE on 7.26beta4 byte-shape IDENTICAL to all 3 fixture versions (programmatic multiset diff vs {6.49,7.25,7.26beta4}-user-family.json get-13-5-bare-rx, SYS/banners excluded): {f5/0x88=[], f1/0x0=F, f2/0x1=T, f4/0x9=1, f3/0x9=0}, f3 after SYS keys"
+  - id: D-k3-13-9-beta4
+    verdict: no-drift
+    detail: "[13,9] GETONE on 7.26beta4 IDENTICAL to both 7.x error-census fixtures (get-13-9-bare-rx): {f1/0x9=0, f2/0x9=0}; stays {0,0} with 2 active admin sessions present (further corroboration of NOT-session-count)"
+  - id: D-k3-13-6-miss-both-7x
+    verdict: no-drift
+    detail: "[13,6] f1=admin EMPTY miss (SYS-only success, zero USER fields) IDENTICAL on beta4 + 7.25 live vs same-version fixtures; bare GET FAILED 0xfe0006 + 'no user name provided' verbatim both versions"
+  - id: D-k3-13-8-beta4
+    verdict: no-drift
+    detail: "[13,8] GETALL singleton row {id 0, 'default'} + total 1 and GETCOUNT 0xfe0019=1 on beta4 IDENTICAL to the 7.26beta4 fixture"
+census:
+  - handler: unknown-13-5
+    route: [13, 5]
+    reads: ["GETONE beta4 (IDENTICAL to all-version baselines, drift-free)", "gating GETALL/GETOBJ(obj=1)/GETCOUNT beta4 (->0xfe0003/->0xfe0003/0xFFFFFFFF) — NEW, previously untested"]
+  - handler: unknown-13-9
+    route: [13, 9]
+    reads: ["GETONE beta4 (IDENTICAL to 7.x baselines, drift-free; {0,0} with sessions active)", "gating GETALL (NOTIMP re-proof) + GETOBJ(obj=1)/GETCOUNT (->0xfe0003/0xFFFFFFFF) beta4 — GETOBJ/GETCOUNT NEW"]
+  - handler: user-prefs-13-6
+    route: [13, 6]
+    reads: ["f1=admin EMPTY miss beta4 + 7.25 (sole existing username on both VMs; no other read-only variant exists)", "bare GET FAILED re-proof beta4 + 7.25 (0xfe0006 + 'no user name provided' verbatim)"]
+    variants_note: "centrs retrieve /user shows exactly 1 row (admin) on both VMs; 'existing usernames only' = {admin}. nosuchuser legs exist in queue-3 fixtures (all 3 versions) and were not re-run."
+  - handler: unknown-13-8
+    route: [13, 8]
+    reads: ["GETALL beta4 (singleton 'default' row id 0 + total 1, drift-free)", "GETCOUNT beta4 (0xfe0019=1, drift-free)"]
+proven:
+  - id: P-k3-13-5-drift-free
+    claim: "[13,5] GETONE byte-shape identical on 7.26beta4 vs all 3 fixture baselines: f5=[], f1=F, f2=T, f4=1, f3=0 (5 USER fields pinned)"
+    tier: "TIER 1 (step-beta4-13-5-13-9.jsonl seq 0-1; programmatic multiset diff)"
+  - id: P-k3-13-5-gating
+    claim: "[13,5] is GET-only on beta4 (GETALL/GETOBJ->0xfe0003 NOTIMP from=[13,5], same signature as [13,9]/defconf GET-only); GETCOUNT=0xFFFFFFFF sentinel in 0xfe0019/0x8, no row count"
+    tier: "TIER 1 (step-beta4-13-5-13-9.jsonl seq 2-7)"
+  - id: P-k3-13-9-drift-free
+    claim: "[13,9] GETONE {f1=0, f2=0} on tcode 0x09 identical on beta4 vs both 7.x baselines, with 2 active admin sessions present"
+    tier: "TIER 1 (step-beta4-13-5-13-9.jsonl seq 8-9; programmatic multiset diff)"
+  - id: P-k3-13-9-gating-extended
+    claim: "[13,9] gating on beta4: GETALL->0xfe0003 NOTIMP (re-proof of the queued shape), GETOBJ obj=1->0xfe0003 NOTIMP (NEW), GETCOUNT=0xFFFFFFFF in 0xfe0019/0x8 (NEW)"
+    tier: "TIER 1 (step-beta4-13-5-13-9.jsonl seq 10-15)"
+  - id: P-k3-13-6-miss-both-7x
+    claim: "[13,6] f1=admin EMPTY miss (SYS-only success, zero USER fields) re-proven on beta4 + 7.25; admin has NO record on either VM; bare GET FAILED 0xfe0006 + 'no user name provided' verbatim both versions"
+    tier: "TIER 1 (step-beta4-13-6.jsonl + step-725-13-6.jsonl)"
+  - id: P-k3-13-8-singleton
+    claim: "[13,8] singleton-list shape re-proven on beta4: GETALL 1 row {id 0, 'default'} + total 1; GETCOUNT total 1 in 0xfe0019"
+    tier: "TIER 1 (step-beta4-13-8.jsonl)"
+disproven: []
+unresolved:
+  - id: U6-13-6-population-path
+    claim: "CARRIED: no evidence shows how a [13,6] record comes to exist; sheeted as hunts H-13-6-A (WinBox-client prefs write) + H-13-6-B (M2 SET sibling-pattern create) — DESIGNED ONLY, not executed"
+  - id: U7-13-8-identity
+    claim: "CARRIED: singleton-'default' registry role still open; user/aaa default-group spelling temptation stays REJECTED (no structural match); sheeted as hunts H-13-8-A (group add/remove) + H-13-8-B (aaa/radius toggles) — DESIGNED ONLY"
+  - id: U-k3-13-5-role
+    claim: "CARRIED: {[],F,T,1,0} role still open; no plausible menu; sheeted as hunt H-13-5-A (user add/remove + sessions sweep) — DESIGNED ONLY"
+  - id: U-k3-13-9-role
+    claim: "CARRIED: {0,0} role still open beyond NOT-user/session-count (now with sessions-active corroboration); sheeted as hunt H-13-9-A (aaa/radius + session sweep) — DESIGNED ONLY"
+stimulus_sheets:
+  file: work/2026-11-winbox-attributes/proof/k3-user-tail/stimulus-hunt-sheets.yaml
+  hunts: [H-13-6-A, H-13-6-B, H-13-8-A, H-13-8-B, H-13-5-A, H-13-9-A]
+  status: "all 6 DESIGNED ONLY (budgets, VMs, baselines, restores, stop conditions specified); zero executed, zero writes spent"
+  bound_check: "<=2 experiments per unresolved field (13-6: 2, 13-8: 2, 13-5: 1, 13-9: 1)"
+evidence_paths:
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/census.ts
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/report.yaml
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/fragment.yaml
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/stimulus-hunt-sheets.yaml
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/step-beta4-13-5-13-9.jsonl
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/step-beta4-13-6.jsonl
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/step-beta4-13-8.jsonl
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/step-725-13-6.jsonl
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/console-beta4-13-5-13-9.txt
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/console-beta4-13-6.txt
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/console-beta4-13-8.txt
+  - work/2026-11-winbox-attributes/proof/k3-user-tail/console-725-13-6.txt
+async_separation: "all 4 step files are pure correlated tx/rx pairs (28 records, 14 tx, 0 orphan rx); no async/keepalive traffic interleaved; reqIds sequential per session" # coordinator-corrected per K-reviewer R-K3 (was 24/12)
+vm_state: "g4beta + twin3 each started once, stopped after their legs; both STOPPED at end. ws3c6 observed RUNNING at final check (not mine, untouched — sibling worker's machine). No other VMs touched."
+tiers_note: "Every proven[] claim above is TIER 1 (committed rx bytes in the cited step jsonl). No TIER 2 values are presented as rx-committed; console output was used only as a live progress signal."

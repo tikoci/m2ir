@@ -1,0 +1,4 @@
+cspell:ignore getone getall getobj getcount getf1
+census [13,8] getall: ok fields=7 statusWord=null
+census [13,8] getcount: ok fields=6 statusWord=null
+census: records=4 out=step-beta4-13-8.jsonl

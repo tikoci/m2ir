@@ -1,0 +1,4 @@
+cspell:ignore getone getall getobj getcount getf1
+census [13,6] getf1: ok fields=5 statusWord=null
+census [13,6] getone: ROUTER-ERROR errno=16646150 errstr="no user name provided"
+census: records=4 out=step-beta4-13-6.jsonl

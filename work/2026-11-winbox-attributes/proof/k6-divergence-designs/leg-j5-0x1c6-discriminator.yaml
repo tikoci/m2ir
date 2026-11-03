@@ -1,0 +1,162 @@
+# cspell:ignore rowid getall getcount fasttrack ws21 centrs jsonl mangle calea fanout anyproto posthoc unsets
+# U-j5-0x1c6-value-divergence DISCRIMINATOR (design only, unexecuted).
+# G1 M9 add-fasttrack (no protocol) grew 0x1c6=TRUE; J5 T5-c set-fasttrack
+# on a protocol=udp row grew 0x1c6=FALSE. Verb (add-vs-set) and protocol
+# state (absent-vs-udp) are CONFOUNDED across the two observations. This
+# sheet runs the missing 2x2 cells: leg A adds fasttrack direct with and
+# without protocol; leg B sets fasttrack on a no-protocol row.
+# Combined cap 7w+0r on ws21 7.25. Needs the user's per-leg yes; K6 seeks
+# neither approval nor scheduling.
+id: K6-j5-0x1c6-discriminator
+kind: write-leg-sheet
+status: design-unexecuted
+date: 2026-11-02
+worker: K6
+question: "U-j5-0x1c6-value-divergence: is the 0x1c6 TRUE-vs-FALSE split driven by the verb (add-vs-set semantics), by protocol state (absent-vs-present confound), or by their interaction?"
+record_standing: "G1 M9 (add-fasttrack, no protocol -> 0x1c6 TRUE, rowid 15, f40=40; cleared on set-back-to-accept) and J5 T5-c (set-fasttrack on protocol=udp row -> 0x1c6 FALSE; cleared on set-back-to-accept) BOTH STAND. This leg discriminates between them; it re-reads the G1 cell (A2) as a replication control, it does not re-prove either leg."
+confound:
+  observed:
+    - { cell: "add + no-protocol", value: "TRUE", source: "G1 M9" }
+    - { cell: "set + protocol=udp", value: "FALSE", source: "J5 T5-c" }
+  missing:
+    - { cell: "add + protocol (A1)", source: "this sheet, leg A" }
+    - { cell: "set + no-protocol (B)", source: "this sheet, leg B" }
+  control: "A2 re-adds bare fasttrack (G1 M9 cell): if TRUE replicates, the 2x2 interprets cleanly; if not, outcome D-non-replication names the regime question. A1 runs FIRST so a rejection leaves a clean table for A2+A1f (single-experimental-row matching holds throughout)."
+hypotheses:
+  - id: H-verb
+    claim: "add-vs-set semantics: the 0x1c6 value is a function of the verb (add=TRUE, set=FALSE), independent of protocol state."
+    predicts: { A1_add_with_proto: true, A2_add_bare: true, B_set_no_proto: false }
+  - id: H-proto
+    claim: "protocol-confound: the 0x1c6 value is a function of protocol state (absent=TRUE, present=FALSE), independent of the verb."
+    predicts: { A1_add_with_proto: false, A2_add_bare: true, B_set_no_proto: true }
+  - id: H-interaction
+    claim: "interaction: FALSE occurs only at (set, protocol-present); every other cell reads TRUE."
+    predicts: { A1_add_with_proto: true, A2_add_bare: true, B_set_no_proto: true }
+  - id: H-regime
+    claim: "regime shift / non-replication: the G1 TRUE does not replicate (A2 reads FALSE), so neither axis as stated explains the value; the TRUE-vs-FALSE split is boot/session/history-specific."
+    predicts: { A2_add_bare: false }
+vm:
+  name: ws21
+  routeros: "7.25"
+  arch: x86
+  why: "same host AND version as G1 and J5: controls for host/version so the 2x2 varies only verb and protocol state."
+  network: user, socket::ws21-a, socket::ws21-b
+  ports: "resolve live at execution from `quickchr list` (J5 line; re-resolve, never hardcode); numeric values redacted per sanitization rule"
+  end_state: STOPPED (not removed)
+tooling:
+  control_via: "centrs execute --quickchr ws21 --yes (writes) / centrs retrieve --quickchr ws21 (reads); every string explained offline pre-send, outputs saved as explain-*.json"
+  native_via: "proof/i2-decay-backlog/leg-h1-fixed.ts read (session-per-read; GETALL [20,3] row payloads ONLY, never [20,17]; J5 route-scope precedent)"
+counting_rule: "H1 F-jump rule: each control add/set = 1w; +1 per restore-verify branch; per-cell removes bundled 0w; rejected adds/sets 0w; ALL native reads 0w; quickchr start/stop 0r"
+budget:
+  leg_A: { counted_writes: 3, reboots: 0, conditional: "+1w ONLY if the A1 add is device-rejected (A1f fallback set fires)", itemized: "A1 add (1) + A2 add (1) + restore-verify branch (1); A1f set (0/1)" }
+  leg_B: { counted_writes: 3, reboots: 0, itemized: "B1 add (1) + B2 set (1) + restore-verify branch (1)" }
+  combined_cap: "7w+0r (A 3+1conditional, B 3); recycle stop/start between sub-legs is 0r (J5 precedent)"
+  note: "sub-legs priced separately; a per-leg yes may cover A, B, or both back-to-back."
+baseline_snapshot:
+  verdict_required: PASS
+  when: "at the start of EACH sub-leg (fresh boot or post-recycle); a sub-leg never inherits dummies from the other."
+  control_commands:
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/filter' > control-base-firewall-filter.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/nat' > control-base-firewall-nat.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/raw' > control-base-firewall-raw.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/mangle' > control-base-firewall-mangle.json"
+    - "centrs retrieve --quickchr ws21 '/ip/firewall/calea' > control-base-firewall-calea.json"
+  control_expect: "0 rows in all five menus"
+  native_command: "bun work/2026-11-winbox-attributes/proof/i2-decay-backlog/leg-h1-fixed.ts --quickchr ws21 --allowed-version 7.25 --t0-ms <now-ms> read --out step-base.jsonl --timing-out timing-base.jsonl"
+  native_expect: "[20,3]=0 [20,32]=0, GETALL [20,3] 0 rows complete"
+  fail_action: "STOP: baseline not empty. Do not proceed; report."
+exact_strings:
+  add_A2_bare: "/ip/firewall/filter/add chain=forward action=fasttrack-connection comment=k6-d-ft-bare"
+  add_A1_udp: "/ip/firewall/filter/add chain=forward action=fasttrack-connection protocol=udp comment=k6-d-ft-udp"
+  set_A1f_proto: "/ip/firewall/filter/set numbers=<A2-.id> protocol=udp"
+  add_B1_host: "/ip/firewall/filter/add chain=forward action=accept comment=k6-d-host"
+  set_B2_ft: "/ip/firewall/filter/set numbers=<HOST-.id> action=fasttrack-connection"
+  remove_form: "/ip/firewall/filter/remove numbers=<LIVE-.id>"
+row_matching: "at most ONE experimental row present at any time (remove between cells, bundled 0w); the single GETALL [20,3] row with comment k6-d-* is the cell row. Fasttrack dummy rows (comment 'special dummy rule to show fasttrack counters') are matched separately and counted per cell, never confused with the cell row (J5 precedent)."
+steps:
+  - tag: A1-add-with-protocol
+    why: "missing 2x2 cell (add, protocol-present), FIRST: protocol=udp mirrors J5 T5-c protocol-state exactly. Runs first so a rejection leaves a clean table for A2+A1f."
+    stimulus: "/ip/firewall/filter/add chain=forward action=fasttrack-connection protocol=udp comment=k6-d-ft-udp"
+    read_back: "MANDATORY: control shows the row (action fasttrack-connection); native GETALL [20,3] cell row carries f40=40; record 0x1c6 presence + value (predict TRUE under H-verb/H-interaction, FALSE under H-proto). Remove the row after the read (bundled 0w)."
+    evidence: [control-A1-add.json, control-A1-read.json, step-A1.jsonl, timing-A1.jsonl]
+    writes: 1
+    fail_action: "add rejected -> 0w data (a fasttrack+protocol add gate would be novel; cf. tarpit TCP-only P-g1-tarpit-tcp-only); A2 still runs, then A1f fallback fires on the A2 row. Read-back disagrees -> STOP stimulus-invalid."
+  - tag: A2-add-bare
+    why: "G1 M9 replication control: bare add-fasttrack must re-read TRUE for the 2x2 to interpret cleanly. Runs after the A1 row is removed (or after the A1 rejection, which leaves no row)."
+    stimulus: "/ip/firewall/filter/add chain=forward action=fasttrack-connection comment=k6-d-ft-bare"
+    read_back: "MANDATORY as A1; record 0x1c6 value (predict TRUE under H-verb/H-proto/H-interaction)."
+    evidence: [control-A2-add.json, control-A2-read.json, step-A2.jsonl, timing-A2.jsonl]
+    writes: 1
+    then: "KEEP the row if A1 was rejected (A1f fallback host); else remove (bundled 0w)."
+    fail_action: "add rejected -> 0w data (novel: bare fasttrack add was accepted in G1); leg A degrades to A1-only + report degraded. Read-back disagrees -> STOP stimulus-invalid."
+  - tag: A1f-set-protocol-on-A2-row
+    when: "CONDITIONAL: fires ONLY if the A1 add was device-rejected. Requires the kept A2 row."
+    why: "within-row protocol-state causation probe: the A2 row's 0x1c6 is already read (expect TRUE); setting protocol=udp tests whether protocol-state flips it within one row."
+    stimulus: "/ip/firewall/filter/set numbers=<A2-.id> protocol=udp"
+    read_back: "MANDATORY; record 0x1c6 value (flip TRUE->FALSE supports H-proto within-row; stays TRUE supports H-verb)."
+    interpretive_note: "verb-mixed (add-then-set), so this read is SUPPORTING, not decisive: a flip is consistent with H-proto but does not rule out set-semantics applying to the flip itself."
+    evidence: [control-A1f-set.json, control-A1f-read.json, step-A1f.jsonl, timing-A1f.jsonl]
+    writes: 1
+    fail_action: "set rejected -> 0w data; remove A2 row, restore, report A1-untestable."
+  - tag: A-restore-verify
+    stimulus: "remove live experimental rows (bundled 0w) + 5-menu control verify + native zero read"
+    expect: "PARTIAL expected (5 fasttrack dummies: filter x1, raw x1, mangle x3 — G1/J5 fanout); then 0r stop/start recycle -> FULL re-verify (0 rows all five menus both surfaces; J5 precedent)."
+    evidence: [control-A-restored-*.json, step-A-restored.jsonl, timing-A-restored.jsonl, control-A-recycle-*.json]
+    writes: 1
+    fail_action: "recycle still shows dummies or experimental rows -> non-sheet recovery, recorded honestly, never silently re-run."
+  - tag: B1-add-host
+    why: "no-protocol host row for the (set, no-protocol) cell; mirrors J5 T5-b-base."
+    stimulus: "/ip/firewall/filter/add chain=forward action=accept comment=k6-d-host"
+    read_back: "MANDATORY: exactly 1 row forward/accept; native cell row carries NO 0x1c6 and NO protocol triple (J5 T5-b-base precedent); ret .id recorded for B2."
+    evidence: [control-B1-add.json, control-B1-read.json, step-B1.jsonl, timing-B1.jsonl]
+    writes: 1
+    fail_action: "read-back disagrees (triple or 0x1c6 present on a bare add) -> STOP: J5 baseline violated, report novel."
+  - tag: B2-set-fasttrack
+    why: "missing 2x2 cell (set, no-protocol). Mirrors J5 T5-c verb with G1 M9 protocol-state."
+    stimulus: "/ip/firewall/filter/set numbers=<HOST-.id> action=fasttrack-connection"
+    read_back: "MANDATORY; record 0x1c6 value (predict FALSE under H-verb, TRUE under H-proto/H-interaction). Expect the 5-dummy fanout (record the count exactly)."
+    evidence: [control-B2-set.json, control-B2-read.json, step-B2.jsonl, timing-B2.jsonl]
+    writes: 1
+    fail_action: "set rejected -> 0w data (novel: J5 T5-c set accepted); restore, report B-untestable."
+  - tag: B-restore-verify
+    stimulus: "as A-restore-verify (remove + 5-menu verify + native zero + 0r recycle to FULL)"
+    evidence: [control-B-restored-*.json, step-B-restored.jsonl, timing-B-restored.jsonl, control-B-recycle-*.json]
+    writes: 1
+    fail_action: "as A-restore-verify."
+  - tag: stop-vm
+    commands: ["quickchr stop ws21"]
+    writes: 0
+    note: "omit (leave UP) ONLY if a further approved leg follows in-session on the recycled-clean ws21 (J5->J6 precedent); otherwise STOP."
+uncontrolled_axes:
+  - "table occupancy: G1 M9 TRUE was read with 3 rows present (C2 host + M9 + 1 fasttrack dummy; G1 report M9 N=3) and J5 T5-c FALSE with 2 rows present (host + 1 dummy; J5 report T5-c row-count 1->2) — both historical reads had a dummy present (coordinator-corrected per K-reviewer R-K6; was 'J5 single row'). Full table state is recorded per cell; no cells are added for occupancy (bound discipline). If the 2x2 returns all-one-value except the historical cells, occupancy becomes the lead suspect (outcome D-other)."
+  - "tcp-vs-udp within protocol-present: A1 uses udp (exact J5 mirror). A tcp variant is NOT sheeted; a split inside protocol-present stays open."
+  - "0xfd002a adjunct: expected on set-cells (G1 9/9 edit-trigger precedent); enumerated per cell, not a target."
+  - "[20,32] values: recorded values-only per cell (G1 bycatch convention); no model claimed."
+stop_conditions:
+  - "baseline not empty (control or native) at either sub-leg start -> STOP before any stimulus in that sub-leg"
+  - "read-back disagrees at any cell (row missing/wrong/traffic nonzero) -> STOP, restore-verify, report stimulus-invalid"
+  - "B1 bare add carries triple or 0x1c6 -> STOP (J5 baseline violated), restore-verify, report novel"
+  - "any add/set rejected -> 0w data, continue with surviving cells per the step's fail_action (J5 clear-form precedent)"
+  - "no [20,3] counter guard this leg (dummies pollute the count); the guard is experimental-row-by-comment + control read-back agreement"
+  - "A2-non-replication (reads FALSE) is NOT a stop: B and A1 still discriminate under the new regime (outcome D-non-replication)"
+outcomes:
+  - id: D-verb
+    condition: "A1=TRUE AND A2=TRUE AND B=FALSE (with J5 FALSE standing)"
+    verdict: "H-verb SUPPORTED: 0x1c6 value is add-vs-set semantics (add=TRUE, set=FALSE), protocol-independent."
+  - id: D-proto
+    condition: "A1=FALSE AND A2=TRUE AND B=TRUE"
+    verdict: "H-proto SUPPORTED: the J5/G1 split was a protocol-state confound (absent=TRUE, present=FALSE), verb-independent."
+  - id: D-interaction
+    condition: "A1=TRUE AND A2=TRUE AND B=TRUE"
+    verdict: "H-interaction SUPPORTED: FALSE is unique to (set, protocol-present). Follow-up (NOT sheeted, named only): order-swap leg (set-protocol-then-set-fasttrack vs set-fasttrack-then-set-protocol on one row) to test whether the interaction is order-sensitive."
+  - id: D-non-replication
+    condition: "A2=FALSE (G1 TRUE does not replicate on a bare add)"
+    verdict: "H-regime: neither stated axis explains the value as a stable function. If A1=FALSE and B=FALSE too -> all-FALSE regime (G1 TRUE was boot/session/history-specific; NEW question U-k6-0x1c6-regime, unscoped). Any mixed pattern -> record exactly, no model claimed."
+  - id: D-a1-rejected
+    condition: "A1 add device-rejected (0w); A1f conditional fired"
+    verdict: "A1-direct untestable (novel add gate, cf. tarpit-only precedent). A1f flip TRUE->FALSE supports H-proto (supporting, not decisive: verb-mixed); stays TRUE supports H-verb (same caveat). B cell still decisive between H-verb (FALSE) and H-proto/H-interaction (TRUE)."
+  - id: D-other
+    condition: "any pattern outside D-verb/D-proto/D-interaction/D-non-replication (e.g. 0x1c6 absent where presence was predicted)"
+    verdict: "no model claimed; record exactly. Occupancy (uncontrolled axis) becomes the lead suspect if the historical cells are the only outliers."
+evidence_tiers: "TIER 1 throughout: control read-backs (centrs retrieve) + committed native rx bytes (step-*.jsonl write-through) + timing ledgers. No TIER 2 by construction."
+spend: { counted_writes: 7, reboots: 0, cap_note: "7w+0r combined cap (A 3 + A1f 0/1 + B 3); no extension, no improvised cells" }

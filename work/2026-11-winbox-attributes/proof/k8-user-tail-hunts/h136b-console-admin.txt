@@ -1,0 +1,3 @@
+cspell:ignore getall getone getobj getcount getf1 rowid centrs quickchr winbox aaa nosuchuser synth
+census [13,6] getf1: ok fields=8 statusWord=null
+census: records=2 out=h136b-step-admin-unaffected.jsonl

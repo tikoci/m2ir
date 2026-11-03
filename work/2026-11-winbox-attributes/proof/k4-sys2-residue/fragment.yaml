@@ -1,0 +1,66 @@
+# cspell:ignore getall getone getobj getcount getonly notimp chfont sys2 cliref libumsg sysnote macwinbox mproxy u32c num
+# K4 proposed fragment (Phase K, sys2-residue). Coordinator integrates; K4 edits nothing canonical.
+# Proposes: notes + evidence for unknown-24-14 / unknown-24-16 / unknown-2-1 (drift-free,
+# GET-only gating, static holder trail). Omits: every field-name candidate (all unproven —
+# the screen-enum correlation is a sheeted hypothesis, not a mapping).
+proposals:
+  - handler: unknown-24-14
+    add_notes: |
+      Residue census (K4, 0w): GETONE {8:F, 9:T, 15:0} is
+      drift-free across 6.49.23/7.25/7.26beta4. Verb gating
+      (both 7.x): GET-only — GETALL/GETOBJ -> 0xfe0003
+      (NOTIMP, same signature as default-config); GETCOUNT =
+      0xFFFFFFFF sentinel (no row count). Static: AHolder
+      /nova/store/health both versions (v6 addHandler
+      0x8053416/vt 0x808ee78; v7 0x805ca60/vt 0x808cd10).
+      Role still open; health-store code is an
+      emptiness check only, no CLI pairing record found.
+    add_evidence:
+      - source: sample
+        ref: "live CHR interrogation (K4 sys2-residue census, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (drift-free, GET-only, GETCOUNT 0xFFFFFFFF) — work/2026-11-winbox-attributes/proof/k4-sys2-residue/{census.ts,step-beta4-sys2-residue.jsonl,step-725-sys2-residue.jsonl}"
+      - source: code
+        ref: "sys2 AHolder /nova/store/health both versions (v6 0x8053416/vt 0x808ee78/str 0x808e656; v7 0x805ca60/vt 0x808cd10/str 0x8086e0e); see work/2026-11-winbox-attributes/proof/k4-sys2-residue/report.yaml S-k4-health-holder"
+  - handler: unknown-24-16
+    add_notes: |
+      Residue census (K4, 0w): GETONE {1:2, 2:10} (both
+      u32c) is drift-free across 6.49.23/7.25/7.26beta4.
+      Verb gating (both 7.x): GET-only — GETALL/GETOBJ ->
+      0xfe0003 (NOTIMP); GETCOUNT = 0xFFFFFFFF sentinel.
+      Static: AHolder /nova/store/chfont both versions
+      (v6 0x80535a5/vt 0x808f178; v7 0x805cbfb/vt
+      0x808d0d0). console/settings mapping KILLED: the
+      menu is {sanitize-names:bool, log-script-errors:bool,
+      tab-width:num} (zero bools on the wire) and the
+      chfont store statically pairs with
+      /system/console/screen (v7 libumsg.so record), a
+      different menu. Screen-enum fit ({line-count 25:2,
+      blank-interval 10min:10} vs {1:2, 2:10}) is an
+      UNPROVEN correlation — discriminating leg sheeted,
+      no field names claimed.
+    add_evidence:
+      - source: sample
+        ref: "live CHR interrogation (K4 sys2-residue census, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (drift-free, GET-only, GETCOUNT 0xFFFFFFFF) — work/2026-11-winbox-attributes/proof/k4-sys2-residue/{census.ts,step-beta4-sys2-residue.jsonl,step-725-sys2-residue.jsonl}"
+      - source: code
+        ref: "sys2 AHolder /nova/store/chfont both versions (v6 0x80535a5/vt 0x808f178/str 0x808e6b4; v7 0x805cbfb/vt 0x808d0d0/str 0x8086e65); v7 libumsg.so chfont -> /system/console/screen record (file 0x77460); see work/2026-11-winbox-attributes/proof/k4-sys2-residue/report.yaml S-k4-chfont-holder, S-k4-chfont-screen-record, X-k4-console-settings-mapping"
+  - handler: unknown-2-1
+    add_notes: |
+      Residue census (K4, 0w): GETONE {2:u32 0x2000000}
+      (full-u32 tcode 0x08) is drift-free across
+      6.49.23/7.25/7.26beta4. Verb gating (both 7.x):
+      GET-only — GETALL/GETOBJ -> 0xfe0003 (NOTIMP);
+      GETCOUNT = 0xFFFFFFFF sentinel. Static: AHolder
+      /nova/store/mproxy-settings both versions (v6
+      mproxy 0x804e39f/vt 0x8057ef8; v7 0x8056b52/vt
+      0x8058c58); the store statically pairs with
+      /tool/mac-server/mac-winbox (v7 libumsg.so record).
+      Single-bitmask meaning unprovable statically;
+      toggle leg sheeted, no field name claimed.
+    add_evidence:
+      - source: sample
+        ref: "live CHR interrogation (K4 sys2-residue census, 2026-11-02, 0w): GETONE + gating on 7.26beta4/7.25 (drift-free, GET-only, GETCOUNT 0xFFFFFFFF) — work/2026-11-winbox-attributes/proof/k4-sys2-residue/{census.ts,step-beta4-sys2-residue.jsonl,step-725-sys2-residue.jsonl}"
+      - source: code
+        ref: "mproxy AHolder /nova/store/mproxy-settings both versions (v6 0x804e39f/vt 0x8057ef8/str 0x8057def; v7 0x8056b52/vt 0x8058c58/str 0x8058569); v7 libumsg.so mproxy-settings -> /tool/mac-server/mac-winbox record (file 0x787ac); see work/2026-11-winbox-attributes/proof/k4-sys2-residue/report.yaml S-k4-mproxy-holder, S-k4-mproxy-macwinbox-record"
+omits:
+  - "all field-name candidates for 24-14/24-16/2-1 (meanings unproven; U-k4-* stay open)"
+  - "screen line-count/blank-interval mapping for [24,16] (S-k4-screen-enum-correlation is sheeted hypothesis SH-k4-2416-screen, not evidence)"
+  - "no GLOSSARY.txt additions needed: no new protocol terms coined (chfont/sysnote/macwinbox are proof-local store/menu names)"

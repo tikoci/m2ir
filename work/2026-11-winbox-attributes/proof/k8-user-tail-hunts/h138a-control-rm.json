@@ -1,0 +1,113 @@
+{
+  "ok": true,
+  "data": {
+    "ret": ""
+  },
+  "warnings": [],
+  "tips": [],
+  "meta": {
+    "target": {
+      "input": "g4beta",
+      "host": "127.0.0.1",
+      "port": 9233,
+      "baseUrl": "api://127.0.0.1:9233",
+      "identity": "g4beta",
+      "source": {
+        "kind": "provider",
+        "key": "quickchr:g4beta"
+      },
+      "sources": {
+        "host": {
+          "kind": "provider",
+          "key": "quickchr:g4beta"
+        },
+        "port": {
+          "kind": "provider",
+          "key": "quickchr:g4beta"
+        }
+      }
+    },
+    "via": "native-api",
+    "settings": {
+      "via": {
+        "kind": "default",
+        "key": "via"
+      },
+      "host": {
+        "kind": "provider",
+        "key": "quickchr:g4beta"
+      },
+      "port": {
+        "kind": "provider",
+        "key": "quickchr:g4beta"
+      },
+      "timeoutMs": {
+        "kind": "default",
+        "key": "timeout"
+      },
+      "format": {
+        "kind": "cli",
+        "key": "format"
+      },
+      "validate": {
+        "kind": "default",
+        "key": "validate"
+      },
+      "insecure": {
+        "kind": "default",
+        "key": "insecure"
+      },
+      "username": {
+        "kind": "provider",
+        "key": "quickchr:g4beta:username"
+      },
+      "password": {
+        "kind": "provider",
+        "key": "quickchr:g4beta:password"
+      }
+    },
+    "validation": {
+      "enabled": true,
+      "source": ":put [:parse]",
+      "result": "passed",
+      "syntax": true,
+      "stages": [
+        {
+          "stage": "offline",
+          "source": "offline explain (canonicalizer)",
+          "result": "passed"
+        },
+        {
+          "stage": "device",
+          "source": ":put [:parse]",
+          "result": "passed"
+        }
+      ]
+    },
+    "operation": {
+      "kind": "execute",
+      "objectCount": 1,
+      "request": {
+        "command": "/user/group/remove k3synth",
+        "canonical": {
+          "mode": "script",
+          "input": "/user/group/remove k3synth",
+          "path": "",
+          "verb": "",
+          "attributes": {},
+          "queries": []
+        },
+        "write": true,
+        "yes": true,
+        "validate": true,
+        "verbose": false,
+        "timeoutMs": 10000,
+        "format": "json"
+      },
+      "auth": {
+        "username": "admin",
+        "passwordProvided": true
+      }
+    }
+  }
+}

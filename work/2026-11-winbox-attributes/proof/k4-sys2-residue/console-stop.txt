@@ -1,0 +1,3 @@
+cspell:ignore winbox datagram uncapped quickchr ether
+○ winbox-beta4 stopped
+○ ws20 stopped

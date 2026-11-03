@@ -1,0 +1,9 @@
+cspell:ignore winbox datagram uncapped quickchr ether amm
+  Network socket::ws20-link: unix datagram /home/amm0bot/.local/share/quickchr/networks/ws20-link.0.sock -> /home/amm0bot/.local/share/quickchr/networks/ws20-link.1.sock
+● ws20 started
+  Version: 7.25 (x86)
+  Network: user, socket::ws20-link
+  Ports:   http:9180 https:9181 ssh:9182 api:9183 api-ssl:9184 winbox:9185
+  REST:    http://admin@127.0.0.1:9180
+  SSH:     ssh admin@127.0.0.1 -p 9182
+  WinBox:  127.0.0.1:9185
