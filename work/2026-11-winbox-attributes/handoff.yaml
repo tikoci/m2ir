@@ -4,30 +4,9 @@
 # 4 user-tail hunts 8w), integrated, green. Uncommitted by design; do not
 # commit or push without instruction. H-13-6-A parked per user (needs tooling
 # design); 0x1c6/standing-2/K4-sheets/61-private-5/8-B remain unapproved.
-head: 53649dc81fe8f8bebec8b42e2e65ee0dddd03f2d
-git_status: "PHASE K APPROVED LEGS DONE, UNCOMMITTED; gates 421/0 + lint:ci green; all VMs stopped; 8w+0r spent of 8w approved"
-dirty_files:
-  - profiles/winbox-ipc/gui-handlers.yaml (M: K0/K1/K2/K3/K4/K5 notes + 15ev; 24-16 role chfont-correction; K7 124 live-confirm + 1ev; K8 13-6 fields f1/f2/f3 + set-block + hunt notes + 4ev)
-  - profiles/winbox-ipc/README.md (M: evidence 603 -> 623; fields 352 -> 355 (180/175); with-fields 33 -> 34; tail queue 17 -> 16; ev transcript count 249 -> 290)
-  - README.md (M: 352 -> 355 field entries)
-  - GLOSSARY.txt (M: +netns)
-  - work/2026-11-winbox-attributes/proof/j3-decay-u1-designs/u1-ambiguity-stop.yaml (M: S7 TR-069 row + sole-writer wording fix)
-  - test/profiles/winbox-ipc/k-residue-census.test.ts (new: 7 tests)
-  - test/profiles/winbox-ipc/k8-user-hunts.test.ts (new: 7 tests)
-  - fixtures/winbox-ipc/7.26beta4-k-residue-gating.json (new: 5 records)
-  - fixtures/winbox-ipc/7.25-get-20-124-selector.json (new: 2 records)
-  - fixtures/winbox-ipc/7.25-set-13-6-populated.json (new: 3 records)
-  - work/2026-11-winbox-attributes/proof/k0-v6-overflow/ (new, coordinator)
-  - work/2026-11-winbox-attributes/proof/k1-modem-pair/ (new)
-  - work/2026-11-winbox-attributes/proof/k2-board-info/ (new)
-  - work/2026-11-winbox-attributes/proof/k3-user-tail/ (new)
-  - work/2026-11-winbox-attributes/proof/k4-sys2-residue/ (new)
-  - work/2026-11-winbox-attributes/proof/k5-gated-pair/ (new)
-  - work/2026-11-winbox-attributes/proof/k6-divergence-designs/ (new)
-  - work/2026-11-winbox-attributes/proof/k-reviewer/ (new)
-  - work/2026-11-winbox-attributes/proof/k7-124-matrix-exec/ (new, coordinator)
-  - work/2026-11-winbox-attributes/proof/k8-user-tail-hunts/ (new, coordinator)
-  - work/2026-11-winbox-attributes/handoff.yaml (this file)
+head: 1dcb6819a95683d1c91234c1c53a2e90c4eaaedd
+git_status: "PHASE K COMMITTED (1dcb681); tree clean except pre-existing untracked work/2026-11-romon/; gates 421/0 + lint:ci green; all VMs stopped; 8w+0r spent of 8w approved"
+dirty_files: []
 slices:
   done: [K1-modem-pair, K2-board-info, K3-user-tail, K0-v6-overflow, K4-sys2-residue, K5-gated-pair-design, K6-divergence-designs, K-reviewer, reconcile, integrate-readonly, K7-124-matrix-exec, K8-user-tail-hunts, integrate-legs]
   in_progress: []
@@ -184,7 +163,7 @@ continuation_decision:
   clause_b_citable: "HELD (all budgets/VM-state/evidence-paths/counts citable from k-proof dirs + reviewer + this handoff)"
   clause_c_green: "HELD (gates 421/0 + lint:ci green, handoff written)"
   doubt_invoked: "NO"
-  resume_commit: "53649dc + uncommitted Phase K work incl. executed legs (do not commit or push without instruction)"
+  resume_commit: "1dcb681 (Phase K committed; tree clean except pre-existing untracked work/2026-11-romon/)"
 tooling_lessons_new:
   - "v6 quickchr inspect carries no winbox service entry (K2 D-k2-v6-port-resolution): resolve the WinBox port live from quickchr list (J2 precedent), redact from tees"
   - "Fixture JSON must be biome-formatted (compact arrays): run biome check --write on new fixtures before lint:ci"
