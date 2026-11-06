@@ -2,10 +2,16 @@
 
 <!-- cspell:ignore llms cliref unsettable syscap rodenasl oneline getset -->
 
-Status: proposed execution sequence, grounded in repository and local-source
-inspection on 2026-11-01, starting at commit `31b3f85`. This is research
-planning, not a new protocol specification or a claim of completed mapping.
-Canonical results belong in `profiles/winbox-ipc/*.yaml`.
+Status: methodology and historical execution sequence, initially grounded
+in repository and local-source inspection on 2026-11-01 at commit
+`31b3f85`. Batches through Phase K have since produced canonical mappings,
+fixtures, and implemented experimental tooling. Start at
+[`handoff.yaml`](handoff.yaml) for completed work and remaining gaps, and
+the [harness guide](harness/README.md) for capture/correlation/paging tooling.
+The dated queues and coordinator prompts below are historical; they do not
+restart completed work. This plan is not a protocol specification.
+Canonical results belong in `profiles/winbox-ipc/*.yaml`; use the
+[agent reading map](../../llms.txt) for the three public task paths.
 
 ## Pinned version decisions (2026-11-01)
 

@@ -17,6 +17,33 @@ says to the router, what parts of that are proven, and what you could
 build or debug with it. You do not need to reverse binaries to use this;
 the evidence trail is linked for when you want to check a claim.
 
+## Choose a reading path
+
+- **Packet capture and decoding:** the [agent map](../../llms.txt)'s capture
+  path starts at transport, authentication, and session crypto, then reaches
+  the wire grammar and handler tables below. The
+  [dissector proposal](../../work/2026-10-winbox-dissector/dissector-proposal.md)
+  distinguishes the implemented schema shape builder from a proposed
+  Wireshark/TShark dissector and secret exporter. Passive capture plus a
+  password generally cannot decrypt a session without ephemeral key material.
+- **Patched WinBox client compatibility:** start at the
+  [WinBox 3 patch review](../../work/2026-11-winbox3-patches/README.md), then
+  follow its original-client fingerprint, parser/descriptor findings, and
+  schema promotion map. It is a static review; patched binaries were not
+  executed by that review. A working native query does not validate a GUI.
+- **Native application backends:** use the message files below for routes,
+  types, retrieval, pagination, and write/persistence evidence. Then use the
+  [experiment harness](../../work/2026-11-winbox-attributes/harness/README.md),
+  [fixtures and replay trail](../../fixtures/README.md), and
+  [existing consumers](#existing-consumers-and-implementation-status).
+  Native handler access, terminal execution, and RouterOS native API need
+  separate evidence. Measure efficiency for the intended workload;
+  notification lifecycle and wider field coverage remain incomplete.
+
+These are example WinBox paths. The
+[format and research index](../README.md) routes file-based formats and
+other protocols, including material without a populated schema yet.
+
 ## The conversation in one picture
 
 ```text
@@ -38,11 +65,14 @@ Five layers, each in its own file:
 | Session crypto | [`session-crypto.yaml`](session-crypto.yaml) | Key derivation, AES-128-CBC envelopes, MAC, padding |
 | Messages | files below | Handlers, commands, keys, errors, processes |
 
-## What we know, as of RouterOS 6.49.23 / 7.25
+## What we know, with version scope
 
-Everything below was tested live against CHR instances of those two
-versions plus static binary analysis. It is not a promise about other
-versions, hardware, or every handler.
+The initial shared-machinery investigation used RouterOS 6.49.23 / 7.25
+CHR instances and static binary analysis. Later attribute work includes
+7.26beta4, selected 7.26beta5 checks, and limited 7.16.2 hardware evidence.
+These are not a full version matrix: each entry records which version,
+handler, operation, and row shape was actually observed. Some findings
+remain static-only or guessed; read the attached evidence and confidence.
 
 ### Addressing is a path, not a port number
 
@@ -52,9 +82,10 @@ process id, prepends the caller id to `SYS_FROM`, and forwards. Each
 process's Looper strips the next handler id and dispatches. Replies swap
 `SYS_TO`/`SYS_FROM`. Practical consequences:
 
-- Process ids are **version-scoped**. They come from loader config
-  (`system.x3`); v6 and v7 maps differ, and v7 ids are only recoverable
-  live. Never hard-code a pid from one version into another.
+- Process ids are **version-scoped**. The v6 map comes from loader config
+  (`system.x3`); the v7.25 registry is compiled into `libumsg`'s PR/HD
+  tables. Boot-time aliases and shims need live evidence. Never hard-code
+  a pid from one version into another.
 - Special routes exist: broadcast `[0xff0001]`, multicast prefix
   `0xff0002`, and pseudo-pids such as `0xff0003` (the looper fabric
   itself, not a process).
@@ -87,22 +118,27 @@ closed:
 
 ### Reading data natively: GETALL, GETONE, ADD, SET, REMOVE
 
-This is the part a tool like `centrs retrieve` needs — asking a handler
-for its objects without driving the CLI. Proven semantics:
+This is the part a native WinBox backend needs — asking a handler for its
+objects without driving the CLI. The catalog records these tested semantics
+with per-handler limits:
 
-- `GETALL` returns a message array (`0xfe0002`) and, when truncated at
-  the ~16 KB cap, a continuation token in `0xfe0003`. Pagination is a
-  lower-bound on row id, not an opaque cursor: pass the last row id to
-  get the rest.
-- **Row order is not creation order and not simple name order.** It is
-  a dual-mode mechanism keyed on (class, name) with a rename fixup, and
-  it differs subtly between v6 and v7. If you diff two GETALL replies,
+- `GETALL` returns a message array (`0xfe0002`) and a continuation token
+  in `0xfe0003` when truncated by count or the ~16 KB cap. Follow the
+  **server-issued token**, which names the next un-emitted row; passing
+  the last emitted row can repeat it. Start validation is per-handler:
+  `[20,1]` validates an inclusive row id; `[20,0]` uses a lower bound.
+  Avoid `count=0`, whose behavior differs between tested v6/v7 handlers.
+- **Interface `[20,0]` row order is not creation order or simple name order.**
+  It is a tree keyed on (class, name), with unconditional rename re-sorting on
+  both tested versions; the earlier dual-mode explanation is superseded.
+  If you diff two GETALL replies,
   sort by row id yourself; do not read meaning into reply order.
 - `ADD`/`SET`/`REMOVE` address rows by row id (`0xfe0001`) through
   slot-7 verbs. `SET` with a mistyped field is **silently ignored** —
-  strict typing, no error. Server-derived fields (the `0x10002`/`0x10003`
-  flag words on interfaces) cannot be set at all; they are recomputed
-  by the router from its own state on every bring-up.
+  strict typing, no error in the tested cases. Interface flag word
+  `0x10002` is stripped before apply; `0x10003` has both accepted and
+  server-owned/recomputed bits. Do not infer write access from read-back
+  alone; follow the field's tested setter behavior.
 - Field flags are decoded: for example interface flag word `0x10002`
   bits cover MACVLAN parent, ARP support, and being enslavable, with
   matching live refusal/acceptance behavior.
@@ -148,7 +184,10 @@ seed files.
 
 ## Coverage in numbers (inexact, counted 2026-11-02)
 
-Counted from the YAML in this directory, the 290 live transcripts in
+Schema totals below were rechecked on 2026-11-06 at m2ir `eee0d00`.
+The transcript, registry, Rosetta, and quality figures remain a historical
+2026-11-02 snapshot, not current coverage percentages. That snapshot used
+the YAML in this directory, the 290 live transcripts in
 `work/2026-10-chr-extraction/ws3c/ev/`, and the Rosetta database
 (`ros-help` 0.12.0, manuals 7.24–7.26) behind tikoci/restraml. Treat the
 ratios as scale indicators, not exact percentages: nobody has a total
@@ -214,27 +253,79 @@ answer would not change a client implementation:
 The full still-open list, with evidence counts, is the tail of
 [`ws3c-prober-findings.md`](../../work/2026-10-chr-extraction/ws3c-prober-findings.md).
 
-### Queued next phase — the handler field tail (not blocked)
+### Attribute and verb research — completed batches and remaining work
 
-The CHR-capable portion can start now; individual hardware-dependent fields
-may still need separate equipment. The
-[attribute and verb discovery plan](../../work/2026-11-winbox-attributes/attribute-discovery-plan.md)
-is the agent execution entrypoint. It covers the 16 catalogued handlers
-without fields, unknown entries, additional registry bindings, and native
-configuration operations useful to UIs and `centrs explain`.
+The follow-on is already implemented in experimental tooling and has
+promoted further mappings into YAML. Start at the
+[attribute handoff](../../work/2026-11-winbox-attributes/handoff.yaml) for
+completed batches through Phase K, proof directories, and unresolved or
+parked experiments. Its recorded head describes that campaign; it is not
+the current repository HEAD. The
+[execution plan](../../work/2026-11-winbox-attributes/attribute-discovery-plan.md)
+preserves the methodology and earlier queues, which the handoff supersedes
+for status.
 
-Start by extracting version-scoped candidates from Rosetta and hardening
-the existing native prober for lossless evidence, correlated replies,
-pagination, and schema checks. Then calibrate on identity and IP addresses,
-add an unmapped configuration slice and a grounded private-verb candidate,
-and expand through independent handler-family workers. Controlled changes
-and inverse native writes establish field meanings and write support;
-CLI names/types alone establish neither. Proven results belong in the
-canonical YAML, with unknowns and version limits preserved.
+The [harness guide](../../work/2026-11-winbox-attributes/harness/README.md)
+documents lossless plaintext capture, request correlation, bounded paging,
+schema naming, version checks, and mutation controls. The
+[fixture guide](../../fixtures/README.md) connects sanitized evidence to
+replay tests. Controlled changes and inverse native writes establish field
+meanings and write support; CLI names/types alone establish neither.
 
 This phase is deliberately separate from the §§16–47 series: that
 series established the shared protocol machinery, and this one develops
 the configuration field and operation catalogue that machinery carries.
+
+### Help collect TLVs and map attributes
+
+Unknown fields, version/type differences, absent fields, and negative
+experiments are useful contributions. Start with the handler catalog and
+current handoff to avoid repeating completed probes; the
+[candidate inventory](../../work/2026-11-winbox-attributes/candidates.yaml)
+provides experimental leads rather than numeric identity proof. Reuse the
+harness and sanitized fixture workflow above. Follow the
+[discovery submission path](../../README.md#submit-a-discovery) to open an
+issue or PR; maintainers will reproduce or cross-check submitted evidence
+before promoting it into canonical YAML.
+
+## Existing consumers and implementation status
+
+Inspected 2026-11-06: **tikoci/centrs main at
+`0221b899da70b8c54410f357fd77c2133b286c08`**. The links below pin that
+revision; consult its current matrix before relying on later capabilities.
+
+- [Shared EC-SRP5 source](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/src/protocols/ec-srp5.ts)
+  explicitly cites m2ir's
+  [handshake schema](ec-srp5-handshake.yaml). Its minimal-length REDP1/shared
+  value handling follows the libucrypto and live-probe corrections. The
+  implemented consumers include
+  [MAC-Telnet MTWEI](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/src/protocols/mtwei.ts)
+  and [bandwidth-test framing](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/src/protocols/btest.ts).
+- [Regression vectors and provenance](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/test/fixtures/ec-srp5.json)
+  record m2ir's vector provenance and
+  [reference implementation](../../work/2026-10-chr-extraction/ws3c/ec-srp5.ts).
+  The original m2ir vector file named there is not tracked here; use the
+  committed centrs fixture for public replay.
+  These deterministic transcripts are calculated, not live captures.
+  [Unit tests](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/test/unit/ec-srp5.test.ts)
+  exercise the encoding discriminators and both roles;
+  [CHR integration tests](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/test/integration/ec-srp5.test.ts)
+  check RouterOS's bandwidth-test proofs. These are authentication tests,
+  not native WinBox retrieval or GUI compatibility tests.
+- The [capability matrix](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/docs/MATRIX.md)
+  marks `execute / winbox-terminal` **not-started**. Its native-api
+  retrieval/listen support is a separate protocol; shared EC-SRP5 does not
+  establish a native WinBox backend or notifications. Those remain future
+  centrs applications of the handler research, not implemented support
+  demonstrated by this trail.
+
+Within m2ir, the prober and attribute harness are implemented experimental
+WinBox consumers. The
+[schema shape builder](../../src/tooling/winbox-dissector-shape.ts) and
+[tests](../../test/tooling/winbox-dissector-shape.test.ts) implement a data
+adapter; the [dissector](../../work/2026-10-winbox-dissector/dissector-proposal.md)
+and session-secret exporter remain proposals. No production client or
+complete format coverage is implied by these tools.
 
 ## Layout
 
@@ -267,8 +358,9 @@ as evidence — the canonical YAML files above are derived from it.
 
 ## Research and version scope
 
-The current schema incorporates client analysis and live CHR observations
-on RouterOS 6.49.23 and 7.25 (§§16–47 of the probe findings). Read each
+The current schema incorporates client analysis, the RouterOS 6.49.23 and
+7.25 shared-machinery campaign (§§16–47 of the probe findings), and later
+attribute batches with additional version scope noted above. Read each
 entry's confidence, version scope, and evidence before reusing a handler
 ID or field mapping. Native queries working on 7.25 do not establish
 full WinBox 3 client compatibility.
@@ -277,5 +369,6 @@ For ongoing work and reproductions, follow the
 [client analysis](../../work/2026-10-winbox-client-re/README.md),
 [CHR analysis](../../work/2026-10-chr-extraction/README.md), and
 [live probe findings](../../work/2026-10-chr-extraction/ws3c-prober-findings.md).
-These are research trails; protocol definitions and corrected findings
-belong in the YAML above.
+For attribute-batch status, continue to the handoff linked above. These are
+research trails; protocol definitions and corrected findings belong in
+the YAML above.

@@ -23,7 +23,7 @@ and active research.
 - `physical/` — profile-agnostic wire grammars (`nv-message.yaml`)
 - `concepts/` — cross-profile semantic identity (placeholder)
 - `profiles/<name>/` — one usage context per directory; `winbox-ipc/strawman/` holds the imported seed material
-- `fixtures/` — raw bytes referenced from `evidence:` entries (placeholder)
+- `fixtures/` — sanitized evidence referenced from `evidence:` entries; WinBox plaintext replay JSON is populated
 - `src/tooling/` — repo-local Bun tooling (`audit:applyto`, `cortex.db` logging)
 - `test/` — anchor tests for schema slices and repo tooling
 - `work/` — exploratory protocol/design notes that are not yet hardened

@@ -17,10 +17,22 @@ anything. Schema content is **CC0-1.0**.
 - **Curious about how WinBox works?** Start with the
   [WinBox profile guide](profiles/winbox-ipc/README.md). It connects the
   transport, authentication, messages, and management handlers.
-- **Building a client or investigating compatibility?** Read
-  [the wire grammar](physical/nv-message.yaml) and
-  [the WinBox profile](profiles/winbox-ipc/profile.yaml), then follow the
-  relevant entries' `notes:`, `confidence:`, and `evidence:`.
+- **Decoding a packet capture?** Follow the
+  [capture path in the agent map](llms.txt) to framing,
+  authentication, encryption, and handler evidence. The proposed dissector
+  and session-secret export still need implementation.
+- **Investigating patched winbox.exe / winbox64.exe compatibility?** Follow
+  the [compatibility path in the agent map](llms.txt)
+  through the static patch review, client analysis, and canonical YAML.
+- **Building a native WinBox backend?** Follow the
+  [backend path in the agent map](llms.txt) to routing, typed fields,
+  retrieval, pagination, writes, and notification gaps, plus existing
+  implementation references.
+- **Working with files or another protocol?** Use the
+  [format and research index](profiles/README.md) for Dude databases,
+  CDB/WBX saved connections, MNDP, RouterOS internal files, and related
+  protocol leads. The three WinBox paths above are examples, not the
+  repository's scope limit.
 - **Sending an agent here?** Use [the agent reading map](llms.txt) as a focused reading
   map. [AGENTS.md](AGENTS.md) contains contributor instructions.
 
@@ -34,9 +46,11 @@ menu alone does not establish full compatibility.
 
 Our [forum discussion of possible future changes](https://forum.mikrotik.com/t/general-discussion-on-stable-releases-cut-off-from-7-25-stable-announcement-thread/274031/120)
 is motivation for investigation, not a confirmed account of MikroTik's
-roadmap. The current lab work demonstrates authenticated native WinBox
-queries on RouterOS **6.49.23 and 7.25**; it does not establish compatibility
-for every client, handler, device, or later RouterOS release.
+roadmap. The initial lab work demonstrates authenticated native WinBox
+queries on RouterOS **6.49.23 and 7.25**. Later attribute experiments include
+**7.26beta4**, selected **7.26beta5** checks, and limited **7.16.2** hardware
+observations; each YAML entry records its own scope. This does not establish
+compatibility for every client, handler, device, or later RouterOS release.
 
 The ongoing research combines WinBox client analysis with REA/Ghidra,
 RouterOS binary analysis, and live probes using
@@ -52,29 +66,39 @@ is known, in administrator terms. Follow the
 [CHR research](work/2026-10-chr-extraction/README.md) for the investigation
 trail; the [live probe findings](work/2026-10-chr-extraction/ws3c-prober-findings.md)
 record tested behavior and remaining gaps.
+The [WinBox 3 patch review](work/2026-11-winbox3-patches/README.md)
+connects version gates and GUI descriptor/parser breaks to that evidence.
+It reviews sources statically; it does not verify patched client behavior.
 
 That CHR-lab series (§§16–47 of the findings) is at a natural stopping
 point: its remaining items need real RouterBOARD hardware, LTE/CAPsMAN/PPP
 peers, or user credentials, or are small bounded residues. They are listed
-as parked in the profile guide rather than chased further here. One
-unblocked follow-on now has an
-[agent execution plan](work/2026-11-winbox-attributes/attribute-discovery-plan.md):
-mapping native configuration attributes and verbs through Rosetta candidate
-metadata, a schema-aware WinBox experiment harness, controlled CHR changes,
-and bounded parallel handler research.
+as parked in the profile guide rather than chased further here. The
+configuration-attribute follow-on has since produced a
+[schema-aware experiment harness](work/2026-11-winbox-attributes/harness/README.md),
+[sanitized replay fixtures](fixtures/README.md), and further YAML mappings.
+Its [handoff](work/2026-11-winbox-attributes/handoff.yaml) records completed
+batches and remaining work; the
+[execution plan](work/2026-11-winbox-attributes/attribute-discovery-plan.md)
+preserves the methodology and historical sequence.
 
 ## What this knowledge enables
 
-One implementation goal is [tikoci/centrs](https://github.com/tikoci/centrs):
-WinBox as a transport in its `--via` schemes. Terminal execution for
-`centrs execute` provides a starting point. Native data retrieval and
-listening for updates for `centrs retrieve` require a deeper understanding
-of the attribute-based messages: which handler owns a field, what its TLV
-(type-length-value) means, and how replies and notifications behave.
-The [GUI handler catalog](profiles/winbox-ipc/gui-handlers.yaml) is a key
-entrypoint for that work. Retrieval, pagination, and write/persistence
-semantics are now proven for the catalogued handlers; notification
-behavior and wider handler coverage remain open.
+[tikoci/centrs](https://github.com/tikoci/centrs) already consumes m2ir:
+its shared EC-SRP5 implementation and regression vectors use this repo's
+authentication findings for MAC-Telnet and bandwidth-test traffic. The
+[implementation trail](profiles/winbox-ipc/README.md#existing-consumers-and-implementation-status)
+pins the inspected revision and links source, tests, provenance, and status.
+At that revision, WinBox terminal execution is still `not-started`; shared
+authentication does not implement a native WinBox configuration backend.
+
+Native WinBox data access is a further application of the
+[GUI handler catalog](profiles/winbox-ipc/gui-handlers.yaml): which handler
+owns a field, what its TLV (type-length-value) means, and how replies and
+notifications behave. Retrieval, pagination, and selected write/persistence
+experiments are recorded with per-handler limits; notification lifecycle
+and wider handler coverage remain open. Compare efficiency by measuring
+the target workload, including pagination, projection, and change handling.
 
 Another goal is a **better Wireshark dissector for WinBox IPC**, with
 schema-derived field names, context-aware handler decoding, and eventually
@@ -91,7 +115,7 @@ here remains the shared source of protocol knowledge.
 | Area | Current coverage |
 |---|---|
 | [M2 wire grammar](physical/nv-message.yaml) | Headers, types, compact encodings, and nested messages |
-| [WinBox IPC](profiles/winbox-ipc/) | Transport, EC-SRP5 authentication, session encryption, system/session keys, commands, errors, processes, and selected GUI handlers (51 envelope keys, 50 handlers, 355 field entries mapped; see the profile guide's coverage counts) |
+| [WinBox IPC](profiles/winbox-ipc/) | Transport, EC-SRP5 authentication, session encryption, system/session keys, commands, errors, processes, and selected GUI handlers; see the profile guide for coverage counts |
 | [The Dude on disk](profiles/dude-on-disk/) | Initial object-class and field catalogs, with upstream cross-checks |
 | [WinBox CDB](profiles/winbox-cdb/) and [MNDP](profiles/mndp/) | Planned profiles; currently placeholders |
 | [Cross-profile concepts](concepts/) | Planned semantic identities shared between profiles |
@@ -100,6 +124,11 @@ Coverage is incremental. A populated schema is not a claim that an entire
 protocol is understood. Handler IDs and field meanings can depend on the
 RouterOS version and context; check the evidence attached to the entry you
 intend to use.
+The [format and research index](profiles/README.md) also routes to material
+outside populated profiles: CDB/WBX sources, `.x3` extraction/decoder work,
+store persistence evidence, and leads for MAC-WinBox, terminal access,
+RoMON, and other RouterOS artifacts. A research link does not imply a
+complete grammar, decoder, or interoperability guarantee.
 
 ## Reading and contributing
 
@@ -115,5 +144,62 @@ research stay in [`work/`](work/) until ready to promote. Contributions
 are most useful when they identify the tested version, preserve a source
 or sanitized observation, and distinguish an observation from an inference.
 
+### Submit a discovery
+
+**Issues and pull requests are welcome, including partial findings and
+corrections from agents.** [Open an issue](https://github.com/tikoci/m2ir/issues/new)
+to share an observation, unknown TLV, negative result, or reproduction you
+cannot yet turn into a schema change. For a concrete change, send a
+[pull request](https://github.com/tikoci/m2ir/compare) with the evidence and
+proposed YAML or research update. Maintainers will reproduce or cross-check
+the finding against its sources and version scope before accepting it into
+canonical schema; a useful submission need not arrive fully proven.
+
+Include the affected format/profile, m2ir revision, exact RouterOS and
+client versions (plus architecture/binary hash when relevant), numeric
+route/tag and wire type, observed versus expected behavior, and a public
+source or sanitized minimal sample with reproduction steps. Keep proposed
+meanings separate from observed bytes; unresolved IDs can stay unknown.
+Do not submit credentials, session secrets, private device data, or raw
+saved-connection/database files containing them.
+
+Help with **TLV collection and attribute mapping** is especially welcome:
+start at the [handler catalog](profiles/winbox-ipc/gui-handlers.yaml)'s
+unknown fields and gaps, then the
+[attribute handoff](work/2026-11-winbox-attributes/handoff.yaml) for completed
+experiments and remaining work. The
+[candidate inventory](work/2026-11-winbox-attributes/candidates.yaml) and
+[discovery methodology](work/2026-11-winbox-attributes/attribute-discovery-plan.md)
+help design a bounded experiment; CLI candidates alone do not establish
+native field IDs. Use the
+[harness guide](work/2026-11-winbox-attributes/harness/README.md) and
+[fixture guide](fixtures/README.md) to preserve evidence. Reports of absent
+fields, type/version differences, and failed hypotheses are useful too.
+
+For other formats, use the [format and research index](profiles/README.md)
+to find the relevant schema or source lead. Keep exploratory submissions
+under `work/`; promote supported findings into YAML with `confidence:`,
+`evidence:`, and any corrective `revision-history:`. For local changes,
+follow [AGENTS.md](AGENTS.md) and the applicable path rules, run
+`bun run lint:ci`, and run relevant existing tests for changed mappings.
+
 See [BOOTSTRAP.md](BOOTSTRAP.md) for Bun setup and validation, and
 [CREDITS.md](CREDITS.md) for the upstream work this reference builds on.
+
+## Stable public entrypoints
+
+For downstream skills such as
+[routeros-skills#55](https://github.com/tikoci/routeros-skills/issues/55),
+use these maintained URLs, then follow their links to current details:
+
+- [README](https://github.com/tikoci/m2ir/blob/main/README.md) — mission, coverage, and discovery submissions.
+- [Agent reading map](https://raw.githubusercontent.com/tikoci/m2ir/main/llms.txt) — example task paths, broader format/research discovery, evidence, and tooling.
+- [Format and research index](https://github.com/tikoci/m2ir/blob/main/profiles/README.md) — file-based formats, other protocols, placeholders, and source leads.
+- [WinBox profile guide](https://github.com/tikoci/m2ir/blob/main/profiles/winbox-ipc/README.md) — human orientation, implementation references, and limitations.
+
+The WinBox examples should help a skill route common tasks without hiding
+other formats and research. Include a path back to discovery submissions
+when an agent learns something new. Keep field tables, patch inventories,
+counts, and research status here.
+Record the m2ir commit and exact RouterOS/client versions when using them;
+`main` links discover current knowledge but do not pin a reproduction.
