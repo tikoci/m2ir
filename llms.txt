@@ -11,7 +11,10 @@ Links below fetch plain-text files from the main branch. In a local checkout,
 the path after `/main/` identifies the same file. For reproducible work,
 record the commit used alongside the RouterOS version.
 
-Choose one of the three task paths below, then use the shared file index.
+The three WinBox task paths below are examples. For file analysis, another
+protocol, or a topic that does not fit them, start with Other formats and
+protocol research below and the format/research index. Use Returning new
+discoveries to contribute what you learn.
 `physical/` defines bytes, `profiles/` assigns meaning in a usage context,
 and `concepts/` is a placeholder for shared semantic identity. The WinBox
 and Dude profiles have content; CDB and MNDP profiles remain placeholders.
@@ -147,9 +150,36 @@ forum theories about future protocol changes are not established behavior.
 - [Live probe findings](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-chr-extraction/ws3c-prober-findings.md): Version-scoped observations, transcript references, corrections, and open questions.
 - [Configuration attribute and verb plan](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-11-winbox-attributes/attribute-discovery-plan.md): Methodology and historical execution sequence; completed work and remaining gaps are in the attribute handoff above. Later evidence includes 7.26beta4 and selected 7.26beta5 checks; read scope per entry.
 
-## Other formats and sources
+## Other formats and protocol research
 
-- [The Dude profile](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/dude-on-disk/profile.yaml): On-disk object classification and field-table references; do not transfer WinBox naming assumptions unchanged.
-- [Profile index](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/README.md): Other usage contexts, including placeholder CDB and MNDP profiles.
+- [Format and research index](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/README.md): Maintained routes across populated schemas, file-based formats, placeholder profiles, shared mechanisms, experimental tooling, and adjacent source leads. If a topic is missing, inspect the tracked physical/, profiles/, and work/ trees; an untracked local artifact is not a public source.
+- [The Dude profile](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/dude-on-disk/profile.yaml) → [object classes](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/dude-on-disk/object-classes.yaml) → [fields](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/dude-on-disk/fields.yaml): Initial populated schema for dude.db object blobs. Follow evidence to donny / TheDudeToHuman. Preserve object-class/tag identity and marker rules; WinBox naming and compact rules do not transfer unchanged.
+- [CDB saved-connections guide](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-cdb/README.md): Placeholder profile with pinned centrs reader/test references; use the source inventory below for WBX saved sessions and conversion leads. Saved RoMON neighbor/target records do not establish the RoMON tunnel protocol.
+- [MNDP guide](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/mndp/README.md): Placeholder for a separate TLV grammar; pinned external codec/tests provide implementation evidence. No canonical MNDP YAML is populated yet.
+- [CHR extraction](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-chr-extraction/README.md) and [x3parse.ts](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-chr-extraction/x3parse.ts): RouterOS image/.x3 metadata research and experimental decoding, not a standalone canonical file-format profile.
+- [SYS keys](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/sys-keys.yaml), especially SYS_OWNER / 0xff001e, and Live probe findings above: selected /rw/store/cfg.* persistence evidence; not a general store-file grammar.
+- [WinBox guide's implementation trail](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/README.md): Shared EC-SRP5 findings consumed by MAC-Telnet and bandwidth-test code. This does not constitute complete m2ir profiles for those protocols. Profile/Processes/mproxy/Private commands above route internal IPC and the seeded terminal surface.
+- [Source inventory](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-05-winbox-nova-sources/winbox-nova-source-inventory.md): Dated public-source scouting for CDB/WBX, MAC-WinBox, service-specific nova, and adjacent NPK/backup/user-database/supout extraction. These are leads to investigate, not claims of canonical coverage or completed decoders.
 - [Credits](https://raw.githubusercontent.com/tikoci/m2ir/main/CREDITS.md): Major upstream sources; detailed citations live in the YAML.
-- [Source inventory](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-05-winbox-nova-sources/winbox-nova-source-inventory.md): Additional public leads and prior scouting.
+
+## Returning new discoveries
+
+Issues and pull requests are welcome, including partial agent findings,
+unknown TLVs, negative results, and corrections. [Open an issue](https://github.com/tikoci/m2ir/issues/new)
+for an observation or reproduction; send a [pull request](https://github.com/tikoci/m2ir/compare)
+for proposed evidence, research, or schema changes. Maintainers reproduce
+or cross-check findings against sources and version scope before canonical
+promotion. Read [submission guidance](https://github.com/tikoci/m2ir/blob/main/README.md#submit-a-discovery)
+for the evidence checklist, sanitization, placement, and checks; contributing
+does not require a completed field mapping.
+
+For the TLV collection effort, start with GUI handlers' unknown fields and
+gaps, then the attribute handoff for completed work and remaining questions.
+The [candidate inventory](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-11-winbox-attributes/candidates.yaml)
+and configuration discovery plan provide experiment leads; CLI metadata
+alone does not establish numeric native identities. Reuse the harness and
+fixture/replay trail above. For other formats, follow the format/research
+index and submit evidence against that context rather than assuming M2.
+Keep observed bytes separate from proposed semantics and include exact
+versions, route/tag/type, provenance, and reproducible steps. Never publish
+credentials, session secrets, or private capture/saved-file data.

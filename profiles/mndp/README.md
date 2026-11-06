@@ -11,7 +11,17 @@ Footgun on record: MNDP uptime (tag 10) is the only little-endian
 integer in the protocol — every other MNDP integer is big-endian.
 Worth annotating prominently when the schema lands.
 
-Reference implementation: `mcp-mikrotik` `src/mndp.ts`.
-See also the `routeros-mndp` skill.
+Public implementation references, inspected centrs main revision
+`0221b899da70b8c54410f357fd77c2133b286c08`:
 
-Placeholder.
+- [MNDP codec](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/src/data/mndp.ts)
+- [Codec tests](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/test/unit/mndp.test.ts)
+
+Earlier implementation lead: `mcp-mikrotik` `src/mndp.ts`. See also the
+`routeros-mndp` skill for discovery-specific work.
+
+This is a **placeholder**, without canonical MNDP YAML. The implementation
+and tests provide external evidence, not a completed schema drain here.
+Use the [discovery submission path](../../README.md#submit-a-discovery) for
+unknown TLVs, version differences, sanitized samples, or proposed mappings.
+The [format and research index](../README.md) routes other protocols.

@@ -40,6 +40,10 @@ the evidence trail is linked for when you want to check a claim.
   separate evidence. Measure efficiency for the intended workload;
   notification lifecycle and wider field coverage remain incomplete.
 
+These are example WinBox paths. The
+[format and research index](../README.md) routes file-based formats and
+other protocols, including material without a populated schema yet.
+
 ## The conversation in one picture
 
 ```text
@@ -271,6 +275,18 @@ meanings and write support; CLI names/types alone establish neither.
 This phase is deliberately separate from the §§16–47 series: that
 series established the shared protocol machinery, and this one develops
 the configuration field and operation catalogue that machinery carries.
+
+### Help collect TLVs and map attributes
+
+Unknown fields, version/type differences, absent fields, and negative
+experiments are useful contributions. Start with the handler catalog and
+current handoff to avoid repeating completed probes; the
+[candidate inventory](../../work/2026-11-winbox-attributes/candidates.yaml)
+provides experimental leads rather than numeric identity proof. Reuse the
+harness and sanitized fixture workflow above. Follow the
+[discovery submission path](../../README.md#submit-a-discovery) to open an
+issue or PR; maintainers will reproduce or cross-check submitted evidence
+before promoting it into canonical YAML.
 
 ## Existing consumers and implementation status
 

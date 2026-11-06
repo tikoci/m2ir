@@ -29,7 +29,9 @@ then the corresponding test under
 
 The tests decode bytes with the independent
 [`m2-replay.ts`](../test/profiles/winbox-ipc/m2-replay.ts) helper and compare
-against canonical YAML. Run an offline example from the repository root:
+decoded bytes with recorded fixture entries. They separately check selected
+YAML fields; this does not establish exhaustive schema-to-fixture agreement.
+Run an offline example from the repository root:
 
 ```bash
 bun test ./test/profiles/winbox-ipc/cursor-20-1.test.ts

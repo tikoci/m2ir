@@ -28,6 +28,11 @@ anything. Schema content is **CC0-1.0**.
   [backend path in the agent map](llms.txt) to routing, typed fields,
   retrieval, pagination, writes, and notification gaps, plus existing
   implementation references.
+- **Working with files or another protocol?** Use the
+  [format and research index](profiles/README.md) for Dude databases,
+  CDB/WBX saved connections, MNDP, RouterOS internal files, and related
+  protocol leads. The three WinBox paths above are examples, not the
+  repository's scope limit.
 - **Sending an agent here?** Use [the agent reading map](llms.txt) as a focused reading
   map. [AGENTS.md](AGENTS.md) contains contributor instructions.
 
@@ -119,6 +124,11 @@ Coverage is incremental. A populated schema is not a claim that an entire
 protocol is understood. Handler IDs and field meanings can depend on the
 RouterOS version and context; check the evidence attached to the entry you
 intend to use.
+The [format and research index](profiles/README.md) also routes to material
+outside populated profiles: CDB/WBX sources, `.x3` extraction/decoder work,
+store persistence evidence, and leads for MAC-WinBox, terminal access,
+RoMON, and other RouterOS artifacts. A research link does not imply a
+complete grammar, decoder, or interoperability guarantee.
 
 ## Reading and contributing
 
@@ -134,6 +144,45 @@ research stay in [`work/`](work/) until ready to promote. Contributions
 are most useful when they identify the tested version, preserve a source
 or sanitized observation, and distinguish an observation from an inference.
 
+### Submit a discovery
+
+**Issues and pull requests are welcome, including partial findings and
+corrections from agents.** [Open an issue](https://github.com/tikoci/m2ir/issues/new)
+to share an observation, unknown TLV, negative result, or reproduction you
+cannot yet turn into a schema change. For a concrete change, send a
+[pull request](https://github.com/tikoci/m2ir/compare) with the evidence and
+proposed YAML or research update. Maintainers will reproduce or cross-check
+the finding against its sources and version scope before accepting it into
+canonical schema; a useful submission need not arrive fully proven.
+
+Include the affected format/profile, m2ir revision, exact RouterOS and
+client versions (plus architecture/binary hash when relevant), numeric
+route/tag and wire type, observed versus expected behavior, and a public
+source or sanitized minimal sample with reproduction steps. Keep proposed
+meanings separate from observed bytes; unresolved IDs can stay unknown.
+Do not submit credentials, session secrets, private device data, or raw
+saved-connection/database files containing them.
+
+Help with **TLV collection and attribute mapping** is especially welcome:
+start at the [handler catalog](profiles/winbox-ipc/gui-handlers.yaml)'s
+unknown fields and gaps, then the
+[attribute handoff](work/2026-11-winbox-attributes/handoff.yaml) for completed
+experiments and remaining work. The
+[candidate inventory](work/2026-11-winbox-attributes/candidates.yaml) and
+[discovery methodology](work/2026-11-winbox-attributes/attribute-discovery-plan.md)
+help design a bounded experiment; CLI candidates alone do not establish
+native field IDs. Use the
+[harness guide](work/2026-11-winbox-attributes/harness/README.md) and
+[fixture guide](fixtures/README.md) to preserve evidence. Reports of absent
+fields, type/version differences, and failed hypotheses are useful too.
+
+For other formats, use the [format and research index](profiles/README.md)
+to find the relevant schema or source lead. Keep exploratory submissions
+under `work/`; promote supported findings into YAML with `confidence:`,
+`evidence:`, and any corrective `revision-history:`. For local changes,
+follow [AGENTS.md](AGENTS.md) and the applicable path rules, run
+`bun run lint:ci`, and run relevant existing tests for changed mappings.
+
 See [BOOTSTRAP.md](BOOTSTRAP.md) for Bun setup and validation, and
 [CREDITS.md](CREDITS.md) for the upstream work this reference builds on.
 
@@ -143,10 +192,14 @@ For downstream skills such as
 [routeros-skills#55](https://github.com/tikoci/routeros-skills/issues/55),
 use these maintained URLs, then follow their links to current details:
 
-- [README](https://github.com/tikoci/m2ir/blob/main/README.md) — mission and coverage.
-- [Agent reading map](https://raw.githubusercontent.com/tikoci/m2ir/main/llms.txt) — the three task paths, schema, evidence, and tooling.
+- [README](https://github.com/tikoci/m2ir/blob/main/README.md) — mission, coverage, and discovery submissions.
+- [Agent reading map](https://raw.githubusercontent.com/tikoci/m2ir/main/llms.txt) — example task paths, broader format/research discovery, evidence, and tooling.
+- [Format and research index](https://github.com/tikoci/m2ir/blob/main/profiles/README.md) — file-based formats, other protocols, placeholders, and source leads.
 - [WinBox profile guide](https://github.com/tikoci/m2ir/blob/main/profiles/winbox-ipc/README.md) — human orientation, implementation references, and limitations.
 
-Keep field tables, patch inventories, counts, and research status here.
+The WinBox examples should help a skill route common tasks without hiding
+other formats and research. Include a path back to discovery submissions
+when an agent learns something new. Keep field tables, patch inventories,
+counts, and research status here.
 Record the m2ir commit and exact RouterOS/client versions when using them;
 `main` links discover current knowledge but do not pin a reproduction.
