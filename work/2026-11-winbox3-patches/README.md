@@ -9,6 +9,14 @@ agree RouterOS 7.25 changed, and where that knowledge would land in the
 schema when drained. No binaries were downloaded or executed; claims
 rest on repo README plus patch-script reads and forum post text.
 
+For the maintained compatibility reading path, use the
+[agent map](../../llms.txt) and
+[WinBox profile guide](../../profiles/winbox-ipc/README.md). The promotion
+map below identifies where findings would belong; it does not claim they
+have been promoted or dynamically verified. Canonical YAML takes precedence
+over this dated review. Record exact client hashes and RouterOS builds for
+any later reproduction; native router probes do not exercise a patched GUI.
+
 ## Sources
 
 - [WinBox 3 for ROS 7.25 — post #71 ("And then there were three")](https://forum.mikrotik.com/t/winbox-3-for-ros-7-25/274093/71) — enumerates all three variants.
@@ -123,6 +131,6 @@ layers are unaffected as far as either project shows.
 - mark99i `ANALYSIS*.md` files referenced by the build scripts are
   absent from the clone; releases `patched-v1..v5` binaries and icon
   PNGs never fetched.
-- No dynamic confirmation anywhere: patchers read statically only, no
+- No dynamic confirmation in this review: patchers read statically only, no
   build, no patched EXE run against ROS 7.25/7.26.
 - Masyanich zips never downloaded or executed.

@@ -1,5 +1,13 @@
 # WS-1A working notes — WinBox 3.43 client MapEntry tables
 
+This is the original-client static analysis trail. For patched
+`winbox.exe` / `winbox64.exe` compatibility, start at the
+[patch review](../2026-11-winbox3-patches/README.md), which shares the binary
+fingerprint below but does not verify patched-client execution. The
+[WinBox profile guide](../../profiles/winbox-ipc/README.md) indexes canonical
+YAML; old triage/"Next" entries below are historical, not current schema
+status. Use the [agent map](../../llms.txt) for the full task paths.
+
 Binary: `scratch/winbox64.exe` (sha256 `5b41cf51…07b6e9`), PE x86_64.
 Engine: REA 6.7.0 CLI + Ghidra 12.1.4 (`~/.local/share/ghidra/ghidra_12.1.4_PUBLIC`,
 discovered via `~/.local/bin/ghidraRun` symlink; Temurin 25.0.5).

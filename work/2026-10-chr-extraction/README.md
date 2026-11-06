@@ -1,10 +1,19 @@
 # WS-3A working notes — CHR offline extraction (7.25 + 6.49.23)
 
-For the next configuration-field and native-verb phase, start with the
-[attribute discovery execution plan](../2026-11-winbox-attributes/attribute-discovery-plan.md).
-It reuses this directory's evidence and prober while adding controlled
-experiments and schema validation. The historical sequence below records
-the earlier extraction work; canonical YAML contains its corrected results.
+For configuration-field and native-verb work, start with the
+[attribute handoff](../2026-11-winbox-attributes/handoff.yaml) for completed
+batches through Phase K and remaining gaps, then the
+[execution plan](../2026-11-winbox-attributes/attribute-discovery-plan.md)
+for methodology and the [harness guide](../2026-11-winbox-attributes/harness/README.md)
+for implemented capture/correlation/paging tooling. The historical sequence
+below records earlier extraction work; canonical YAML contains its
+corrected results. Its old "Next" queue and transcript counts are historical.
+
+For capture decoding, patched-client compatibility, and native backends,
+use the [agent reading map](../../llms.txt) and
+[WinBox profile guide](../../profiles/winbox-ipc/README.md). The
+[patch review](../2026-11-winbox3-patches/README.md) is static client evidence;
+the native prober does not dynamically validate patched GUI behavior.
 
 Source images (quickchr cache, `~/.local/share/quickchr/cache/`):
 `chr-7.25.img` (128M), `chr-6.49.23.img` (64M). Fully rootless chain:

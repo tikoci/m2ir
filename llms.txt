@@ -11,9 +11,100 @@ Links below fetch plain-text files from the main branch. In a local checkout,
 the path after `/main/` identifies the same file. For reproducible work,
 record the commit used alongside the RouterOS version.
 
+Choose one of the three task paths below, then use the shared file index.
+`physical/` defines bytes, `profiles/` assigns meaning in a usage context,
+and `concepts/` is a placeholder for shared semantic identity. The WinBox
+and Dude profiles have content; CDB and MNDP profiles remain placeholders.
+
+## Packet capture and decoding
+
+For sniffing/TZSP/Wireshark/TShark work:
+
+1. Read Transport, Handshake, and Session crypto below to identify framing
+   and the encryption boundary; then use Wire grammar, System keys, and GUI
+   handlers for plaintext M2 interpretation scoped to route and version.
+2. Follow the entry's evidence to CHR analysis / Live probe findings and
+   the fixture/replay trail under Native WinBox backends. Plaintext JSON/hex
+   transcripts support decoding checks; they do not test TCP reassembly.
+3. Read the [dissector proposal](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-winbox-dissector/dissector-proposal.md)
+   for existing upstream tooling, the implemented schema shape builder,
+   and proposed Wireshark/TShark integration. The shape builder is not a
+   functioning dissector. A session-secret exporter is also still proposed.
+
+Encrypted attributes require appropriate session secrets: a passive capture
+and password alone generally do not suffice because derivation depends on
+an ephemeral private scalar. Capture acquisition and TZSP encapsulation are
+separate from this WinBox reference. Preserve unknown IDs/types and report
+missing secrets or incomplete captures without inventing decoded fields.
+
+## Patched WinBox client compatibility
+
+For patched winbox.exe / winbox64.exe, version gates, GUI descriptors, or
+parser failures:
+
+1. Start with the [WinBox 3 patch review](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-11-winbox3-patches/README.md).
+   It separates client gates and descriptor/parser changes from evidence
+   of wire changes, and links the client analysis plus schema promotion map.
+2. Follow Client analysis below for the original 3.43 binary fingerprint
+   and name oracle. Read the canonical YAML for the layer implicated by
+   the failure: GUI handlers/keys/commands, or Transport/Handshake/Session
+   crypto/Wire grammar if actual wire drift is demonstrated.
+3. Follow that entry's version-scoped evidence, CHR analysis, fixtures, and
+   replay tests. The native prober can reproduce router replies; it does
+   not exercise a patched GUI client. Record the exact client hash/build,
+   RouterOS version, operation, and result for any dynamic validation.
+
+The patch review is static source/forum analysis, with no patched binary
+executed by that review. Neither successful login nor native CHR queries
+establish full client compatibility. Its proposed promotions are not
+automatically canonical findings.
+
+## Native WinBox backends
+
+For configuration-data access through native WinBox:
+
+1. Read Profile and the transport/authentication files below, then GUI
+   handlers, Processes, System keys, and Standard keys/commands/errors.
+   Keep the process/handler route, field namespace, wire type, and exact
+   version attached to every mapping.
+2. Follow GUI handlers' request-shape and the per-handler entries for
+   retrieval, server-issued pagination tokens, typed writes, persistence,
+   and known gaps. Command names alone do not prove notification lifecycle.
+3. Use the [attribute handoff](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-11-winbox-attributes/handoff.yaml)
+   for completed batches and remaining gaps; its historical execution plan
+   supplies methodology. The [harness guide](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-11-winbox-attributes/harness/README.md)
+   links the implemented experimental codec/session, capture, correlation,
+   paging, naming, and probes. The [fixtures guide](https://raw.githubusercontent.com/tikoci/m2ir/main/fixtures/README.md)
+   explains sanitized plaintext evidence and links replay tests. Live
+   probes require their stated dependencies and mutation controls.
+4. Follow [existing consumers and implementation status](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/README.md)
+   for centrs source, tests, docs, m2ir provenance, and the inspected main
+   revision. Its shared EC-SRP5 code is implemented; WinBox terminal is
+   not-started there, and native WinBox retrieval is not established by it.
+
+Native WinBox handler access, WinBox terminal execution, and RouterOS
+native API are distinct transports/behaviors. A native API listen test
+does not prove WinBox notifications. Measure efficiency for the workload,
+including request count, bytes, pagination, projection, and updates.
+
+## Following evidence
+
+Read each YAML entry's `notes:`, `confidence:`, `evidence:`, version scope,
+`revision-history:`, and any `investigation-trail:` before reusing it.
+Confidence vocabulary lives in DESIGN.md: documented, inferred,
+observed-only, guessed, superseded. A documented source is evidence of its
+stated scope, not universal compatibility. Superseded research explains
+corrections; current canonical YAML takes precedence. Follow `evidence:`
+refs to sanitized fixtures, probes, binary analysis, or external sources;
+some private-source evidence is explicitly unavailable publicly. Record
+the repository revision, exact RouterOS/client build, and the named replay
+test or probe before claiming a reproduction. The repo's general CI is
+offline; a passing replay does not establish a fresh live result.
+
 ## Orientation
 
 - [README.md](https://raw.githubusercontent.com/tikoci/m2ir/main/README.md): Mission, coverage, WinBox compatibility context, and current research.
+- [WinBox profile guide](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/README.md): Human orientation, coverage, file index, implementation references, and limitations.
 - [AGENTS.md](https://raw.githubusercontent.com/tikoci/m2ir/main/AGENTS.md): Contributor instructions and pointers to path-scoped rules.
 - [DESIGN.md](https://raw.githubusercontent.com/tikoci/m2ir/main/DESIGN.md): Canonical YAML, physical/profile/concept layers, and confidence vocabulary.
 - [BOOTSTRAP.md](https://raw.githubusercontent.com/tikoci/m2ir/main/BOOTSTRAP.md): Bun setup, checks, and repository tooling.
@@ -28,10 +119,11 @@ Read these in order when implementing the wire conversation:
 - [Handshake](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/ec-srp5-handshake.yaml): EC-SRP5 authentication and evidence-backed encoding details.
 - [Session crypto](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/session-crypto.yaml): Key derivation, encrypted envelopes, and message authentication.
 
-## Native retrieval, handlers, and attributes
+## Handler and attribute file index
 
-For work such as centrs retrieve, continue here. Terminal execution does
-not establish native retrieval or notification behavior.
+For native handler work, continue here. The centrs implementation trail
+above distinguishes its existing authentication code from future WinBox
+retrieval and notification support.
 
 - [GUI handlers](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/gui-handlers.yaml): Selected handler routes, request/reply shapes, field mappings, and gaps.
 - [System keys](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/sys-keys.yaml): Routing, request correlation, and message envelope attributes.
@@ -40,7 +132,8 @@ not establish native retrieval or notification behavior.
 - [Standard errors](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/std-errors.yaml): Error identities and evidence.
 - [Processes](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/processes.yaml): Process identities, version differences, and unresolved conflicts.
 - [Private and legacy commands](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/commands.yaml): Handler-specific commands, including terminal-related evidence.
-- [WinBox profile guide](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/README.md): Human summary of what is known (routing, native retrieval, persistence, parked items) plus the full file index, including mproxy and undo.
+- [mproxy](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/mproxy.yaml): Front-end proxy and handler-2 file-transfer evidence.
+- [Undo](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/undo.yaml): Seeded undo identities and remaining gaps.
 
 ## Active research and compatibility
 
@@ -52,11 +145,9 @@ forum theories about future protocol changes are not established behavior.
 - [Client analysis](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-winbox-client-re/README.md): WinBox 3.43 analysis using REA/Ghidra.
 - [CHR analysis](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-chr-extraction/README.md): RouterOS extraction, binary analysis, quickchr probes, and promotion status.
 - [Live probe findings](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-chr-extraction/ws3c-prober-findings.md): Version-scoped observations, transcript references, corrections, and open questions.
-- [Configuration attribute and verb plan](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-11-winbox-attributes/attribute-discovery-plan.md): Next-phase agent entrypoint: local Rosetta tables and extraction queries, existing prober gaps, controlled configuration experiments, native verb mapping, schema promotion gates, and parallel handler batches.
+- [Configuration attribute and verb plan](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-11-winbox-attributes/attribute-discovery-plan.md): Methodology and historical execution sequence; completed work and remaining gaps are in the attribute handoff above. Later evidence includes 7.26beta4 and selected 7.26beta5 checks; read scope per entry.
 
 ## Other formats and sources
-
-- [Dissector proposal](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-winbox-dissector/dissector-proposal.md): Proposed Wireshark/TShark consumer, evidence, milestones, session-secret requirements, and open repository placement. Planning material, not an implemented dissector.
 
 - [The Dude profile](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/dude-on-disk/profile.yaml): On-disk object classification and field-table references; do not transfer WinBox naming assumptions unchanged.
 - [Profile index](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/README.md): Other usage contexts, including placeholder CDB and MNDP profiles.

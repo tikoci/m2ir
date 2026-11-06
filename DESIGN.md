@@ -122,7 +122,7 @@ profiles/
   winbox-cdb/       # placeholder
   mndp/             # placeholder
 
-fixtures/           # raw bytes referenced by `evidence:` (placeholder)
+fixtures/           # sanitized evidence; winbox-ipc/ has plaintext replay JSON
 
 src/tooling/        # repo-local Bun tooling (audit, cortex.db log)
 test/               # anchor tests for the schema and the tooling
