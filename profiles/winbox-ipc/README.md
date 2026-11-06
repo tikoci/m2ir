@@ -286,9 +286,10 @@ revision; consult its current matrix before relying on later capabilities.
   [MAC-Telnet MTWEI](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/src/protocols/mtwei.ts)
   and [bandwidth-test framing](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/src/protocols/btest.ts).
 - [Regression vectors and provenance](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/test/fixtures/ec-srp5.json)
-  name m2ir's
-  [synthetic vector](../../work/2026-10-chr-extraction/srp5-minimal-vector.json)
-  and [reference implementation](../../work/2026-10-chr-extraction/ws3c/ec-srp5.ts).
+  record m2ir's vector provenance and
+  [reference implementation](../../work/2026-10-chr-extraction/ws3c/ec-srp5.ts).
+  The original m2ir vector file named there is not tracked here; use the
+  committed centrs fixture for public replay.
   These deterministic transcripts are calculated, not live captures.
   [Unit tests](https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/test/unit/ec-srp5.test.ts)
   exercise the encoding discriminators and both roles;
