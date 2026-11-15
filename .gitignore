@@ -26,6 +26,8 @@ work/**/*.json
 !work/**/ws3c/ev/*.json
 # Phase C proof transcripts: small control-interface envelopes cited by proof reports
 !work/**/proof/**/*.json
+# MNDP grounding lab: per-study captures and the sanitized field summary cited by profiles/mndp
+!work/2026-11-mndp-grounding/evidence/*.json
 work/**/*.snapshot
 work/**/*.stderr.log
 
