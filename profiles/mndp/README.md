@@ -7,9 +7,11 @@ marker/tcode byte). It belongs in m2ir anyway because it carries the
 IPv4/v6, uptime) that turn up in the nv::message profiles. That's the
 empirical case for `/concepts/`.
 
-Footgun on record: MNDP uptime (tag 10) is the only little-endian
-integer in the protocol — every other MNDP integer is big-endian.
-Worth annotating prominently when the schema lands.
+Byte order is mixed, and the old footgun note ("uptime is the only
+little-endian integer") is incomplete. TLV type and length are big-endian
+`u16`. Uptime (TLV 10) and aggregated-size (TLV 9) are little-endian `u32`.
+The header counter uses the *sender's* native byte order. See the wire map
+below.
 
 Public implementation references, inspected centrs main revision
 `0221b899da70b8c54410f357fd77c2133b286c08`:
@@ -26,104 +28,158 @@ Use the [discovery submission path](../../README.md#submit-a-discovery) for
 unknown TLVs, version differences, sanitized samples, or proposed mappings.
 The [format and research index](../README.md) routes other protocols.
 
-## Lab observations: RouterOS 7.26beta5
+## Grounded wire map (2026-11-15)
 
-The quickchr CMR wire study captured MNDP announcements from x86 CHRs on
-QEMU socket links, across several lab runs (14 interface MACs). Each
-router streamed its own links to the host with `/tool/sniffer` over TZSP
-(2026-11-14, Linux KVM host). The figures below come from the 215 distinct
-announcement payloads saved in its three evidence files. The tool saves a payload only when it differs from that
-sender's previous one. Every value is a lab observation on this one build.
-The table is a source for the MNDP YAML once it is written; it is not
-canonical schema.
+Three evidence sets back the tables below. None of them is canonical
+schema yet, but every row says what was observed and where:
 
-Sources, at quickchr main revision `dd7e0ad99aa51acc79f086fe5d71e65efbb511eb`
-([tikoci/quickchr#277](https://github.com/tikoci/quickchr/pull/277)):
+- **m2ir lab**: quickchr CHRs (6.49.23, 7.24.6, 7.25, 7.26beta5) on socket
+  links, with one setting changed per step and both routers' sniffers
+  streamed to the host. Harness, method and evidence:
+  [`work/2026-11-mndp-grounding/`](../../work/2026-11-mndp-grounding/).
+- **Field capture**: 35 s of `/tool/sniffer` on a 7.26beta5 RB1100Dx4 whose
+  neighbors run RouterOS 6.49.21 and 7.6–7.26beta5 on ARM, ARM64 and MIPSBE
+  hardware. Only a [sanitized summary](../../work/2026-11-mndp-grounding/evidence/field-summary.json)
+  is committed.
+- **quickchr CMR wire study** (7.26beta5, 215 payloads), at quickchr
+  `dd7e0ad99aa51acc79f086fe5d71e65efbb511eb`
+  ([tikoci/quickchr#277](https://github.com/tikoci/quickchr/pull/277)):
+  [FINDINGS.md → Wire → MNDP](https://github.com/tikoci/quickchr/blob/dd7e0ad99aa51acc79f086fe5d71e65efbb511eb/examples/cmr/FINDINGS.md#mndp)
+  and its [evidence files](https://github.com/tikoci/quickchr/tree/dd7e0ad99aa51acc79f086fe5d71e65efbb511eb/examples/cmr/evidence/7.26beta5).
 
-- [FINDINGS.md → Wire → MNDP](https://github.com/tikoci/quickchr/blob/dd7e0ad99aa51acc79f086fe5d71e65efbb511eb/examples/cmr/FINDINGS.md#mndp):
-  claims, trial counts and method.
-- [`wire.json`](https://github.com/tikoci/quickchr/blob/dd7e0ad99aa51acc79f086fe5d71e65efbb511eb/examples/cmr/evidence/7.26beta5/wire.json),
-  [`wire-first-run.json`](https://github.com/tikoci/quickchr/blob/dd7e0ad99aa51acc79f086fe5d71e65efbb511eb/examples/cmr/evidence/7.26beta5/wire-first-run.json)
-  and [`demo-probe-sniff.json`](https://github.com/tikoci/quickchr/blob/dd7e0ad99aa51acc79f086fe5d71e65efbb511eb/examples/cmr/evidence/7.26beta5/demo-probe-sniff.json):
-  raw payloads in `wire.mndp[].payloadHex`.
-- [TZSP/MNDP decoder](https://github.com/tikoci/quickchr/blob/dd7e0ad99aa51acc79f086fe5d71e65efbb511eb/examples/cmr/tool/tzsp.ts)
-  and [tests](https://github.com/tikoci/quickchr/blob/dd7e0ad99aa51acc79f086fe5d71e65efbb511eb/test/unit/examples-cmr-tzsp.test.ts).
-  The tests hold one CMR controller announcement as whole TZSP packets,
-  captured before and after `/cmr set enabled=yes`.
+Changelog entries cited by version come from MikroTik's changelogs, read
+through rosetta.
 
 ### Header
 
-| Bytes | Observed | Notes |
-|---|---|---|
-| 0 | Counter | Increments by 1 per announcement on an interface and restarts at boot. The IPv4 broadcast and IPv6 multicast copies of one announcement carry the same value. The highest value seen was `0x25`. A wider field would read the same at that size: a `u8` that wraps cannot be told from the low byte of a little-endian `u16`/`u32` |
-| 1–3 | `00 00 00` | In all 215 payloads |
+Bytes 0–3 are one `u32` announcement counter in the sender's CPU byte
+order. It counts every announcement on that interface, periodic or
+triggered, and restarts at boot. The IPv4 and IPv6 copies of one
+announcement carry the same value.
 
-This conflicts with readings that put a big-endian `u16` sequence number at
-bytes 2–3 (the `routeros-mndp` skill, after MAC-Telnet). On 7.26beta5 those
-bytes stayed zero while byte 0 counted.
+- Little-endian on x86, ARM and ARM64. A 7.26beta5 RB1100Dx4 sent
+  `20 7c 01 00` (97,312) at 973,177 s uptime and a 10 s interval, so the
+  carry into byte 2 is real.
+- Big-endian on MIPSBE: a 7.25beta5 RB912R sent `00 00 23 58` (9,048) at
+  271,468 s uptime, one count per 30 s. A 7.23beta4 RB924iR (also MIPSBE)
+  reads the same way.
+- In the field capture, uptime ÷ counter ≈ the discover-interval for every
+  device. That held on 6.49 and on 7.6–7.12 (≈60 s), and on 7.19 and later
+  (≈30 s).
+
+This replaces two earlier readings: version + TTL bytes plus a
+big-endian sequence number at bytes 2–3 (MAC-Telnet, the `routeros-mndp`
+skill), and "byte 0 only" (the first quickchr reading). A short-uptime
+little-endian router shows only byte 0 moving; a long-uptime big-endian
+router puts the moving bytes at 2–3.
 
 ### TLVs
 
-Every payload had the same TLV order: 1, 5, 7, 8, 10, 11, 12, 14, 16, 18,
-19, 17, 15. When TLV 17 or 15 was missing, it was left out, not sent
-zero-filled. TLV 17 was missing in 51 payloads and TLV 15 in 12. Types 2–4,
-6, 9 and 13, and types above 19, did not appear.
+Type and length are big-endian `u16`; the value follows. Neighbor field
+names are as `/ip/neighbor` prints them on 7.26beta5.
 
-| Type | Name | Length | Observed values | Status |
+| Type | `/ip/neighbor` field | Value | Since | Grounding |
 |---|---|---|---|---|
-| 1 | MAC address | 6 | Sending interface MAC | Known |
-| 5 | Identity | variable | `/system/identity` | Known |
-| 7 | Version | 29 | e.g. `7.26beta5 2026-10-30 11:13:55`: version plus build time, no channel | Known |
-| 8 | Platform | 8 | `MikroTik` | Known |
-| 10 | Uptime | 4 | Seconds, **little-endian** `u32` | Known |
-| 11 | Software ID | 11 | Per-router string | Known |
-| 12 | Board | 3 | `CHR` | Known |
-| 14 | Unpack | 1 | `01` in every payload. The lab does not configure `/ip/packing` | Mapping to `unpack=` still open ([#3](https://github.com/tikoci/m2ir/issues/3)) |
-| 15 | IPv6 address | 16 | Link-local address of the sending interface | Known |
-| 16 | Interface name | 6 | e.g. `ether2` | Known |
-| 17 | IPv4 address | 4 | Address of the sending interface, network order | Known |
-| 18 | Running | 1 | `00`, or `02` while `/cmr` (the CMR controller) is enabled | **New**: see below |
-| 19 | Unknown | 1 | `79` on every router, CMR or not | **New**: meaning unknown |
+| 1 | `mac-address` | 6 bytes | — | All sources |
+| 2 | `unpack` | Empty flag: unpacks aggregated packets | — | Lab: present for `unpacking=simple` and above, absent for `none` |
+| 3 | `unpack` | Empty flag: decompresses headers | — | Lab: added by `compress-headers` and `compress-all` |
+| 4 | `unpack` | Empty flag: decompresses payload | — | Lab: added by `compress-all` |
+| 5 | `identity` | UTF-8 bytes as configured (`ü` → `c3 bc`) | — | All sources; lab |
+| 7 | `version` | Text; format changes by version (below) | — | All sources |
+| 8 | `platform` | Text: `MikroTik`, or the branding package's value | — | Field: a branded router sends its branding name |
+| 9 | (none seen) | `/ip/packing` `aggregated-size`, **little-endian** `u32` | — | Lab: 1500 → `dc 05 00 00`, 1000 → `e8 03 00 00`; only with TLV 2 |
+| 10 | `uptime` | Seconds, **little-endian** `u32`, also on MIPSBE | — | All sources; field MIPSBE rows match the neighbor table |
+| 11 | `software-id` | Text | — | All sources |
+| 12 | `board` | Text | — | All sources |
+| 14 | `ipv6` | 1 byte: `01` IPv6 enabled, `00` disabled | — | Lab: `disable-ipv6=yes` → `00`, and `ipv6=true` leaves the neighbor row. Field: every `00` sender showed `ipv6=false` |
+| 15 | `address6` | 16 bytes, one TLV per address on the interface (global first, then link-local) | — | Field: two TLV 15s on interfaces with a global address |
+| 16 | `interface-name` | Text; `bridge/port` for a bridge port | — | Field: `bridge/ether1` on 6.49 and 7.x |
+| 17 | `address4` | 4 bytes, network order | — | All sources |
+| 18 | `running` | Bitmask: `01` CAPsMAN, `02` CMR controller | 7.20 | Lab: `/interface/wifi/capsman enabled=yes` → `01`. quickchr: `/cmr` → `02`. Field: absent on 7.19.4, present from 7.20. Changelog 7.20: "report router as CAPsMAN on MNDP under running parameter" |
+| 19 | (entry lifetime) | TTL seconds, `u8`: `min(discover-interval × 4 + 1, 255)`; `00` = dying gasp | 7.24 | Lab: 5 s → `15`, 7 s → `1d`, 30 s → `79`, 60 s → `f1`, 64 s/300 s/9 h → `ff`. Field: 10 s → `29`. Absent on 7.24beta1 and older; changelog 7.24 adds dying-gasp "TTL=0" |
 
-**TLV 18 (`running`).** It is `00` normally and `02` while the router runs
-an enabled CMR controller. It goes back to `00` when `/cmr` is disabled.
-While it is `02`, the receiving router's `/ip/neighbor` row shows
-`running=cmr`. Two values were seen, so a bitmask is likely; no other bit
-appeared. TLV 18 changed 138 times between one sender's consecutive saved
-payloads. In 130 of those changes, no TLV besides uptime changed with it.
-The other 8 also changed addresses or came from a new VM with the same lab
-name. A CMR *client* left TLV 18 at `00` while enabled, pending,
-half-paired and paired. Pairing state is not in MNDP. A client that finds
-its controller by discovery connects from its neighbor table. Its SYN left
-11–35 ms after `enabled=yes`, with no announcement in between.
+**TLV 14 is not `unpack`.** MAC-Telnet, the Wireshark dissector, centrs
+and the `routeros-mndp` skill all name it "unpack". In the lab,
+`/ip/packing` never changed TLV 14, while `/ipv6/settings disable-ipv6`
+flipped it and the observer's `ipv6` field with it. The `unpack` field is
+built from TLVs 2–4 instead:
 
-**TLV 19.** One byte, `0x79`, from every router. Its meaning is unknown. The
-same neighbor rows show `system-caps=bridge,router` and
-`system-caps-enabled=router`, but `discovered-by=lldp,mndp`, so LLDP may
-supply those values instead. That mapping is a lead, not a finding.
+| Sender `/ip/packing` `unpacking=` | TLVs sent | Receiver shows `unpack=` |
+|---|---|---|
+| no entry, disabled entry, or `none` | none | `none` |
+| `simple` | 2, 9 | `simple` |
+| `compress-headers` | 2, 3, 9 | `uncompress-headers` |
+| `compress-all` | 2, 3, 4, 9 | `uncompress-all` |
 
-### Timing
+Only the `unpacking` side is announced: `packing=compress-all
+unpacking=none` sends nothing. An entry on another interface does not
+change ether2's announcement. TLVs 2–4 and 9 follow TLV 1 directly. They
+are the "packing TLVs 2, 3 and 9" an earlier skill revision listed without
+a source. That claim was right.
 
-- Periodic announcements follow `/ip/neighbor/discovery-settings`
-  `discover-interval`, which defaults to `30s` on this build. Within one
-  boot no gap exceeded 30.0 s. The `routeros-mndp` skill's "~60 s cycle"
-  does not hold here.
-- A state change triggers an extra announcement immediately. The
-  announcement left 7–49 ms after each controller `/cmr set enabled=…`, for
-  all 32 enables and 28 disables. Off-cycle announcements also followed
-  identity and address changes at boot.
+**TLV 19 drives expiry.** At a 5 s interval (TTL 21) the receiver dropped a
+silent neighbor between age 19 s and 24 s. At 30 s (TTL 121) it was still
+listed at 135 s and gone by 140 s. Expiry follows the TTL, checked on a
+coarser timer.
+
+Types 6 and 13, and anything above 19, appeared in no capture. centrs reads
+13 as an alternate board field; nothing here supports that.
+
+### Layout by version
+
+| Versions (observed) | TLV order |
+|---|---|
+| 6.49, 7.6–7.19 | 1, 5, 7, 8, 10, 11, 12, 14, [15], 16, 17 |
+| 7.20–7.23 | 1, 5, 7, 8, 10, 11, 12, 14, [15], 16, 17, 18 |
+| 7.24beta1 | 1, 5, 7, 8, 10, 11, 12, 14, 16, 18, 17 (centrs fixture) |
+| 7.24.5 and later | 1, [2, 3, 4, 9], 5, 7, 8, 10, 11, 12, 14, 16, 18, 19, 17, 15… |
+
+TLVs 15 and 17 are left out when the interface has no such address,
+including the first announcements after boot. The 6.49.23 CHR sends no TLV
+15 (IPv6 is off by default on 6.x).
+
+TLV 7 text formats:
+
+| Versions | Example |
+|---|---|
+| 6.x | `6.49.21 (long-term)` |
+| 7.6–7.13 | `7.12.1 (stable) Nov/17/2023 11:38:45` |
+| 7.14–7.24 | `7.24.6 (long-term) 2026-10-30 08:24:29` |
+| 7.25 and later (7.25beta5 seen) | `7.25.1 2026-11-02 12:39:53` (no channel) |
+
+The 7.13/7.14 boundary comes from a neighbor table (7.13.5 and 7.14.3
+neighbors), not a capture. The channel loss is pinned by the lab sweep:
+7.24.6 sends it, 7.25 does not.
+
+### Timing and lifecycle
+
+- **Interval.** Periodic announcements follow `discover-interval`. The
+  default changed from 60 s to 30 s in 7.16 (changelog), matching the field
+  counters. 7.26beta5 rejects values under 5 s.
+- **Triggered announcements.** These changes sent an announcement at once
+  and advanced the counter: identity, CAPsMAN, CMR, `/ip/packing`, IPv6
+  on/off, discovery `protocol`, `lldp-med`, `mode` and `discover-interval`.
+  So do address changes (changelog 7.21). These kept the 30 s cadence
+  instead: MAC server, MAC WinBox and MAC ping, RoMON, bandwidth server,
+  the IP services (winbox, api, ssh, telnet, ftp, api-ssl, www-ssl), cloud
+  DDNS, remote DNS and IP forwarding.
+- **Transport.** Each announcement goes out twice, as an IPv4 broadcast
+  and an IPv6 `ff02::1` multicast, with the same payload. `mode=rx-only`
+  stops both.
+- **Dying gasp** (`dying-gasp=yes`, 7.24+). On reboot the router sends a
+  short announcement: header (the counter continues), then TLVs 1, 19 =
+  `00`, 17, 15. The changelog says receivers clear the entry on it; the
+  lab did not time that.
+- **One timer observation.** After `discover-interval=9h` and then `5s`,
+  the next periodic announcement did not come for over a minute, so the
+  pending timer may not be rescheduled. Seen once.
 
 ### Still open
 
-- TLV 19: meaning, and whether its value varies with configuration,
-  hardware or version.
-- TLV 18: the other bits, and whether any service besides the CMR
-  controller sets them.
-- TLV 14: the byte for each `unpack=` value, and whether the TLV is ever
-  absent ([#3](https://github.com/tikoci/m2ir/issues/3)).
-- Header byte 0: its width (one byte, or the low byte of a wider field)
-  and when it wraps. It needs more than 255 announcements on one interface
-  in one boot.
-- Other versions: TLVs 18 and 19 were seen only on 7.26beta5. Their first
-  version, and whether any build sends one without the other, are not
-  known.
+- Types 6 and 13 and anything above 19: never seen.
+- TLV 18 with both CAPsMAN and CMR running (`03`?), and other services.
+- TLV 9 byte order on big-endian hardware. Packing TLVs on 6.x and older
+  7.x.
+- 6.x with the IPv6 package enabled.
+- The packed-frame format (EtherType 0x9000) itself
+  ([#3](https://github.com/tikoci/m2ir/issues/3)).
