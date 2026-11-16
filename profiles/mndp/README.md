@@ -40,8 +40,9 @@ until canonical MNDP YAML exists. Its corrections to earlier sources:
   empty TLVs 2–4, and TLV 9 carries `aggregated-size`.
 - **The header is a `u32` announcement counter** in the sender's CPU byte
   order, not version + TTL + sequence bytes.
-- **TLV 18** (`running`, 7.20+) is a bitmask: `01` CAPsMAN, `02` CMR
-  controller.
+- **TLV 18** (`running`, 7.20+): `00` none, `01` CAPsMAN, `02` CMR
+  controller. Reading it as a bitmask is inferred; a combined value such
+  as `03` has not been observed.
 - **TLV 19** (7.24+) is the entry TTL in seconds,
   `min(discover-interval × 4 + 1, 255)`; `00` is the dying gasp.
 - **TLV 15 repeats** once per IPv6 address on the interface.

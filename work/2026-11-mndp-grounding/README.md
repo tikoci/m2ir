@@ -60,7 +60,9 @@ Add a fifth argument to sniff more observer interfaces (for example
 All `evidence/*.json` files from `lab.ts` hold `subject`/`observer`
 versions, every step's commands and results, the observer's neighbor rows,
 per-step `frames` (MNDP frames each sniffer delivered on the link, from
-either router), and every captured announcement (`payloadHex` plus a
+either router; `null` when that sniffer had delivered nothing for 45 s, so
+its stream had stalled and the step has no wire coverage), and every
+captured announcement (`payloadHex` plus a
 readable `summary`). `payloadHex` is the evidence; `summary` is derived
 from it with the current `NAMES` table. Summaries and `frames` in the files
 captured before 2026-11-16 were regenerated from `payloadHex` after TLV 14
@@ -94,5 +96,9 @@ values.
 - `counter` (1 s interval) is defined but was not run: 7.26beta5's 5 s
   minimum makes it slow, and the field capture already shows the counter
   across byte boundaries.
+- In `ageout2`, both streams stalled again after t=212 s, partway through
+  the 30 s age-out. Neighbor rows are REST reads and stay valid; the file's
+  `coverage` field says so, and the later steps' `frames` are `null`.
+  `lab.ts` now applies the same 45 s stall rule while it runs.
 - `ageout`/`ageout2` rows were `discovered-by: lldp,mndp`, so `ageout-mndp`
   repeated the age-out with `protocol=mndp` on both routers.

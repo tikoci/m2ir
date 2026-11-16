@@ -105,6 +105,18 @@ interface Seen {
 }
 const seen: Seen[] = [];
 let stepId = "setup";
+/**
+ * The observer announces on its own every 30 s (default interval), and both sniffers see those
+ * frames. So a sniffer that has delivered nothing for longer than this has stalled, and its
+ * zero count for a step means "not captured", not "silent".
+ */
+const STALL_MS = 45_000;
+/** Frames one sniffer delivered in a step, or null when its stream had stalled by step end. */
+function coverage(via: string, id: string): number | null {
+	const last = seen.findLast((s) => s.via === via)?.t ?? 0;
+	if (now() - last > STALL_MS) return null;
+	return seen.filter((s) => s.via === via && s.step === id).length;
+}
 /** One TZSP receiver per router, so every frame records which sniffer saw it. */
 async function receiver(
 	via: string,
@@ -164,10 +176,13 @@ const steps: Array<{
 	commands: Array<{ cmd: string; result: unknown }>;
 	neighbor?: unknown;
 	read?: Record<string, unknown>;
-	/** MNDP frames each sniffer delivered during the step; 0/0 means no wire coverage. */
-	frames?: { subject: number; observer: number };
+	/**
+	 * MNDP frames (from either router) each sniffer delivered during the step. `null` means
+	 * that sniffer's stream had stalled (see STALL_MS): no wire coverage, not measured silence.
+	 */
+	frames?: { subject: number | null; observer: number | null };
 }> = [];
-let failure: string | undefined;
+let failure: { step: string; error: string } | undefined;
 try {
 	await armSubject();
 	await arm(observer, rxObserver.port, OBSERVER_IFACE);
@@ -212,13 +227,15 @@ try {
 					)
 				: rows;
 		}
-		const inStep = seen.filter((s) => s.step === step.id);
 		rec.frames = {
-			subject: inStep.filter((s) => s.via === "subject").length,
-			observer: inStep.filter((s) => s.via === "observer").length,
+			subject: coverage("subject", step.id),
+			observer: coverage("observer", step.id),
 		};
-		const mine = inStep.filter(
-			(s) => s.via === "subject" && subjectMacs.includes(s.srcMac),
+		const mine = seen.filter(
+			(s) =>
+				s.step === step.id &&
+				s.via === "subject" &&
+				subjectMacs.includes(s.srcMac),
 		);
 		console.log(
 			`${step.id}: ${mine.length} subject announcements; last ${mine.at(-1)?.summary ?? "-"}`,
@@ -226,9 +243,11 @@ try {
 	}
 } catch (e) {
 	// Keep what was captured: the partial evidence is written below with the failure recorded.
-	failure = String(e);
-	console.error(`study failed at ${stepId}: ${failure}`);
+	failure = { step: stepId, error: String(e) };
+	console.error(`study failed at ${stepId}: ${failure.error}`);
 } finally {
+	// Frames that arrive during shutdown belong to no step; keep them out of the last step's count.
+	stepId = "(shutdown)";
 	for (const r of [subject, observer])
 		await execute(r, "/tool/sniffer/stop").catch(() => undefined);
 	rxSubject.close();
@@ -249,7 +268,7 @@ await Bun.write(
 				macs: subjectMacs,
 			},
 			observer: { name: observerName, version: observerRes["version"] },
-			...(failure ? { failure: { step: stepId, error: failure } } : {}),
+			...(failure ? { failure } : {}),
 			steps,
 			announcements: seen,
 		},

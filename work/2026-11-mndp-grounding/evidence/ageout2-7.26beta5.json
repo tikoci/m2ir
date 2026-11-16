@@ -1,6 +1,7 @@
 {
 	"study": "ageout2",
 	"date": "2026-11-15T22:15:10.517Z",
+	"coverage": "Both TZSP streams stopped after t=212224 ms (during step i30:+105s); the observer's own 30 s announcements stop appearing too. Steps whose frames are null have no wire coverage. Their neighbor rows are REST reads of the observer and remain valid: the age-out timings rest on those rows, not on frames.",
 	"subject": {
 		"name": "mndp-sub",
 		"version": "7.26beta5",
@@ -1256,8 +1257,8 @@
 			"commands": [],
 			"neighbor": [],
 			"frames": {
-				"subject": 0,
-				"observer": 0
+				"subject": null,
+				"observer": null
 			}
 		},
 		{
@@ -1266,8 +1267,8 @@
 			"commands": [],
 			"neighbor": [],
 			"frames": {
-				"subject": 0,
-				"observer": 0
+				"subject": null,
+				"observer": null
 			}
 		},
 		{
@@ -1276,8 +1277,8 @@
 			"commands": [],
 			"neighbor": [],
 			"frames": {
-				"subject": 0,
-				"observer": 0
+				"subject": null,
+				"observer": null
 			}
 		},
 		{
@@ -1286,8 +1287,8 @@
 			"commands": [],
 			"neighbor": [],
 			"frames": {
-				"subject": 0,
-				"observer": 0
+				"subject": null,
+				"observer": null
 			}
 		},
 		{
@@ -1296,8 +1297,8 @@
 			"commands": [],
 			"neighbor": [],
 			"frames": {
-				"subject": 0,
-				"observer": 0
+				"subject": null,
+				"observer": null
 			}
 		},
 		{
@@ -1306,8 +1307,8 @@
 			"commands": [],
 			"neighbor": [],
 			"frames": {
-				"subject": 0,
-				"observer": 0
+				"subject": null,
+				"observer": null
 			}
 		},
 		{
@@ -1316,8 +1317,8 @@
 			"commands": [],
 			"neighbor": [],
 			"frames": {
-				"subject": 0,
-				"observer": 0
+				"subject": null,
+				"observer": null
 			}
 		},
 		{
@@ -1356,8 +1357,8 @@
 				}
 			],
 			"frames": {
-				"subject": 0,
-				"observer": 0
+				"subject": null,
+				"observer": null
 			}
 		}
 	],

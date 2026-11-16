@@ -72,7 +72,7 @@ names are as `/ip/neighbor` prints them on 7.26beta5.
 | 15 | `address6` | 16 bytes, one TLV per address on the interface (global first, then link-local) | — | Field: two TLV 15s on interfaces with a global address |
 | 16 | `interface-name` | Text; `bridge/port` for a bridge port | — | Field: `bridge/ether1` on 6.49 and 7.x |
 | 17 | `address4` | 4 bytes, network order | — | All sources |
-| 18 | `running` | Bitmask: `00` none, `01` CAPsMAN, `02` CMR controller | 7.20 | Lab: `/interface/wifi/capsman enabled=yes` → `01`. quickchr: `/cmr` → `02`. Field: absent on 7.19.4, present from 7.20. Changelog 7.20: "report router as CAPsMAN on MNDP under running parameter" |
+| 18 | `running` | `00` none, `01` CAPsMAN, `02` CMR controller; bitmask inferred, combined values unobserved | 7.20 | Lab: `/interface/wifi/capsman enabled=yes` → `01`. quickchr: `/cmr` → `02`. Field: absent on 7.19.4, present from 7.20. Changelog 7.20: "report router as CAPsMAN on MNDP under running parameter" |
 | 19 | (entry lifetime) | TTL seconds, `u8`: `min(discover-interval × 4 + 1, 255)`; `00` = dying gasp | 7.24 | Lab: 5 s → `15`, 7 s → `1d`, 30 s → `79`, 60 s → `f1`, 64 s/300 s/9 h → `ff`. Field: 10 s → `29`. Absent on 7.24beta1 and older; changelog 7.24 adds dying-gasp "TTL=0" |
 
 **TLV 14 is not `unpack`.** MAC-Telnet, the Wireshark dissector, centrs
