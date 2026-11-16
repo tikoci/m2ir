@@ -95,8 +95,10 @@ are the "packing TLVs 2, 3 and 9" an earlier skill revision listed without
 a source. That claim was right.
 
 **TLV 19 sets a minimum lifetime.** A receiver removes a silent neighbor
-some time after its TTL runs out: never before it in any run, and up to
-about 20 s after. That fits a periodic sweep, but the sweep was not timed.
+around or after its TTL: no run removed one clearly early (the earliest
+removal fell between age 18 s and 22 s for TTL 21, within the 4 s sampling),
+and some stayed listed up to about 20 s past it. That fits a periodic
+sweep, but the sweep was not timed.
 Ages are the observer's `/ip/neighbor` `age` (time since the last
 announcement):
 
