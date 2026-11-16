@@ -1,4 +1,4 @@
-# MNDP wire map: grounded findings (2026-11-15)
+# MNDP wire map: grounded findings (2026-11-15, requests 2026-11-16)
 
 Findings from the MNDP grounding lab, kept in `work/` until an MNDP
 schema exists to promote them into (see [`AGENTS.md`](../../AGENTS.md)).
@@ -7,13 +7,17 @@ schema exists to promote them into (see [`AGENTS.md`](../../AGENTS.md)).
 
 ## Sources
 
-Three evidence sets back the tables below. None of them is canonical
+Four evidence sets back the tables below. None of them is canonical
 schema yet, but every row says what was observed and where:
 
 - **m2ir lab**: quickchr CHRs (6.49.23, 7.24.6, 7.25, 7.26beta5) on socket
   links, with one setting changed per step and both routers' sniffers
   streamed to the host. Harness, method and evidence:
   [this directory](README.md).
+- **m2ir hub lab** (2026-11-16): CHRs 6.49.23, 7.17.2, 7.18.2, 7.20.8 and
+  two 7.26beta5 on one segment that the host joins as a station
+  ([`hub.ts`](hub.ts)), so the host can send requests and see every frame
+  that comes back with its Ethernet and IP destinations.
 - **Field capture**: 35 s of `/tool/sniffer` on a 7.26beta5 RB1100Dx4 whose
   neighbors run RouterOS 6.49.21 and 7.6–7.26beta5 on ARM, ARM64 and MIPSBE
   hardware. Only a [sanitized summary](evidence/field-summary.json)
@@ -57,22 +61,23 @@ names are as `/ip/neighbor` prints them on 7.26beta5.
 
 | Type | `/ip/neighbor` field | Value | Since | Grounding |
 |---|---|---|---|---|
-| 1 | `mac-address` | 6 bytes | — | All sources |
+| 1 | `mac-address` (see note) | 6 bytes | — | All sources. The receiver's row uses the frame's Ethernet source, not this TLV (below) |
 | 2 | `unpack` | Empty flag: unpacks aggregated packets | — | Lab: present for `unpacking=simple` and above, absent for `none` |
 | 3 | `unpack` | Empty flag: decompresses headers | — | Lab: added by `compress-headers` and `compress-all` |
 | 4 | `unpack` | Empty flag: decompresses payload | — | Lab: added by `compress-all` |
 | 5 | `identity` | UTF-8 bytes as configured (`ü` → `c3 bc`) | — | All sources; lab |
+| 6 | (request) | Empty flag: "send your announcement now"; never in an announcement | — | Hub lab: any packet carrying it draws replies, whatever the header, and does not create a neighbor row. See [Requests](#requests) |
 | 7 | `version` | Text; format changes by version (below) | — | All sources |
 | 8 | `platform` | Text: `MikroTik`, or the branding package's value | — | Field: a branded router sends its branding name |
 | 9 | (none seen) | `/ip/packing` `aggregated-size`, `u32`; **little-endian on x86** (CHR), unverified on big-endian CPUs | — | Lab (x86 CHR): 1500 → `dc 05 00 00`, 1000 → `e8 03 00 00`; only with TLV 2. No field sender used packing |
 | 10 | `uptime` | Seconds, **little-endian** `u32`, also on MIPSBE | — | All sources; field MIPSBE rows match the neighbor table |
 | 11 | `software-id` | Text | — | All sources |
 | 12 | `board` | Text | — | All sources |
-| 14 | `ipv6` | 1 byte: `01` IPv6 enabled, `00` disabled | — | Lab: `disable-ipv6=yes` → `00`, and `ipv6=true` leaves the neighbor row. Field: every `00` sender showed `ipv6=false` |
+| 14 | `ipv6` | 1 byte: `01` IPv6 enabled, `00` disabled. Meaning changes by version (below) | — | Lab: `disable-ipv6=yes` → `00`, and `ipv6=true` leaves the neighbor row. Field: every `00` sender showed `ipv6=false`. Hub lab: 6.49 to 7.26beta5 (below) |
 | 15 | `address6` | 16 bytes, one TLV per address on the interface (global first, then link-local) | — | Field: two TLV 15s on interfaces with a global address |
 | 16 | `interface-name` | Text; `bridge/port` for a bridge port | — | Field: `bridge/ether1` on 6.49 and 7.x |
 | 17 | `address4` | 4 bytes, network order | — | All sources |
-| 18 | `running` | `00` none, `01` CAPsMAN, `02` CMR controller; bitmask inferred, combined values unobserved | 7.20 | Lab: `/interface/wifi/capsman enabled=yes` → `01`. quickchr: `/cmr` → `02`. Field: absent on 7.19.4, present from 7.20. Changelog 7.20: "report router as CAPsMAN on MNDP under running parameter" |
+| 18 | `running` | Bitmask: `01` CAPsMAN, `02` CMR controller, `03` both, `00` none. Receivers print `running=capsman`, `cmr`, `capsman,cmr`, and leave the field out for `00` | 7.20 | Lab: `/interface/wifi/capsman enabled=yes` → `01`. quickchr: `/cmr` → `02`, printed `running=cmr`. Hub lab (7.26beta5 with `cmr`): both on → `03`, printed `capsman,cmr`; each toggle reverses. Field: absent on 7.19.4, present from 7.20. Changelog 7.20: "report router as CAPsMAN on MNDP under running parameter" |
 | 19 | (entry lifetime) | TTL seconds, `u8`: `min(discover-interval × 4 + 1, 255)`; `00` = dying gasp | 7.24 | Lab: 5 s → `15`, 7 s → `1d`, 30 s → `79`, 60 s → `f1`, 64 s/300 s/9 h → `ff`. Field: 10 s → `29`. Absent on 7.24beta1 and older; changelog 7.24 adds dying-gasp "TTL=0" |
 
 **TLV 14 is not `unpack`.** MAC-Telnet, the Wireshark dissector, centrs
@@ -122,8 +127,108 @@ were also learned by LLDP before the subject went quiet (`mode=rx-only`
 stops both). Treat the TTL as an approximate lifetime, not an exact
 expiry time.
 
-Types 6 and 13, and anything above 19, appeared in no capture. centrs reads
-13 as an alternate board field; nothing here supports that.
+Type 13, and anything above 19, appeared in no capture. centrs read 13 as
+an alternate board field; nothing here supports that. Type 6 appears only in
+requests (below), never in an announcement.
+
+**TLV 14 by version.** The flag meant "IPv6 present" before 7.18 and has
+followed `/ipv6/settings disable-ipv6` since. It followed it reliably only
+from 7.21 on:
+
+| Sender | `disable-ipv6=yes` | Then reboot | `disable-ipv6=no` |
+|---|---|---|---|
+| 6.49.23 | not tested; the flag follows the `ipv6` package (below) | — | — |
+| 7.17.2 | stays `01` | stays `01` | `01` |
+| 7.18.2, 7.20.8 | stays `01` | `00` | `01` at once |
+| 7.26beta5 | `00` at once | `00` | `01` at once |
+
+6.49.23 sends `00` while the `ipv6` package is disabled (its default) and
+`01` once it is enabled. With the package enabled it also announces over
+IPv6, but still sends no TLV 15. On every version, `disable-ipv6=yes` removes
+the TLV 15 addresses at once. Changelogs: 7.18 "advertise IPv6 capabilities
+based on "Disable IPv6" global setting", 7.21 "fixed MNDP IPv6 status
+reporting". So the flag alone does not say whether IPv6 is disabled on a
+7.18–7.20 sender, and it never does on 7.17 or older.
+
+**The receiver keys the row on the frame, not on TLV 1.** A spoofed
+announcement (Ethernet source `02:4d:4e:44:5c:01`, TLV 1
+`02:66:66:66:66:66`, TLV 17 `192.168.77.200`, IP source `.131`) was listed
+by 7.26beta5 and 7.17.2 as `mac-address=02:4D:4E:44:5C:01
+address4=192.168.77.200`. A packet with no TLV 17 was listed with its IP
+source address. A receiver on a UDP socket cannot see the Ethernet source,
+so TLV 1 is the best it has. On real routers the two match.
+
+### Requests
+
+A request asks every router on the segment to announce now. The host sent
+each candidate from its own station and recorded which of the six routers
+(6.49.23, 7.17.2, 7.18.2, 7.20.8 and two 7.26beta5) answered within 4 s.
+Every result below held for all six routers, in every round
+([`requests-forms.json`](evidence/requests-forms.json): 3 shuffled rounds;
+[`requests-main-run2.json`](evidence/requests-main-run2.json);
+[`requests-fresh.json`](evidence/requests-fresh.json)).
+
+| Payload (hex) | Form | Replies | Requester listed as a neighbor |
+|---|---|---|---|
+| `00000000` | Header 0 (MAC-Telnet) | yes | yes, empty identity |
+| `0000000000000000` | Header 0 + empty TLV 0 | yes | not checked |
+| `0000000000060000` | Header 0 + empty TLV 6 | yes | **no** |
+| `000000000006000100` | Header 0 + TLV 6 with a value byte | yes | not checked |
+| `0100000000060000`, `0000000100060000` | Non-zero header + empty TLV 6 | yes | not checked |
+| Announcement-shaped (TLVs 1, 5), header 0 | | yes | yes, as announced |
+| `000000000000000000` | 9 zero bytes (centrs `mndpRefreshPacket`) | **no** (0 of 11 tries) | no |
+| `000000000006000000` | Header 0 + TLV 6 + 1 byte (the "9-byte form") | **no** | no |
+| `0000000000`, `0000000000000000ffffff`, `00000000000600000000000000`, `010000000006000000` | Any trailing bytes that are not a whole TLV | no | no (checked for `0000000000`) |
+| `01000000`, `00000001`, `0100000000000000` | Non-zero header, no TLV 6 | no | yes (`01000000` from a new host) |
+| Announcement-shaped, header `05000000` | | no | not checked |
+| empty, `000000` | Shorter than a header | no | no |
+
+So a payload is a request when its header is `00000000` **or** it carries
+TLV 6. A payload whose TLVs do not end exactly at the end of the datagram is
+dropped whole: no reply and no neighbor row. Any well-formed payload, request
+or not, creates or refreshes a neighbor row for its sender, except one that
+carries TLV 6. A host that sends bare `00000000` requests therefore shows up
+in every router's `/ip/neighbor` (empty identity, the host's IPv4); one that
+sends `0000000000060000` does not.
+
+The 9-byte forms in circulation do not work. The `routeros-mndp` skill's
+"9-byte form" (`00 00 00 00 00 06 00 00 00`) and centrs's nine zero bytes
+both carry a trailing byte. In one early run the nine zero bytes seemed to
+draw replies from all six routers. Those frames were periodic announcements
+that happened to fall in the window: 5 of them came from the five routers
+just reconfigured to `discover-interval=1h`, about 70 ms apart in the order
+they had been configured, without the 0.2–2 s jitter that replies show (see
+the timer finding below), and the sixth was 6.49.23's 60 s periodic. Every
+later try failed, including from fresh hosts, after a valid request from
+the same host, and in shuffled orders
+([`requests-main-run1.json`](evidence/requests-main-run1.json) keeps that
+run).
+
+**What a reply looks like.** A reply is an ordinary announcement: the same
+payload, sent from port 5678 to `255.255.255.255:5678` and to
+`ff02::1:5678` (6.49.23 without the `ipv6` package: IPv4 only). This holds
+whether the request came over IPv4 broadcast, subnet broadcast, unicast, from
+source `0.0.0.0`, or over IPv6 `ff02::1` (every router with IPv6 answered
+it). A unicast request draws a reply
+only from the router it is addressed to, and that reply is broadcast too. So
+a listener must bind port 5678. The source port of the request does not
+matter. Replies come **0.2–2 s** after the request, with a random delay for
+each router. Requests that arrive before a router has replied are merged
+into one reply (two requests 200 ms apart, or five 50 ms apart, drew one
+reply each). Each reply advances the header counter like any other
+announcement.
+
+**A boot announcement is a request.** After a reboot the first announcement
+has header `00000000` and goes out on IPv4 only (7.26beta5 in
+[`dying-gasp-7.26beta5.json`](evidence/dying-gasp-7.26beta5.json); 6.49.23
+twice in [`hub-session-2026-11-16.json`](evidence/hub-session-2026-11-16.json)).
+Its neighbors answer it: the 7.26beta5 observer announced 561 ms later. The
+counter continues from 1.
+
+Prior art: MAC-Telnet sends `00000000`. The author's earlier Swift MNDP tool
+sent `0000000000060000` ("mimic winbox"), which works. Its TypeScript port
+added a trailing zero, which does not. WinBox's own request was not
+captured.
 
 ### Layout by version
 
@@ -170,18 +275,31 @@ neighbors), not a capture. The channel loss is pinned by the lab sweep:
   short announcement: header (the counter continues), then TLVs 1, 19 =
   `00`, 17, 15. The changelog says receivers clear the entry on it; the
   lab did not time that.
-- **One timer observation.** After `discover-interval=9h` and then `5s`,
-  the next periodic announcement did not come for over a minute, so the
-  pending timer may not be rescheduled. Seen once.
+- **Changing `discover-interval` does not reschedule the pending periodic
+  announcement.** The change sends one triggered announcement. The next
+  periodic one still comes on the old schedule, and only after that does the
+  new interval apply. Going from 2 h to 10 s, then from 10 s to 1 h, produced
+  no periodic announcement for 40 s on any of five routers (7.17.2, 7.18.2,
+  7.20.8 and two 7.26beta5). From the 30 s default to 1 h, the five routers'
+  next announcements arrived in the order they had been configured, about
+  70 ms apart: the pattern a pending schedule produces (see the early run
+  under [Requests](#requests)). The first lab saw this once, going from 9 h
+  to 5 s. A receiver can therefore go much longer than the new interval (and
+  past the TLV 19 TTL it now advertises) without hearing from a router whose
+  interval was just shortened. That consequence is inferred; the lab did not
+  watch a receiver expire the row.
 
 ### Still open
 
-- Types 6 and 13 and anything above 19: never seen.
-- TLV 18 with both CAPsMAN and CMR running (`03`?), and other services.
+- Type 13 and anything above 19: never seen.
+- Other TLV 18 bits: services other than CAPsMAN and CMR were not tried.
+- WinBox's request bytes, and whether anything else (RoMON, the Dude) sends
+  requests.
+- The reply delay's real range: 0.2–2 s fits every reply seen here, but the
+  bound was not measured.
 - The receiver's expiry timing: why removal lags the TTL by up to about
   20 s, and whether it can come slightly before it.
 - TLV 9 byte order on big-endian hardware. Packing TLVs on 6.x and older
   7.x.
-- 6.x with the IPv6 package enabled.
 - The packed-frame format (EtherType 0x9000) itself
   ([#3](https://github.com/tikoci/m2ir/issues/3)).

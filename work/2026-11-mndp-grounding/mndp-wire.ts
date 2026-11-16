@@ -29,6 +29,7 @@ export const NAMES: Record<number, string> = {
 	3: "unpack-headers",
 	4: "unpack-all",
 	5: "identity",
+	6: "request",
 	7: "version",
 	8: "platform",
 	9: "aggregated-size",
