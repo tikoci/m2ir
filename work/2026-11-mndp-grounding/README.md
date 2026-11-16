@@ -76,7 +76,7 @@ values.
 | [`tlv19-7.26beta5.json`](evidence/tlv19-7.26beta5.json) | TLV 19 moved `79` → `15` with the interval, not with any service toggle (see run notes) |
 | [`ttl-7.26beta5.json`](evidence/ttl-7.26beta5.json) | TLV 19 = `min(interval × 4 + 1, 255)` for 5 s to 9 h |
 | [`ageout-7.26beta5.json`](evidence/ageout-7.26beta5.json), [`ageout2-7.26beta5.json`](evidence/ageout2-7.26beta5.json) | Receiver expiry vs TTL; TLV 9 = `aggregated-size`; packing-only sends nothing |
-| [`ageout-mndp-7.26beta5.json`](evidence/ageout-mndp-7.26beta5.json), [`ageout-mndp2-7.26beta5.json`](evidence/ageout-mndp2-7.26beta5.json) | Receiver expiry vs TTL with `protocol=mndp` on both sides; run 2 adds a 5 s phase on a row only MNDP created. Removal comes 0–20 s after the TTL |
+| [`ageout-mndp-7.26beta5.json`](evidence/ageout-mndp-7.26beta5.json), [`ageout-mndp2-7.26beta5.json`](evidence/ageout-mndp2-7.26beta5.json) | Receiver expiry vs TTL with `protocol=mndp` on both sides; run 2 adds a 5 s phase on a row only MNDP created. Removal comes at about the TTL or up to ~20 s after it |
 | [`dying-gasp-7.26beta5.json`](evidence/dying-gasp-7.26beta5.json) | Dying-gasp payload (TLVs 1, 19 = `00`, 17, 15) and the counter restart |
 | [`field-summary.json`](evidence/field-summary.json) | Hardware: header byte order by CPU, TLV 18/19 version boundaries, repeated TLV 15, TLV 14 vs `ipv6` |
 
