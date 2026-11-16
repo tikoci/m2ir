@@ -245,7 +245,9 @@ has header `00000000` and goes out on IPv4 only (7.26beta5 in
 [`dying-gasp-7.26beta5.json`](evidence/dying-gasp-7.26beta5.json); 6.49.23
 twice in [`hub-session-2026-11-16.json`](evidence/hub-session-2026-11-16.json)).
 Its neighbors answer it: the 7.26beta5 observer announced 561 ms later. The
-counter continues from 1.
+counter continues from 1. On 7.26beta5 announcement 1 was IPv4 only too, and
+both lacked TLV 15. The IPv6 copy started with announcement 2, the first to
+carry TLV 15 (see Transport, below).
 
 Prior art: MAC-Telnet sends `00000000`. The author's earlier Swift MNDP tool
 sent `0000000000060000` ("mimic winbox"), which works. Its TypeScript port
@@ -290,14 +292,20 @@ neighbors), not a capture. The channel loss is pinned by the lab sweep:
   instead: MAC server, MAC WinBox and MAC ping, RoMON, bandwidth server,
   the IP services (winbox, api, ssh, telnet, ftp, api-ssl, www-ssl), cloud
   DDNS, remote DNS and IP forwarding.
-- **Transport.** Once IPv6 is up, each announcement goes out twice, as an
-  IPv4 broadcast and an IPv6 `ff02::1` multicast, with the same payload.
-  Only the IPv4 copy goes out for the first announcement after boot (see
-  "A boot announcement is a request"), while `disable-ipv6=yes`, and for the
-  first announcement after setting it back to `no` (probe steps `ipv6:on`
-  2 IPv4 / 0 IPv6, `ipv6:off` 2 IPv4 / 1 IPv6 in
-  [`probe-7.26beta5.json`](evidence/probe-7.26beta5.json)). `mode=rx-only`
-  stops both.
+- **Transport.** Every announcement goes out as an IPv4 broadcast. On 7.x
+  the IPv6 `ff02::1` multicast copy, with the same payload, went out exactly
+  when the announcement carried TLV 15. In every lab file that records the
+  address family (7.24.6, 7.25 and 7.26beta5), each announcement with TLV 15
+  had both copies. Each one without TLV 15 was IPv4 only, and those were
+  seen only on 7.26beta5: the first two after boot (counters 0 and 1, see
+  "A boot announcement is a request"), all of them while `disable-ipv6=yes`,
+  and the first one after setting it back to `no`. In
+  [`probe-7.26beta5.json`](evidence/probe-7.26beta5.json), step `ipv6:on`
+  has 2 announcements, both IPv4 only. Step `ipv6:off` has 2, and only the
+  second has an IPv6 copy. Each announcement appears twice in that file,
+  once per capture point. 6.49.23 sends only IPv4 without the `ipv6`
+  package. With the package it also sends the IPv6 copy, still without
+  TLV 15 (see TLV 14 by version). `mode=rx-only` stops both.
 - **Dying gasp** (`dying-gasp=yes`, 7.24+). On reboot the router sends a
   short announcement: header (the counter continues), then TLVs 1, 19 =
   `00`, 17, 15. The changelog says receivers clear the entry on it; the
