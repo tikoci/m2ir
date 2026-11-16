@@ -460,6 +460,23 @@ export const STUDIES: Record<string, Study> = {
 			{ id: "30s:rx-only+134s", wait: 8 },
 			{ id: "30s:rx-only+142s", wait: 8 },
 			{ id: "30s:rx-only+150s", wait: 8 },
+			// The 30 s expiry removed the row, so this 5 s phase starts from a row only MNDP created.
+			{
+				id: "5s-clean:tx-and-rx",
+				subject: [
+					"/ip/neighbor/discovery-settings/set mode=tx-and-rx discover-interval=5s",
+				],
+				wait: 10,
+			},
+			{
+				id: "5s-clean:rx-only+12s",
+				subject: ["/ip/neighbor/discovery-settings/set mode=rx-only"],
+				wait: 12,
+			},
+			{ id: "5s-clean:rx-only+16s", wait: 4 },
+			{ id: "5s-clean:rx-only+20s", wait: 4 },
+			{ id: "5s-clean:rx-only+24s", wait: 4 },
+			{ id: "5s-clean:rx-only+28s", wait: 4 },
 			{
 				id: "restore",
 				subject: [

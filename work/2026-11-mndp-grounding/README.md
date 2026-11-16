@@ -38,7 +38,7 @@ router.
 |---|---|
 | [`mndp-wire.ts`](mndp-wire.ts) | Dependency-free decoders: TZSP v1 → Ethernet → UDP/5678 → MNDP header + raw TLVs |
 | [`lab.ts`](lab.ts) | Study runner: arms both sniffers, runs steps, records announcements and neighbor rows |
-| [`studies.ts`](studies.ts) | Step lists: `probe`, `tlv19`, `ttl`, `ageout`, `ageout2`, `ageout-mndp`, `dying-gasp`, `baseline`, `counter` |
+| [`studies.ts`](studies.ts) | Step lists: `probe`, `tlv19`, `ttl`, `ageout`, `ageout2`, `ageout-mndp`, `dying-gasp`, `baseline`, `counter` (`ageout-mndp` gained a clean 5 s phase after the first run) |
 | [`pcap-mndp.ts`](pcap-mndp.ts) | pcapng (RouterOS sniffer file) → distinct MNDP payloads |
 | [`field-summary.ts`](field-summary.ts) | Field capture + `/ip/neighbor` → sanitized per-version rows |
 
@@ -76,7 +76,7 @@ values.
 | [`tlv19-7.26beta5.json`](evidence/tlv19-7.26beta5.json) | TLV 19 moved `79` → `15` with the interval, not with any service toggle (see run notes) |
 | [`ttl-7.26beta5.json`](evidence/ttl-7.26beta5.json) | TLV 19 = `min(interval × 4 + 1, 255)` for 5 s to 9 h |
 | [`ageout-7.26beta5.json`](evidence/ageout-7.26beta5.json), [`ageout2-7.26beta5.json`](evidence/ageout2-7.26beta5.json) | Receiver expiry vs TTL; TLV 9 = `aggregated-size`; packing-only sends nothing |
-| [`ageout-mndp-7.26beta5.json`](evidence/ageout-mndp-7.26beta5.json) | Receiver expiry vs TTL with `protocol=mndp` on both sides (no LLDP confound) |
+| [`ageout-mndp-7.26beta5.json`](evidence/ageout-mndp-7.26beta5.json), [`ageout-mndp2-7.26beta5.json`](evidence/ageout-mndp2-7.26beta5.json) | Receiver expiry vs TTL with `protocol=mndp` on both sides; run 2 adds a 5 s phase on a row only MNDP created. Removal comes 0–20 s after the TTL |
 | [`dying-gasp-7.26beta5.json`](evidence/dying-gasp-7.26beta5.json) | Dying-gasp payload (TLVs 1, 19 = `00`, 17, 15) and the counter restart |
 | [`field-summary.json`](evidence/field-summary.json) | Hardware: header byte order by CPU, TLV 18/19 version boundaries, repeated TLV 15, TLV 14 vs `ipv6` |
 
@@ -101,4 +101,8 @@ values.
   `coverage` field says so, and the later steps' `frames` are `null`.
   `lab.ts` now applies the same 45 s stall rule while it runs.
 - `ageout`/`ageout2` rows were `discovered-by: lldp,mndp`, so `ageout-mndp`
-  repeated the age-out with `protocol=mndp` on both routers.
+  repeated the age-out with `protocol=mndp` on both routers. Its 5 s phase
+  still carried a stale `lldp` label, so the study gained a clean 5 s phase
+  and ran again as `ageout-mndp2`. The two runs removed the same TTL-21 row
+  at different ages (≤22 s vs 29–41 s): the TTL is a lower bound, and
+  removal waits for a sweep.

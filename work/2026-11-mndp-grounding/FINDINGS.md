@@ -94,15 +94,30 @@ change ether2's announcement. TLVs 2–4 and 9 follow TLV 1 directly. They
 are the "packing TLVs 2, 3 and 9" an earlier skill revision listed without
 a source. That claim was right.
 
-**TLV 19 drives expiry.** In `ageout-mndp`, both routers ran
-`protocol=mndp`, so the observer's row came from MNDP alone
-(`discovered-by: mndp`). At a 30 s interval (TTL 121) the silent subject
-was still listed at age 123 s and gone by about 131 s. At 5 s (TTL 21) it
-was listed at age 18 s and gone by 22 s. The earlier `ageout`/`ageout2`
-runs agree (19–24 s and 135–140 s), but their rows were also learned by
-LLDP, so they do not isolate MNDP on their own. Expiry follows the TTL and
-is checked on a coarser timer. A row's `discovered-by` label kept `lldp`
-for over two minutes after LLDP stopped, so it is not a live indicator.
+**TLV 19 sets a minimum lifetime.** A receiver removes a silent neighbor
+some time after its TTL runs out: never before it in any run, and up to
+about 20 s after. That fits a periodic sweep, but the sweep was not timed.
+Ages are the observer's `/ip/neighbor` `age` (time since the last
+announcement):
+
+| Run | TTL | `discovered-by` | Last listed at | Gone by |
+|---|---|---|---|---|
+| `ageout-mndp`, 30 s | 121 | `mndp` | 123 s | 131 s |
+| `ageout-mndp2`, 30 s | 121 | `mndp` | 130 s | 138 s |
+| `ageout-mndp`, 5 s | 21 | `lldp,mndp` (stale label) | 18 s | 22 s |
+| `ageout-mndp2`, 5 s | 21 | `lldp,mndp` (stale label) | 29 s | 41 s |
+| `ageout-mndp2`, 5 s clean | 21 | `mndp` | 36 s | not reached (re-announced) |
+| `ageout2`, 5 s | 21 | `lldp,mndp` | 19 s | 24 s |
+| `ageout`, 60 s | 241 | `lldp,mndp` | 252 s | — |
+
+In the `ageout-mndp*` runs both routers ran `protocol=mndp`, so nothing
+refreshed the rows except MNDP. The first 5 s phase of each still carried
+an `lldp` label from before the protocol change. The label outlived LLDP by
+minutes, so it is not a live indicator. The "5 s clean" phase starts from a
+row MNDP alone created after the 30 s expiry. The `ageout`/`ageout2` rows
+were also learned by LLDP before the subject went quiet (`mode=rx-only`
+stops both). A receiver can rely on the TTL as a lower bound, not as an
+exact expiry time.
 
 Types 6 and 13, and anything above 19, appeared in no capture. centrs reads
 13 as an alternate board field; nothing here supports that.
@@ -160,6 +175,8 @@ neighbors), not a capture. The channel loss is pinned by the lab sweep:
 
 - Types 6 and 13 and anything above 19: never seen.
 - TLV 18 with both CAPsMAN and CMR running (`03`?), and other services.
+- The receiver's expiry sweep: when it runs and how far past the TTL a
+  neighbor can stay listed.
 - TLV 9 byte order on big-endian hardware. Packing TLVs on 6.x and older
   7.x.
 - 6.x with the IPv6 package enabled.
