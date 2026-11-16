@@ -180,8 +180,8 @@ comes from `requests-fresh.json`, which read the neighbor tables of the five
 | `000000000006000100` | Header 0 + TLV 6 with a value byte | yes | not checked |
 | `0100000000060000`, `0000000100060000` | Non-zero header + empty TLV 6 | yes | not checked |
 | Announcement-shaped (TLVs 1, 5), header 0 | | yes | yes, as announced |
-| `000000000000000000` | 9 zero bytes (centrs `mndpRefreshPacket`) | **no** (0 of 11 tries after run 1; see below) | no |
-| `000000000006000000` | Header 0 + TLV 6 + 1 byte (the "9-byte form") | **no** | no |
+| `000000000000000000` | 9 zero bytes (centrs `mndpRefreshPacket`) | **no**: 0 replies in 11 sends after run 1 (see below) | no |
+| `000000000006000000` | Header 0 + TLV 6 + 1 byte (the "9-byte form") | **no**: 0 replies in 7 sends, including run 1 | no |
 | `0000000000`, `0000000000000000ffffff`, `00000000000600000000000000`, `010000000006000000` | Any trailing bytes that are not a whole TLV | no | no (checked for `0000000000`) |
 | `01000000`, `00000001`, `0100000000000000` | Non-zero header, no TLV 6 | no | yes (`01000000` from a new host) |
 | Announcement-shaped, header `05000000` | | no | not checked |
@@ -206,9 +206,19 @@ switched to `discover-interval=1h` shortly before, and their announcements
 arrived 1.403–1.690 s after the send, about 70 ms apart in the order they had
 been configured. Replies to valid requests are not ordered that way. The
 sixth was 6.49.23, whose 60 s periodic could fall in any 4 s window. The
-configuration times were not recorded, so this is a hypothesis. The 11
-later tries all failed, including from fresh hosts, after a valid request
-from the same host, and in shuffled orders.
+configuration times were not recorded, so this is a hypothesis.
+
+The 11 later sends of nine zero bytes drew no reply. Seven are in the study
+files: three in `requests-forms.json`, three in `requests-fresh.json` (a new
+host, the same host again, and the host that had sent a valid `00000000`
+earlier), and one in `requests-main-run2.json`. Four were ad hoc sequences,
+described in `hub-session-2026-11-16.json` → `anchors`. One announcement was
+captured in those windows: a 6.49.23 frame 511 ms after
+`fresh-z9-after-z4`. It is not counted as a reply because it falls on
+6.49.23's 60 s periodic schedule. Its unprompted announcements in
+`hub-session-2026-11-16.json` came at 27.8, 87.8, 147.8, 207.8, 267.8 and
+327.8 s. The `000000000006000000` form drew no reply in any of its 7 sends
+(forms ×3, fresh, run 1, run 2, and one ad hoc).
 
 **What a reply looks like.** A reply is an ordinary announcement: the same
 payload, sent from port 5678 to `255.255.255.255:5678` and to
@@ -220,8 +230,10 @@ only from the router it is addressed to, and that reply is broadcast too. So
 a listener must bind port 5678. The source port of the request does not
 matter. Replies came after a random delay for each router: 21 ms to 1.96 s
 on the 7.x routers (median about 1.1–1.3 s, 41–42 replies each across the
-four request files) and 11 ms to 2.1 s on 6.49.23 (three later 6.49.23
-frames, up to 2.75 s, may be its 60 s periodic). The 7.x routers merged a
+four request files) and 11 ms to 1.87 s on 6.49.23. Three later 6.49.23
+frames (2.05–2.75 s) are not counted as replies. The 2.75 s one falls on its
+60 s periodic schedule (above). The other two are in run 1, which has no
+continuous log, and are likely periodic too. The 7.x routers merged a
 burst into one reply: two requests 200 ms apart, or five 50 ms apart, drew
 one reply each in both runs. 6.49.23 merged the five-request burst in both
 runs, but answered the 200 ms pair twice in run 2 (155 ms and 543 ms) and

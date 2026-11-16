@@ -258,71 +258,79 @@ const FORMS: Request[] = [
 		payloadHex: `${fakeAnnouncement("00000000")}00`,
 	},
 ];
-/** Fresh stations: 02:4d:4e:44:5<k>:<n>, 192.168.77.<100+n>. */
+/**
+ * Fresh stations: host `n` of round `r` is 02:4d:4e:44:5<k>:<r+1><n> and 192.168.77.<100+10r+n>,
+ * so every round uses hosts no router has seen (k is random per run). Up to 15 rounds.
+ */
 const run = Math.floor(Math.random() * 16).toString(16);
-const fresh = (n: number) => ({
-	srcMac: `02:4d:4e:44:5${run}:${(0x10 + n).toString(16)}`,
-	src: `192.168.77.${100 + n}`,
-});
-const FRESH: Request[] = [
-	{
-		id: "fresh-z4",
-		note: "header 0 from a never-seen host",
-		payloadHex: "00000000",
-		...fresh(1),
-	},
-	{
-		id: "fresh-z9",
-		note: "centrs 9-byte form from a never-seen host",
-		payloadHex: "000000000000000000",
-		...fresh(2),
-	},
-	{
-		id: "fresh-z9-again",
-		note: "the same host and form again",
-		payloadHex: "000000000000000000",
-		...fresh(2),
-	},
-	{
-		id: "fresh-t6-9",
-		note: "header 0 + TLV 6 + 1 byte from a never-seen host",
-		payloadHex: "000000000006000000",
-		...fresh(3),
-	},
-	{
-		id: "fresh-z5",
-		note: "header 0 + 1 byte from a never-seen host",
-		payloadHex: "0000000000",
-		...fresh(4),
-	},
-	{
-		id: "fresh-nz4",
-		note: "header 01000000 (not a request) from a never-seen host",
-		payloadHex: "01000000",
-		...fresh(5),
-	},
-	{
-		id: "fresh-t6-8",
-		note: "header 0 + TLV 6 from a never-seen host",
-		payloadHex: "0000000000060000",
-		...fresh(6),
-	},
-	{
-		id: "fresh-z9-after-z4",
-		note: "z9 from the host that sent fresh-z4 earlier in this run",
-		payloadHex: "000000000000000000",
-		...fresh(1),
-	},
-];
-const SETS: Record<string, Request[]> = {
-	main: MAIN,
-	forms: FORMS,
-	fresh: FRESH,
+const freshSet = (round: number): Request[] => {
+	const fresh = (n: number) => ({
+		srcMac: `02:4d:4e:44:5${run}:${(((round + 1) << 4) | n).toString(16)}`,
+		src: `192.168.77.${100 + round * 10 + n}`,
+	});
+	return [
+		{
+			id: "fresh-z4",
+			note: "header 0 from a never-seen host",
+			payloadHex: "00000000",
+			...fresh(1),
+		},
+		{
+			id: "fresh-z9",
+			note: "centrs 9-byte form from a never-seen host",
+			payloadHex: "000000000000000000",
+			...fresh(2),
+		},
+		{
+			id: "fresh-z9-again",
+			note: "the same host and form again",
+			payloadHex: "000000000000000000",
+			...fresh(2),
+		},
+		{
+			id: "fresh-t6-9",
+			note: "header 0 + TLV 6 + 1 byte from a never-seen host",
+			payloadHex: "000000000006000000",
+			...fresh(3),
+		},
+		{
+			id: "fresh-z5",
+			note: "header 0 + 1 byte from a never-seen host",
+			payloadHex: "0000000000",
+			...fresh(4),
+		},
+		{
+			id: "fresh-nz4",
+			note: "header 01000000 (not a request) from a never-seen host",
+			payloadHex: "01000000",
+			...fresh(5),
+		},
+		{
+			id: "fresh-t6-8",
+			note: "header 0 + TLV 6 from a never-seen host",
+			payloadHex: "0000000000060000",
+			...fresh(6),
+		},
+		{
+			id: "fresh-z9-after-z4",
+			note: "z9 from the host that sent fresh-z4 earlier in this run",
+			payloadHex: "000000000000000000",
+			...fresh(1),
+		},
+	];
 };
-const base = SETS[SET];
-if (!base) throw new Error(`unknown set ${SET}`);
+const SETS: Record<string, (round: number) => Request[]> = {
+	main: () => MAIN,
+	forms: () => FORMS,
+	fresh: freshSet,
+};
+const build = SETS[SET];
+if (!build) throw new Error(`unknown set ${SET}`);
+if (SET === "fresh" && ROUNDS > 15)
+	throw new Error("--set=fresh supports up to 15 rounds");
 const REQUESTS: Request[] = [];
-for (let round = 0; round < ROUNDS; round++)
+for (let round = 0; round < ROUNDS; round++) {
+	const base = build(round);
 	// `fresh` depends on its order (a host's second request); a single round keeps the listed order too.
 	REQUESTS.push(
 		...(SET === "fresh" || ROUNDS === 1
@@ -330,6 +338,7 @@ for (let round = 0; round < ROUNDS; round++)
 			: [...base].sort(() => Math.random() - 0.5)
 		).map((q) => ({ ...q, round })),
 	);
+}
 
 /** Replies came 21 ms to about 2 s after a request (random per router), so wait well past that. */
 const WINDOW_MS = 4000;
@@ -388,7 +397,8 @@ for (const q of REQUESTS) {
 	let listedBy: Record<string, unknown> | undefined;
 	if (q.srcMac) {
 		listedBy = {};
-		for (const r of routers.filter((x) => !x.machine.endsWith("-v6"))) {
+		// 6.x has no REST; its version comes from the observer's neighbor table.
+		for (const r of routers.filter((x) => !x.version?.startsWith("6."))) {
 			const rows = (await get(r.machine, "/ip/neighbor")) as Array<
 				Record<string, string>
 			>;

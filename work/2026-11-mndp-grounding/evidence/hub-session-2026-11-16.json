@@ -1,5 +1,5 @@
 {
-	"source": "Every UDP/5678 frame the hub.ts station received on the hub segment (CHRs 7.26beta5 x2, 7.17.2, 7.18.2, 7.20.8, 6.49.23), from the start of requests-fresh.json to the end of the session, 2026-11-16. The station logs what it receives, not what it sends; t is ms since the hub process started (requests-*.json `sends` and running/ipv6 step times use the same clock).",
+	"source": "Every UDP/5678 frame the hub.ts station received on the hub segment (CHRs 7.26beta5 x2, 7.17.2, 7.18.2, 7.20.8, 6.49.23), from the start of requests-fresh.json to the end of the session, 2026-11-16. The station logs what it receives, not what it sends; t is ms since the hub process started. requests-fresh.json and requests-main-run2.json `sends` and `anchors` below use that clock. running-7.26beta5.json and ipv6-7.17-7.26beta5.json do not: their `announcements[].t` are offsets from each step's start, and the step's hub-clock start was not recorded. Match those by payloadHex instead. requests-forms.json and requests-main-run1.json came from an earlier hub process with its own clock.",
 	"routers": [
 		{
 			"name": "obs",

@@ -119,7 +119,10 @@ interface StepRecord {
 	/** IPv4 announcements from the router after the change (triggered, then the requested reply). */
 	announcements: Array<{ t: number; payloadHex: string; summary: string }>;
 	tlv?: Record<string, string[]>;
+	/** Observer's row for the router; null when the table was read and has no row for it. */
 	neighbor?: Record<string, string> | null;
+	/** Set instead of `neighbor` when the observer's `/ip/neighbor` read failed. */
+	neighborError?: unknown;
 }
 const steps: StepRecord[] = [];
 
@@ -184,25 +187,29 @@ async function step(
 	const rows = (await call(obs.rest, "GET", "/ip/neighbor")) as Array<
 		Record<string, string>
 	>;
+	if (!Array.isArray(rows)) rec.neighborError = rows;
 	const row = Array.isArray(rows)
 		? rows.find((x) => x["mac-address"]?.toLowerCase() === r.mac)
 		: undefined;
-	rec.neighbor = row
-		? Object.fromEntries(
-				[
-					"identity",
-					"version",
-					"ipv6",
-					"address6",
-					"running",
-					"unpack",
-					"age",
-				].map((k) => [k, row[k] ?? "(absent)"]),
-			)
-		: null;
+	if (Array.isArray(rows))
+		rec.neighbor = row
+			? Object.fromEntries(
+					[
+						"identity",
+						"version",
+						"ipv6",
+						"address6",
+						"running",
+						"unpack",
+						"age",
+					].map((k) => [k, row[k] ?? "(absent)"]),
+				)
+			: null;
 	steps.push(rec);
 	console.log(
-		`${id} [${r.name}]: tlv ${JSON.stringify(rec.tlv)} neighbor ipv6=${rec.neighbor?.["ipv6"]} running=${rec.neighbor?.["running"]}`,
+		rec.neighborError === undefined
+			? `${id} [${r.name}]: tlv ${JSON.stringify(rec.tlv)} neighbor ipv6=${rec.neighbor?.["ipv6"]} running=${rec.neighbor?.["running"]}`
+			: `${id} [${r.name}]: tlv ${JSON.stringify(rec.tlv)} neighbor read FAILED: ${JSON.stringify(rec.neighborError)}`,
 	);
 }
 
