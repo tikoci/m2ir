@@ -318,8 +318,10 @@ neighbors), not a capture. The channel loss is pinned by the lab sweep:
 
   `probe-7.26beta5.json` records each announcement twice, once per capture
   point; the counts above are per announcement. 6.49.23 sends only IPv4
-  without the `ipv6` package. With the package it also sends the IPv6
-  copy, without TLV 15 (see TLV 14 by version). `mode=rx-only` stops both.
+  without the `ipv6` package. In the hub session, after the reboot that
+  enabled the package, the boot announcement (`t=1140553`) was still IPv4
+  only. The next one (`t=1152524`) also went out as an IPv6 copy, without
+  TLV 15 (see TLV 14 by version). `mode=rx-only` stops both.
 - **Dying gasp** (`dying-gasp=yes`, 7.24+). On reboot the router sends a
   short announcement: header (the counter continues), then TLVs 1, 19 =
   `00`, 17, 15. The changelog says receivers clear the entry on it; the
