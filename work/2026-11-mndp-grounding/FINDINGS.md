@@ -241,11 +241,17 @@ once in run 1. Each reply advances the header counter like any other
 announcement.
 
 **A boot announcement is a request.** After a reboot the first announcement
-has header `00000000` and goes out on IPv4 only (7.26beta5 in
-[`dying-gasp-7.26beta5.json`](evidence/dying-gasp-7.26beta5.json); 6.49.23
-twice in [`hub-session-2026-11-16.json`](evidence/hub-session-2026-11-16.json)).
+has header `00000000` (7.26beta5 in
+[`dying-gasp-7.26beta5.json`](evidence/dying-gasp-7.26beta5.json); 6.49.23,
+7.17.2, 7.18.2, 7.20.8 and 7.26beta5 in
+[`hub-session-2026-11-16.json`](evidence/hub-session-2026-11-16.json)).
 Its neighbors answer it: the 7.26beta5 observer announced 561 ms later. The
-counter continues from 1.
+counter continues from 1. The boot announcement went out 2–18 s into uptime
+and carries only the addresses the interface had by then, so TLVs 15 and 17
+are often missing. It was IPv4 only in 12 of the 13 boots captured. The
+exception is a 7.20.8 boot with IPv6 enabled, whose announcement went out at
+13 s uptime and already carried TLV 15 and an IPv6 copy. See Transport,
+below.
 
 Prior art: MAC-Telnet sends `00000000`. The author's earlier Swift MNDP tool
 sent `0000000000060000` ("mimic winbox"), which works. Its TypeScript port
@@ -290,9 +296,32 @@ neighbors), not a capture. The channel loss is pinned by the lab sweep:
   instead: MAC server, MAC WinBox and MAC ping, RoMON, bandwidth server,
   the IP services (winbox, api, ssh, telnet, ftp, api-ssl, www-ssl), cloud
   DDNS, remote DNS and IP forwarding.
-- **Transport.** Each announcement goes out twice, as an IPv4 broadcast
-  and an IPv6 `ff02::1` multicast, with the same payload. `mode=rx-only`
-  stops both.
+- **Transport.** Every announcement goes out as an IPv4 broadcast. Most
+  also go out as an IPv6 `ff02::1` multicast with the same payload. Only
+  one direction held in every capture that records the address family
+  (the lab files and `hub-session-2026-11-16.json`, 7.17.2 to 7.26beta5):
+  on 7.x, every announcement with TLV 15 had an IPv6 copy. Without TLV 15
+  the announcement was usually IPv4 only, but not always:
+  - **After boot, with IPv6 enabled:** 0 to 2 IPv4-only announcements
+    before the first with TLV 15 (7 boots on 7.17.2, 7.18.2, 7.20.8 and
+    7.26beta5; see "A boot announcement is a request").
+  - **While `disable-ipv6=yes`:** every announcement was IPv4 only,
+    including after a reboot. In
+    [`probe-7.26beta5.json`](evidence/probe-7.26beta5.json), step `ipv6:on`
+    has 2 announcements, both IPv4 only.
+  - **First announcement after setting `disable-ipv6=no`:** it varied. In
+    `probe-7.26beta5.json` (step `ipv6:off`) and on 7.20.8 in the hub
+    session it was IPv4 only. In the hub session, 7.26beta5 (`mndp2-sub`,
+    counter 3, `t=1007272`) sent an IPv6 copy without TLV 15, and 7.17.2
+    and 7.18.2 already had TLV 15 and both copies. Where the first was
+    incomplete, the next announcement had both copies and TLV 15.
+
+  `probe-7.26beta5.json` records each announcement twice, once per capture
+  point; the counts above are per announcement. 6.49.23 sends only IPv4
+  without the `ipv6` package. In the hub session, after the reboot that
+  enabled the package, the boot announcement (`t=1140553`) was still IPv4
+  only. The next one (`t=1152524`) also went out as an IPv6 copy, without
+  TLV 15 (see TLV 14 by version). `mode=rx-only` stops both.
 - **Dying gasp** (`dying-gasp=yes`, 7.24+). On reboot the router sends a
   short announcement: header (the counter continues), then TLVs 1, 19 =
   `00`, 17, 15. The changelog says receivers clear the entry on it; the
