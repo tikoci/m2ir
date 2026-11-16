@@ -1,0 +1,652 @@
+{
+	"study": "dying-gasp",
+	"date": "2026-11-15T22:16:15.266Z",
+	"subject": {
+		"name": "mndp-sub",
+		"version": "7.26beta5",
+		"arch": "x86_64",
+		"board": "CHR QEMU Standard PC (i440FX + PIIX, 1996)",
+		"macs": ["02:af:91:67:26:04", "02:aa:13:dd:4f:2c", "00:00:00:00:00:00"]
+	},
+	"observer": {
+		"name": "mndp-obs",
+		"version": "7.26beta5"
+	},
+	"steps": [
+		{
+			"id": "dg-off-baseline",
+			"t": 21,
+			"commands": [
+				{
+					"cmd": "/ip/neighbor/discovery-settings/set discover-interval=5s",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"neighbor": [
+				{
+					".id": "*7",
+					"address": "192.0.2.2",
+					"address4": "192.0.2.2",
+					"address6": "fe80::aa:13ff:fedd:4f2c",
+					"age": "4s",
+					"board": "CHR",
+					"discovered-by": "lldp,mndp",
+					"identity": "mndp-subject",
+					"interface": "ether2",
+					"interface-name": "ether2",
+					"ipv6": "true",
+					"mac-address": "02:AA:13:DD:4F:2C",
+					"platform": "MikroTik",
+					"software-id": "TtzdgrsHqmO",
+					"system-caps": "bridge,router",
+					"system-caps-enabled": "router",
+					"system-description": "MikroTik RouterOS 7.26beta5 2026-10-30 11:13:55 CHR",
+					"unpack": "none",
+					"uptime": "33m43s",
+					"version": "7.26beta5 2026-10-30 11:13:55"
+				}
+			],
+			"frames": {
+				"subject": 2,
+				"observer": 2
+			}
+		},
+		{
+			"id": "dg-on",
+			"t": 8026,
+			"commands": [
+				{
+					"cmd": "/ip/neighbor/discovery-settings/set dying-gasp=yes",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"neighbor": [
+				{
+					".id": "*7",
+					"address": "192.0.2.2",
+					"address4": "192.0.2.2",
+					"address6": "fe80::aa:13ff:fedd:4f2c",
+					"age": "2s",
+					"board": "CHR",
+					"discovered-by": "lldp,mndp",
+					"identity": "mndp-subject",
+					"interface": "ether2",
+					"interface-name": "ether2",
+					"ipv6": "true",
+					"mac-address": "02:AA:13:DD:4F:2C",
+					"platform": "MikroTik",
+					"software-id": "TtzdgrsHqmO",
+					"system-caps": "bridge,router",
+					"system-caps-enabled": "router",
+					"system-description": "MikroTik RouterOS 7.26beta5 2026-10-30 11:13:55 CHR",
+					"unpack": "none",
+					"uptime": "33m53s",
+					"version": "7.26beta5 2026-10-30 11:13:55"
+				}
+			],
+			"frames": {
+				"subject": 4,
+				"observer": 4
+			}
+		},
+		{
+			"id": "dg-reboot",
+			"t": 16031,
+			"commands": [
+				{
+					"cmd": ":execute {/system/reboot}",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"neighbor": [
+				{
+					".id": "*8",
+					"address": "192.0.2.2",
+					"address4": "192.0.2.2",
+					"address6": "fe80::aa:13ff:fedd:4f2c",
+					"age": "1s",
+					"board": "CHR",
+					"discovered-by": "lldp,mndp",
+					"identity": "mndp-subject",
+					"interface": "ether2",
+					"interface-name": "ether2",
+					"ipv6": "true",
+					"mac-address": "02:AA:13:DD:4F:2C",
+					"platform": "MikroTik",
+					"software-id": "TtzdgrsHqmO",
+					"system-caps": "bridge,router",
+					"system-caps-enabled": "router",
+					"system-description": "MikroTik RouterOS 7.26beta5 2026-10-30 11:13:55 CHR",
+					"unpack": "none",
+					"uptime": "22s",
+					"version": "7.26beta5 2026-10-30 11:13:55"
+				}
+			],
+			"frames": {
+				"subject": 8,
+				"observer": 16
+			}
+		},
+		{
+			"id": "dg-after",
+			"t": 42281,
+			"commands": [],
+			"neighbor": [
+				{
+					".id": "*8",
+					"address": "192.0.2.2",
+					"address4": "192.0.2.2",
+					"address6": "fe80::aa:13ff:fedd:4f2c",
+					"age": "1s",
+					"board": "CHR",
+					"discovered-by": "lldp,mndp",
+					"identity": "mndp-subject",
+					"interface": "ether2",
+					"interface-name": "ether2",
+					"ipv6": "true",
+					"mac-address": "02:AA:13:DD:4F:2C",
+					"platform": "MikroTik",
+					"software-id": "TtzdgrsHqmO",
+					"system-caps": "bridge,router",
+					"system-caps-enabled": "router",
+					"system-description": "MikroTik RouterOS 7.26beta5 2026-10-30 11:13:55 CHR",
+					"unpack": "none",
+					"uptime": "32s",
+					"version": "7.26beta5 2026-10-30 11:13:55"
+				}
+			],
+			"frames": {
+				"subject": 6,
+				"observer": 6
+			}
+		}
+	],
+	"announcements": [
+		{
+			"t": 3912,
+			"via": "subject",
+			"step": "dg-off-baseline",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "be0000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004e7070000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[be000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2023 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 3912,
+			"via": "subject",
+			"step": "dg-off-baseline",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "be0000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004e7070000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[be000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2023 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 3913,
+			"via": "observer",
+			"step": "dg-off-baseline",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "be0000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004e7070000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[be000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2023 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 3913,
+			"via": "observer",
+			"step": "dg-off-baseline",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "be0000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004e7070000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[be000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2023 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 8921,
+			"via": "subject",
+			"step": "dg-on",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "bf0000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004ec070000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[bf000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2028 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 8921,
+			"via": "subject",
+			"step": "dg-on",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "bf0000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004ec070000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[bf000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2028 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 8921,
+			"via": "observer",
+			"step": "dg-on",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "bf0000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004ec070000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[bf000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2028 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 8921,
+			"via": "observer",
+			"step": "dg-on",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "bf0000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004ec070000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[bf000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2028 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 13919,
+			"via": "subject",
+			"step": "dg-on",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "c00000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004f1070000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[c0000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2033 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 13919,
+			"via": "subject",
+			"step": "dg-on",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "c00000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004f1070000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[c0000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2033 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 13920,
+			"via": "observer",
+			"step": "dg-on",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "c00000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004f1070000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[c0000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2033 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 13920,
+			"via": "observer",
+			"step": "dg-on",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "c00000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004f1070000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[c0000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2033 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 16032,
+			"via": "subject",
+			"step": "dg-reboot",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "c10000000001000602aa13dd4f2c001300010000110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[c1000000] mac=02aa13dd4f2c ttl=00 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 16032,
+			"via": "subject",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "c10000000001000602aa13dd4f2c001300010000110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[c1000000] mac=02aa13dd4f2c ttl=00 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 16033,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "c10000000001000602aa13dd4f2c001300010000110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[c1000000] mac=02aa13dd4f2c ttl=00 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 16033,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "c10000000001000602aa13dd4f2c001300010000110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[c1000000] mac=02aa13dd4f2c ttl=00 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 21544,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "0.0.0.0",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "000000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000402000000000b000b54747a6467727348716d4f000c0003434852000e0001010010000665746865723200120001000013000115",
+			"summary": "[00000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15"
+		},
+		{
+			"t": 22105,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 6,
+			"src": "fe80:0:0:0:7e:d1ff:fe2a:671c",
+			"srcMac": "02:7e:d1:2a:67:1c",
+			"payloadHex": "4600000000010006027ed12a671c0005000d6d6e64702d6f627365727665720007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004fc070000000b000b6c4457696c566d7549614a000c0003434852000e000101001000066574686572320012000100001300017900110004c0000201000f0010fe80000000000000007ed1fffe2a671c",
+			"summary": "[46000000] mac=027ed12a671c identity=mndp-observer version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2044 software-id=lDWilVmuIaJ board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=79 ipv4=c0000201 ipv6=fe80000000000000007ed1fffe2a671c"
+		},
+		{
+			"t": 22105,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "192.0.2.1",
+			"srcMac": "02:7e:d1:2a:67:1c",
+			"payloadHex": "4600000000010006027ed12a671c0005000d6d6e64702d6f627365727665720007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a0004fc070000000b000b6c4457696c566d7549614a000c0003434852000e000101001000066574686572320012000100001300017900110004c0000201000f0010fe80000000000000007ed1fffe2a671c",
+			"summary": "[46000000] mac=027ed12a671c identity=mndp-observer version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2044 software-id=lDWilVmuIaJ board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=79 ipv4=c0000201 ipv6=fe80000000000000007ed1fffe2a671c"
+		},
+		{
+			"t": 22347,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "010000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000403000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202",
+			"summary": "[01000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=3 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202"
+		},
+		{
+			"t": 23943,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "020000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000404000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[02000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=4 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 23943,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "020000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000404000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[02000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=4 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 26265,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "030000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000407000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[03000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=7 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 26265,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "030000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000407000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[03000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=7 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 31262,
+			"via": "subject",
+			"step": "dg-reboot",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "040000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00040c000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[04000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=12 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 31262,
+			"via": "subject",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "040000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00040c000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[04000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=12 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 31262,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "040000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00040c000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[04000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=12 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 31262,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "040000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00040c000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[04000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=12 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 36262,
+			"via": "subject",
+			"step": "dg-reboot",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "050000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000411000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[05000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=17 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 36262,
+			"via": "subject",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "050000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000411000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[05000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=17 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 36262,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "050000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000411000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[05000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=17 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 36263,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "050000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000411000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[05000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=17 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 41263,
+			"via": "subject",
+			"step": "dg-reboot",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "060000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000416000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[06000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=22 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 41263,
+			"via": "subject",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "060000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000416000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[06000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=22 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 41263,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "060000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000416000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[06000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=22 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 41264,
+			"via": "observer",
+			"step": "dg-reboot",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "060000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000416000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[06000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=22 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 46267,
+			"via": "subject",
+			"step": "dg-after",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "070000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00041b000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[07000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=27 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 46267,
+			"via": "subject",
+			"step": "dg-after",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "070000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00041b000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[07000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=27 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 46267,
+			"via": "observer",
+			"step": "dg-after",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "070000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00041b000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[07000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=27 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 46267,
+			"via": "observer",
+			"step": "dg-after",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "070000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00041b000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[07000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=27 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 51265,
+			"via": "subject",
+			"step": "dg-after",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "080000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000420000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[08000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=32 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 51265,
+			"via": "subject",
+			"step": "dg-after",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "080000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000420000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[08000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=32 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 51265,
+			"via": "observer",
+			"step": "dg-after",
+			"family": 6,
+			"src": "fe80:0:0:0:aa:13ff:fedd:4f2c",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "080000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000420000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[08000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=32 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 51265,
+			"via": "observer",
+			"step": "dg-after",
+			"family": 4,
+			"src": "192.0.2.2",
+			"srcMac": "02:aa:13:dd:4f:2c",
+			"payloadHex": "080000000001000602aa13dd4f2c0005000c6d6e64702d7375626a6563740007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000420000000000b000b54747a6467727348716d4f000c0003434852000e000101001000066574686572320012000100001300011500110004c0000202000f0010fe8000000000000000aa13fffedd4f2c",
+			"summary": "[08000000] mac=02aa13dd4f2c identity=mndp-subject version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=32 software-id=TtzdgrsHqmO board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=15 ipv4=c0000202 ipv6=fe8000000000000000aa13fffedd4f2c"
+		},
+		{
+			"t": 52106,
+			"via": "observer",
+			"step": "dg-after",
+			"family": 6,
+			"src": "fe80:0:0:0:7e:d1ff:fe2a:671c",
+			"srcMac": "02:7e:d1:2a:67:1c",
+			"payloadHex": "4700000000010006027ed12a671c0005000d6d6e64702d6f627365727665720007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00041a080000000b000b6c4457696c566d7549614a000c0003434852000e000101001000066574686572320012000100001300017900110004c0000201000f0010fe80000000000000007ed1fffe2a671c",
+			"summary": "[47000000] mac=027ed12a671c identity=mndp-observer version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2074 software-id=lDWilVmuIaJ board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=79 ipv4=c0000201 ipv6=fe80000000000000007ed1fffe2a671c"
+		},
+		{
+			"t": 52106,
+			"via": "observer",
+			"step": "dg-after",
+			"family": 4,
+			"src": "192.0.2.1",
+			"srcMac": "02:7e:d1:2a:67:1c",
+			"payloadHex": "4700000000010006027ed12a671c0005000d6d6e64702d6f627365727665720007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00041a080000000b000b6c4457696c566d7549614a000c0003434852000e000101001000066574686572320012000100001300017900110004c0000201000f0010fe80000000000000007ed1fffe2a671c",
+			"summary": "[47000000] mac=027ed12a671c identity=mndp-observer version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2074 software-id=lDWilVmuIaJ board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=79 ipv4=c0000201 ipv6=fe80000000000000007ed1fffe2a671c"
+		},
+		{
+			"t": 52106,
+			"via": "subject",
+			"step": "dg-after",
+			"family": 6,
+			"src": "fe80:0:0:0:7e:d1ff:fe2a:671c",
+			"srcMac": "02:7e:d1:2a:67:1c",
+			"payloadHex": "4700000000010006027ed12a671c0005000d6d6e64702d6f627365727665720007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00041a080000000b000b6c4457696c566d7549614a000c0003434852000e000101001000066574686572320012000100001300017900110004c0000201000f0010fe80000000000000007ed1fffe2a671c",
+			"summary": "[47000000] mac=027ed12a671c identity=mndp-observer version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2074 software-id=lDWilVmuIaJ board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=79 ipv4=c0000201 ipv6=fe80000000000000007ed1fffe2a671c"
+		},
+		{
+			"t": 52106,
+			"via": "subject",
+			"step": "dg-after",
+			"family": 4,
+			"src": "192.0.2.1",
+			"srcMac": "02:7e:d1:2a:67:1c",
+			"payloadHex": "4700000000010006027ed12a671c0005000d6d6e64702d6f627365727665720007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00041a080000000b000b6c4457696c566d7549614a000c0003434852000e000101001000066574686572320012000100001300017900110004c0000201000f0010fe80000000000000007ed1fffe2a671c",
+			"summary": "[47000000] mac=027ed12a671c identity=mndp-observer version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2074 software-id=lDWilVmuIaJ board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=79 ipv4=c0000201 ipv6=fe80000000000000007ed1fffe2a671c"
+		}
+	]
+}

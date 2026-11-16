@@ -625,3 +625,14 @@ adddst # add-dst-to-address-list cell-tag fragment, verbatim in fixture comments
 covary # change together across cells (G1 f15/f206 witness note, gui-handlers.yaml)
 mainb # stimulus-tag fragment, verbatim in I1-B fixture rows (i1mainb address comment, fixtures/proof)
 wps # Wi-Fi Protected Setup; verbatim in defconf WPS-Sync body names ([24,8] wire bodies, gui-handlers.yaml)
+# MNDP grounding lab (work/2026-11-mndp-grounding)
+capsman # RouterOS /ip/neighbor `running=capsman` value (MNDP TLV 18 bit 0x01)
+ageout # lab study name: receiver neighbor-entry expiry vs MNDP TLV 19 TTL
+tlvs # plural of TLV in identifiers
+ifaces # interface list in pcapng parsing
+ihl # IPv4 header length field
+caplen # pcapng captured-length field
+snaplen # pcapng snapshot-length field
+linktype
+linktypes
+tsresol

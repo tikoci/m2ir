@@ -7,9 +7,12 @@ marker/tcode byte). It belongs in m2ir anyway because it carries the
 IPv4/v6, uptime) that turn up in the nv::message profiles. That's the
 empirical case for `/concepts/`.
 
-Footgun on record: MNDP uptime (tag 10) is the only little-endian
-integer in the protocol — every other MNDP integer is big-endian.
-Worth annotating prominently when the schema lands.
+Byte order is mixed, and the old footgun note ("uptime is the only
+little-endian integer") is incomplete. TLV type and length are big-endian
+`u16`. Uptime (TLV 10) is a little-endian `u32` on every CPU seen,
+including MIPSBE. Aggregated-size (TLV 9) is a little-endian `u32` on x86
+and unverified on big-endian CPUs. The header counter uses the *sender's*
+native byte order. See the [grounded wire map](#grounded-wire-map).
 
 Public implementation references, inspected centrs main revision
 `0221b899da70b8c54410f357fd77c2133b286c08`:
@@ -25,3 +28,21 @@ and tests provide external evidence, not a completed schema drain here.
 Use the [discovery submission path](../../README.md#submit-a-discovery) for
 unknown TLVs, version differences, sanitized samples, or proposed mappings.
 The [format and research index](../README.md) routes other protocols.
+
+## Grounded wire map
+
+The wire map grounded on 2026-11-15 (header, TLVs 1–19, layout by version,
+timing and lifecycle) lives with its evidence in
+[`work/2026-11-mndp-grounding/FINDINGS.md`](../../work/2026-11-mndp-grounding/FINDINGS.md)
+until canonical MNDP YAML exists. Its corrections to earlier sources:
+
+- **TLV 14 is the IPv6-enabled flag**, not `unpack`. `unpack` comes from
+  empty TLVs 2–4, and TLV 9 carries `aggregated-size`.
+- **The header is a `u32` announcement counter** in the sender's CPU byte
+  order, not version + TTL + sequence bytes.
+- **TLV 18** (`running`, 7.20+): `00` none, `01` CAPsMAN, `02` CMR
+  controller. Reading it as a bitmask is inferred; a combined value such
+  as `03` has not been observed.
+- **TLV 19** (7.24+) is the entry TTL in seconds,
+  `min(discover-interval × 4 + 1, 255)`; `00` is the dying gasp.
+- **TLV 15 repeats** once per IPv6 address on the interface.
