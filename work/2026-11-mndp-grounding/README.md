@@ -106,5 +106,5 @@ values.
   repeated the age-out with `protocol=mndp` on both routers. Its 5 s phase
   still carried a stale `lldp` label, so the study gained a clean 5 s phase
   and ran again as `ageout-mndp2`. The two runs removed the same TTL-21 row
-  at different ages (≤22 s vs 29–41 s): the TTL is a lower bound, and
-  removal waits for a sweep.
+  at different ages (≤22 s vs 29–41 s): removal comes at about the TTL
+  or later, possibly on a periodic check (not observed).

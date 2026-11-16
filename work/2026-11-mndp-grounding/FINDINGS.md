@@ -94,11 +94,12 @@ change ether2's announcement. TLVs 2–4 and 9 follow TLV 1 directly. They
 are the "packing TLVs 2, 3 and 9" an earlier skill revision listed without
 a source. That claim was right.
 
-**TLV 19 sets a minimum lifetime.** A receiver removes a silent neighbor
-around or after its TTL: no run removed one clearly early (the earliest
-removal fell between age 18 s and 22 s for TTL 21, within the 4 s sampling),
-and some stayed listed up to about 20 s past it. That fits a periodic
-sweep, but the sweep was not timed.
+**TLV 19 sets the approximate lifetime.** A receiver removes a silent
+neighbor at about its TTL or later. The earliest removal fell between age
+18 s and 22 s for TTL 21, so removal slightly before the TTL is not ruled
+out at this 4 s sampling. Some rows stayed listed up to about 20 s past the
+TTL. A periodic expiry check would explain the lag, but the mechanism was
+not observed.
 Ages are the observer's `/ip/neighbor` `age` (time since the last
 announcement):
 
@@ -118,8 +119,8 @@ an `lldp` label from before the protocol change. The label outlived LLDP by
 minutes, so it is not a live indicator. The "5 s clean" phase starts from a
 row MNDP alone created after the 30 s expiry. The `ageout`/`ageout2` rows
 were also learned by LLDP before the subject went quiet (`mode=rx-only`
-stops both). A receiver can rely on the TTL as a lower bound, not as an
-exact expiry time.
+stops both). Treat the TTL as an approximate lifetime, not an exact
+expiry time.
 
 Types 6 and 13, and anything above 19, appeared in no capture. centrs reads
 13 as an alternate board field; nothing here supports that.
@@ -177,8 +178,8 @@ neighbors), not a capture. The channel loss is pinned by the lab sweep:
 
 - Types 6 and 13 and anything above 19: never seen.
 - TLV 18 with both CAPsMAN and CMR running (`03`?), and other services.
-- The receiver's expiry sweep: when it runs and how far past the TTL a
-  neighbor can stay listed.
+- The receiver's expiry timing: why removal lags the TTL by up to about
+  20 s, and whether it can come slightly before it.
 - TLV 9 byte order on big-endian hardware. Packing TLVs on 6.x and older
   7.x.
 - 6.x with the IPv6 package enabled.
