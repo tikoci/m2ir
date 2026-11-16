@@ -112,7 +112,7 @@ values.
 | [`ageout-mndp-7.26beta5.json`](evidence/ageout-mndp-7.26beta5.json), [`ageout-mndp2-7.26beta5.json`](evidence/ageout-mndp2-7.26beta5.json) | Receiver expiry vs TTL with `protocol=mndp` on both sides; run 2 adds a 5 s phase on a row only MNDP created. Removal comes at about the TTL or up to ~20 s after it |
 | [`dying-gasp-7.26beta5.json`](evidence/dying-gasp-7.26beta5.json) | Dying-gasp payload (TLVs 1, 19 = `00`, 17, 15) and the counter restart |
 | [`requests-forms.json`](evidence/requests-forms.json) | Which payloads count as a request: 15 forms × 3 shuffled rounds, six routers |
-| [`requests-main-run1.json`](evidence/requests-main-run1.json), [`requests-main-run2.json`](evidence/requests-main-run2.json) | Transports (broadcast, subnet broadcast, unicast, `0.0.0.0`, `ff02::1`), source ports, bursts; reply destination and delay. Run 1's 9-zero-byte "replies" were coincident periodic announcements (FINDINGS → Requests) |
+| [`requests-main-run1.json`](evidence/requests-main-run1.json), [`requests-main-run2.json`](evidence/requests-main-run2.json) | Transports (broadcast, subnet broadcast, unicast, `0.0.0.0`, `ff02::1`), source ports, bursts; reply destination and delay. Run 1's announcements after the 9-zero-byte send are unexplained; likely already-scheduled announcements (FINDINGS → Requests) |
 | [`requests-fresh.json`](evidence/requests-fresh.json) | Requests from never-seen hosts, and whether each router then lists the host |
 | [`running-7.26beta5.json`](evidence/running-7.26beta5.json) | TLV 18 = `01`/`02`/`03`/`00` with CAPsMAN and CMR, and how the observer prints each |
 | [`ipv6-7.17-7.26beta5.json`](evidence/ipv6-7.17-7.26beta5.json) | TLV 14 vs `disable-ipv6` on 7.17.2, 7.18.2, 7.20.8 and 7.26beta5, live and after reboot |

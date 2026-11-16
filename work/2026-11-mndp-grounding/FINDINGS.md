@@ -132,8 +132,9 @@ an alternate board field; nothing here supports that. Type 6 appears only in
 requests (below), never in an announcement.
 
 **TLV 14 by version.** The flag meant "IPv6 present" before 7.18 and has
-followed `/ipv6/settings disable-ipv6` since. It followed it reliably only
-from 7.21 on:
+followed `/ipv6/settings disable-ipv6` since. On the tested 7.18 and 7.20
+releases it followed the setting only after a reboot. On 7.26beta5 it
+followed it at once:
 
 | Sender | `disable-ipv6=yes` | Then reboot | `disable-ipv6=no` |
 |---|---|---|---|
@@ -147,8 +148,9 @@ from 7.21 on:
 IPv6, but still sends no TLV 15. On every version, `disable-ipv6=yes` removes
 the TLV 15 addresses at once. Changelogs: 7.18 "advertise IPv6 capabilities
 based on "Disable IPv6" global setting", 7.21 "fixed MNDP IPv6 status
-reporting". So the flag alone does not say whether IPv6 is disabled on a
-7.18–7.20 sender, and it never does on 7.17 or older.
+reporting". That 7.21 fix is the likely boundary for live updates, but
+7.21–7.25 were not tested. So the flag alone does not say whether IPv6 is
+disabled on a 7.18–7.20 sender, and it never does on 7.17 or older.
 
 **The receiver keys the row on the frame, not on TLV 1.** A spoofed
 announcement (Ethernet source `02:4d:4e:44:5c:01`, TLV 1
@@ -163,12 +165,14 @@ so TLV 1 is the best it has. On real routers the two match.
 A request asks every router on the segment to announce now. The host sent
 each candidate from its own station and recorded which of the six routers
 (6.49.23, 7.17.2, 7.18.2, 7.20.8 and two 7.26beta5) answered within 4 s.
-Every result below held for all six routers, in every round
+Every reply result below held for all six routers, in every round
 ([`requests-forms.json`](evidence/requests-forms.json): 3 shuffled rounds;
 [`requests-main-run2.json`](evidence/requests-main-run2.json);
-[`requests-fresh.json`](evidence/requests-fresh.json)).
+[`requests-fresh.json`](evidence/requests-fresh.json)). The last column
+comes from `requests-fresh.json`, which read the neighbor tables of the five
+7.x routers only. Whether 6.49.23 lists a requester was not checked.
 
-| Payload (hex) | Form | Replies | Requester listed as a neighbor |
+| Payload (hex) | Form | Replies | Requester listed as a neighbor (7.x receivers) |
 |---|---|---|---|
 | `00000000` | Header 0 (MAC-Telnet) | yes | yes, empty identity |
 | `0000000000000000` | Header 0 + empty TLV 0 | yes | not checked |
@@ -176,7 +180,7 @@ Every result below held for all six routers, in every round
 | `000000000006000100` | Header 0 + TLV 6 with a value byte | yes | not checked |
 | `0100000000060000`, `0000000100060000` | Non-zero header + empty TLV 6 | yes | not checked |
 | Announcement-shaped (TLVs 1, 5), header 0 | | yes | yes, as announced |
-| `000000000000000000` | 9 zero bytes (centrs `mndpRefreshPacket`) | **no** (0 of 11 tries) | no |
+| `000000000000000000` | 9 zero bytes (centrs `mndpRefreshPacket`) | **no** (0 of 11 tries after run 1; see below) | no |
 | `000000000006000000` | Header 0 + TLV 6 + 1 byte (the "9-byte form") | **no** | no |
 | `0000000000`, `0000000000000000ffffff`, `00000000000600000000000000`, `010000000006000000` | Any trailing bytes that are not a whole TLV | no | no (checked for `0000000000`) |
 | `01000000`, `00000001`, `0100000000000000` | Non-zero header, no TLV 6 | no | yes (`01000000` from a new host) |
@@ -185,24 +189,26 @@ Every result below held for all six routers, in every round
 
 So a payload is a request when its header is `00000000` **or** it carries
 TLV 6. A payload whose TLVs do not end exactly at the end of the datagram is
-dropped whole: no reply and no neighbor row. Any well-formed payload, request
-or not, creates or refreshes a neighbor row for its sender, except one that
-carries TLV 6. A host that sends bare `00000000` requests therefore shows up
-in every router's `/ip/neighbor` (empty identity, the host's IPv4); one that
-sends `0000000000060000` does not.
+dropped whole: no reply and no neighbor row. On the 7.x receivers, any
+well-formed payload, request or not, created or refreshed a neighbor row for
+its sender, except one that carried TLV 6. A host that sends bare `00000000`
+requests therefore shows up in `/ip/neighbor` on 7.x routers (empty
+identity, the host's IPv4); one that sends `0000000000060000` does not.
 
 The 9-byte forms in circulation do not work. The `routeros-mndp` skill's
 "9-byte form" (`00 00 00 00 00 06 00 00 00`) and centrs's nine zero bytes
-both carry a trailing byte. In one early run the nine zero bytes seemed to
-draw replies from all six routers. Those frames were periodic announcements
-that happened to fall in the window: 5 of them came from the five routers
-just reconfigured to `discover-interval=1h`, about 70 ms apart in the order
-they had been configured, without the 0.2–2 s jitter that replies show (see
-the timer finding below), and the sixth was 6.49.23's 60 s periodic. Every
-later try failed, including from fresh hosts, after a valid request from
-the same host, and in shuffled orders
-([`requests-main-run1.json`](evidence/requests-main-run1.json) keeps that
-run).
+both carry a trailing byte. In the first run
+([`requests-main-run1.json`](evidence/requests-main-run1.json)) the nine
+zero bytes were followed by announcements from all six routers, 1.40–2.11 s
+after the send. That run stays **unexplained**. The likely cause is
+announcements that were already scheduled. The five 7.x routers had been
+switched to `discover-interval=1h` shortly before, and their announcements
+arrived 1.403–1.690 s after the send, about 70 ms apart in the order they had
+been configured. Replies to valid requests are not ordered that way. The
+sixth was 6.49.23, whose 60 s periodic could fall in any 4 s window. The
+configuration times were not recorded, so this is a hypothesis. The 11
+later tries all failed, including from fresh hosts, after a valid request
+from the same host, and in shuffled orders.
 
 **What a reply looks like.** A reply is an ordinary announcement: the same
 payload, sent from port 5678 to `255.255.255.255:5678` and to
@@ -212,10 +218,14 @@ source `0.0.0.0`, or over IPv6 `ff02::1` (every router with IPv6 answered
 it). A unicast request draws a reply
 only from the router it is addressed to, and that reply is broadcast too. So
 a listener must bind port 5678. The source port of the request does not
-matter. Replies come **0.2–2 s** after the request, with a random delay for
-each router. Requests that arrive before a router has replied are merged
-into one reply (two requests 200 ms apart, or five 50 ms apart, drew one
-reply each). Each reply advances the header counter like any other
+matter. Replies came after a random delay for each router: 21 ms to 1.96 s
+on the 7.x routers (median about 1.1–1.3 s, 41–42 replies each across the
+four request files) and 11 ms to 2.1 s on 6.49.23 (three later 6.49.23
+frames, up to 2.75 s, may be its 60 s periodic). The 7.x routers merged a
+burst into one reply: two requests 200 ms apart, or five 50 ms apart, drew
+one reply each in both runs. 6.49.23 merged the five-request burst in both
+runs, but answered the 200 ms pair twice in run 2 (155 ms and 543 ms) and
+once in run 1. Each reply advances the header counter like any other
 announcement.
 
 **A boot announcement is a request.** After a reboot the first announcement
@@ -275,19 +285,21 @@ neighbors), not a capture. The channel loss is pinned by the lab sweep:
   short announcement: header (the counter continues), then TLVs 1, 19 =
   `00`, 17, 15. The changelog says receivers clear the entry on it; the
   lab did not time that.
-- **Changing `discover-interval` does not reschedule the pending periodic
-  announcement.** The change sends one triggered announcement. The next
-  periodic one still comes on the old schedule, and only after that does the
-  new interval apply. Going from 2 h to 10 s, then from 10 s to 1 h, produced
-  no periodic announcement for 40 s on any of five routers (7.17.2, 7.18.2,
-  7.20.8 and two 7.26beta5). From the 30 s default to 1 h, the five routers'
-  next announcements arrived in the order they had been configured, about
-  70 ms apart: the pattern a pending schedule produces (see the early run
-  under [Requests](#requests)). The first lab saw this once, going from 9 h
-  to 5 s. A receiver can therefore go much longer than the new interval (and
-  past the TLV 19 TTL it now advertises) without hearing from a router whose
-  interval was just shortened. That consequence is inferred; the lab did not
-  watch a receiver expire the row.
+- **Shortening `discover-interval` does not bring the next periodic
+  announcement forward right away.** The change sends one triggered
+  announcement. After going from 2 h to 10 s, none of five routers
+  (7.17.2, 7.18.2, 7.20.8 and two 7.26beta5) sent a periodic announcement
+  in the next 40 s, until the interval was changed again
+  ([`hub-session-2026-11-16.json`](evidence/hub-session-2026-11-16.json) →
+  `anchors`). The first lab saw the same once, going from 9 h to 5 s (over a
+  minute). The likely mechanism is that the change does not reschedule the
+  already-pending periodic announcement, so it still comes at the old
+  interval. That mechanism is **inferred**: neither the old deadline firing
+  nor the new cadence starting was observed (run 1's unexplained burst, under
+  [Requests](#requests), would fit it). If it holds, a receiver can go much
+  longer than the new interval, and past the TLV 19 TTL the router now
+  advertises, without hearing from a router whose interval was just
+  shortened.
 
 ### Still open
 
@@ -295,8 +307,14 @@ neighbors), not a capture. The channel loss is pinned by the lab sweep:
 - Other TLV 18 bits: services other than CAPsMAN and CMR were not tried.
 - WinBox's request bytes, and whether anything else (RoMON, the Dude) sends
   requests.
-- The reply delay's real range: 0.2–2 s fits every reply seen here, but the
-  bound was not measured.
+- The reply delay's real range: 21 ms to about 2 s fits every reply seen
+  here, but the bound was not measured.
+- Whether 6.49.23 lists a requester as a neighbor, and when it merges a
+  burst of requests into one reply.
+- TLV 14 on 7.21–7.25: whether 7.21 is where it starts following
+  `disable-ipv6` at once.
+- What happens after `discover-interval` is shortened: when the old pending
+  announcement fires and when the new cadence starts.
 - The receiver's expiry timing: why removal lags the TTL by up to about
   20 s, and whether it can come slightly before it.
 - TLV 9 byte order on big-endian hardware. Packing TLVs on 6.x and older

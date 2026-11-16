@@ -331,7 +331,7 @@ for (let round = 0; round < ROUNDS; round++)
 		).map((q) => ({ ...q, round })),
 	);
 
-/** Replies come 0.2–2 s after a request (random), so wait well past that. */
+/** Replies came 21 ms to about 2 s after a request (random per router), so wait well past that. */
 const WINDOW_MS = 4000;
 const results: unknown[] = [];
 let sport = 40000;
