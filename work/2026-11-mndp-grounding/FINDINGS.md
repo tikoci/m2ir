@@ -290,8 +290,13 @@ neighbors), not a capture. The channel loss is pinned by the lab sweep:
   instead: MAC server, MAC WinBox and MAC ping, RoMON, bandwidth server,
   the IP services (winbox, api, ssh, telnet, ftp, api-ssl, www-ssl), cloud
   DDNS, remote DNS and IP forwarding.
-- **Transport.** Each announcement goes out twice, as an IPv4 broadcast
-  and an IPv6 `ff02::1` multicast, with the same payload. `mode=rx-only`
+- **Transport.** Once IPv6 is up, each announcement goes out twice, as an
+  IPv4 broadcast and an IPv6 `ff02::1` multicast, with the same payload.
+  Only the IPv4 copy goes out for the first announcement after boot (see
+  "A boot announcement is a request"), while `disable-ipv6=yes`, and for the
+  first announcement after setting it back to `no` (probe steps `ipv6:on`
+  2 IPv4 / 0 IPv6, `ipv6:off` 2 IPv4 / 1 IPv6 in
+  [`probe-7.26beta5.json`](evidence/probe-7.26beta5.json)). `mode=rx-only`
   stops both.
 - **Dying gasp** (`dying-gasp=yes`, 7.24+). On reboot the router sends a
   short announcement: header (the counter continues), then TLVs 1, 19 =
