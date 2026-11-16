@@ -12,6 +12,7 @@ const [capturePath, neighborPath] = process.argv.slice(2) as [string, string];
 const rows = (await Bun.file(capturePath).text())
 	.trim()
 	.split("\n")
+	.filter((l) => l.trim() !== "")
 	.map((l) => JSON.parse(l));
 const neighbors: Array<Record<string, string>> = (
 	await Bun.file(neighborPath).json()
@@ -43,7 +44,9 @@ for (const r of rows) {
 	if (out.has(key)) continue;
 	const h = Buffer.from(m.header, "hex");
 	const up = one(10);
-	const uptime = up ? Buffer.from(up.hex, "hex").readUInt32LE(0) : undefined;
+	// A malformed uptime TLV gives no ratio rather than aborting the summary.
+	const uptime =
+		up?.length === 4 ? Buffer.from(up.hex, "hex").readUInt32LE(0) : undefined;
 	const le = h.readUInt32LE(0),
 		be = h.readUInt32BE(0);
 	const mac = one(1)?.hex;

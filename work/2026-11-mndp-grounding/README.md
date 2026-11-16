@@ -1,9 +1,8 @@
 # MNDP grounding lab (2026-11-15)
 
-Live grounding for the MNDP wire map in
-[`profiles/mndp/README.md`](../../profiles/mndp/README.md#grounded-wire-map-2026-11-15).
-That file holds the conclusions. This directory holds the method, the
-harness and the evidence.
+Live grounding for the MNDP wire map. [`FINDINGS.md`](FINDINGS.md) holds
+the conclusions, and [`profiles/mndp/`](../../profiles/mndp/README.md)
+points to it. This file holds the method, the harness and the evidence.
 
 ## Method
 
@@ -39,7 +38,7 @@ router.
 |---|---|
 | [`mndp-wire.ts`](mndp-wire.ts) | Dependency-free decoders: TZSP v1 → Ethernet → UDP/5678 → MNDP header + raw TLVs |
 | [`lab.ts`](lab.ts) | Study runner: arms both sniffers, runs steps, records announcements and neighbor rows |
-| [`studies.ts`](studies.ts) | Step lists: `probe`, `tlv19`, `ttl`, `ageout`, `ageout2`, `dying-gasp`, `baseline`, `counter` |
+| [`studies.ts`](studies.ts) | Step lists: `probe`, `tlv19`, `ttl`, `ageout`, `ageout2`, `ageout-mndp`, `dying-gasp`, `baseline`, `counter` |
 | [`pcap-mndp.ts`](pcap-mndp.ts) | pcapng (RouterOS sniffer file) → distinct MNDP payloads |
 | [`field-summary.ts`](field-summary.ts) | Field capture + `/ip/neighbor` → sanitized per-version rows |
 
@@ -60,8 +59,13 @@ Add a fifth argument to sniff more observer interfaces (for example
 
 All `evidence/*.json` files from `lab.ts` hold `subject`/`observer`
 versions, every step's commands and results, the observer's neighbor rows,
-and every captured announcement (`payloadHex` plus a readable `summary`).
-CHR MACs and software-ids are disposable lab values.
+per-step `frames` (MNDP frames each sniffer delivered on the link, from
+either router), and every captured announcement (`payloadHex` plus a
+readable `summary`). `payloadHex` is the evidence; `summary` is derived
+from it with the current `NAMES` table. Summaries and `frames` in the files
+captured before 2026-11-16 were regenerated from `payloadHex` after TLV 14
+was renamed `ipv6-enabled`. CHR MACs and software-ids are disposable lab
+values.
 
 | File | Shows |
 |---|---|
@@ -70,6 +74,7 @@ CHR MACs and software-ids are disposable lab values.
 | [`tlv19-7.26beta5.json`](evidence/tlv19-7.26beta5.json) | TLV 19 moved `79` → `15` with the interval, not with any service toggle (see run notes) |
 | [`ttl-7.26beta5.json`](evidence/ttl-7.26beta5.json) | TLV 19 = `min(interval × 4 + 1, 255)` for 5 s to 9 h |
 | [`ageout-7.26beta5.json`](evidence/ageout-7.26beta5.json), [`ageout2-7.26beta5.json`](evidence/ageout2-7.26beta5.json) | Receiver expiry vs TTL; TLV 9 = `aggregated-size`; packing-only sends nothing |
+| [`ageout-mndp-7.26beta5.json`](evidence/ageout-mndp-7.26beta5.json) | Receiver expiry vs TTL with `protocol=mndp` on both sides (no LLDP confound) |
 | [`dying-gasp-7.26beta5.json`](evidence/dying-gasp-7.26beta5.json) | Dying-gasp payload (TLVs 1, 19 = `00`, 17, 15) and the counter restart |
 | [`field-summary.json`](evidence/field-summary.json) | Hardware: header byte order by CPU, TLV 18/19 version boundaries, repeated TLV 15, TLV 14 vs `ipv6` |
 
@@ -81,10 +86,13 @@ CHR MACs and software-ids are disposable lab values.
 - In `tlv19`, both TZSP streams stopped together after the `romon:on` step.
   Discovery itself kept working (the observer still listed the subject).
   The cause was not found. Later studies streamed normally. Only the steps
-  before the stall carry data.
+  before the stall carry wire data: the file's `coverage` field says so,
+  and the later steps show `frames` 0/0.
 - `ageout` started with the subject silent. The previous study had set
   `discover-interval=9h` and then `5s`, and the next periodic announcement
   did not come for over a minute. `ageout2` repeated the age-out cleanly.
 - `counter` (1 s interval) is defined but was not run: 7.26beta5's 5 s
   minimum makes it slow, and the field capture already shows the counter
   across byte boundaries.
+- `ageout`/`ageout2` rows were `discovered-by: lldp,mndp`, so `ageout-mndp`
+  repeated the age-out with `protocol=mndp` on both routers.

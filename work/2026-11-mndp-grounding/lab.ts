@@ -57,6 +57,25 @@ async function call(
 const execute = (r: Rest, script: string) =>
 	call(r, "POST", "/execute", { script, "as-string": "" });
 
+const failed = (v: unknown) =>
+	typeof v === "object" && v !== null && "error" in v;
+
+/**
+ * Run a statement the study cannot do without (sniffer setup). Study steps keep errors as data,
+ * because a rejected setting is itself evidence; setup errors stop the run instead.
+ */
+async function must(r: Rest, script: string): Promise<unknown> {
+	const v = await execute(r, script);
+	// `/execute` reports a CLI error as text in `ret`, not as an HTTP failure.
+	const ret = (v as { ret?: unknown })?.ret;
+	if (
+		failed(v) ||
+		(typeof ret === "string" && /failure|syntax error|expected/i.test(ret))
+	)
+		throw new Error(`${script}: ${JSON.stringify(v)}`);
+	return v;
+}
+
 const [subjectName, observerName, studyName, out, OBSERVER_IFACE = "ether2"] =
 	process.argv.slice(2);
 if (!subjectName || !observerName || !studyName || !out) {
@@ -127,12 +146,15 @@ const subjectMacs = (
 ).map((i) => i["mac-address"]?.toLowerCase());
 
 async function arm(r: Rest, port: number, iface: string) {
-	await execute(r, "/tool/sniffer/stop");
-	await execute(
+	await must(r, "/tool/sniffer/stop");
+	await must(
 		r,
 		`/tool/sniffer/set filter-interface=${iface} filter-ip-protocol=udp filter-port=5678 streaming-enabled=yes streaming-server=10.0.2.2:${port} filter-stream=yes memory-limit=100`,
 	);
-	await execute(r, "/tool/sniffer/start");
+	await must(r, "/tool/sniffer/start");
+	const s = (await call(r, "GET", "/tool/sniffer")) as Record<string, string>;
+	if (s["running"] !== "true" || s["streaming-server"] !== `10.0.2.2:${port}`)
+		throw new Error(`sniffer not armed: ${JSON.stringify(s)}`);
 }
 const armSubject = () => arm(subject, rxSubject.port, study.sniff ?? "ether2");
 
@@ -142,63 +164,76 @@ const steps: Array<{
 	commands: Array<{ cmd: string; result: unknown }>;
 	neighbor?: unknown;
 	read?: Record<string, unknown>;
+	/** MNDP frames each sniffer delivered during the step; 0/0 means no wire coverage. */
+	frames?: { subject: number; observer: number };
 }> = [];
-await armSubject();
-await arm(observer, rxObserver.port, OBSERVER_IFACE);
-for (const step of study.steps as Step[]) {
-	stepId = step.id;
-	const rec: (typeof steps)[number] = { id: step.id, t: now(), commands: [] };
-	for (const cmd of step.subject ?? [])
-		rec.commands.push({ cmd, result: await execute(subject, cmd) });
-	for (const cmd of step.observer ?? [])
-		rec.commands.push({
-			cmd: `observer: ${cmd}`,
-			result: await execute(observer, cmd),
-		});
-	if (step.reboot) {
-		// Wait for REST to come back, then re-arm the sniffer (it does not survive a reboot).
-		const deadline = Date.now() + 180_000;
-		await Bun.sleep(5_000);
-		while (Date.now() < deadline) {
-			try {
-				await call(subject, "GET", "/system/identity");
-				break;
-			} catch {
-				await Bun.sleep(2_000);
+let failure: string | undefined;
+try {
+	await armSubject();
+	await arm(observer, rxObserver.port, OBSERVER_IFACE);
+	for (const step of study.steps as Step[]) {
+		stepId = step.id;
+		const rec: (typeof steps)[number] = { id: step.id, t: now(), commands: [] };
+		steps.push(rec);
+		for (const cmd of step.subject ?? [])
+			rec.commands.push({ cmd, result: await execute(subject, cmd) });
+		for (const cmd of step.observer ?? [])
+			rec.commands.push({
+				cmd: `observer: ${cmd}`,
+				result: await execute(observer, cmd),
+			});
+		if (step.reboot) {
+			// Wait for REST to come back, then re-arm the sniffer (it does not survive a reboot).
+			const deadline = Date.now() + 180_000;
+			await Bun.sleep(5_000);
+			let back = false;
+			while (!back && Date.now() < deadline) {
+				back = await call(subject, "GET", "/system/identity").then(
+					(v) => !failed(v),
+					() => false,
+				);
+				if (!back) await Bun.sleep(2_000);
 			}
+			if (!back) throw new Error(`${step.id}: subject REST did not come back`);
+			await armSubject();
 		}
-		await armSubject();
+		await Bun.sleep((step.wait ?? 8) * 1000);
+		if (step.read) {
+			rec.read = {};
+			for (const p of step.read) rec.read[p] = await call(subject, "GET", p);
+		}
+		if (step.neighbor !== false) {
+			const rows = (await call(observer, "GET", "/ip/neighbor")) as Array<
+				Record<string, string>
+			>;
+			rec.neighbor = Array.isArray(rows)
+				? rows.filter((r) =>
+						subjectMacs.includes(r["mac-address"]?.toLowerCase()),
+					)
+				: rows;
+		}
+		const inStep = seen.filter((s) => s.step === step.id);
+		rec.frames = {
+			subject: inStep.filter((s) => s.via === "subject").length,
+			observer: inStep.filter((s) => s.via === "observer").length,
+		};
+		const mine = inStep.filter(
+			(s) => s.via === "subject" && subjectMacs.includes(s.srcMac),
+		);
+		console.log(
+			`${step.id}: ${mine.length} subject announcements; last ${mine.at(-1)?.summary ?? "-"}`,
+		);
 	}
-	await Bun.sleep((step.wait ?? 8) * 1000);
-	if (step.read) {
-		rec.read = {};
-		for (const p of step.read) rec.read[p] = await call(subject, "GET", p);
-	}
-	if (step.neighbor !== false) {
-		const rows = (await call(observer, "GET", "/ip/neighbor")) as Array<
-			Record<string, string>
-		>;
-		rec.neighbor = Array.isArray(rows)
-			? rows.filter((r) =>
-					subjectMacs.includes(r["mac-address"]?.toLowerCase()),
-				)
-			: rows;
-	}
-	steps.push(rec);
-	const mine = seen.filter(
-		(s) =>
-			s.step === step.id &&
-			s.via === "subject" &&
-			subjectMacs.includes(s.srcMac),
-	);
-	console.log(
-		`${step.id}: ${mine.length} subject announcements; last ${mine.at(-1)?.summary ?? "-"}`,
-	);
+} catch (e) {
+	// Keep what was captured: the partial evidence is written below with the failure recorded.
+	failure = String(e);
+	console.error(`study failed at ${stepId}: ${failure}`);
+} finally {
+	for (const r of [subject, observer])
+		await execute(r, "/tool/sniffer/stop").catch(() => undefined);
+	rxSubject.close();
+	rxObserver.close();
 }
-await execute(subject, "/tool/sniffer/stop");
-await execute(observer, "/tool/sniffer/stop");
-rxSubject.close();
-rxObserver.close();
 
 await Bun.write(
 	out,
@@ -214,6 +249,7 @@ await Bun.write(
 				macs: subjectMacs,
 			},
 			observer: { name: observerName, version: observerRes["version"] },
+			...(failure ? { failure: { step: stepId, error: failure } } : {}),
 			steps,
 			announcements: seen,
 		},
@@ -222,3 +258,4 @@ await Bun.write(
 	),
 );
 console.log(`wrote ${out}: ${seen.length} announcements`);
+if (failure) process.exit(1);

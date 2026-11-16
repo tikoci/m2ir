@@ -15,7 +15,9 @@ const le = buf.readUInt32LE(8) === 0x1a2b3c4d;
 const u16 = (o: number) => (le ? buf.readUInt16LE(o) : buf.readUInt16BE(o));
 const u32 = (o: number) => (le ? buf.readUInt32LE(o) : buf.readUInt32BE(o));
 
-const ifaces: Array<{ linkType: number; name?: string }> = [];
+/** `tsPerSecond` comes from `if_tsresol` (option 9); pcapng's default is microseconds. */
+type Iface = { linkType: number; name?: string; tsPerSecond: number };
+const ifaces: Iface[] = [];
 type Row = {
 	t: number;
 	copies: number;
@@ -36,7 +38,7 @@ while (o + 12 <= buf.length) {
 	if (len < 12) break;
 	const body = o + 8;
 	if (type === 1) {
-		const iface: { linkType: number; name?: string } = { linkType: u16(body) };
+		const iface: Iface = { linkType: u16(body), tsPerSecond: 1e6 };
 		let p = body + 8; // linktype(2) reserved(2) snaplen(4)
 		while (p + 4 <= o + len - 4) {
 			const code = u16(p),
@@ -44,17 +46,22 @@ while (o + 12 <= buf.length) {
 			if (code === 0) break;
 			if (code === 2)
 				iface.name = buf.subarray(p + 4, p + 4 + olen).toString("utf8");
+			if (code === 9 && olen >= 1) {
+				const r = buf[p + 4] as number; // high bit: power of 2, else power of 10
+				iface.tsPerSecond = r & 0x80 ? 2 ** (r & 0x7f) : 10 ** r;
+			}
 			p += 4 + Math.ceil(olen / 4) * 4;
 		}
 		ifaces.push(iface);
 	} else if (type === 6) {
 		frames++;
 		const id = u32(body);
+		const iface = ifaces[id];
 		const t =
-			Number((BigInt(u32(body + 4)) << 32n) | BigInt(u32(body + 8))) / 1e6;
+			Number((BigInt(u32(body + 4)) << 32n) | BigInt(u32(body + 8))) /
+			(iface?.tsPerSecond ?? 1e6);
 		const caplen = u32(body + 12);
 		const frame = buf.subarray(body + 20, body + 20 + caplen);
-		const iface = ifaces[id];
 		const u = iface?.linkType === 1 ? udp5678(frame) : undefined;
 		if (u && u.payload.length >= 4) {
 			const payloadHex = u.payload.toString("hex");

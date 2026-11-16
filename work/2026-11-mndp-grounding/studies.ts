@@ -416,6 +416,62 @@ export const STUDIES: Record<string, Study> = {
 			},
 		],
 	},
+	/**
+	 * Age-out with LLDP and CDP excluded on both sides, so the observer's row can only come from
+	 * MNDP. Answers whether expiry follows TLV 19 or LLDP's own TTL (the `ageout` rows were
+	 * `discovered-by: lldp,mndp`). Neighbor rows carry `age` (time since the last announcement).
+	 */
+	"ageout-mndp": {
+		steps: [
+			{
+				id: "mndp-only",
+				subject: [
+					"/ip/neighbor/discovery-settings/set protocol=mndp discover-interval=5s mode=tx-and-rx",
+				],
+				observer: ["/ip/neighbor/discovery-settings/set protocol=mndp"],
+				wait: 10,
+			},
+			// Let any LLDP-learned part of the row lapse before the subject goes quiet.
+			{ id: "mndp-only+130s", wait: 120 },
+			{
+				id: "5s:rx-only+12s",
+				subject: ["/ip/neighbor/discovery-settings/set mode=rx-only"],
+				wait: 12,
+			},
+			{ id: "5s:rx-only+16s", wait: 4 },
+			{ id: "5s:rx-only+20s", wait: 4 },
+			{ id: "5s:rx-only+24s", wait: 4 },
+			{ id: "5s:rx-only+28s", wait: 4 },
+			{ id: "5s:rx-only+40s", wait: 12 },
+			{
+				id: "30s:tx-and-rx",
+				subject: [
+					"/ip/neighbor/discovery-settings/set mode=tx-and-rx discover-interval=30s",
+				],
+				wait: 8,
+			},
+			{
+				id: "30s:rx-only+110s",
+				subject: ["/ip/neighbor/discovery-settings/set mode=rx-only"],
+				wait: 110,
+			},
+			{ id: "30s:rx-only+118s", wait: 8 },
+			{ id: "30s:rx-only+126s", wait: 8 },
+			{ id: "30s:rx-only+134s", wait: 8 },
+			{ id: "30s:rx-only+142s", wait: 8 },
+			{ id: "30s:rx-only+150s", wait: 8 },
+			{
+				id: "restore",
+				subject: [
+					"/ip/neighbor/discovery-settings/set protocol=cdp,lldp,mndp mode=tx-and-rx discover-interval=30s",
+				],
+				observer: [
+					"/ip/neighbor/discovery-settings/set protocol=cdp,lldp,mndp",
+				],
+				wait: 8,
+			},
+		],
+	},
 	/** Does the receiver honour TLV 19? TTL 21 s at a 5 s interval, then stop announcing (rx-only). */
 	ageout: {
 		steps: [

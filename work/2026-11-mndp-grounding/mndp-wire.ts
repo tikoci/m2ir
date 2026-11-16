@@ -3,9 +3,9 @@
  *
  * - `tzspFrame()` strips RouterOS `/tool/sniffer` TZSP v1 framing and returns the Ethernet frame.
  * - `udp5678()` pulls the UDP/5678 payload out of an Ethernet frame (IPv4 or IPv6).
- * - `parseMndp()` splits an MNDP payload into header + raw TLVs. It names nothing it was not
- *   told: names live in the `NAMES` table only for the types every source agrees on, plus the
- *   lab names for 18/19. Every TLV keeps its raw hex so a report can be re-decoded later.
+ * - `parseMndp()` splits an MNDP payload into header + raw TLVs. Names in `NAMES` are the
+ *   grounded ones (profiles/mndp → work/2026-11-mndp-grounding/FINDINGS.md). Every TLV keeps
+ *   its raw hex, so a report can be re-decoded if a name turns out wrong.
  */
 
 export interface Tlv {
@@ -25,18 +25,22 @@ export interface Mndp {
 
 export const NAMES: Record<number, string> = {
 	1: "mac",
+	2: "unpack-simple",
+	3: "unpack-headers",
+	4: "unpack-all",
 	5: "identity",
 	7: "version",
 	8: "platform",
+	9: "aggregated-size",
 	10: "uptime",
 	11: "software-id",
 	12: "board",
-	14: "unpack",
+	14: "ipv6-enabled",
 	15: "ipv6",
 	16: "interface",
 	17: "ipv4",
 	18: "running",
-	19: "tlv-19",
+	19: "ttl",
 };
 
 export function parseMndp(p: Uint8Array): Mndp {
@@ -107,6 +111,7 @@ export function udp5678(f: Buffer): Udp | undefined {
 		const u = o + ihl;
 		if (f.readUInt16BE(u + 2) !== 5678) return undefined;
 		const len = f.readUInt16BE(u + 4);
+		if (len < 8 || u + len > f.length) return undefined; // truncated capture
 		return {
 			family: 4,
 			src: [...f.subarray(o + 12, o + 16)].join("."),
@@ -120,6 +125,7 @@ export function udp5678(f: Buffer): Udp | undefined {
 		const u = o + 40;
 		if (f.readUInt16BE(u + 2) !== 5678) return undefined;
 		const len = f.readUInt16BE(u + 4);
+		if (len < 8 || u + len > f.length) return undefined; // truncated capture
 		const a6 = (b: Buffer) =>
 			Array.from({ length: 8 }, (_, i) =>
 				b.readUInt16BE(i * 2).toString(16),
@@ -135,11 +141,11 @@ export function udp5678(f: Buffer): Udp | undefined {
 	return undefined;
 }
 
-/** One-line summary of a payload: header, then type=value for each TLV (uptime as LE seconds). */
+/** One-line summary of a payload: header, then type=value for each TLV (TLVs 9 and 10 as LE u32). */
 export function summary(m: Mndp): string {
 	const parts = m.tlvs.map((t) => {
 		const name = NAMES[t.type] ?? `t${t.type}`;
-		if (t.type === 10 && t.length === 4)
+		if ((t.type === 9 || t.type === 10) && t.length === 4)
 			return `${name}=${Buffer.from(t.hex, "hex").readUInt32LE(0)}`;
 		return `${name}=${t.text ?? t.hex}`;
 	});

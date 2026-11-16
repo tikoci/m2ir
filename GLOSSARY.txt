@@ -635,3 +635,4 @@ caplen # pcapng captured-length field
 snaplen # pcapng snapshot-length field
 linktype
 linktypes
+tsresol
