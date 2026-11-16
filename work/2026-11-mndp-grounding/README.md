@@ -145,7 +145,10 @@ values.
   `localaddr=`, so the group rides the host's LAN interface, and this host's
   firewall drops looped-back multicast there: every member was silent with no
   error. Plain host multicast on `127.0.0.1` worked. Per-router
-  `listen-connect` sockets joined by `hub.ts` replaced it.
+  `listen-connect` sockets joined by `hub.ts` replaced it. This is quickchr's
+  mcast "Defect 1" ([tikoci/quickchr#167](https://github.com/tikoci/quickchr/issues/167);
+  Linux evidence in
+  [this comment](https://github.com/tikoci/quickchr/issues/167#issuecomment-6920467098)).
 - Hub lab: the `cmr` package was fetched onto the subject over the `user`
   network (`/tool/fetch` from a host HTTP server on `10.0.2.2`) and installed
   by reboot; a REST upload is capped at 60 KB.
