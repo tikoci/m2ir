@@ -89,8 +89,8 @@ values.
   Discovery itself kept working (the observer still listed the subject).
   The cause was not found. Later studies streamed normally. Only the steps
   before the stall carry wire data: the file's `coverage` field says so.
-  The later steps show `frames` 0/0 from `romon:off` through `svc-ssh:off`
-  (inside the 45 s stall window) and `null` from `svc-winbox:on` on; all
+  The later steps show `frames` 0/0 for `romon:off`, `btest:on` and
+  `btest:off` (inside the 45 s stall window) and `null` from `svc-winbox:on` on; all
   of them lack wire coverage.
 - `ageout` started with the subject silent. The previous study had set
   `discover-interval=9h` and then `5s`, and the next periodic announcement

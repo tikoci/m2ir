@@ -1,7 +1,7 @@
 {
 	"study": "tlv19",
 	"date": "2026-11-15T22:02:17.390Z",
-	"coverage": "Wire coverage ends after step romon:on (last frame t=96347 ms): both TZSP streams stopped together, cause not found. Steps romon:off through svc-ssh:off show frames 0/0 only because they fall inside the 45 s stall window; steps from svc-winbox:on on show frames null. None of the steps after romon:on has wire coverage: they carry neighbor rows only and are NOT evidence of whether a setting triggers an announcement or changes a TLV. The probe study covers those settings on the wire.",
+	"coverage": "Wire coverage ends after step romon:on (last frame t=96347 ms): both TZSP streams stopped together, cause not found. Steps romon:off, btest:on and btest:off show frames 0/0 only because they fall inside the 45 s stall window; steps from svc-winbox:on on show frames null. None of the steps after romon:on has wire coverage: they carry neighbor rows only and are NOT evidence of whether a setting triggers an announcement or changes a TLV. The probe study covers those settings on the wire.",
 	"subject": {
 		"name": "mndp-sub",
 		"version": "7.26beta5",
