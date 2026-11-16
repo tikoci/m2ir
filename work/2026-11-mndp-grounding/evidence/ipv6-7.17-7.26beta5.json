@@ -1,0 +1,691 @@
+{
+	"study": "ipv6",
+	"date": "2026-11-16T14:24:27.732Z",
+	"request": "0000000000060000",
+	"observer": {
+		"machine": "mndp2-obs",
+		"version": "7.26beta5",
+		"mac": "02:05:e2:00:e4:19"
+	},
+	"subjects": [
+		{
+			"name": "r717",
+			"machine": "mndp2-717",
+			"version": "7.17.2 (stable)",
+			"mac": "02:b2:09:af:e2:28"
+		},
+		{
+			"name": "r718",
+			"machine": "mndp2-718",
+			"version": "7.18.2 (stable)",
+			"mac": "02:b1:a4:5a:6b:b4"
+		},
+		{
+			"name": "r720",
+			"machine": "mndp2-720",
+			"version": "7.20.8 (long-term)",
+			"mac": "02:62:2b:fd:29:71"
+		},
+		{
+			"name": "sub",
+			"machine": "mndp2-sub",
+			"version": "7.26beta5",
+			"mac": "02:b6:13:a0:13:e4"
+		}
+	],
+	"steps": [
+		{
+			"id": "default",
+			"router": "r717",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 4441,
+					"payloadHex": "3f0000000001000602b209afe228000500066d322d37313700070023372e31372e322028737461626c652920323032352d30322d30362030393a31303a3234000800084d696b726f54696b000a000480050000000b000b7638555345486f364f6945000c0003434852000e000101000f0010fe8000000000000000b209fffeafe2280010000665746865723200110004c0a84d03",
+					"summary": "[3f000000] mac=02b209afe228 identity=m2-717 version=7.17.2 (stable) 2025-02-06 09:10:24 platform=MikroTik uptime=1408 software-id=v8USEHo6OiE board=CHR ipv6-enabled=01 ipv6=fe8000000000000000b209fffeafe228 interface=ether2 ipv4=c0a84d03"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b209fffeafe228"]
+			},
+			"neighbor": {
+				"identity": "m2-717",
+				"version": "7.17.2 (stable) 2025-02-06 09:10:24",
+				"ipv6": "true",
+				"address6": "fe80::b2:9ff:feaf:e228",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "3s"
+			}
+		},
+		{
+			"id": "disable-ipv6",
+			"router": "r717",
+			"commands": [
+				{
+					"cmd": "/ipv6/settings/set disable-ipv6=yes",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 4346,
+					"payloadHex": "400000000001000602b209afe228000500066d322d37313700070023372e31372e322028737461626c652920323032352d30322d30362030393a31303a3234000800084d696b726f54696b000a000487050000000b000b7638555345486f364f6945000c0003434852000e0001010010000665746865723200110004c0a84d03",
+					"summary": "[40000000] mac=02b209afe228 identity=m2-717 version=7.17.2 (stable) 2025-02-06 09:10:24 platform=MikroTik uptime=1415 software-id=v8USEHo6OiE board=CHR ipv6-enabled=01 interface=ether2 ipv4=c0a84d03"
+				}
+			],
+			"tlv": {
+				"14": ["01"]
+			},
+			"neighbor": {
+				"identity": "m2-717",
+				"version": "7.17.2 (stable) 2025-02-06 09:10:24",
+				"ipv6": "true",
+				"address6": "fe80::b2:9ff:feaf:e228",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "3s"
+			}
+		},
+		{
+			"id": "disable-ipv6:after-reboot",
+			"router": "r717",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 14978,
+					"payloadHex": "000000000001000602b209afe228000500066d322d37313700070023372e31372e322028737461626c652920323032352d30322d30362030393a31303a3234000800084d696b726f54696b000a00040c000000000b000b7638555345486f364f6945000c0003434852000e0001010010000665746865723200110004c0a84d03",
+					"summary": "[00000000] mac=02b209afe228 identity=m2-717 version=7.17.2 (stable) 2025-02-06 09:10:24 platform=MikroTik uptime=12 software-id=v8USEHo6OiE board=CHR ipv6-enabled=01 interface=ether2 ipv4=c0a84d03"
+				},
+				{
+					"t": 25964,
+					"payloadHex": "010000000001000602b209afe228000500066d322d37313700070023372e31372e322028737461626c652920323032352d30322d30362030393a31303a3234000800084d696b726f54696b000a000417000000000b000b7638555345486f364f6945000c0003434852000e0001010010000665746865723200110004c0a84d03",
+					"summary": "[01000000] mac=02b209afe228 identity=m2-717 version=7.17.2 (stable) 2025-02-06 09:10:24 platform=MikroTik uptime=23 software-id=v8USEHo6OiE board=CHR ipv6-enabled=01 interface=ether2 ipv4=c0a84d03"
+				}
+			],
+			"tlv": {
+				"14": ["01"]
+			},
+			"neighbor": {
+				"identity": "m2-717",
+				"version": "7.17.2 (stable) 2025-02-06 09:10:24",
+				"ipv6": "true",
+				"address6": "fe80::b2:9ff:feaf:e228",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "enable-ipv6",
+			"router": "r717",
+			"commands": [
+				{
+					"cmd": "/ipv6/settings/set disable-ipv6=no",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 5328,
+					"payloadHex": "020000000001000602b209afe228000500066d322d37313700070023372e31372e322028737461626c652920323032352d30322d30362030393a31303a3234000800084d696b726f54696b000a00041f000000000b000b7638555345486f364f6945000c0003434852000e000101000f0010fe8000000000000000b209fffeafe2280010000665746865723200110004c0a84d03",
+					"summary": "[02000000] mac=02b209afe228 identity=m2-717 version=7.17.2 (stable) 2025-02-06 09:10:24 platform=MikroTik uptime=31 software-id=v8USEHo6OiE board=CHR ipv6-enabled=01 ipv6=fe8000000000000000b209fffeafe228 interface=ether2 ipv4=c0a84d03"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b209fffeafe228"]
+			},
+			"neighbor": {
+				"identity": "m2-717",
+				"version": "7.17.2 (stable) 2025-02-06 09:10:24",
+				"ipv6": "true",
+				"address6": "fe80::b2:9ff:feaf:e228",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "enable-ipv6:after-reboot",
+			"router": "r717",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 15144,
+					"payloadHex": "000000000001000602b209afe228000500066d322d37313700070023372e31372e322028737461626c652920323032352d30322d30362030393a31303a3234000800084d696b726f54696b000a00040c000000000b000b7638555345486f364f6945000c0003434852000e0001010010000665746865723200110004c0a84d03",
+					"summary": "[00000000] mac=02b209afe228 identity=m2-717 version=7.17.2 (stable) 2025-02-06 09:10:24 platform=MikroTik uptime=12 software-id=v8USEHo6OiE board=CHR ipv6-enabled=01 interface=ether2 ipv4=c0a84d03"
+				},
+				{
+					"t": 26032,
+					"payloadHex": "010000000001000602b209afe228000500066d322d37313700070023372e31372e322028737461626c652920323032352d30322d30362030393a31303a3234000800084d696b726f54696b000a000417000000000b000b7638555345486f364f6945000c0003434852000e000101000f0010fe8000000000000000b209fffeafe2280010000665746865723200110004c0a84d03",
+					"summary": "[01000000] mac=02b209afe228 identity=m2-717 version=7.17.2 (stable) 2025-02-06 09:10:24 platform=MikroTik uptime=23 software-id=v8USEHo6OiE board=CHR ipv6-enabled=01 ipv6=fe8000000000000000b209fffeafe228 interface=ether2 ipv4=c0a84d03"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b209fffeafe228"]
+			},
+			"neighbor": {
+				"identity": "m2-717",
+				"version": "7.17.2 (stable) 2025-02-06 09:10:24",
+				"ipv6": "true",
+				"address6": "fe80::b2:9ff:feaf:e228",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "default",
+			"router": "r718",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 5739,
+					"payloadHex": "460000000001000602b1a45a6bb4000500066d322d37313800070023372e31382e322028737461626c652920323032352d30332d31312031313a35393a3034000800084d696b726f54696b000a0004cf050000000b000b5a3048524d6e593942324f000c0003434852000e000101000f0010fe8000000000000000b1a4fffe5a6bb40010000665746865723200110004c0a84d04",
+					"summary": "[46000000] mac=02b1a45a6bb4 identity=m2-718 version=7.18.2 (stable) 2025-03-11 11:59:04 platform=MikroTik uptime=1487 software-id=Z0HRMnY9B2O board=CHR ipv6-enabled=01 ipv6=fe8000000000000000b1a4fffe5a6bb4 interface=ether2 ipv4=c0a84d04"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b1a4fffe5a6bb4"]
+			},
+			"neighbor": {
+				"identity": "m2-718",
+				"version": "7.18.2 (stable) 2025-03-11 11:59:04",
+				"ipv6": "true",
+				"address6": "fe80::b1:a4ff:fe5a:6bb4",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "disable-ipv6",
+			"router": "r718",
+			"commands": [
+				{
+					"cmd": "/ipv6/settings/set disable-ipv6=yes",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 657,
+					"payloadHex": "470000000001000602b1a45a6bb4000500066d322d37313800070023372e31382e322028737461626c652920323032352d30332d31312031313a35393a3034000800084d696b726f54696b000a0004d2050000000b000b5a3048524d6e593942324f000c0003434852000e0001010010000665746865723200110004c0a84d04",
+					"summary": "[47000000] mac=02b1a45a6bb4 identity=m2-718 version=7.18.2 (stable) 2025-03-11 11:59:04 platform=MikroTik uptime=1490 software-id=Z0HRMnY9B2O board=CHR ipv6-enabled=01 interface=ether2 ipv4=c0a84d04"
+				},
+				{
+					"t": 4069,
+					"payloadHex": "480000000001000602b1a45a6bb4000500066d322d37313800070023372e31382e322028737461626c652920323032352d30332d31312031313a35393a3034000800084d696b726f54696b000a0004d5050000000b000b5a3048524d6e593942324f000c0003434852000e0001010010000665746865723200110004c0a84d04",
+					"summary": "[48000000] mac=02b1a45a6bb4 identity=m2-718 version=7.18.2 (stable) 2025-03-11 11:59:04 platform=MikroTik uptime=1493 software-id=Z0HRMnY9B2O board=CHR ipv6-enabled=01 interface=ether2 ipv4=c0a84d04"
+				}
+			],
+			"tlv": {
+				"14": ["01"]
+			},
+			"neighbor": {
+				"identity": "m2-718",
+				"version": "7.18.2 (stable) 2025-03-11 11:59:04",
+				"ipv6": "true",
+				"address6": "(absent)",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "3s"
+			}
+		},
+		{
+			"id": "disable-ipv6:after-reboot",
+			"router": "r718",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 15122,
+					"payloadHex": "000000000001000602b1a45a6bb4000500066d322d37313800070023372e31382e322028737461626c652920323032352d30332d31312031313a35393a3034000800084d696b726f54696b000a00040c000000000b000b5a3048524d6e593942324f000c0003434852000e0001000010000665746865723200110004c0a84d04",
+					"summary": "[00000000] mac=02b1a45a6bb4 identity=m2-718 version=7.18.2 (stable) 2025-03-11 11:59:04 platform=MikroTik uptime=12 software-id=Z0HRMnY9B2O board=CHR ipv6-enabled=00 interface=ether2 ipv4=c0a84d04"
+				},
+				{
+					"t": 26045,
+					"payloadHex": "010000000001000602b1a45a6bb4000500066d322d37313800070023372e31382e322028737461626c652920323032352d30332d31312031313a35393a3034000800084d696b726f54696b000a000417000000000b000b5a3048524d6e593942324f000c0003434852000e0001000010000665746865723200110004c0a84d04",
+					"summary": "[01000000] mac=02b1a45a6bb4 identity=m2-718 version=7.18.2 (stable) 2025-03-11 11:59:04 platform=MikroTik uptime=23 software-id=Z0HRMnY9B2O board=CHR ipv6-enabled=00 interface=ether2 ipv4=c0a84d04"
+				}
+			],
+			"tlv": {
+				"14": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-718",
+				"version": "7.18.2 (stable) 2025-03-11 11:59:04",
+				"ipv6": "false",
+				"address6": "(absent)",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "enable-ipv6",
+			"router": "r718",
+			"commands": [
+				{
+					"cmd": "/ipv6/settings/set disable-ipv6=no",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 1969,
+					"payloadHex": "020000000001000602b1a45a6bb4000500066d322d37313800070023372e31382e322028737461626c652920323032352d30332d31312031313a35393a3034000800084d696b726f54696b000a00041b000000000b000b5a3048524d6e593942324f000c0003434852000e000101000f0010fe8000000000000000b1a4fffe5a6bb40010000665746865723200110004c0a84d04",
+					"summary": "[02000000] mac=02b1a45a6bb4 identity=m2-718 version=7.18.2 (stable) 2025-03-11 11:59:04 platform=MikroTik uptime=27 software-id=Z0HRMnY9B2O board=CHR ipv6-enabled=01 ipv6=fe8000000000000000b1a4fffe5a6bb4 interface=ether2 ipv4=c0a84d04"
+				},
+				{
+					"t": 5017,
+					"payloadHex": "030000000001000602b1a45a6bb4000500066d322d37313800070023372e31382e322028737461626c652920323032352d30332d31312031313a35393a3034000800084d696b726f54696b000a00041f000000000b000b5a3048524d6e593942324f000c0003434852000e000101000f0010fe8000000000000000b1a4fffe5a6bb40010000665746865723200110004c0a84d04",
+					"summary": "[03000000] mac=02b1a45a6bb4 identity=m2-718 version=7.18.2 (stable) 2025-03-11 11:59:04 platform=MikroTik uptime=31 software-id=Z0HRMnY9B2O board=CHR ipv6-enabled=01 ipv6=fe8000000000000000b1a4fffe5a6bb4 interface=ether2 ipv4=c0a84d04"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b1a4fffe5a6bb4"]
+			},
+			"neighbor": {
+				"identity": "m2-718",
+				"version": "7.18.2 (stable) 2025-03-11 11:59:04",
+				"ipv6": "true",
+				"address6": "fe80::b1:a4ff:fe5a:6bb4",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "enable-ipv6:after-reboot",
+			"router": "r718",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 14908,
+					"payloadHex": "000000000001000602b1a45a6bb4000500066d322d37313800070023372e31382e322028737461626c652920323032352d30332d31312031313a35393a3034000800084d696b726f54696b000a00040c000000000b000b5a3048524d6e593942324f000c0003434852000e0001010010000665746865723200110004c0a84d04",
+					"summary": "[00000000] mac=02b1a45a6bb4 identity=m2-718 version=7.18.2 (stable) 2025-03-11 11:59:04 platform=MikroTik uptime=12 software-id=Z0HRMnY9B2O board=CHR ipv6-enabled=01 interface=ether2 ipv4=c0a84d04"
+				},
+				{
+					"t": 26267,
+					"payloadHex": "010000000001000602b1a45a6bb4000500066d322d37313800070023372e31382e322028737461626c652920323032352d30332d31312031313a35393a3034000800084d696b726f54696b000a000417000000000b000b5a3048524d6e593942324f000c0003434852000e000101000f0010fe8000000000000000b1a4fffe5a6bb40010000665746865723200110004c0a84d04",
+					"summary": "[01000000] mac=02b1a45a6bb4 identity=m2-718 version=7.18.2 (stable) 2025-03-11 11:59:04 platform=MikroTik uptime=23 software-id=Z0HRMnY9B2O board=CHR ipv6-enabled=01 ipv6=fe8000000000000000b1a4fffe5a6bb4 interface=ether2 ipv4=c0a84d04"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b1a4fffe5a6bb4"]
+			},
+			"neighbor": {
+				"identity": "m2-718",
+				"version": "7.18.2 (stable) 2025-03-11 11:59:04",
+				"ipv6": "true",
+				"address6": "fe80::b1:a4ff:fe5a:6bb4",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "default",
+			"router": "r720",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 5084,
+					"payloadHex": "4d0000000001000602622bfd2971000500066d322d37323000070026372e32302e3820286c6f6e672d7465726d2920323032362d30312d33302030393a31373a3534000800084d696b726f54696b000a00041d060000000b000b6750776e5047565265654d000c0003434852000e000101000f0010fe8000000000000000622bfffefd29710010000665746865723200110004c0a84d050012000100",
+					"summary": "[4d000000] mac=02622bfd2971 identity=m2-720 version=7.20.8 (long-term) 2026-01-30 09:17:54 platform=MikroTik uptime=1565 software-id=gPwnPGVReeM board=CHR ipv6-enabled=01 ipv6=fe8000000000000000622bfffefd2971 interface=ether2 ipv4=c0a84d05 running=00"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000622bfffefd2971"],
+				"18": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-720",
+				"version": "7.20.8 (long-term) 2026-01-30 09:17:54",
+				"ipv6": "true",
+				"address6": "fe80::62:2bff:fefd:2971",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "disable-ipv6",
+			"router": "r720",
+			"commands": [
+				{
+					"cmd": "/ipv6/settings/set disable-ipv6=yes",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 1629,
+					"payloadHex": "4e0000000001000602622bfd2971000500066d322d37323000070026372e32302e3820286c6f6e672d7465726d2920323032362d30312d33302030393a31373a3534000800084d696b726f54696b000a000422060000000b000b6750776e5047565265654d000c0003434852000e0001010010000665746865723200110004c0a84d050012000100",
+					"summary": "[4e000000] mac=02622bfd2971 identity=m2-720 version=7.20.8 (long-term) 2026-01-30 09:17:54 platform=MikroTik uptime=1570 software-id=gPwnPGVReeM board=CHR ipv6-enabled=01 interface=ether2 ipv4=c0a84d05 running=00"
+				},
+				{
+					"t": 4384,
+					"payloadHex": "4f0000000001000602622bfd2971000500066d322d37323000070026372e32302e3820286c6f6e672d7465726d2920323032362d30312d33302030393a31373a3534000800084d696b726f54696b000a000425060000000b000b6750776e5047565265654d000c0003434852000e0001010010000665746865723200110004c0a84d050012000100",
+					"summary": "[4f000000] mac=02622bfd2971 identity=m2-720 version=7.20.8 (long-term) 2026-01-30 09:17:54 platform=MikroTik uptime=1573 software-id=gPwnPGVReeM board=CHR ipv6-enabled=01 interface=ether2 ipv4=c0a84d05 running=00"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"18": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-720",
+				"version": "7.20.8 (long-term) 2026-01-30 09:17:54",
+				"ipv6": "true",
+				"address6": "(absent)",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "3s"
+			}
+		},
+		{
+			"id": "disable-ipv6:after-reboot",
+			"router": "r720",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 5441,
+					"payloadHex": "000000000001000602622bfd2971000500066d322d37323000070026372e32302e3820286c6f6e672d7465726d2920323032362d30312d33302030393a31373a3534000800084d696b726f54696b000a000402000000000b000b6750776e5047565265654d000c0003434852000e000100001000066574686572320012000100",
+					"summary": "[00000000] mac=02622bfd2971 identity=m2-720 version=7.20.8 (long-term) 2026-01-30 09:17:54 platform=MikroTik uptime=2 software-id=gPwnPGVReeM board=CHR ipv6-enabled=00 interface=ether2 running=00"
+				},
+				{
+					"t": 19486,
+					"payloadHex": "010000000001000602622bfd2971000500066d322d37323000070026372e32302e3820286c6f6e672d7465726d2920323032362d30312d33302030393a31373a3534000800084d696b726f54696b000a000410000000000b000b6750776e5047565265654d000c0003434852000e0001000010000665746865723200110004c0a84d050012000100",
+					"summary": "[01000000] mac=02622bfd2971 identity=m2-720 version=7.20.8 (long-term) 2026-01-30 09:17:54 platform=MikroTik uptime=16 software-id=gPwnPGVReeM board=CHR ipv6-enabled=00 interface=ether2 ipv4=c0a84d05 running=00"
+				}
+			],
+			"tlv": {
+				"14": ["00"],
+				"18": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-720",
+				"version": "7.20.8 (long-term) 2026-01-30 09:17:54",
+				"ipv6": "(absent)",
+				"address6": "(absent)",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "0s"
+			}
+		},
+		{
+			"id": "enable-ipv6",
+			"router": "r720",
+			"commands": [
+				{
+					"cmd": "/ipv6/settings/set disable-ipv6=no",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 1092,
+					"payloadHex": "020000000001000602622bfd2971000500066d322d37323000070026372e32302e3820286c6f6e672d7465726d2920323032362d30312d33302030393a31373a3534000800084d696b726f54696b000a000415000000000b000b6750776e5047565265654d000c0003434852000e0001010010000665746865723200110004c0a84d050012000100",
+					"summary": "[02000000] mac=02622bfd2971 identity=m2-720 version=7.20.8 (long-term) 2026-01-30 09:17:54 platform=MikroTik uptime=21 software-id=gPwnPGVReeM board=CHR ipv6-enabled=01 interface=ether2 ipv4=c0a84d05 running=00"
+				},
+				{
+					"t": 5713,
+					"payloadHex": "030000000001000602622bfd2971000500066d322d37323000070026372e32302e3820286c6f6e672d7465726d2920323032362d30312d33302030393a31373a3534000800084d696b726f54696b000a000419000000000b000b6750776e5047565265654d000c0003434852000e000101000f0010fe8000000000000000622bfffefd29710010000665746865723200110004c0a84d050012000100",
+					"summary": "[03000000] mac=02622bfd2971 identity=m2-720 version=7.20.8 (long-term) 2026-01-30 09:17:54 platform=MikroTik uptime=25 software-id=gPwnPGVReeM board=CHR ipv6-enabled=01 ipv6=fe8000000000000000622bfffefd2971 interface=ether2 ipv4=c0a84d05 running=00"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000622bfffefd2971"],
+				"18": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-720",
+				"version": "7.20.8 (long-term) 2026-01-30 09:17:54",
+				"ipv6": "true",
+				"address6": "fe80::62:2bff:fefd:2971",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "enable-ipv6:after-reboot",
+			"router": "r720",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 16646,
+					"payloadHex": "000000000001000602622bfd2971000500066d322d37323000070026372e32302e3820286c6f6e672d7465726d2920323032362d30312d33302030393a31373a3534000800084d696b726f54696b000a00040d000000000b000b6750776e5047565265654d000c0003434852000e000101000f0010fe8000000000000000622bfffefd29710010000665746865723200110004c0a84d050012000100",
+					"summary": "[00000000] mac=02622bfd2971 identity=m2-720 version=7.20.8 (long-term) 2026-01-30 09:17:54 platform=MikroTik uptime=13 software-id=gPwnPGVReeM board=CHR ipv6-enabled=01 ipv6=fe8000000000000000622bfffefd2971 interface=ether2 ipv4=c0a84d05 running=00"
+				},
+				{
+					"t": 25293,
+					"payloadHex": "010000000001000602622bfd2971000500066d322d37323000070026372e32302e3820286c6f6e672d7465726d2920323032362d30312d33302030393a31373a3534000800084d696b726f54696b000a000416000000000b000b6750776e5047565265654d000c0003434852000e000101000f0010fe8000000000000000622bfffefd29710010000665746865723200110004c0a84d050012000100",
+					"summary": "[01000000] mac=02622bfd2971 identity=m2-720 version=7.20.8 (long-term) 2026-01-30 09:17:54 platform=MikroTik uptime=22 software-id=gPwnPGVReeM board=CHR ipv6-enabled=01 ipv6=fe8000000000000000622bfffefd2971 interface=ether2 ipv4=c0a84d05 running=00"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000622bfffefd2971"],
+				"18": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-720",
+				"version": "7.20.8 (long-term) 2026-01-30 09:17:54",
+				"ipv6": "true",
+				"address6": "fe80::62:2bff:fefd:2971",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "3s"
+			}
+		},
+		{
+			"id": "default",
+			"router": "sub",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 5351,
+					"payloadHex": "250000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000453010000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010000130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[25000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=339 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b613fffea013e4"],
+				"18": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-sub",
+				"version": "7.26beta5 2026-10-30 11:13:55",
+				"ipv6": "true",
+				"address6": "fe80::b6:13ff:fea0:13e4",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "disable-ipv6",
+			"router": "sub",
+			"commands": [
+				{
+					"cmd": "/ipv6/settings/set disable-ipv6=yes",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 798,
+					"payloadHex": "260000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000456010000000b000b4f6d6158573467614b344c000c0003434852000e00010000100006657468657232001200010000130001ff00110004c0a84d02",
+					"summary": "[26000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=342 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=00 interface=ether2 running=00 ttl=ff ipv4=c0a84d02"
+				},
+				{
+					"t": 4542,
+					"payloadHex": "270000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00045a010000000b000b4f6d6158573467614b344c000c0003434852000e00010000100006657468657232001200010000130001ff00110004c0a84d02",
+					"summary": "[27000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=346 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=00 interface=ether2 running=00 ttl=ff ipv4=c0a84d02"
+				}
+			],
+			"tlv": {
+				"14": ["00"],
+				"18": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-sub",
+				"version": "7.26beta5 2026-10-30 11:13:55",
+				"ipv6": "false",
+				"address6": "(absent)",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "3s"
+			}
+		},
+		{
+			"id": "disable-ipv6:after-reboot",
+			"router": "sub",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 1,
+					"payloadHex": "280000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00045d010000000b000b4f6d6158573467614b344c000c0003434852000e00010000100006657468657232001200010000130001ff00110004c0a84d02",
+					"summary": "[28000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=349 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=00 interface=ether2 running=00 ttl=ff ipv4=c0a84d02"
+				},
+				{
+					"t": 5557,
+					"payloadHex": "000000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000402000000000b000b4f6d6158573467614b344c000c0003434852000e00010000100006657468657232001200010000130001ff",
+					"summary": "[00000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=2 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=00 interface=ether2 running=00 ttl=ff"
+				},
+				{
+					"t": 6318,
+					"payloadHex": "010000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000403000000000b000b4f6d6158573467614b344c000c0003434852000e00010000100006657468657232001200010000130001ff00110004c0a84d02",
+					"summary": "[01000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=3 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=00 interface=ether2 running=00 ttl=ff ipv4=c0a84d02"
+				},
+				{
+					"t": 20277,
+					"payloadHex": "020000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000411000000000b000b4f6d6158573467614b344c000c0003434852000e00010000100006657468657232001200010000130001ff00110004c0a84d02",
+					"summary": "[02000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=17 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=00 interface=ether2 running=00 ttl=ff ipv4=c0a84d02"
+				}
+			],
+			"tlv": {
+				"14": ["00"],
+				"18": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-sub",
+				"version": "7.26beta5 2026-10-30 11:13:55",
+				"ipv6": "false",
+				"address6": "(absent)",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "3s"
+			}
+		},
+		{
+			"id": "enable-ipv6",
+			"router": "sub",
+			"commands": [
+				{
+					"cmd": "/ipv6/settings/set disable-ipv6=no",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 1729,
+					"payloadHex": "030000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000416000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010000130001ff00110004c0a84d02",
+					"summary": "[03000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=22 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=ff ipv4=c0a84d02"
+				},
+				{
+					"t": 1768,
+					"payloadHex": "040000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000416000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010000130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[04000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=22 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				},
+				{
+					"t": 4399,
+					"payloadHex": "050000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000418000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010000130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[05000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=24 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b613fffea013e4"],
+				"18": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-sub",
+				"version": "7.26beta5 2026-10-30 11:13:55",
+				"ipv6": "true",
+				"address6": "fe80::b6:13ff:fea0:13e4",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "3s"
+			}
+		},
+		{
+			"id": "enable-ipv6:after-reboot",
+			"router": "sub",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 2,
+					"payloadHex": "060000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00041c000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010000130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[06000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=28 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				},
+				{
+					"t": 15361,
+					"payloadHex": "000000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00040c000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010000130001ff00110004c0a84d02",
+					"summary": "[00000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=12 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=ff ipv4=c0a84d02"
+				},
+				{
+					"t": 16518,
+					"payloadHex": "010000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00040d000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010000130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[01000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=13 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				},
+				{
+					"t": 25311,
+					"payloadHex": "020000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000416000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010000130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[02000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=22 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b613fffea013e4"],
+				"18": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-sub",
+				"version": "7.26beta5 2026-10-30 11:13:55",
+				"ipv6": "true",
+				"address6": "fe80::b6:13ff:fea0:13e4",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "3s"
+			}
+		}
+	]
+}

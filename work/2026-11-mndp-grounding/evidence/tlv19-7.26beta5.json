@@ -7,11 +7,7 @@
 		"version": "7.26beta5",
 		"arch": "x86_64",
 		"board": "CHR QEMU Standard PC (i440FX + PIIX, 1996)",
-		"macs": [
-			"02:af:91:67:26:04",
-			"02:aa:13:dd:4f:2c",
-			"00:00:00:00:00:00"
-		]
+		"macs": ["02:af:91:67:26:04", "02:aa:13:dd:4f:2c", "00:00:00:00:00:00"]
 	},
 	"observer": {
 		"name": "mndp-obs",

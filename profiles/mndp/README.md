@@ -32,17 +32,26 @@ The [format and research index](../README.md) routes other protocols.
 ## Grounded wire map
 
 The wire map grounded on 2026-11-15 (header, TLVs 1–19, layout by version,
-timing and lifecycle) lives with its evidence in
+timing and lifecycle), with requests and per-version TLV 14 added on
+2026-11-16, lives with its evidence in
 [`work/2026-11-mndp-grounding/FINDINGS.md`](../../work/2026-11-mndp-grounding/FINDINGS.md)
 until canonical MNDP YAML exists. Its corrections to earlier sources:
 
 - **TLV 14 is the IPv6-enabled flag**, not `unpack`. `unpack` comes from
-  empty TLVs 2–4, and TLV 9 carries `aggregated-size`.
+  empty TLVs 2–4, and TLV 9 carries `aggregated-size`. Before 7.18 the flag
+  means "IPv6 present". It follows `disable-ipv6` from 7.18, but on 7.18.2
+  and 7.20.8 only after a reboot; 7.26beta5 follows it at once (7.21's
+  changelog fix is the likely boundary, untested).
 - **The header is a `u32` announcement counter** in the sender's CPU byte
   order, not version + TTL + sequence bytes.
-- **TLV 18** (`running`, 7.20+): `00` none, `01` CAPsMAN, `02` CMR
-  controller. Reading it as a bitmask is inferred; a combined value such
-  as `03` has not been observed.
+- **TLV 18** (`running`, 7.20+) is a bitmask: `01` CAPsMAN, `02` CMR
+  controller, `03` both (printed `capsman,cmr`).
+- **A request** is a header of `00000000` or any packet carrying TLV 6. A
+  packet with trailing bytes is dropped, so the "9-byte" forms (nine zero
+  bytes, or TLV 6 plus a pad byte) draw no reply. Use
+  `00 00 00 00 00 06 00 00`: it draws a reply without adding the requester
+  to 7.x routers' neighbor tables. Replies are broadcast announcements to
+  port 5678, sent after a random delay of up to about 2 s.
 - **TLV 19** (7.24+) is the entry TTL in seconds,
   `min(discover-interval × 4 + 1, 255)`; `00` is the dying gasp.
 - **TLV 15 repeats** once per IPv6 address on the interface.

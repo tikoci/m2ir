@@ -636,3 +636,16 @@ snaplen # pcapng snapshot-length field
 linktype
 linktypes
 tsresol
+
+# MNDP hub lab (work/2026-11-mndp-grounding)
+bcast
+csum
+dport
+hubstudy
+localaddr
+mcast
+ndp
+NDP
+netdev
+nzbe
+tpa

@@ -1,0 +1,274 @@
+{
+	"study": "running",
+	"date": "2026-11-16T14:19:06.139Z",
+	"request": "0000000000060000",
+	"observer": {
+		"machine": "mndp2-obs",
+		"version": "7.26beta5",
+		"mac": "02:05:e2:00:e4:19"
+	},
+	"subjects": [
+		{
+			"name": "sub",
+			"machine": "mndp2-sub",
+			"version": "7.26beta5",
+			"mac": "02:b6:13:a0:13:e4"
+		}
+	],
+	"steps": [
+		{
+			"id": "baseline",
+			"router": "sub",
+			"commands": [],
+			"announcements": [
+				{
+					"t": 5014,
+					"payloadHex": "030000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000425000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010000130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[03000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=37 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b613fffea013e4"],
+				"18": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-sub",
+				"version": "7.26beta5 2026-10-30 11:13:55",
+				"ipv6": "true",
+				"address6": "fe80::b6:13ff:fea0:13e4",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "3s"
+			}
+		},
+		{
+			"id": "capsman:on",
+			"router": "sub",
+			"commands": [
+				{
+					"cmd": "/interface/wifi/capsman/set enabled=yes",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 145,
+					"payloadHex": "040000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000428000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010100130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[04000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=40 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=01 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				},
+				{
+					"t": 5712,
+					"payloadHex": "050000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00042e000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010100130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[05000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=46 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=01 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b613fffea013e4"],
+				"18": ["01"]
+			},
+			"neighbor": {
+				"identity": "m2-sub",
+				"version": "7.26beta5 2026-10-30 11:13:55",
+				"ipv6": "true",
+				"address6": "fe80::b6:13ff:fea0:13e4",
+				"running": "capsman",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "cmr:on (with capsman)",
+			"router": "sub",
+			"commands": [
+				{
+					"cmd": "/cmr/set enabled=yes",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 81,
+					"payloadHex": "060000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000430000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010300130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[06000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=48 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=03 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				},
+				{
+					"t": 5835,
+					"payloadHex": "070000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000436000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010300130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[07000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=54 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=03 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b613fffea013e4"],
+				"18": ["03"]
+			},
+			"neighbor": {
+				"identity": "m2-sub",
+				"version": "7.26beta5 2026-10-30 11:13:55",
+				"ipv6": "true",
+				"address6": "fe80::b6:13ff:fea0:13e4",
+				"running": "capsman,cmr",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "capsman:off (cmr only)",
+			"router": "sub",
+			"commands": [
+				{
+					"cmd": "/interface/wifi/capsman/set enabled=no",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 2,
+					"payloadHex": "080000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000438000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010200130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[08000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=56 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=02 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				},
+				{
+					"t": 5628,
+					"payloadHex": "090000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00043e000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010200130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[09000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=62 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=02 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b613fffea013e4"],
+				"18": ["02"]
+			},
+			"neighbor": {
+				"identity": "m2-sub",
+				"version": "7.26beta5 2026-10-30 11:13:55",
+				"ipv6": "true",
+				"address6": "fe80::b6:13ff:fea0:13e4",
+				"running": "cmr",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "capsman:on again (with cmr)",
+			"router": "sub",
+			"commands": [
+				{
+					"cmd": "/interface/wifi/capsman/set enabled=yes",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 3,
+					"payloadHex": "0a0000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000440000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010300130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[0a000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=64 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=03 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				},
+				{
+					"t": 5013,
+					"payloadHex": "0b0000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000445000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010300130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[0b000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=69 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=03 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b613fffea013e4"],
+				"18": ["03"]
+			},
+			"neighbor": {
+				"identity": "m2-sub",
+				"version": "7.26beta5 2026-10-30 11:13:55",
+				"ipv6": "true",
+				"address6": "fe80::b6:13ff:fea0:13e4",
+				"running": "capsman,cmr",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "cmr:off (capsman only)",
+			"router": "sub",
+			"commands": [
+				{
+					"cmd": "/cmr/set enabled=no",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 2,
+					"payloadHex": "0c0000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000448000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010100130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[0c000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=72 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=01 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				},
+				{
+					"t": 5050,
+					"payloadHex": "0d0000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a00044d000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010100130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[0d000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=77 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=01 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b613fffea013e4"],
+				"18": ["01"]
+			},
+			"neighbor": {
+				"identity": "m2-sub",
+				"version": "7.26beta5 2026-10-30 11:13:55",
+				"ipv6": "true",
+				"address6": "fe80::b6:13ff:fea0:13e4",
+				"running": "capsman",
+				"unpack": "none",
+				"age": "2s"
+			}
+		},
+		{
+			"id": "capsman:off",
+			"router": "sub",
+			"commands": [
+				{
+					"cmd": "/interface/wifi/capsman/set enabled=no",
+					"result": {
+						"ret": ""
+					}
+				}
+			],
+			"announcements": [
+				{
+					"t": 2,
+					"payloadHex": "0e0000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000450000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010000130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[0e000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=80 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				},
+				{
+					"t": 4395,
+					"payloadHex": "0f0000000001000602b613a013e4000500066d322d7375620007001d372e3236626574613520323032362d31302d33302031313a31333a3535000800084d696b726f54696b000a000455000000000b000b4f6d6158573467614b344c000c0003434852000e00010100100006657468657232001200010000130001ff00110004c0a84d02000f0010fe8000000000000000b613fffea013e4",
+					"summary": "[0f000000] mac=02b613a013e4 identity=m2-sub version=7.26beta5 2026-10-30 11:13:55 platform=MikroTik uptime=85 software-id=OmaXW4gaK4L board=CHR ipv6-enabled=01 interface=ether2 running=00 ttl=ff ipv4=c0a84d02 ipv6=fe8000000000000000b613fffea013e4"
+				}
+			],
+			"tlv": {
+				"14": ["01"],
+				"15": ["fe8000000000000000b613fffea013e4"],
+				"18": ["00"]
+			},
+			"neighbor": {
+				"identity": "m2-sub",
+				"version": "7.26beta5 2026-10-30 11:13:55",
+				"ipv6": "true",
+				"address6": "fe80::b6:13ff:fea0:13e4",
+				"running": "(absent)",
+				"unpack": "none",
+				"age": "3s"
+			}
+		}
+	]
+}
