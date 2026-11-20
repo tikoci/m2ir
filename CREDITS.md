@@ -54,8 +54,10 @@ where they diverge.
 
 Pure-Python WinBox terminal-protocol implementation. Source of the seed
 material in [`profiles/winbox-ipc/strawman/`](profiles/winbox-ipc/strawman/)
-(three `.ksy` files plus the semantic-overlay `.yaml`) and the
-`PROTOCOL.md` notes that drove the v0.1 strawman drain.
+(three `.ksy` files plus the semantic-overlay `.yaml`), the imported
+notes in [`work/2026-05-m2ir-bootstrap/`](work/2026-05-m2ir-bootstrap/),
+and the `PROTOCOL.md` notes that drove the v0.1 strawman drain. License:
+MIT; both folders keep the upstream notice in their own `LICENSE`.
 
 ## Adding a new source
 

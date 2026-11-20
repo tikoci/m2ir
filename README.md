@@ -215,8 +215,7 @@ to make your work reproducible.
 
 CC0-1.0 covers everything m2ir authors:
 
-- the schema YAML in `physical/`, `concepts/`, and `profiles/`, including
-  the Kaitai strawman
+- the schema YAML in `physical/`, `concepts/`, and `profiles/`
 - sanitized evidence in `fixtures/` and `work/`
 - the documentation: this README, [DESIGN.md](DESIGN.md), the
   [agent reading map](llms.txt), and the other Markdown files
@@ -239,6 +238,10 @@ keeps its own terms, even inside a file that is otherwise covered:
   (MIT). That file is itself a port of `mtwei.c` from
   [MAC-Telnet](https://github.com/haakonnessjoen/MAC-Telnet)
   (GPL-2.0-or-later). Treat the probe under those terms, not CC0-1.0.
+- the Kaitai strawman in `profiles/winbox-ipc/strawman/` and the imported
+  notes in `work/2026-05-m2ir-bootstrap/`, which come from
+  [subixonfire/winbox-terminal-protocol](https://github.com/subixonfire/winbox-terminal-protocol)
+  (MIT). Each folder keeps the upstream notice in its own `LICENSE`.
 - text or tables quoted or transcribed from the upstream projects in
   [CREDITS.md](CREDITS.md), which keep the notices their licenses require
 

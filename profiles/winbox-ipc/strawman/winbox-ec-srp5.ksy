@@ -2,7 +2,7 @@ meta:
   id: winbox_ec_srp5
   title: WinBox EC-SRP5 handshake messages (pre-encryption frames)
   endian: be
-  license: CC0-1.0
+  license: MIT
   ks-version: "0.10"
 
 doc: |

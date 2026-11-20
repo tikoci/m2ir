@@ -3,7 +3,7 @@ meta:
   title: WinBox "M2" / nv::message TLV format
   file-extension: m2
   endian: le
-  license: CC0-1.0
+  license: MIT
   ks-version: "0.10"
 
 doc: |

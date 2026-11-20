@@ -254,4 +254,9 @@ with `yaml.safe_load()` and use as a side-table during display.
 
 ## License
 
-CC0-1.0 for the schema files (we want maximum reuse and re-derivation).
+MIT, from the upstream
+[subixonfire/winbox-terminal-protocol](https://github.com/subixonfire/winbox-terminal-protocol);
+the notice is in [`LICENSE`](LICENSE) here and in
+[`profiles/winbox-ipc/strawman/LICENSE`](../../profiles/winbox-ipc/strawman/LICENSE).
+An earlier version of this note said CC0-1.0 for the schema files; the
+upstream repository is MIT.
