@@ -2,7 +2,7 @@ meta:
   id: winbox_chunk
   title: WinBox transport-layer chunked framing (TCP/8291)
   endian: be
-  license: CC0-1.0
+  license: MIT
   ks-version: "0.10"
 
 doc: |

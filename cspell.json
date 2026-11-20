@@ -19,6 +19,7 @@
 		"work/**/*.sha256",
 		"work/**/sys2-res-getall.asm.txt",
 		"work/2026-05-m2ir-bootstrap/**",
+		"LICENSE",
 		"GLOSSARY.txt",
 		".claude/settings*.json"
 	],

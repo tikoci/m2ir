@@ -10,7 +10,8 @@ recorded alongside each finding.
 
 The schema is the deliverable: a reusable knowledge base, with research
 probes and repo tooling alongside it. You can browse it without installing
-anything. Schema content is **CC0-1.0**.
+anything. m2ir's own schema and code are **CC0-1.0**; third-party material
+keeps its own terms (see [License](#license)).
 
 ## Start here
 
@@ -203,3 +204,51 @@ when an agent learns something new. Keep field tables, patch inventories,
 counts, and research status here.
 Record the m2ir commit and exact RouterOS/client versions when using them;
 `main` links discover current knowledge but do not pin a reproduction.
+
+## License
+
+m2ir is released under [CC0-1.0](LICENSE), a public-domain dedication
+with a fallback license where dedication is not possible. You can copy,
+change, vendor, or generate code from anything m2ir authored without
+asking and without attribution. Citing the m2ir commit you used is still the best way
+to make your work reproducible.
+
+CC0-1.0 covers everything m2ir authors:
+
+- the schema YAML in `physical/`, `concepts/`, and `profiles/`
+- sanitized evidence in `fixtures/` and `work/`
+- the documentation: this README, [DESIGN.md](DESIGN.md), the
+  [agent reading map](llms.txt), and the other Markdown files
+- the code: repo tooling in `src/`, tests in `test/`, and the probes and
+  harnesses under `work/`
+
+The code uses the same license as the schema, so a project that vendors
+YAML and copies a probe that reads it has one license to track, not two.
+
+CC0-1.0 cannot waive rights m2ir does not hold. Material from elsewhere
+keeps its own terms, even inside a file that is otherwise covered:
+
+- MikroTik's own material: disassembly listings and strings taken from
+  RouterOS binaries (such as
+  `work/2026-10-chr-extraction/sys2-res-getall.asm.txt`) and RouterOS
+  output recorded in evidence (such as the replies under
+  `work/2026-10-chr-extraction/ws3c/ev/`)
+- `work/2026-10-chr-extraction/ws3c/ec-srp5.ts`, which follows
+  [centrs](https://github.com/tikoci/centrs)'s `src/protocols/ec-srp5.ts`
+  (MIT). That file is itself a port of `mtwei.c` from
+  [MAC-Telnet](https://github.com/haakonnessjoen/MAC-Telnet)
+  (GPL-2.0-or-later). Treat the probe under those terms, not CC0-1.0.
+- the Kaitai strawman in `profiles/winbox-ipc/strawman/` and the imported
+  notes in `work/2026-05-m2ir-bootstrap/`, which come from
+  [subixonfire/winbox-terminal-protocol](https://github.com/subixonfire/winbox-terminal-protocol)
+  (MIT). Each folder keeps the upstream notice in its own `LICENSE`.
+- text or tables quoted or transcribed from the upstream projects in
+  [CREDITS.md](CREDITS.md), which keep the notices their licenses require
+
+CC0-1.0 grants no trademark or patent rights; MikroTik, RouterOS, and
+WinBox are MikroTik's trademarks.
+
+Contributions submitted for inclusion, such as a pull request or an issue
+finding you ask to have added, are accepted under CC0-1.0. Submit only
+material you have the right to dedicate, and say where anything you copied
+came from.

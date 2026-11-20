@@ -1,6 +1,6 @@
 # m2ir
 
-> Evidence-backed YAML reference for MikroTik RouterOS binary protocols and data formats. Schema content is CC0-1.0. This file is a reading map; AGENTS.md governs repository contributions.
+> Evidence-backed YAML reference for MikroTik RouterOS binary protocols and data formats. m2ir's own schema and code are CC0-1.0; third-party material keeps its own terms (see the README's License section). This file is a reading map; AGENTS.md governs repository contributions.
 
 Read canonical YAML before implementing behavior. Follow each entry's
 confidence, evidence, version scope, and revision history. Research notes
