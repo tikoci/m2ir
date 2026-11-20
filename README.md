@@ -10,7 +10,7 @@ recorded alongside each finding.
 
 The schema is the deliverable: a reusable knowledge base, with research
 probes and repo tooling alongside it. You can browse it without installing
-anything. Schema content is **CC0-1.0**.
+anything. The schema and the code are **CC0-1.0**; see [License](#license).
 
 ## Start here
 
@@ -203,3 +203,33 @@ when an agent learns something new. Keep field tables, patch inventories,
 counts, and research status here.
 Record the m2ir commit and exact RouterOS/client versions when using them;
 `main` links discover current knowledge but do not pin a reproduction.
+
+## License
+
+m2ir is released under [CC0-1.0](LICENSE), a public-domain dedication
+with a fallback license where dedication is not possible. You can copy,
+change, vendor, or generate code from any of it without asking and
+without attribution. Citing the m2ir commit you used is still the best way
+to make your work reproducible.
+
+CC0-1.0 covers everything m2ir authors:
+
+- the schema YAML in `physical/`, `concepts/`, and `profiles/`, including
+  the Kaitai strawman
+- sanitized evidence in `fixtures/` and `work/`
+- the documentation: this README, [DESIGN.md](DESIGN.md), the
+  [agent reading map](llms.txt), and the other Markdown files
+- the code: repo tooling in `src/`, tests in `test/`, and the probes and
+  harnesses under `work/`
+
+The code uses the same license as the schema, so a project that vendors
+YAML and copies a probe that reads it has one license to track, not two.
+
+CC0-1.0 cannot waive rights m2ir does not hold. Material copied from
+elsewhere keeps its own terms: disassembly listings and strings taken from
+MikroTik binaries, and anything quoted from the upstream projects in
+[CREDITS.md](CREDITS.md). CC0-1.0 grants no trademark or patent rights;
+MikroTik, RouterOS, and WinBox are MikroTik's trademarks.
+
+Contributions are accepted under CC0-1.0. Submitting a finding in an issue
+or a pull request means you agree to release it under CC0-1.0.
