@@ -209,10 +209,14 @@ interface RequestRecord {
 }
 const requests: RequestRecord[] = [];
 
+/** The reply window the request studies used, in seconds (windowMs 4000). */
+const WINDOW_S = 4;
+
 /**
  * A row counts as created or refreshed when every 7.x receiver lists the
- * sender with an age inside the 4 s window. A row left over from an earlier
- * send (fresh-z9-after-z4, age 55 s) is neither.
+ * sender with an age inside the 4 s window (the neighbor tables were read
+ * at its end). A row left over from an earlier send (fresh-z9-after-z4,
+ * age 55 s) is neither.
  */
 function requesterRow(
 	id: string,
@@ -221,8 +225,9 @@ function requesterRow(
 	const ages = Object.values(listedBy).map((row) =>
 		row ? Number.parseInt(row.age, 10) : null,
 	);
-	if (ages.every((a) => a !== null && a <= 5)) return "created-or-refreshed";
-	if (ages.every((a) => a === null || a > 5)) return "none";
+	if (ages.every((a) => a !== null && a <= WINDOW_S))
+		return "created-or-refreshed";
+	if (ages.every((a) => a === null || a > WINDOW_S)) return "none";
 	throw new Error(`requests-fresh ${id}: receivers disagree`);
 }
 const run2Keep = new Set([
@@ -373,7 +378,7 @@ write("requests.json", {
 		generator: "work/2026-11-mndp-grounding/make-fixtures.ts",
 		routers:
 			"six hub-lab routers: 6.49.23, 7.17.2, 7.18.2, 7.20.8 and two 7.26beta5",
-		windowMs: 4000,
+		windowMs: WINDOW_S * 1000,
 		notes:
 			"responders = distinct routers that announced within the window after the send. Not every announcement in a window is a reply: 6.49.23's 60 s periodic can fall in one.",
 	},
