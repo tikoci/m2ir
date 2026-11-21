@@ -23,12 +23,14 @@ hits first, each with its entry in `profile.yaml`:
 
 - **Byte order is mixed.** TLV type and length are big-endian. Uptime
   (TLV 10) is little-endian on every CPU seen, MIPSBE included.
-  Aggregated-size (TLV 9) is little-endian on x86 and unverified on
-  big-endian CPUs. The header counter is in the *sender's* byte order.
+  Aggregated-size (TLV 9) is little-endian on x86_64 and unverified on
+  every other architecture, 32-bit x86 included. The header counter is in the *sender's* byte order.
 - **TLV 14 is the IPv6-enabled flag**, not `unpack`; what it means
   depends on the sender's version. `unpack=` comes from TLVs 2–4.
-- **A request** is header `00000000` or any datagram carrying TLV 6, and
-  a datagram with trailing bytes is dropped whole. Send
+- **A request** must first pass the framing rule: its TLVs end exactly at
+  the end of the datagram. Then it is a request if the header is
+  `00000000` or it carries TLV 6. Every malformed form tested (trailing
+  bytes, shorter than a header) was dropped whole. Send
   `00 00 00 00 00 06 00 00`.
 
 ## Evidence

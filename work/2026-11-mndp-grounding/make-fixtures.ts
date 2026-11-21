@@ -288,9 +288,9 @@ const note = (
 	set.add(v);
 	map.set(key, set);
 };
-function indexPayload(hex: string): void {
+function indexPayload(hex: string, fallbackVersion?: string): void {
 	const m = parseMndp(Buffer.from(hex, "hex"));
-	const v = versionOf(hex);
+	const v = versionOf(hex) ?? fallbackVersion;
 	if (!v || m.trailing) return;
 	index.versions.add(v);
 	if (m.header === "00000000") index.zeroHeader.add(v);
@@ -314,6 +314,13 @@ function walk(node: unknown): void {
 }
 for (const name of new Bun.Glob("*.json").scanSync(resolve(here, "evidence")))
 	if (name !== "field-summary.json") walk(evidence(name));
+// Dying gasps carry no TLV 7; take the version from the study's subject.
+{
+	const doc = evidence("dying-gasp-7.26beta5.json");
+	for (const a of doc.announcements as { payloadHex: string }[])
+		if (!versionOf(a.payloadHex))
+			indexPayload(a.payloadHex, doc.subject.version);
+}
 for (const row of field.rows as {
 	version: string;
 	tlvOrder: string;

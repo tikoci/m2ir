@@ -33,6 +33,11 @@ physical-ref: ../../physical/mndp.yaml
 # (test/profiles/mndp/) checks these lists against every evidence payload
 # in both directions.
 #
+# Scope covers m2ir's own captures (lab, hub lab, field). The one external
+# packet used here, a 7.24beta1 announcement in centrs's codec tests, backs
+# only its own entry in `layouts` and is not counted in versions-observed
+# or any versions-seen.
+#
 # Enum and bitmask tables are lists with a numeric `value` or `mask`, not
 # maps keyed by hex, so a consumer never depends on how its YAML parser
 # turns a 0x01 key into a string. Architectures use RouterOS
@@ -143,7 +148,9 @@ header:
         - value: 0x00000000
           name: request
           meaning: |
-            A request, whatever follows. A router's first announcement after
+            A request, whatever follows, once the datagram passes
+            physical/mndp.yaml framing-rule (a zero header with a trailing
+            byte is malformed, not a request). A router's first announcement after
             boot has header 0, so neighbors answer it; the counter then
             continues from 1. See `requests` and `lifecycle.boot-announcement`.
           confidence: observed-only
@@ -185,7 +192,8 @@ header:
 # `emit-length` gives it. `in` lists the datagram
 # kinds that carry the TLV: announcement, request, dying-gasp. `repeat`
 # is true when one datagram can carry the TLV more than once. `since` is
-# the first version seen sending it, when older versions did not.
+# the first version seen sending it, when older versions did not;
+# `introduced`, where given, is the release whose changelog adds it.
 tlvs:
   1:
     name: mac-address
@@ -341,6 +349,9 @@ tlvs:
         encoding: u32le
         confidence: observed-only
         versions-seen: ["7.26beta5"]
+        examples:
+          - { hex: "dc050000", value: 1500 }
+          - { hex: "e8030000", value: 1000 }
     in: [announcement]
     confidence: observed-only
     versions-seen: ["7.26beta5"]
@@ -654,7 +665,8 @@ tlvs:
     encoding: u8
     length: 1
     in: [announcement, dying-gasp]
-    since: "7.24"
+    since: "7.24.5"
+    introduced: "7.24"
     confidence: observed-only
     versions-seen: ["7.24.5", "7.24.6", "7.25beta5", "7.25", "7.25.1", "7.26beta5"]
     formula:
@@ -688,6 +700,8 @@ tlvs:
       about its TTL or up to about 20 s later; removal slightly before the TTL
       is not ruled out at the 4 s sampling. Treat it as an approximate
       lifetime, not an exact expiry time. Absent on 7.24beta1 and older.
+      `since` is the first release seen sending it; `introduced` is the
+      release whose changelog adds it.
     evidence:
       - source: sample
         ref: "lab TTL vs discover-interval, 5 s to 9 h; see work/2026-11-mndp-grounding/evidence/ttl-7.26beta5.json"
@@ -716,6 +730,9 @@ unassigned:
   above-19:
     confidence: guessed
     notes: "No type above 19 was seen. A decoder should keep unknown types as raw bytes."
+    evidence:
+      - source: sample
+        ref: "every TLV type across the lab, hub lab and field payloads; see fixtures/mndp/versions-index.json and work/2026-11-mndp-grounding/FINDINGS.md → TLVs"
     investigation-trail:
       - date: 2026-11-16
         looked-at: "every lab, hub lab and field payload, 6.49.21 to 7.26beta5"
@@ -744,8 +761,9 @@ unpack-derivation:
 # ── requests ─────────────────────────────────────────────────────────────
 requests:
   # A datagram that passes physical/mndp.yaml framing-rule is a request when
-  # ANY of `any-of` holds. A malformed datagram is dropped whole, request or
-  # not. A request asks every router on the segment to announce now.
+  # ANY of `any-of` holds. Malformed datagrams are not requests; every
+  # malformed form tested was dropped whole (see framing-rule). A request
+  # asks every router on the segment to announce now.
   rule:
     requires: framing-rule
     any-of:

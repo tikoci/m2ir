@@ -83,7 +83,12 @@ interface Tlv extends Scoped {
 	"values-seen"?: ValueEntry[];
 	formula?: { multiplier: number; offset: number; max: number };
 	examples?: { "discover-interval-seconds": number; value: number }[];
-	"encoding-by-architecture"?: { architectures: string[]; encoding: string }[];
+	"encoding-by-architecture"?: {
+		architectures: string[];
+		encoding: string;
+		examples?: { hex: string; value: number }[];
+	}[];
+	introduced?: string;
 }
 type OrderItem =
 	| number
@@ -379,6 +384,15 @@ function isRequest(hex: string): boolean {
 	});
 }
 
+/** Decode an unsigned integer by a physical/mndp.yaml value encoding. */
+function decodeAs(encoding: string, bytes: Uint8Array): number {
+	const enc = physical["value-encodings"][encoding];
+	if (!enc || enc.size !== bytes.length)
+		throw new Error(`cannot decode ${encoding}`);
+	const order = enc.endian === "le" ? [...bytes].reverse() : [...bytes];
+	return order.reduce((n, b) => n * 256 + b, 0);
+}
+
 function ttlFor(seconds: number): number {
 	const [, ttl] = tlvNamed("ttl");
 	const f = ttl.formula;
@@ -462,7 +476,20 @@ describe("MNDP schema shape", () => {
 				);
 				for (const a of alt.architectures)
 					expect(profile.scope["architectures-observed"]).toContain(a);
+				expect(alt.examples?.length ?? 0, `${where} examples`).toBeGreaterThan(
+					0,
+				);
+				for (const ex of alt.examples ?? [])
+					expect(
+						decodeAs(alt.encoding, hexBytes(ex.hex)),
+						`${where} ${ex.hex}`,
+					).toBe(ex.value);
 			}
+			if (t.introduced && t.since)
+				expect(
+					compareVersions(t.introduced, t.since),
+					`${where} introduced`,
+				).toBeLessThanOrEqual(0);
 			expect(t.confidence, where).toBeString();
 			expect(t.evidence.length, where).toBeGreaterThan(0);
 			expect(t.in.length, where).toBeGreaterThan(0);
@@ -610,13 +637,12 @@ describe("versions-seen matches the evidence in both directions", () => {
 		check(t14, ipv6.values ?? []);
 		const [t18, running] = tlvNamed("running");
 		check(t18, running["values-seen"] ?? []);
-		// TLV 19: only 00 is an enum value; the rest follow the formula.
+		// TLV 19: only 00 (dying gasp) is an enum value; the rest follow the
+		// formula, so the index's non-zero keys are skipped.
 		const [t19, ttl] = tlvNamed("ttl");
-		check(
-			t19,
-			(ttl.values ?? []).filter((v) => v.value !== 0),
-			(v) => v !== 0,
-		);
+		expect((ttl.values ?? []).map((v) => v.value)).toEqual([0]);
+		check(t19, ttl.values ?? [], (v) => v !== 0);
+		expect(versionsIndex.values[`${t19}:0`]?.length ?? 0).toBeGreaterThan(0);
 	});
 
 	test("each TLV 18 bit's versions-seen is the union of the values that set it", () => {
@@ -679,6 +705,16 @@ describe("lab announcements decode by the YAML", () => {
 				if (!t)
 					throw new Error(`${rec.id}: TLV ${r.type} not in profiles/mndp`);
 				if (t.length !== "any") expect(r.value.length, t.name).toBe(t.length);
+				// Every lab fixture comes from an x86_64 CHR: decode through
+				// that architecture's binding and expect a documented value.
+				const binding = t["encoding-by-architecture"]?.find((b) =>
+					b.architectures.includes("x86_64"),
+				);
+				if (binding)
+					expect(
+						binding.examples?.map((e) => e.value),
+						`${t.name} ${hexOf(r.value)}`,
+					).toContain(decodeAs(binding.encoding, r.value));
 				expect(t.in, t.name).toContain(rec.kind);
 				expect(seenOn(t, version), `${t.name} seen on ${version}`).toBe(true);
 				if (!t.repeat)

@@ -65,7 +65,7 @@ The public TLV names behind `profiles/mndp/` (types 1, 5, 7, 8, 10, 11,
 12, 14 to 17) and the big-endian TLV header in `physical/mndp.yaml`.
 Only names and numbers were taken; the encodings, byte order, versions
 and the TLV 14 correction come from m2ir's own MNDP grounding lab
-(`work/2026-11-mndp-grounding/`). License: GPL-2.0 for both.
+(`work/2026-11-mndp-grounding/`). License: GPL-2.0-or-later for both.
 
 ## Adding a new source
 

@@ -21,7 +21,8 @@ transport:
   notes: |
     Announcements and replies are sent from and to UDP port 5678; a request
     may come from any source port. Announcements go to the IPv4 limited
-    broadcast and, when the interface has IPv6, to ff02::1. See
+    broadcast and may also go to ff02::1; having IPv6 does not guarantee an
+    IPv6 copy (a boot announcement can be IPv4 only). See
     profiles/mndp/profile.yaml `transport` for when each copy is sent.
 
 endian-policy: |
@@ -74,8 +75,12 @@ framing-rule:
     form a whole record (including a record whose length runs past the
     end), is malformed.
   receiver-behavior: |
-    RouterOS drops a malformed datagram whole: no reply to it and no
-    neighbor row for its sender, even when it starts with a valid request.
+    RouterOS dropped every malformed form tested whole: no reply to it and
+    no neighbor row for its sender, even when it started with a valid
+    request. The forms tested were shorter than a header (empty, 3 bytes),
+    or had bytes left over that do not form a whole TLV header (1 to 4
+    trailing bytes). A complete TLV header whose length runs past the end
+    was not sent to a router; a decoder still treats it as malformed.
   confidence: observed-only
   versions-seen: ["6.49.23", "7.17.2", "7.18.2", "7.20.8", "7.26beta5"]
   evidence:
