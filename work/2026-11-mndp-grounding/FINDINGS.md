@@ -159,7 +159,12 @@ announcement (Ethernet source `02:4d:4e:44:5c:01`, TLV 1
 `02:66:66:66:66:66`, TLV 17 `192.168.77.200`, IP source `.131`) was listed
 by 7.26beta5 and 7.17.2 as `mac-address=02:4D:4E:44:5C:01
 address4=192.168.77.200`. A packet with no TLV 17 was listed with its IP
-source address. A receiver on a UDP socket cannot see the Ethernet source,
+source address; that was seen for the station's own packets only. Every
+real router announcement without TLV 17 in the hub session (9 IPv4
+frames from 6.49.23, 7.20.8 and 7.26beta5, at 2–47 s uptime) came from
+`0.0.0.0`, so the fallback gives no usable address there
+([routeros-skills#61](https://github.com/tikoci/routeros-skills/issues/61)).
+A receiver on a UDP socket cannot see the Ethernet source,
 so TLV 1 is the best it has. On real routers the two match.
 
 ### Requests

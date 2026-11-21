@@ -587,13 +587,23 @@ tlvs:
     notes: |
       Left out when the interface has no IPv4 address, including the first
       announcements after boot. The 7.24.6 and 7.25 lab CHRs had none on the
-      link, so they sent no TLV 17. A receiver lists a datagram without
-      TLV 17 under its IP source address.
+      link, so they sent no TLV 17. A receiver listed a datagram without
+      TLV 17 under its IP source address, but that was seen only for a
+      host's packets: the hub station's bare 00000000 requests and its
+      spoofed announcement. Every real router announcement without TLV 17
+      on the IPv4 copy was sent from 0.0.0.0 (9 frames: 6.49.23, 7.20.8 and
+      7.26beta5, 2–47 s of uptime), so the IP source gives a receiver no
+      usable address in that state. Whether a router ever omits TLV 17
+      while sending from a usable IPv4 source is not known.
     evidence:
       - source: code
         ref: "Wireshark packet-mndp.c type 17 IPv4-Address"
       - source: sample
         ref: "hub lab spoofed announcement and no-TLV-17 case; see work/2026-11-mndp-grounding/evidence/hub-session-2026-11-16.json → anchors"
+      - source: sample
+        ref: "IPv4 announcements without TLV 17, all from source 0.0.0.0; see work/2026-11-mndp-grounding/evidence/hub-session-2026-11-16.json → frames, and https://github.com/tikoci/routeros-skills/issues/61"
+      - source: sample
+        ref: "a host's bare 00000000 requests listed under the host's IPv4; see work/2026-11-mndp-grounding/evidence/requests-fresh.json"
   18:
     name: running
     neighbor-field: running
@@ -1002,4 +1012,5 @@ open-questions:
   - "The reply delay's real bound."
   - "When the old pending announcement fires after discover-interval is shortened."
   - "The receiver's expiry timing: why removal lags the TTL by up to about 20 s."
+  - "Why routers send announcements without TLV 17 from 0.0.0.0 (likely no IPv4 address on the interface yet), and whether any case omits TLV 17 with a usable IPv4 source: https://github.com/tikoci/m2ir/issues/3."
   - "The packed-frame format (EtherType 0x9000): https://github.com/tikoci/m2ir/issues/3."
