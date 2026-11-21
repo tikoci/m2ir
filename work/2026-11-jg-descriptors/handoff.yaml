@@ -1,0 +1,38 @@
+# cspell:ignore jsproxy webfig typevalue multibignumber multiraw quickchr
+# Declared-schema-first plan: progress handoff. Read plan.md first.
+plan: work/2026-11-jg-descriptors/plan.md
+approved: 2026-11-21
+decisions:
+  - "Typed field identity (step 0) lands before any .jg promotion (user, 2026-11-21)."
+  - "WebFig instrumentation (step 3) is tried before the MITM proxy (user, 2026-11-21)."
+  - "Step 3 uses a headless browser with sessionStorage seeded (name/password) and a hook above the Session cipher; a Bun-native JSProxy client is deferred because it would be our client, not MikroTik's."
+steps:
+  0-typed-identity: done
+  1-promote-jg: queued
+  2-conversation-census: queued
+  3-webfig-instrumentation: queued
+  4-acceptance-bridge: queued
+  5-mitm-proxy: queued
+open:
+  conflicts-before-promotion:
+    - "routerboard [24,17] f1/f4 look like non-CHR license [65] s1/u4 (typed diff: f1 is type-differs, YAML string vs .jg u1 Baud Rate)"
+    - "license [65] f12: RESOLVED by typed identity: YAML nlevel (u) = CHR uc Level; sc Serial Number is a separate attribute (non-CHR)"
+    - "boot-flags [24,10] f1: .jg 'Multi CPU' (x86, 6.49.23 only) vs exists(DISABLE_SMP); polarity"
+    - "policy-catalog [13,3] f1/f2: .jg Name/Alias vs YAML description/policy-name"
+  evidence-source-for-jg: "decided: source: doc (vendor-authored, machine-readable declaration served by the router); WebFig JS is source: code. Revisit at review if you disagree."
+  leads:
+    - ".jg declares Q (u64 array, 0x90) fields on [20,0] interface stats (multibignumber, 148 on 7.25) and R (raw array, 0xb0) fields (multiraw). physical/nv-message.yaml calls 0x90 declared-unwired and has no 0xb0 entry. Confirm on the wire with a native [20,0] stats read."
+lab:
+  chr: "quickchr twin3 (7.25), ws3c6 (6.49.23), winbox-beta4 (7.26beta4); stop after use"
+  raw-assets: "scratch only (.jg, WebFig JS); never commit"
+step0-record:
+  date: 2026-11-21
+  changed:
+    - "physical/nv-message.yaml: type_class / is_array / typed_key derived fields; 0x80/0x90 descriptor leads; new 0xb0 bytes_array (descriptor-only)"
+    - "profiles/winbox-ipc/profile.yaml: key-id.typed-identity + type-letters; full-key-is-canonical belief superseded"
+    - "profiles/winbox-ipc/gui-handlers.yaml: interface namespace-user 16 -> variants u region-revision / s region-name"
+    - "src/tooling/lint-yaml.ts: handler field checks (tcode spelling -> letter, variants keyed by letter) + tests"
+    - "work/2026-11-winbox-attributes/harness/schema-names.ts: typeLetter(), typedRoutes, resolveRouteField(route, key, tcode?) -> type-ambiguous without tcode; namespace-1 now loaded + tests"
+    - "work/2026-11-jg-descriptors/jg-diff.ts: typed matching, type-differs class"
+    - "GLOSSARY.txt: typed-key and .jg vocabulary"
+  gates: "bun run lint green; bun run test 555/0; harness tests 64/0; cspell clean on touched files"

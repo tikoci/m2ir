@@ -137,3 +137,66 @@ describe("validateYamlDocument", () => {
 		expect(errors[0]).toContain('"bad"');
 	});
 });
+
+describe("handler field typed identity", () => {
+	const withField = (entry: unknown) => ({
+		handlers: {
+			h: { "sys-to": [20, 0], fields: { "namespace-user": { 16: entry } } },
+		},
+	});
+
+	test("accepts a two-variant field keyed by type letter", () => {
+		const doc = withField({
+			variants: {
+				u: { name: "region-revision", tcode: "u32" },
+				s: { name: "region-name", tcode: "string" },
+			},
+		});
+		expect(validateYamlDocument(doc, "g.yaml")).toEqual([]);
+	});
+
+	test("rejects a variant whose tcode is another type letter", () => {
+		const doc = withField({
+			variants: {
+				u: { name: "a", tcode: "string" },
+				s: { name: "b", tcode: "string" },
+			},
+		});
+		const errors = validateYamlDocument(doc, "g.yaml");
+		expect(errors).toHaveLength(1);
+		expect(errors[0]).toContain("variants.u.tcode");
+	});
+
+	test("rejects a non-letter variant key, a single variant, and name next to variants", () => {
+		expect(
+			validateYamlDocument(
+				withField({ variants: { int: { name: "a" }, s: { name: "b" } } }),
+				"g.yaml",
+			)[0],
+		).toContain('"int" is not a type letter');
+		expect(
+			validateYamlDocument(
+				withField({ variants: { u: { name: "a" } } }),
+				"g.yaml",
+			)[0],
+		).toContain("at least two");
+		expect(
+			validateYamlDocument(
+				withField({
+					name: "x",
+					variants: { u: { name: "a" }, s: { name: "b" } },
+				}),
+				"g.yaml",
+			)[0],
+		).toContain("not allowed next to variants");
+	});
+
+	test("rejects an unknown tcode spelling on a plain field", () => {
+		const errors = validateYamlDocument(
+			withField({ name: "x", tcode: "int32" }),
+			"g.yaml",
+		);
+		expect(errors).toHaveLength(1);
+		expect(errors[0]).toContain('unknown tcode "int32"');
+	});
+});

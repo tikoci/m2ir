@@ -119,9 +119,41 @@ compact-pairs:
 key-id:
   formula: "(namespace << 16) | (key_high << 8) | key_low"
   notes: |
-    The 24-bit "full key" is the canonical identifier in cross-tool tables.
     Cisco-Talos's dispatch tables, MarginResearch write-ups, and this
-    repo's sys-keys.yaml/std-keys.yaml all key by full_key.
+    repo's sys-keys.yaml/std-keys.yaml key by the 24-bit full key. That
+    is safe for SYS_* and STD_* keys, which each have one type. Handler
+    fields are identified by the typed key (physical/nv-message.yaml
+    typed_key): the same full key can carry two attributes of different
+    types in one message. In gui-handlers.yaml a field number with more
+    than one type is written as `variants:` keyed by type letter.
+  typed-identity:
+    rule: "attribute = (full_key, type_class, is_array); a field number alone is ambiguous"
+    confidence: observed-only
+    type-letters:
+      role: |
+        RouterOS writes a typed key as one letter plus the hex full key,
+        for example u10006 = u32 0x010006 and sfe0010 = string 0xfe0010.
+        Lowercase is a scalar and uppercase is an array of that class.
+        The same spelling appears in the router-served UI descriptors
+        (.jg) and in WebFig's message objects (Uff0001 = SYS_TO,
+        uff0007 = SYS_CMD).
+      letters: { b: bool, u: u32, q: u64, a: bytes16, s: string, m: msg, r: bytes }
+      arrays: { B: bool_array, U: u32_array, Q: u64_array, A: bytes16_array, S: string_array, M: msg_array, R: bytes_array }
+      confidence: documented
+      evidence:
+        - source: doc
+          ref: "RouterOS 6.49.23/7.25/7.26beta4 .jg descriptors served at /webfig/<name>.jg; see work/2026-11-jg-descriptors/README.md"
+        - source: code
+          ref: "RouterOS 7.25 WebFig master.js: SYS_TO='Uff0001', SYS_CMD='uff0007', STD_ID='ufe0001', STD_NAME='sfe0010'; see work/2026-11-jg-descriptors/plan.md"
+  revision-history:
+    - date: 2026-11-21
+      belief: "the 24-bit full key is the canonical identifier for every attribute"
+      outcome: superseded
+      evidence:
+        - source: sample
+          ref: "7.25 bridge row on [20,0]: 0x000010 as u32 and as string in one message"
+        - source: doc
+          ref: "RouterOS .jg Bridge dialog: u10 Region Revision, s10 Region Name"
 
 # ── classification ──────────────────────────────────────────────────────
 classification:

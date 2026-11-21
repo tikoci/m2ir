@@ -419,7 +419,16 @@ handlers:
         4: { name: unknown-4, tcode: u32, role: "OPEN — bridge-row-only: 300 (t=0x08); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
         5: { name: unknown-5, tcode: u32, role: "OPEN — 15 on bridge rows (t=0x09); vrf-interface row carries \"vrf1\" (t=0x21, `050000210476726631`); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
         8: { name: unknown-8, tcode: u32, role: "OPEN — bridge-row-only: 20 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
-        16: { name: unknown-16, tcode: u32, role: "OPEN — bridge-row-only, carried TWICE in one row: u32 0 (`1000000900`) AND string '' (`1000002100`); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
+        16:
+          role: "two attributes sharing field number 16 on bridge rows (typed identity, see profile.yaml key-id.typed-identity); absent on ether/lo; v6 bridge cell unobserved"
+          variants:
+            u: { name: region-revision, tcode: u32, cli-alias: "/interface/bridge region-revision", role: "MSTP region revision; observed 0 (`1000000900`) on the 7.25 bridge row; named by the .jg Bridge dialog (u10)" }
+            s: { name: region-name, tcode: string, cli-alias: "/interface/bridge region-name", role: "MSTP region name; observed '' (`1000002100`) on the 7.25 bridge row; named by the .jg Bridge dialog (s10)" }
+          evidence:
+            - source: sample
+              ref: "7.25 bridge row GETALL [20,0]: both entries in one row; see work/2026-10-chr-extraction/ws3c-prober-findings.md"
+            - source: doc
+              ref: "RouterOS 6.49.23/7.25/7.26beta4 roteros.jg Bridge dialog (typevalue=12): u10 'Region Revision', s10 'Region Name'; see work/2026-11-jg-descriptors/README.md"
         19: { name: unknown-19, tcode: u32, role: "OPEN — bridge-row-only: 20 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
         100: { name: unknown-100, tcode: u32, role: "OPEN — bridge-row-only: 2 (t=0x09); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
         101: { name: unknown-101, tcode: bool, role: "OPEN — bridge-row-only: true (t=0x01); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
@@ -624,8 +633,8 @@ handlers:
       fast counter, NOT uptime; writer unknown). The -4 pattern
       (0x01000c/0x2f/0x3a = 4294967292) is ether-only; bridge
       rows join lo at 0. One bridge row carries 0x000010 TWICE
-      (u32 0 AND string '') — another shape-not-canonical data
-      point. Per-row wire order is boot-stable (identical
+      (u32 0 AND string '') — resolved 2026-11-21 as two attributes
+      (region-revision u32, region-name string; typed identity). Per-row wire order is boot-stable (identical
       across all 3 in-session boots, both rows, pairwise) but
       differs from the older WS-3C capture (lo {1046,1002}
       swap) — mechanism unknown, with no wider claim. [20,0] rowids

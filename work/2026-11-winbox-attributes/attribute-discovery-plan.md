@@ -52,7 +52,10 @@ session crypto. Findings notes are a trail, and can contain superseded claims.
 
 ## Source strategy
 
-Use three complementary sources, preserving disagreements:
+Use three complementary sources, preserving disagreements. Since
+2026-11-21, router-served `.jg` UI descriptors come first for field
+names, types and enums; the three below confirm and extend them. See
+[`../2026-11-jg-descriptors/plan.md`](../2026-11-jg-descriptors/plan.md).
 
 - **Rosetta and CLI reference:** names, descriptions, candidate types,
   conditional arguments, defaults, enums, access hints, and command paths.

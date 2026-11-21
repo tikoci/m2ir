@@ -14,6 +14,7 @@ import {
 	resolveCommandName,
 	resolveKeyName,
 	resolveRouteField,
+	typeLetter,
 } from "../schema-names.ts";
 
 const bx = (hex: string): Uint8Array => new Uint8Array(Buffer.from(hex, "hex"));
@@ -205,5 +206,55 @@ describe("pilot replay from hand bytes", () => {
 				expect(checkTcode(e.fullKey, e.tcode).agree).not.toBe(false);
 			}
 		}
+	});
+});
+
+describe("typed field identity", () => {
+	test("type letters follow physical type_class and is_array", () => {
+		const cases: Record<number, string> = {
+			0: "b",
+			1: "b",
+			8: "u",
+			9: "u",
+			16: "q",
+			24: "a",
+			32: "s",
+			33: "s",
+			40: "m",
+			41: "m",
+			48: "r",
+			49: "r",
+			128: "B",
+			136: "U",
+			144: "Q",
+			152: "A",
+			160: "S",
+			168: "M",
+			176: "R",
+		};
+		for (const [t, letter] of Object.entries(cases))
+			expect(typeLetter(Number(t))).toBe(letter);
+	});
+
+	test("bridge field 16 resolves by type, and is ambiguous without one", () => {
+		expect(resolveRouteField([20, 0], 0x000010, 0x09)).toMatchObject({
+			name: "region-revision",
+		});
+		expect(resolveRouteField([20, 0], 0x000010, 0x08)).toMatchObject({
+			name: "region-revision",
+		});
+		expect(resolveRouteField([20, 0], 0x000010, 0x21)).toMatchObject({
+			name: "region-name",
+		});
+		expect(resolveRouteField([20, 0], 0x000010)).toMatchObject({
+			name: null,
+			reason: "type-ambiguous",
+		});
+	});
+
+	test("namespace-1 interface fields load", () => {
+		expect(resolveRouteField([20, 0], 0x010006)).toMatchObject({
+			name: "name",
+		});
 	});
 });
