@@ -72,6 +72,8 @@ interface Tlv extends Scoped {
 	"neighbor-field": string | null;
 	encoding: string;
 	length: number | "any";
+	"emit-length"?: number;
+	"accepted-lengths-seen"?: number[];
 	in: Kind[];
 	repeat?: boolean;
 	since?: string;
@@ -501,6 +503,44 @@ describe("MNDP schema shape", () => {
 
 	test("the recommended request satisfies the request rule", () => {
 		expect(isRequest(profile.requests.recommended.hex)).toBe(true);
+	});
+
+	test("TLV lengths in documented request forms pass the YAML's length rules", () => {
+		const accepts = (t: Tlv, n: number) => t.length === "any" || t.length === n;
+		const seen = new Map<number, Set<number>>();
+		for (const form of profile.requests.forms) {
+			const d = parseDatagram(form.hex);
+			if (!d) continue;
+			for (const r of d.records) {
+				const t = profile.tlvs[r.type];
+				if (!t) continue; // e.g. type 0 in "header 0 + empty TLV 0"
+				const where = `${form.hex} TLV ${r.type}`;
+				expect(accepts(t, r.value.length), where).toBe(true);
+				if (form.replies)
+					seen.set(r.type, (seen.get(r.type) ?? new Set()).add(r.value.length));
+			}
+		}
+		// accepted-lengths-seen is exactly the lengths in forms that drew replies.
+		let checked = 0;
+		for (const [type, t] of Object.entries(profile.tlvs)) {
+			if (!t["accepted-lengths-seen"]) continue;
+			checked++;
+			expect([...t["accepted-lengths-seen"]].sort(), `TLV ${type}`).toEqual(
+				[...(seen.get(Number(type)) ?? [])].sort(),
+			);
+		}
+		expect(checked).toBeGreaterThan(0);
+		// The recommended request uses each TLV's emit-length.
+		const rec = mustParse(profile.requests.recommended.hex);
+		for (const r of rec.records) {
+			const t = profile.tlvs[r.type];
+			if (t?.["emit-length"] !== undefined)
+				expect(r.value.length, `recommended TLV ${r.type}`).toBe(
+					t["emit-length"],
+				);
+			if (t && t["emit-length"] !== undefined)
+				expect(accepts(t, t["emit-length"])).toBe(true);
+		}
 	});
 
 	test("every documented request form agrees with the request rule", () => {

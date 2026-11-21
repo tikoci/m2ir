@@ -180,7 +180,9 @@ header:
 # ── TLVs ─────────────────────────────────────────────────────────────────
 # Keyed by TLV type. `name` is m2ir's identifier; `neighbor-field` is the
 # /ip/neighbor field RouterOS 7.26beta5 prints for it (null when none).
-# `length` is the value length in bytes, or `any`. `in` lists the datagram
+# `length` is the value length a decoder accepts, in bytes, or `any`; when
+# a sender should use one specific length that `length` does not pin down,
+# `emit-length` gives it. `in` lists the datagram
 # kinds that carry the TLV: announcement, request, dying-gasp. `repeat`
 # is true when one datagram can carry the TLV more than once. `since` is
 # the first version seen sending it, when older versions did not.
@@ -267,8 +269,9 @@ tlvs:
   6:
     name: request
     neighbor-field: null
-    encoding: empty
-    length: 0
+    encoding: bytes
+    length: any
+    emit-length: 0
     accepted-lengths-seen: [0, 1]
     in: [request]
     confidence: observed-only
@@ -277,8 +280,10 @@ tlvs:
       "Send your announcement now". Never seen in an announcement. Any
       well-formed datagram that carries it draws replies, whatever the header,
       and a 7.x receiver does not list its sender as a neighbor. Send it
-      empty, as in the recommended request; receivers ignore a value (a
-      1-byte value, 000000000006000100, also drew replies). See `requests`.
+      empty (`emit-length: 0`), as in the recommended request. Receivers
+      ignore the value, so a decoder accepts any length: a 1-byte value
+      (000000000006000100) also drew replies; longer values were not
+      tried. See `requests`.
     evidence:
       - source: sample
         ref: "hub lab request forms; see work/2026-11-mndp-grounding/evidence/requests-forms.json and requests-fresh.json"
