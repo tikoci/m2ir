@@ -118,7 +118,8 @@ here remains the shared source of protocol knowledge.
 | [M2 wire grammar](physical/nv-message.yaml) | Headers, types, compact encodings, and nested messages |
 | [WinBox IPC](profiles/winbox-ipc/) | Transport, EC-SRP5 authentication, session encryption, system/session keys, commands, errors, processes, and selected GUI handlers; see the profile guide for coverage counts |
 | [The Dude on disk](profiles/dude-on-disk/) | Initial object-class and field catalogs, with upstream cross-checks |
-| [WinBox CDB](profiles/winbox-cdb/) and [MNDP](profiles/mndp/) | Planned profiles; currently placeholders |
+| [MNDP](profiles/mndp/) | Datagram grammar, TLVs 1–19 with version scope, requests, layout by version, and timing, grounded on RouterOS 6.49 to 7.26beta5 |
+| [WinBox CDB](profiles/winbox-cdb/) | Planned profile; currently a placeholder |
 | [Cross-profile concepts](concepts/) | Planned semantic identities shared between profiles |
 
 Coverage is incremental. A populated schema is not a claim that an entire

@@ -12,5 +12,7 @@ Two grammars:
   via tcodes 0x28/0x29/0xa8, and the split between the LE-internal and
   BE-framing-only parts. Drained from
   `profiles/winbox-ipc/strawman/winbox-m2.ksy`.
-- `mndp.yaml` — entirely separate TLV grammar (BE u16 tag/length).
-  Placeholder until the MNDP profile is drained.
+- [`mndp.yaml`](mndp.yaml) — the MNDP datagram grammar: a 4-byte header,
+  then BE u16 type/length records to the exact end of the payload, plus
+  the value encodings. Used by `profiles/mndp/`. Promoted from
+  `work/2026-11-mndp-grounding/FINDINGS.md`.

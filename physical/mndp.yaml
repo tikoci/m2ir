@@ -1,0 +1,136 @@
+# MNDP datagram grammar — profile-agnostic wire format
+#
+# The byte grammar of a MikroTik Neighbor Discovery Protocol datagram:
+# a 4-byte header, then type-length-value records until the end of the
+# UDP payload. Not an nv::message variant: no "M2" magic, no tcode byte,
+# and the TLV header is big-endian.
+#
+# Naming is the profile's job. profiles/mndp/profile.yaml names the
+# header, binds TLV types to fields and value encodings, and records the
+# version scope and confidence of each. Promoted from
+# work/2026-11-mndp-grounding/FINDINGS.md, which stays as the evidence.
+---
+m2ir-version: 0.1
+schema-version: 0.1
+
+id: mndp
+title: MNDP datagram grammar
+transport:
+  protocol: udp
+  port: 5678
+  notes: |
+    Announcements and replies are sent from and to UDP port 5678; a request
+    may come from any source port. Announcements go to the IPv4 limited
+    broadcast and may also go to ff02::1; having IPv6 does not guarantee an
+    IPv6 copy (a boot announcement can be IPv4 only). See
+    profiles/mndp/profile.yaml `transport` for when each copy is sent.
+
+endian-policy: |
+  The TLV header (type and length) is big-endian. Value byte order is per
+  TLV and set by the profile: addresses are in network order, uptime is
+  little-endian, and aggregated-size is little-endian on x86_64 senders
+  and unverified on every other architecture. The 4-byte
+  datagram header is in the SENDER's CPU byte order, so a receiver cannot
+  pick one fixed order for it.
+
+confidence: documented
+notes: |
+  The record grammar (u16be type, u16be length, value) is documented by
+  the Wireshark dissector and MAC-Telnet and holds in every lab and field
+  capture. The datagram-end rule under `framing-rule` is observed only.
+evidence:
+  - source: code
+    ref: "Wireshark MNDP dissector (TLV header: u16be type, u16be length)"
+    url: "https://github.com/wireshark/wireshark/blob/ffc784d8541ac6bfb038d2186195252603d1f602/epan/dissectors/packet-mndp.c"
+  - source: code
+    ref: "MAC-Telnet protocol.c mndp_add_attribute / parse_mndp (type and length converted to and from network byte order)"
+    url: "https://github.com/haakonnessjoen/MAC-Telnet/blob/de620882c73e235ab319f3cb55481888d7d8f71d/src/protocol.c#L272-L330"
+  - source: code
+    ref: "MAC-Telnet protocol.h struct mt_mndp_hdr (4-byte header)"
+    url: "https://github.com/haakonnessjoen/MAC-Telnet/blob/de620882c73e235ab319f3cb55481888d7d8f71d/src/protocol.h#L82-L87"
+  - source: sample
+    ref: "m2ir MNDP grounding lab, 6.49.23 to 7.26beta5 CHRs plus a sanitized field capture; see work/2026-11-mndp-grounding/FINDINGS.md"
+
+# ── datagram ─────────────────────────────────────────────────────────────
+structure:
+  datagram:
+    seq:
+      - name: header
+        size: 4
+        role: "profile-defined; profiles/mndp names it the announcement counter"
+        profile-naming: required
+      - name: records
+        kind: tlv
+        repeat: eos
+  tlv:
+    seq:
+      - { name: type, width: u16be }
+      - { name: length, width: u16be, role: "byte count of `value`; may be 0" }
+      - { name: value, size: "length" }
+
+framing-rule:
+  rule: |
+    The records must end exactly at the end of the UDP payload. A datagram
+    shorter than the 4-byte header, or with bytes left over that do not
+    form a whole record (including a record whose length runs past the
+    end), is malformed.
+  # What RouterOS did with the malformed forms the lab sent. Each claim is
+  # limited to its own sample; a complete TLV header whose length runs past
+  # the end was never sent to a router (a decoder still treats it as
+  # malformed).
+  receiver-behavior:
+    replies: |
+      No router answered any malformed form, even one that started with a
+      valid request. Forms: shorter than a header (empty, 3 bytes), and 1 or
+      3 bytes left after the last complete TLV. Six routers (6.49.23 to
+      7.26beta5), requests-forms.json and requests-main-run2.json.
+    neighbor-row: |
+      No 7.x receiver created a neighbor row for a never-seen sender of
+      000000000000000000, 000000000006000000 or 0000000000 (one byte after
+      the last complete TLV). Five 7.x receivers, requests-fresh.json. Other
+      malformed forms, and 6.49.23, were not checked.
+  confidence: observed-only
+  versions-seen: ["6.49.23", "7.17.2", "7.18.2", "7.20.8", "7.26beta5"]
+  evidence:
+    - source: sample
+      ref: "hub lab request forms, 3 shuffled rounds × six routers; see work/2026-11-mndp-grounding/evidence/requests-forms.json and FINDINGS.md → Requests"
+
+# ── value encodings ──────────────────────────────────────────────────────
+# The closed set of encodings profiles/mndp binds TLVs to. `size` is the
+# value length in bytes; `null` means any length.
+value-encodings:
+  empty:
+    size: 0
+    role: "presence flag; the record carries no value bytes"
+  u8:
+    size: 1
+    role: "unsigned 8-bit integer"
+  u32-sender-order:
+    size: 4
+    endian: sender
+    role: "unsigned 32-bit integer in the sending CPU's byte order (LE on x86 and ARM, BE on MIPSBE); used only by the datagram header"
+  u32le:
+    size: 4
+    endian: le
+    role: "unsigned 32-bit integer, little-endian"
+  mac48:
+    size: 6
+    role: "Ethernet MAC address, transmission order"
+  ipv4:
+    size: 4
+    endian: be
+    role: "IPv4 address, network order"
+  ipv6:
+    size: 16
+    endian: be
+    role: "IPv6 address, network order"
+  text:
+    size: null
+    body: utf8
+    role: "UTF-8 bytes, not NUL-terminated, no length prefix beyond the TLV length"
+  bytes:
+    size: null
+    role: "raw bytes, no interpretation; used where the byte order is not known for every sender (the profile gives the length)"
+  bitmask-u8:
+    size: 1
+    role: "one byte of flag bits; the profile names each bit"

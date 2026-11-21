@@ -1,9 +1,11 @@
 # MNDP wire map: grounded findings (2026-11-15, requests 2026-11-16)
 
-Findings from the MNDP grounding lab, kept in `work/` until an MNDP
-schema exists to promote them into (see [`AGENTS.md`](../../AGENTS.md)).
-[`README.md`](README.md) holds the method, harness and evidence index.
-[`profiles/mndp/`](../../profiles/mndp/README.md) points here.
+Findings from the MNDP grounding lab. They have been promoted into the
+canonical YAML, [`physical/mndp.yaml`](../../physical/mndp.yaml) and
+[`profiles/mndp/profile.yaml`](../../profiles/mndp/profile.yaml); this file
+stays as the long-form evidence behind it. Change the YAML first when a
+finding changes. [`README.md`](README.md) holds the method, harness and
+evidence index.
 
 ## Sources
 

@@ -1,0 +1,50 @@
+{
+	"provenance": {
+		"generator": "work/2026-11-mndp-grounding/make-fixtures.ts",
+		"notes": "TLV 19 of the subject's last announcement in each discover-interval step."
+	},
+	"records": [
+		{
+			"id": "interval-5s",
+			"source": "work/2026-11-mndp-grounding/evidence/ttl-7.26beta5.json steps[interval-5s] announcements[t=4914]",
+			"discoverIntervalSeconds": 5,
+			"ttl": 21
+		},
+		{
+			"id": "interval-7s",
+			"source": "work/2026-11-mndp-grounding/evidence/ttl-7.26beta5.json steps[interval-7s] announcements[t=16915]",
+			"discoverIntervalSeconds": 7,
+			"ttl": 29
+		},
+		{
+			"id": "interval-60s",
+			"source": "work/2026-11-mndp-grounding/evidence/ttl-7.26beta5.json steps[interval-60s] announcements[t=23915]",
+			"discoverIntervalSeconds": 60,
+			"ttl": 241
+		},
+		{
+			"id": "interval-64s",
+			"source": "work/2026-11-mndp-grounding/evidence/ttl-7.26beta5.json steps[interval-64s] announcements[t=25963]",
+			"discoverIntervalSeconds": 64,
+			"ttl": 255
+		},
+		{
+			"id": "interval-300s",
+			"source": "work/2026-11-mndp-grounding/evidence/ttl-7.26beta5.json steps[interval-300s] announcements[t=32087]",
+			"discoverIntervalSeconds": 300,
+			"ttl": 255
+		},
+		{
+			"id": "interval-9h",
+			"source": "work/2026-11-mndp-grounding/evidence/ttl-7.26beta5.json steps[interval-9h] announcements[t=37525]",
+			"discoverIntervalSeconds": 32400,
+			"ttl": 255
+		},
+		{
+			"id": "interval-5s-again",
+			"source": "work/2026-11-mndp-grounding/evidence/ttl-7.26beta5.json steps[interval-5s-again] announcements[t=43542]",
+			"discoverIntervalSeconds": 5,
+			"ttl": 21
+		}
+	]
+}

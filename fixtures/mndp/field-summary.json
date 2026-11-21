@@ -1,0 +1,546 @@
+{
+	"provenance": {
+		"generator": "work/2026-11-mndp-grounding/make-fixtures.ts",
+		"copiedFrom": "work/2026-11-mndp-grounding/evidence/field-summary.json",
+		"source": "RouterOS /tool/sniffer pcapng on a 7.26beta5 RB1100Dx4 (filter udp/5678), ~35 s, 2026-11-15; neighbors on Ethernet, VLAN, EoIP and ZeroTier links. Sanitized: no identities, MACs, software-ids, addresses or interface names."
+	},
+	"rows": [
+		{
+			"version": "6.49.21 (long-term)",
+			"board": "RBcAPGi-5acD2nD",
+			"arch": "ARM 32bit",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,17",
+			"header": {
+				"hex": "f8860000",
+				"uptimePerCountLE": 59.97,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "00",
+			"tlv18": null,
+			"tlv19": null,
+			"tlv15Count": 0,
+			"tlv17Count": 1,
+			"interfaceShape": "bridge/port",
+			"neighborRow": {
+				"ipv6": "false",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.6 (stable) Oct/17/2022 10:55:40",
+			"board": "RBcAPGi-5acD2nD",
+			"arch": "ARM 32bit",
+			"platformIsMikroTik": false,
+			"tlvOrder": "1,5,7,8,10,11,12,14,15,16,17",
+			"header": {
+				"hex": "1a2f0000",
+				"uptimePerCountLE": 59.34,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": null,
+			"tlv19": null,
+			"tlv15Count": 1,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.6 (stable) Oct/17/2022 10:55:40",
+			"board": "RBcAPGi-5acD2nD",
+			"arch": "ARM 32bit",
+			"platformIsMikroTik": false,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,17",
+			"header": {
+				"hex": "2a2f0000",
+				"uptimePerCountLE": 59.26,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": null,
+			"tlv19": null,
+			"tlv15Count": 0,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.6 (stable) Oct/17/2022 10:55:40",
+			"board": "RBwAPG-5HacD2HnD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,15,16,17",
+			"header": {
+				"hex": "1e0a0000",
+				"uptimePerCountLE": 60.01,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": null,
+			"tlv19": null,
+			"tlv15Count": 1,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.6 (stable) Oct/17/2022 10:55:40",
+			"board": "RBwAPG-5HacD2HnD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,17",
+			"header": {
+				"hex": "210a0000",
+				"uptimePerCountLE": 59.94,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": null,
+			"tlv19": null,
+			"tlv15Count": 0,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.11 (stable) Aug/15/2023 06:33:51",
+			"board": "RBwAPGR-5HacD2HnD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,17",
+			"header": {
+				"hex": "2d2f0000",
+				"uptimePerCountLE": 59.25,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": null,
+			"tlv19": null,
+			"tlv15Count": 0,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.11beta6 (development) Jul/18/2023 11:06:26",
+			"board": "C52iG-5HaxD2HaxD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,17",
+			"header": {
+				"hex": "ef000000",
+				"uptimePerCountLE": 60.81,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": null,
+			"tlv19": null,
+			"tlv15Count": 0,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.12.1 (stable) Nov/17/2023 11:38:45",
+			"board": "RB5009UPr+S+",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,17",
+			"header": {
+				"hex": "6e1b0000",
+				"uptimePerCountLE": 59.84,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": null,
+			"tlv19": null,
+			"tlv15Count": 0,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.12.1 (stable) Nov/17/2023 11:38:45",
+			"board": "C53UiG+5HPaxD2HPaxD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,17",
+			"header": {
+				"hex": "50ab0400",
+				"uptimePerCountLE": 57.89,
+				"uptimePerCountBE": 0.01
+			},
+			"tlv14": "01",
+			"tlv18": null,
+			"tlv19": null,
+			"tlv15Count": 0,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.12.1 (stable) Nov/17/2023 11:38:45",
+			"board": "RBwAPGR-5HacD2HnD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,17",
+			"header": {
+				"hex": "3d2f0000",
+				"uptimePerCountLE": 59.17,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": null,
+			"tlv19": null,
+			"tlv15Count": 0,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.19.4 (stable) 2025-07-28 10:00:16",
+			"board": "C52iG-5HaxD2HaxD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,15,16,17",
+			"header": {
+				"hex": "e66e0000",
+				"uptimePerCountLE": 29.83,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": null,
+			"tlv19": null,
+			"tlv15Count": 1,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.20 (stable) 2025-09-29 09:33:57",
+			"board": "cAPGi-5HaxD2HaxD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,15,16,17,18",
+			"header": {
+				"hex": "d74b0000",
+				"uptimePerCountLE": 29.95,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": "00",
+			"tlv19": null,
+			"tlv15Count": 1,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.21.3 (stable) 2026-02-12 13:10:04",
+			"board": "C53UiG+5HPaxD2HPaxD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,17,18",
+			"header": {
+				"hex": "dcf60400",
+				"uptimePerCountLE": 29.22,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "00",
+			"tlv18": "00",
+			"tlv19": null,
+			"tlv15Count": 0,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "false",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.23beta4 (development) 2026-03-25 14:31:01",
+			"board": "RB924iR-2nD-BT5&BG77",
+			"arch": "MIPSBE",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,17,18",
+			"header": {
+				"hex": "0007697d",
+				"uptimePerCountLE": 0,
+				"uptimePerCountBE": 4.96
+			},
+			"tlv14": "00",
+			"tlv18": "00",
+			"tlv19": null,
+			"tlv15Count": 0,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "false",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.24.5 (stable) 2026-09-29 14:21:27",
+			"board": "L009UiGS-2HaxD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,18,19,17,15,15",
+			"header": {
+				"hex": "47a10100",
+				"uptimePerCountLE": 28.99,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": "01",
+			"tlv19": "79",
+			"tlv15Count": 2,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": "capsman",
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.24.5 (stable) 2026-09-29 14:21:27",
+			"board": "SXTsq-5axD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,18,19,17,15,15",
+			"header": {
+				"hex": "f8a70100",
+				"uptimePerCountLE": 28.53,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": "00",
+			"tlv19": "79",
+			"tlv15Count": 2,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.24.5 (stable) 2026-09-29 14:21:27",
+			"board": "C53UiG+5HPaxD2HPaxD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,18,19,17,15",
+			"header": {
+				"hex": "bd5d0000",
+				"uptimePerCountLE": 29.82,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": "00",
+			"tlv19": "79",
+			"tlv15Count": 1,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.24.5 (stable) 2026-09-29 14:21:27",
+			"board": "wAPG-5HaxD2HaxD",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,18,19,17,15,15",
+			"header": {
+				"hex": "df0d0000",
+				"uptimePerCountLE": 30,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": "00",
+			"tlv19": "79",
+			"tlv15Count": 2,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.25.1 2026-11-02 12:39:53",
+			"board": "CHR",
+			"arch": "not looked up",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,18,19,17,15",
+			"header": {
+				"hex": "3e050000",
+				"uptimePerCountLE": 29.98,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": "00",
+			"tlv19": "79",
+			"tlv15Count": 1,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.25beta5 2026-09-16 11:11:41",
+			"board": "RB912R-2nD",
+			"arch": "MIPSBE",
+			"platformIsMikroTik": true,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,18,19,17,15",
+			"header": {
+				"hex": "00002358",
+				"uptimePerCountLE": 0,
+				"uptimePerCountBE": 30
+			},
+			"tlv14": "01",
+			"tlv18": "00",
+			"tlv19": "79",
+			"tlv15Count": 1,
+			"tlv17Count": 1,
+			"interfaceShape": "bridge/port",
+			"neighborRow": {
+				"ipv6": "true",
+				"unpack": "none",
+				"running": null,
+				"discovered-by": "mndp"
+			}
+		},
+		{
+			"version": "7.26beta5 2026-10-30 11:13:55",
+			"board": "RB1100Dx4",
+			"arch": "ARM 32bit",
+			"platformIsMikroTik": false,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,18,19,17,15",
+			"header": {
+				"hex": "cbac0000",
+				"uptimePerCountLE": 22.01,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": "00",
+			"tlv19": "29",
+			"tlv15Count": 1,
+			"tlv17Count": 1,
+			"interfaceShape": "bridge/port",
+			"neighborRow": null
+		},
+		{
+			"version": "7.26beta5 2026-10-30 11:13:55",
+			"board": "RB1100Dx4",
+			"arch": "ARM 32bit",
+			"platformIsMikroTik": false,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,18,19,15,15",
+			"header": {
+				"hex": "36830100",
+				"uptimePerCountLE": 9.82,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": "00",
+			"tlv19": "29",
+			"tlv15Count": 2,
+			"tlv17Count": 0,
+			"interfaceShape": "plain",
+			"neighborRow": null
+		},
+		{
+			"version": "7.26beta5 2026-10-30 11:13:55",
+			"board": "RB1100Dx4",
+			"arch": "ARM 32bit",
+			"platformIsMikroTik": false,
+			"tlvOrder": "1,5,7,8,10,11,12,14,16,18,19,17,15,15",
+			"header": {
+				"hex": "dc820100",
+				"uptimePerCountLE": 9.83,
+				"uptimePerCountBE": 0
+			},
+			"tlv14": "01",
+			"tlv18": "00",
+			"tlv19": "29",
+			"tlv15Count": 2,
+			"tlv17Count": 1,
+			"interfaceShape": "plain",
+			"neighborRow": null
+		}
+	]
+}

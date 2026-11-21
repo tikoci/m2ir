@@ -110,7 +110,7 @@ BOOTSTRAP.md        # repo plumbing (cortex.db, hooks, lint, scripts)
 
 physical/           # profile-agnostic wire grammars
   nv-message.yaml   # M2 wire grammar
-  mndp.yaml         # planned, not yet populated
+  mndp.yaml         # MNDP datagram grammar
 
 concepts/           # cross-profile semantic identity (placeholder)
 
@@ -120,7 +120,7 @@ profiles/
     strawman/       # imported .ksy + .yaml — the input to v0.1
   dude-on-disk/     # initial object-class and field catalogs
   winbox-cdb/       # placeholder
-  mndp/             # placeholder
+  mndp/             # MNDP TLVs, requests, layouts, timing
 
 fixtures/           # sanitized evidence; winbox-ipc/ has plaintext replay JSON
 
