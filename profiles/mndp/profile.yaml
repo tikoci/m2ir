@@ -29,7 +29,14 @@ physical-ref: ../../physical/mndp.yaml
 # ── scope ────────────────────────────────────────────────────────────────
 # `versions-seen: all` on an entry below means every version in
 # `versions-observed`. Otherwise an entry lists the versions it was seen
-# on. Absence from a list means "not seen", not "not sent".
+# on. Absence from a list means "not seen", not "not sent". The test
+# (test/profiles/mndp/) checks these lists against every evidence payload
+# in both directions.
+#
+# Enum and bitmask tables are lists with a numeric `value` or `mask`, not
+# maps keyed by hex, so a consumer never depends on how its YAML parser
+# turns a 0x01 key into a string. Architectures use RouterOS
+# architecture-name values.
 scope:
   versions-observed:
     - "6.49.21"
@@ -51,7 +58,7 @@ scope:
     - "7.25"
     - "7.25.1"
     - "7.26beta5"
-  architectures-observed: [x86 (CHR), ARM, ARM64, MIPSBE]
+  architectures-observed: [x86_64, arm, arm64, mipsbe]
   evidence-sets:
     lab:
       role: "quickchr CHRs 6.49.23, 7.24.6, 7.25 and 7.26beta5 on socket links, one setting changed per step, both routers' sniffers streamed to the host"
@@ -80,15 +87,19 @@ evidence:
     ref: "tikoci/centrs MNDP codec at 0221b899"
     url: "https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/src/data/mndp.ts"
   - source: doc
-    ref: "MikroTik manual, Neighbor discovery (/ip/neighbor field names) and IP Packing (unpack= values)"
+    ref: "MikroTik manual, Neighbor discovery (/ip/neighbor field names)"
+    url: "https://manual.mikrotik.com/docs/system-information-and-utilities/neighbor-discovery/"
+  - source: doc
+    ref: "MikroTik manual, IP Packing (unpack= values)"
     url: "https://manual.mikrotik.com/docs/system-information-and-utilities/ip-packing/"
 
 # ── transport ────────────────────────────────────────────────────────────
 transport:
   port: 5678
   destinations:
-    ipv4: "255.255.255.255:5678 (limited broadcast), source port 5678"
-    ipv6: "[ff02::1]:5678 (all-nodes multicast), source port 5678"
+    ipv4: "255.255.255.255:5678 (limited broadcast)"
+    ipv6: "[ff02::1]:5678 (all-nodes multicast)"
+  source-port: "5678 on announcements and replies; a request may come from any source port"
   confidence: observed-only
   versions-seen: ["6.49.23", "7.17.2", "7.18.2", "7.20.8", "7.24.6", "7.25", "7.26beta5"]
   notes: |
@@ -121,20 +132,27 @@ header:
         carry the same value. In the field capture, uptime ÷ counter ≈ the
         discover-interval for every device.
       byte-order-by-architecture:
-        - architectures: [x86 (CHR), ARM, ARM64]
+        - architectures: [x86_64, arm, arm64]
           endian: le
           example: "20 7c 01 00 = 97,312 (7.26beta5 RB1100Dx4, 973,177 s uptime, 10 s interval)"
-        - architectures: [MIPSBE]
+          notes: "x86_64 from the lab CHRs, arm from the field rows. arm64 is from FINDINGS.md; the committed field summary records no arm64 row."
+        - architectures: [mipsbe]
           endian: be
           example: "00 00 23 58 = 9,048 (7.25beta5 RB912R, 271,468 s uptime, 30 s interval); 7.23beta4 RB924iR reads the same way"
       special-values:
-        0x00000000:
+        - value: 0x00000000
+          name: request
           meaning: |
             A request, whatever follows. A router's first announcement after
             boot has header 0, so neighbors answer it; the counter then
             continues from 1. See `requests` and `lifecycle.boot-announcement`.
           confidence: observed-only
           versions-seen: ["6.49.23", "7.17.2", "7.18.2", "7.20.8", "7.26beta5"]
+          evidence:
+            - source: sample
+              ref: "hub lab: header-0 requests drew replies from all six routers; see work/2026-11-mndp-grounding/evidence/requests-forms.json"
+            - source: sample
+              ref: "boot announcements with header 0; see work/2026-11-mndp-grounding/evidence/hub-session-2026-11-16.json and dying-gasp-7.26beta5.json"
       notes: |
         A receiver reading the counter must guess the byte order, for example
         from the board or by comparing uptime ÷ counter with the expected
@@ -147,7 +165,7 @@ header:
           ref: "boot announcements with header 0; see work/2026-11-mndp-grounding/evidence/dying-gasp-7.26beta5.json and hub-session-2026-11-16.json"
       revision-history:
         - date: 2026-11-15
-          belief: "bytes 0–1 are version and TTL, bytes 2–3 a big-endian sequence number (MAC-Telnet `mndp_init_packet(version, ttl)`, the routeros-mndp skill)"
+          belief: "bytes 0–1 are version and TTL, bytes 2–3 a checksum (MAC-Telnet `struct mt_mndp_hdr`, sent as 0) or a big-endian sequence number (the routeros-mndp skill)"
           outcome: superseded
           evidence:
             - source: sample
@@ -251,6 +269,7 @@ tlvs:
     neighbor-field: null
     encoding: empty
     length: 0
+    accepted-lengths-seen: [0, 1]
     in: [request]
     confidence: observed-only
     versions-seen: ["6.49.23", "7.17.2", "7.18.2", "7.20.8", "7.26beta5"]
@@ -310,15 +329,22 @@ tlvs:
   9:
     name: aggregated-size
     neighbor-field: null
-    encoding: u32le
+    encoding: bytes
     length: 4
+    encoding-by-architecture:
+      - architectures: [x86_64]
+        encoding: u32le
+        confidence: observed-only
+        versions-seen: ["7.26beta5"]
     in: [announcement]
     confidence: observed-only
     versions-seen: ["7.26beta5"]
     notes: |
       The /ip/packing aggregated-size, sent only with TLV 2. Little-endian on
       x86 (CHR): 1500 → dc 05 00 00, 1000 → e8 03 00 00. No /ip/neighbor
-      field shows it.
+      field shows it. Decode it as u32le only for an x86_64 sender and keep
+      the raw bytes otherwise; a receiver can only guess the sender's
+      architecture, for example from TLV 12 board.
     open: "Byte order on big-endian CPUs is unverified: no field sender used packing."
     evidence:
       - source: sample
@@ -339,6 +365,9 @@ tlvs:
     evidence:
       - source: code
         ref: "Wireshark packet-mndp.c type 10 Uptime"
+      - source: code
+        ref: "MAC-Telnet protocol.c parse_mndp converts uptime from little-endian"
+        url: "https://github.com/haakonnessjoen/MAC-Telnet/blob/de620882c73e235ab319f3cb55481888d7d8f71d/src/protocol.c#L374"
       - source: sample
         ref: "field MIPSBE rows; see work/2026-11-mndp-grounding/evidence/field-summary.json"
   11:
@@ -376,33 +405,84 @@ tlvs:
     versions-seen: all
     aka: { wireshark: Unpack, centrs: unpack }
     values:
-      0x00:
+      - value: 0x00
         name: disabled
         neighbor-value: "false"
-        notes: "The hub lab's REST reads of /ip/neighbor (7.26beta5 observer) left a false `ipv6` out instead of returning \"false\"."
+        notes: "The hub lab's REST reads of /ip/neighbor (7.26beta5 observer) left a false `ipv6` out instead of returning \"false\"; the field capture's neighbor table shows false."
         confidence: observed-only
         versions-seen: ["6.49.21", "6.49.23", "7.18.2", "7.20.8", "7.21.3", "7.23beta4", "7.26beta5"]
-      0x01:
+        evidence:
+          - source: sample
+            ref: "hub lab disable-ipv6 steps; see work/2026-11-mndp-grounding/evidence/ipv6-7.17-7.26beta5.json"
+          - source: sample
+            ref: "field capture: every 00 sender showed ipv6=false; see work/2026-11-mndp-grounding/evidence/field-summary.json"
+      - value: 0x01
         name: enabled
         neighbor-value: "true"
         confidence: observed-only
-        versions-seen: all
+        versions-seen: ["6.49.23", "7.6", "7.11beta6", "7.11", "7.12.1", "7.17.2", "7.18.2", "7.19.4", "7.20", "7.20.8", "7.24.5", "7.24.6", "7.25beta5", "7.25", "7.25.1", "7.26beta5"]
+        evidence:
+          - source: sample
+            ref: "lab sweep and hub lab defaults; see work/2026-11-mndp-grounding/evidence/sweep-baseline.json and ipv6-7.17-7.26beta5.json"
+    # What the flag follows, by sender version. `on-disable` / `on-enable`:
+    # when the flag changes after the setting is turned off / on
+    # (immediate, after-reboot, never, untested).
     meaning-by-version:
-      - versions: "6.x (6.49.23 tested)"
-        meaning: "`ipv6` package enabled. 00 while the package is disabled (its default), 01 once it is enabled."
+      - from: "6.0"
+        to: "6.49.23"
+        versions-tested: ["6.49.23"]
+        follows: ipv6-package
+        on-disable: untested
+        on-enable: after-reboot
+        notes: "00 while the `ipv6` package is disabled (its default), 01 once it is enabled; a package change takes effect at reboot."
         confidence: observed-only
-      - versions: "7.x before 7.18 (7.17.2 tested)"
-        meaning: "IPv6 present. Stays 01 with disable-ipv6=yes, even after a reboot."
+        evidence:
+          - source: sample
+            ref: "hub lab, 6.49.23 with the ipv6 package; see work/2026-11-mndp-grounding/evidence/hub-session-2026-11-16.json → anchors"
+      - from: "7.0"
+        to: "7.17.2"
+        versions-tested: ["7.17.2"]
+        follows: none
+        on-disable: never
+        on-enable: never
+        notes: "Means IPv6 present: stays 01 with disable-ipv6=yes, even after a reboot."
         confidence: observed-only
-      - versions: "7.18–7.20 (7.18.2, 7.20.8 tested)"
-        meaning: "Follows disable-ipv6, but only after a reboot; 01 again at once on disable-ipv6=no."
+        evidence:
+          - source: sample
+            ref: "see work/2026-11-mndp-grounding/evidence/ipv6-7.17-7.26beta5.json (r717 steps)"
+      - from: "7.18"
+        to: "7.20.8"
+        versions-tested: ["7.18.2", "7.20.8"]
+        follows: disable-ipv6
+        on-disable: after-reboot
+        on-enable: immediate
         confidence: observed-only
-      - versions: "7.26beta5"
-        meaning: "Follows disable-ipv6 at once in both directions."
-        confidence: observed-only
-      - versions: "7.21–7.25"
-        meaning: "Untested. The 7.21 changelog's \"fixed MNDP IPv6 status reporting\" is the likely start of live updates."
+        evidence:
+          - source: sample
+            ref: "see work/2026-11-mndp-grounding/evidence/ipv6-7.17-7.26beta5.json (r718, r720 steps)"
+          - source: doc
+            ref: "RouterOS changelog 7.18: advertise IPv6 capabilities based on the Disable IPv6 setting"
+      - from: "7.21"
+        to: "7.25.1"
+        versions-tested: []
+        follows: disable-ipv6
+        on-disable: untested
+        on-enable: untested
+        notes: "Live setting changes were not tested on 7.21–7.25 (field rows show only the flag's value). The 7.21 changelog's \"fixed MNDP IPv6 status reporting\" is the likely start of immediate updates."
         confidence: guessed
+        evidence:
+          - source: doc
+            ref: "RouterOS changelog 7.21: fixed MNDP IPv6 status reporting"
+      - from: "7.26beta5"
+        to: null
+        versions-tested: ["7.26beta5"]
+        follows: disable-ipv6
+        on-disable: immediate
+        on-enable: immediate
+        confidence: observed-only
+        evidence:
+          - source: sample
+            ref: "see work/2026-11-mndp-grounding/evidence/ipv6-7.17-7.26beta5.json (sub steps) and probe-7.26beta5.json"
     notes: |
       So the flag alone does not say whether IPv6 is disabled on a 7.18–7.20
       sender, and it never does on 7.17 or older. On every version,
@@ -471,12 +551,13 @@ tlvs:
     length: 4
     in: [announcement, dying-gasp]
     confidence: documented
-    versions-seen: all
+    versions-seen: ["6.49.21", "6.49.23", "7.6", "7.11beta6", "7.11", "7.12.1", "7.17.2", "7.18.2", "7.19.4", "7.20", "7.20.8", "7.21.3", "7.23beta4", "7.24.5", "7.25beta5", "7.25.1", "7.26beta5"]
     aka: { wireshark: IPv4-Address }
     notes: |
       Left out when the interface has no IPv4 address, including the first
-      announcements after boot. A receiver lists a datagram without TLV 17
-      under its IP source address.
+      announcements after boot. The 7.24.6 and 7.25 lab CHRs had none on the
+      link, so they sent no TLV 17. A receiver lists a datagram without
+      TLV 17 under its IP source address.
     evidence:
       - source: code
         ref: "Wireshark packet-mndp.c type 17 IPv4-Address"
@@ -492,23 +573,62 @@ tlvs:
     confidence: observed-only
     versions-seen: ["7.20", "7.20.8", "7.21.3", "7.23beta4", "7.24.5", "7.24.6", "7.25beta5", "7.25", "7.25.1", "7.26beta5"]
     bits:
-      0x01:
+      - mask: 0x01
         name: capsman
         neighbor-value: capsman
         role: "/interface/wifi/capsman enabled=yes"
         confidence: observed-only
         versions-seen: ["7.24.5", "7.26beta5"]
-      0x02:
+        notes: "The name and its meaning (running=capsman) are documented by the 7.20 changelog; the bit value is observed only."
+        evidence:
+          - source: doc
+            ref: "RouterOS changelog 7.20: report router as CAPsMAN on MNDP under running parameter"
+          - source: sample
+            ref: "hub lab capsman:on → 01; see work/2026-11-mndp-grounding/evidence/running-7.26beta5.json"
+          - source: sample
+            ref: "field capture: a 7.24.5 router with running=capsman sent 01; see work/2026-11-mndp-grounding/evidence/field-summary.json"
+      - mask: 0x02
         name: cmr
         neighbor-value: cmr
         role: "CMR controller (/cmr, from the `cmr` package)"
         confidence: observed-only
         versions-seen: ["7.26beta5"]
+        evidence:
+          - source: sample
+            ref: "hub lab cmr:on → 02/03; see work/2026-11-mndp-grounding/evidence/running-7.26beta5.json"
+          - source: sample
+            ref: "quickchr CMR wire study: /cmr → 02, printed running=cmr"
+            url: "https://github.com/tikoci/quickchr/blob/dd7e0ad99aa51acc79f086fe5d71e65efbb511eb/examples/cmr/FINDINGS.md#mndp"
     values-seen:
-      0x00: { neighbor-value: null, role: "none; receivers leave the field out", versions-seen: ["7.20", "7.20.8", "7.21.3", "7.23beta4", "7.24.5", "7.24.6", "7.25beta5", "7.25", "7.25.1", "7.26beta5"] }
-      0x01: { neighbor-value: capsman, versions-seen: ["7.24.5", "7.26beta5"] }
-      0x02: { neighbor-value: cmr, versions-seen: ["7.26beta5"] }
-      0x03: { neighbor-value: "capsman,cmr", versions-seen: ["7.26beta5"] }
+      - value: 0x00
+        neighbor-value: null
+        role: "none; receivers leave the field out"
+        confidence: observed-only
+        versions-seen: ["7.20", "7.20.8", "7.21.3", "7.23beta4", "7.24.5", "7.24.6", "7.25beta5", "7.25", "7.25.1", "7.26beta5"]
+        evidence:
+          - source: sample
+            ref: "lab sweep, hub lab and field capture defaults; see work/2026-11-mndp-grounding/evidence/field-summary.json and running-7.26beta5.json"
+      - value: 0x01
+        neighbor-value: capsman
+        confidence: observed-only
+        versions-seen: ["7.24.5", "7.26beta5"]
+        evidence:
+          - source: sample
+            ref: "see work/2026-11-mndp-grounding/evidence/running-7.26beta5.json and field-summary.json"
+      - value: 0x02
+        neighbor-value: cmr
+        confidence: observed-only
+        versions-seen: ["7.26beta5"]
+        evidence:
+          - source: sample
+            ref: "see work/2026-11-mndp-grounding/evidence/running-7.26beta5.json"
+      - value: 0x03
+        neighbor-value: "capsman,cmr"
+        confidence: observed-only
+        versions-seen: ["7.26beta5"]
+        evidence:
+          - source: sample
+            ref: "see work/2026-11-mndp-grounding/evidence/running-7.26beta5.json"
     notes: |
       A receiver prints 03 as `capsman,cmr`. Each toggle of CAPsMAN or CMR
       reverses its bit. Absent on 7.19.4, present from 7.20.
@@ -532,20 +652,32 @@ tlvs:
     since: "7.24"
     confidence: observed-only
     versions-seen: ["7.24.5", "7.24.6", "7.25beta5", "7.25", "7.25.1", "7.26beta5"]
-    formula: "min(discover-interval_seconds × 4 + 1, 255)"
+    formula:
+      text: "min(discover-interval_seconds × 4 + 1, 255)"
+      multiplier: 4
+      offset: 1
+      max: 255
     examples:
-      - { discover-interval: 5s, value: 0x15 }
-      - { discover-interval: 7s, value: 0x1d }
-      - { discover-interval: 10s, value: 0x29 }
-      - { discover-interval: 30s, value: 0x79 }
-      - { discover-interval: 60s, value: 0xf1 }
-      - { discover-interval: 64s, value: 0xff }
+      - { discover-interval-seconds: 5, value: 0x15 }
+      - { discover-interval-seconds: 7, value: 0x1d }
+      - { discover-interval-seconds: 10, value: 0x29 }
+      - { discover-interval-seconds: 30, value: 0x79 }
+      - { discover-interval-seconds: 60, value: 0xf1 }
+      - { discover-interval-seconds: 64, value: 0xff }
+      - { discover-interval-seconds: 300, value: 0xff }
+      - { discover-interval-seconds: 32400, value: 0xff }
     values:
-      0x00:
+      - value: 0x00
         name: dying-gasp
-        role: "the router is going away; receivers clear the entry (changelog). Sent on reboot when dying-gasp=yes."
+        role: "the router is going away; receivers clear the entry. Sent on reboot when dying-gasp=yes."
         confidence: observed-only
         versions-seen: ["7.26beta5"]
+        notes: "TTL=0 as a dying gasp is documented by the 7.24 changelog; the wire layout was observed on 7.26beta5. Clearing on receipt was not timed."
+        evidence:
+          - source: doc
+            ref: "RouterOS changelog 7.24: dying gasp with TTL=0"
+          - source: sample
+            ref: "see work/2026-11-mndp-grounding/evidence/dying-gasp-7.26beta5.json"
     notes: |
       The entry lifetime in seconds. A receiver removed a silent neighbor at
       about its TTL or up to about 20 s later; removal slightly before the TTL
@@ -568,6 +700,10 @@ unassigned:
     notes: |
       Never seen in any capture. centrs reads it as an alternate board field
       (`boardAlt`); nothing here supports that.
+    evidence:
+      - source: code
+        ref: "tikoci/centrs mndp.ts mndpTlvType.boardAlt = 13"
+        url: "https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/src/data/mndp.ts"
     investigation-trail:
       - date: 2026-11-16
         looked-at: "every lab, hub lab and field payload, 6.49.21 to 7.26beta5"
@@ -602,11 +738,14 @@ unpack-derivation:
 
 # ── requests ─────────────────────────────────────────────────────────────
 requests:
-  rule: |
-    A well-formed datagram is a request when its header is 00000000 OR it
-    carries TLV 6. A request asks every router on the segment to announce
-    now. A malformed datagram (see physical/mndp.yaml framing-rule) is
-    dropped whole, request or not.
+  # A datagram that passes physical/mndp.yaml framing-rule is a request when
+  # ANY of `any-of` holds. A malformed datagram is dropped whole, request or
+  # not. A request asks every router on the segment to announce now.
+  rule:
+    requires: framing-rule
+    any-of:
+      - { header: 0x00000000 }
+      - { has-tlv: 6 }
   confidence: observed-only
   versions-seen: ["6.49.23", "7.17.2", "7.18.2", "7.20.8", "7.26beta5"]
   recommended:
@@ -615,39 +754,44 @@ requests:
       Draws a reply from every version tested without adding the requester to
       7.x routers' neighbor tables. A bare 00000000 also works, but 7.x
       receivers then list the requester (empty identity, its IPv4).
+  # `requester-row`: whether the five 7.x receivers created or refreshed a
+  # neighbor row for a sender they had never seen (requests-fresh.json):
+  # created-or-refreshed, none, or not-checked. A row left from an earlier
+  # datagram is not refreshed by one that creates none (fresh-z9-after-z4:
+  # age 55 s). Whether 6.49.23 lists a requester was not checked.
   neighbor-row-rule: |
-    On the 7.x receivers, any well-formed datagram, request or not, created
-    or refreshed a neighbor row for its sender, except one that carried
-    TLV 6. Whether 6.49.23 lists a requester was not checked.
+    On the 7.x receivers, every well-formed datagram checked created a
+    neighbor row for its sender except one carrying TLV 6. Malformed
+    datagrams created none.
   forms:
-    - { hex: "00000000", form: "header 0 (MAC-Telnet)", replies: true, listed: true }
-    - { hex: "0000000000000000", form: "header 0 + empty TLV 0", replies: true, listed: not-checked }
-    - { hex: "0000000000060000", form: "header 0 + empty TLV 6", replies: true, listed: false }
-    - { hex: "000000000006000100", form: "header 0 + TLV 6 with a value byte", replies: true, listed: not-checked }
-    - { hex: "0100000000060000", form: "non-zero header + empty TLV 6", replies: true, listed: not-checked }
-    - { hex: "0000000100060000", form: "non-zero header + empty TLV 6", replies: true, listed: not-checked }
-    - { hex: "000000000000000000", form: "9 zero bytes (centrs mndpRefreshPacket)", replies: false, listed: false, notes: "trailing byte; 0 replies in 11 sends after run 1" }
-    - { hex: "000000000006000000", form: "header 0 + TLV 6 + 1 byte (the 9-byte form)", replies: false, listed: false, notes: "trailing byte; 0 replies in 7 sends" }
-    - { hex: "0000000000", form: "trailing byte", replies: false, listed: false }
-    - { hex: "0000000000000000ffffff", form: "trailing bytes", replies: false, listed: not-checked }
-    - { hex: "00000000000600000000000000", form: "trailing bytes", replies: false, listed: not-checked }
-    - { hex: "010000000006000000", form: "trailing byte", replies: false, listed: not-checked }
-    - { hex: "01000000", form: "non-zero header, no TLV 6", replies: false, listed: true }
-    - { hex: "00000001", form: "non-zero header, no TLV 6", replies: false, listed: not-checked }
-    - { hex: "0100000000000000", form: "non-zero header, no TLV 6", replies: false, listed: not-checked }
-    - { hex: "", form: "empty", replies: false, listed: false }
-    - { hex: "000000", form: "shorter than a header", replies: false, listed: false }
-    - { hex: "00000000000100060244444444440005000570726f6265", form: "announcement-shaped (TLVs 1, 5), header 0", replies: true, listed: true }
-    - { hex: "00000000000100060244444444440005000570726f626500", form: "announcement-shaped, header 0, trailing byte", replies: false, listed: not-checked }
-    - { hex: "05000000000100060244444444440005000570726f6265", form: "announcement-shaped (TLVs 1, 5), header 05000000", replies: false, listed: not-checked }
+    - { hex: "00000000", form: "header 0 (MAC-Telnet)", replies: true, requester-row: created-or-refreshed }
+    - { hex: "0000000000000000", form: "header 0 + empty TLV 0", replies: true, requester-row: not-checked }
+    - { hex: "0000000000060000", form: "header 0 + empty TLV 6", replies: true, requester-row: none }
+    - { hex: "000000000006000100", form: "header 0 + TLV 6 with a value byte", replies: true, requester-row: not-checked }
+    - { hex: "0100000000060000", form: "non-zero header + empty TLV 6", replies: true, requester-row: not-checked }
+    - { hex: "0000000100060000", form: "non-zero header + empty TLV 6", replies: true, requester-row: not-checked }
+    - { hex: "000000000000000000", form: "9 zero bytes (centrs mndpRefreshPacket)", replies: false, requester-row: none, notes: "trailing byte; 0 replies in 11 sends after run 1" }
+    - { hex: "000000000006000000", form: "header 0 + TLV 6 + 1 byte (the 9-byte form)", replies: false, requester-row: none, notes: "trailing byte; 0 replies in 7 sends" }
+    - { hex: "0000000000", form: "trailing byte", replies: false, requester-row: none }
+    - { hex: "0000000000000000ffffff", form: "trailing bytes", replies: false, requester-row: not-checked }
+    - { hex: "00000000000600000000000000", form: "trailing bytes", replies: false, requester-row: not-checked }
+    - { hex: "010000000006000000", form: "trailing byte", replies: false, requester-row: not-checked }
+    - { hex: "01000000", form: "non-zero header, no TLV 6", replies: false, requester-row: created-or-refreshed }
+    - { hex: "00000001", form: "non-zero header, no TLV 6", replies: false, requester-row: not-checked }
+    - { hex: "0100000000000000", form: "non-zero header, no TLV 6", replies: false, requester-row: not-checked }
+    - { hex: "", form: "empty", replies: false, requester-row: not-checked }
+    - { hex: "000000", form: "shorter than a header", replies: false, requester-row: not-checked }
+    - { hex: "00000000000100060244444444440005000570726f6265", form: "announcement-shaped (TLVs 1, 5), header 0", replies: true, requester-row: not-checked, notes: "FINDINGS.md says it was listed as announced; no neighbor read for it is in the committed evidence" }
+    - { hex: "00000000000100060244444444440005000570726f626500", form: "announcement-shaped, header 0, trailing byte", replies: false, requester-row: not-checked }
+    - { hex: "05000000000100060244444444440005000570726f6265", form: "announcement-shaped (TLVs 1, 5), header 05000000", replies: false, requester-row: not-checked }
   replies:
     shape: "an ordinary announcement, same payload, advancing the header counter like any other"
     destination: "broadcast from port 5678 to 255.255.255.255:5678 and [ff02::1]:5678 (IPv4 only on 6.49.23 without the `ipv6` package), whatever the request's transport, source address or source port"
     unicast: "a unicast request draws a reply only from the router it is addressed to, and that reply is broadcast too"
-    delay: "random per router: 21 ms to 1.96 s on the 7.x routers (median about 1.1–1.3 s), 11 ms to 1.87 s on 6.49.23"
+    delay: "random per router: 11 ms to 1.96 s across all routers; 21 ms to 1.96 s on the 7.x routers (median about 1.1–1.3 s), 11 ms to 1.87 s on 6.49.23"
     bursts: "7.x routers merged two requests 200 ms apart, or five 50 ms apart, into one reply; 6.49.23 merged the five-request burst but once answered the 200 ms pair twice"
     confidence: observed-only
-    open: "The delay's real bound was not measured; 21 ms to about 2 s fits every reply seen."
+    open: "The delay's real bound was not measured; 11 ms to about 2 s fits every reply seen."
   evidence:
     - source: sample
       ref: "hub lab request forms, 3 shuffled rounds; see work/2026-11-mndp-grounding/evidence/requests-forms.json"
@@ -665,42 +809,80 @@ requests:
   open: "WinBox's own request bytes were not captured, nor whether RoMON or the Dude send requests."
 
 # ── TLV order by version ─────────────────────────────────────────────────
-# `from`/`to` bound the RouterOS versions the layout was seen on (null =
-# open-ended). `order` lists TLV types; an `optional` group's TLVs may each
-# be left out but keep their relative order, and `repeat: true` lets each
-# appear more than once (TLV 15, one per IPv6 address). TLVs 15 and 17 are
-# left out when the interface has no such address, including right after
-# boot. Receivers do not depend on the order.
+# `sampled` lists the versions a layout was captured on; `from`/`to` are
+# the lowest and highest of them (null = open-ended), and versions in
+# between are assumed, not sampled. `order` lists TLV types. An `optional`
+# group's TLVs may each be left out but keep their relative order;
+# `repeat: true` lets each appear more than once (TLV 15, one per IPv6
+# address). A `one-of` group is exactly one of the listed sequences, or
+# none when `optional: true`. TLVs 15 and 17 are left out when the
+# interface has no such address, including right after boot. No receiver
+# was seen to depend on the order; that was not tested.
 layouts:
   - kind: announcement
-    from: "6.49"
+    from: "6.49.21"
     to: "7.19.4"
+    sampled: ["6.49.21", "6.49.23", "7.6", "7.11beta6", "7.11", "7.12.1", "7.17.2", "7.18.2", "7.19.4"]
     order: [1, 5, 7, 8, 10, 11, 12, 14, { optional: [15], repeat: true }, 16, { optional: [17] }]
     confidence: observed-only
-    notes: "6.49.21, 6.49.23 and 7.6 to 7.19.4. 6.49.23 sent no TLV 15, even with the `ipv6` package enabled."
+    notes: "6.49.23 sent no TLV 15, even with the `ipv6` package enabled."
+    evidence:
+      - source: sample
+        ref: "lab, hub lab and field capture; see work/2026-11-mndp-grounding/FINDINGS.md → Layout by version"
   - kind: announcement
     from: "7.20"
     to: "7.23beta4"
+    sampled: ["7.20", "7.20.8", "7.21.3", "7.23beta4"]
     order: [1, 5, 7, 8, 10, 11, 12, 14, { optional: [15], repeat: true }, 16, { optional: [17] }, 18]
     confidence: observed-only
+    evidence:
+      - source: sample
+        ref: "hub lab 7.20.8 and field capture; see work/2026-11-mndp-grounding/FINDINGS.md → Layout by version"
   - kind: announcement
     from: "7.24beta1"
     to: "7.24beta1"
-    order: [1, 5, 7, 8, 10, 11, 12, 14, 16, 18, 17]
+    sampled: ["7.24beta1"]
+    order: [1, 5, 7, 8, 10, 11, 12, 14, 16, 18, { optional: [17] }]
     confidence: observed-only
-    notes: "From the centrs codec test fixture, not an m2ir capture. TLV 19 is not there yet."
+    notes: "One packet from the centrs codec test fixture, not an m2ir capture. TLV 19 is not there yet."
+    evidence:
+      - source: sample
+        ref: "centrs test/unit/mndp.test.ts captured RouterOS announcement"
+        url: "https://github.com/tikoci/centrs/blob/0221b899da70b8c54410f357fd77c2133b286c08/test/unit/mndp.test.ts#L90"
   - kind: announcement
     from: "7.24.5"
     to: null
-    order: [1, { optional: [2, 3, 4, 9] }, 5, 7, 8, 10, 11, 12, 14, 16, 18, 19, { optional: [17] }, { optional: [15], repeat: true }]
+    sampled: ["7.24.5", "7.24.6", "7.25beta5", "7.25", "7.25.1", "7.26beta5"]
+    order:
+      - 1
+      - { one-of: [[2, 9], [2, 3, 9], [2, 3, 4, 9]], optional: true, versions-seen: ["7.26beta5"] }
+      - 5
+      - 7
+      - 8
+      - 10
+      - 11
+      - 12
+      - 14
+      - 16
+      - 18
+      - 19
+      - { optional: [17] }
+      - { optional: [15], repeat: true }
     confidence: observed-only
-    notes: "TLVs 2, 3, 4 and 9 are the /ip/packing TLVs (see `unpack-derivation`), seen on 7.26beta5 only."
+    notes: "The one-of group is the /ip/packing TLVs (see `unpack-derivation`), seen on 7.26beta5 only."
+    evidence:
+      - source: sample
+        ref: "lab sweep and probe, field capture; see work/2026-11-mndp-grounding/FINDINGS.md → Layout by version"
   - kind: dying-gasp
-    from: "7.24"
+    from: "7.26beta5"
     to: null
+    sampled: ["7.26beta5"]
     order: [1, 19, { optional: [17] }, { optional: [15], repeat: true }]
     confidence: observed-only
-    notes: "TLV 19 is 00. Seen on 7.26beta5."
+    notes: "TLV 19 is 00. The dying-gasp feature dates from 7.24 (changelog); this layout was captured on 7.26beta5 only."
+    evidence:
+      - source: sample
+        ref: "see work/2026-11-mndp-grounding/evidence/dying-gasp-7.26beta5.json"
 
 # ── timing and lifecycle ─────────────────────────────────────────────────
 lifecycle:
@@ -713,7 +895,7 @@ lifecycle:
       - source: doc
         ref: "RouterOS changelog 7.16: default discover-interval 30 s"
       - source: sample
-        ref: "field capture uptime ÷ counter ≈ 60 s on 6.49 and 7.6–7.12, ≈ 30 s on 7.19 and later; see work/2026-11-mndp-grounding/evidence/field-summary.json"
+        ref: "field capture uptime ÷ counter ≈ 60 s on 6.49 and 7.6–7.12, and ≈ 30 s (the default) on most 7.19-and-later routers; a 7.23beta4 router showed ≈ 5 s and the 7.26beta5 RB1100Dx4 ≈ 10 s, set intervals; see work/2026-11-mndp-grounding/evidence/field-summary.json"
   triggered:
     sends-at-once: [identity, CAPsMAN, CMR, /ip/packing, IPv6 on/off, discovery protocol, lldp-med, mode, discover-interval, address changes]
     keeps-cadence: [MAC server, MAC WinBox, MAC ping, RoMON, bandwidth server, "IP services (winbox, api, ssh, telnet, ftp, api-ssl, www-ssl)", cloud DDNS, remote DNS, IP forwarding]

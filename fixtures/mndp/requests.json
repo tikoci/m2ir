@@ -280,49 +280,57 @@
 			"id": "fresh-z4#0",
 			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[0]",
 			"payloadHex": "00000000",
-			"responders": 6
+			"responders": 6,
+			"requesterRow": "created-or-refreshed"
 		},
 		{
 			"id": "fresh-z9#0",
 			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[1]",
 			"payloadHex": "000000000000000000",
-			"responders": 0
+			"responders": 0,
+			"requesterRow": "none"
 		},
 		{
 			"id": "fresh-z9-again#0",
 			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[2]",
 			"payloadHex": "000000000000000000",
-			"responders": 0
+			"responders": 0,
+			"requesterRow": "none"
 		},
 		{
 			"id": "fresh-t6-9#0",
 			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[3]",
 			"payloadHex": "000000000006000000",
-			"responders": 0
+			"responders": 0,
+			"requesterRow": "none"
 		},
 		{
 			"id": "fresh-z5#0",
 			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[4]",
 			"payloadHex": "0000000000",
-			"responders": 0
+			"responders": 0,
+			"requesterRow": "none"
 		},
 		{
 			"id": "fresh-nz4#0",
 			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[5]",
 			"payloadHex": "01000000",
-			"responders": 0
+			"responders": 0,
+			"requesterRow": "created-or-refreshed"
 		},
 		{
 			"id": "fresh-t6-8#0",
 			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[6]",
 			"payloadHex": "0000000000060000",
-			"responders": 6
+			"responders": 6,
+			"requesterRow": "none"
 		},
 		{
 			"id": "fresh-z9-after-z4#0",
 			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[7]",
 			"payloadHex": "000000000000000000",
-			"responders": 1
+			"responders": 1,
+			"requesterRow": "none"
 		},
 		{
 			"id": "z4-bcast#0",

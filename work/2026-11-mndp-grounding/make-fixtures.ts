@@ -62,21 +62,73 @@ const announcements: Announcement[] = [];
 	}
 }
 
-// /ip/packing: the first announcement carrying each set of TLVs 2–4.
+// /ip/packing: each packing step's last subject announcement, with the
+// observer's neighbor row for the subject after the step.
 {
 	const name = "probe-7.26beta5.json";
-	const seen = new Set<string>();
-	for (const a of evidence(name).announcements) {
-		const types = tlvTypes(a.payloadHex);
-		const packing = types.filter((t) => [2, 3, 4, 9].includes(t)).join(",");
-		if (!packing || seen.has(packing)) continue;
-		seen.add(packing);
+	const doc = evidence(name);
+	const subjectMacs = new Set<string>(doc.subject.macs);
+	for (const step of doc.steps) {
+		if (!String(step.id).startsWith("packing:")) continue;
+		const last = doc.announcements
+			.filter(
+				(a: { step: string; srcMac: string }) =>
+					a.step === step.id && subjectMacs.has(a.srcMac),
+			)
+			.at(-1);
+		const row = (step.neighbor ?? []).find(
+			(n: { identity?: string }) => n.identity === "mndp-subject",
+		);
+		if (!last || !row) continue;
 		announcements.push({
-			id: `packing-${packing.replaceAll(",", "-")}`,
-			source: `${src(name)} announcements[t=${a.t}] step ${a.step}`,
+			id: `probe-${step.id}`.replace(/[^a-z0-9.-]+/gi, "-"),
+			source: `${src(name)} steps[${step.id}] announcements[t=${last.t}]`,
 			kind: "announcement",
-			version: versionOf(a.payloadHex),
-			payloadHex: a.payloadHex,
+			version: versionOf(last.payloadHex),
+			payloadHex: last.payloadHex,
+			neighbor: row,
+		});
+	}
+}
+
+// TTL study: each interval step's last subject announcement.
+interface TtlSample {
+	id: string;
+	source: string;
+	discoverIntervalSeconds: number;
+	ttl: number;
+}
+const ttlSamples: TtlSample[] = [];
+{
+	const name = "ttl-7.26beta5.json";
+	const doc = evidence(name);
+	const subjectMacs = new Set<string>(doc.subject.macs);
+	const seconds = (v: string) => {
+		const m = /^(\d+)(s|m|h)$/.exec(v);
+		if (!m) throw new Error(`ttl: cannot read interval ${v}`);
+		return Number(m[1]) * { s: 1, m: 60, h: 3600 }[m[2] as "s" | "m" | "h"];
+	};
+	for (const step of doc.steps) {
+		const cmd: string | undefined = step.commands[0]?.cmd;
+		const m = cmd ? /discover-interval=(\S+)/.exec(cmd) : null;
+		if (!m) continue;
+		const last = doc.announcements
+			.filter(
+				(a: { step: string; srcMac: string }) =>
+					a.step === step.id && subjectMacs.has(a.srcMac),
+			)
+			.at(-1);
+		const t19 = last
+			? parseMndp(Buffer.from(last.payloadHex, "hex")).tlvs.find(
+					(t) => t.type === 19,
+				)
+			: undefined;
+		if (!t19) continue;
+		ttlSamples.push({
+			id: step.id,
+			source: `${src(name)} steps[${step.id}] announcements[t=${last.t}]`,
+			discoverIntervalSeconds: seconds(m[1] as string),
+			ttl: Number.parseInt(t19.hex, 16),
 		});
 	}
 }
@@ -152,8 +204,27 @@ interface RequestRecord {
 	source: string;
 	payloadHex: string;
 	responders: number;
+	/** requests-fresh only: did the 7.x receivers create or refresh a row for the sender? */
+	requesterRow?: "created-or-refreshed" | "none";
 }
 const requests: RequestRecord[] = [];
+
+/**
+ * A row counts as created or refreshed when every 7.x receiver lists the
+ * sender with an age inside the 4 s window. A row left over from an earlier
+ * send (fresh-z9-after-z4, age 55 s) is neither.
+ */
+function requesterRow(
+	id: string,
+	listedBy: Record<string, { age: string } | null>,
+): "created-or-refreshed" | "none" {
+	const ages = Object.values(listedBy).map((row) =>
+		row ? Number.parseInt(row.age, 10) : null,
+	);
+	if (ages.every((a) => a !== null && a <= 5)) return "created-or-refreshed";
+	if (ages.every((a) => a === null || a > 5)) return "none";
+	throw new Error(`requests-fresh ${id}: receivers disagree`);
+}
 const run2Keep = new Set([
 	"empty-bcast",
 	"z3-bcast",
@@ -180,6 +251,7 @@ for (const name of [
 				payloadHex: string;
 				round?: number;
 				replies: { router: string }[];
+				listedBy?: Record<string, { age: string } | null>;
 			},
 			i: number,
 		) => {
@@ -189,12 +261,93 @@ for (const name of [
 				source: `${src(name)} requests[${i}]`,
 				payloadHex: r.payloadHex,
 				responders: new Set(r.replies.map((x) => x.router)).size,
+				...(r.listedBy ? { requesterRow: requesterRow(r.id, r.listedBy) } : {}),
 			});
 		},
 	);
 }
 
 const field = evidence("field-summary.json");
+
+// Versions index: for every TLV, TLV 14/18/19 value and the zero header,
+// the versions it was seen on across ALL evidence payloads that carry TLV 7
+// (lab, hub lab, request replies) plus the field rows. The test compares the
+// YAML's versions-seen with this in both directions.
+const index = {
+	versions: new Set<string>(),
+	tlvs: new Map<number, Set<string>>(),
+	values: new Map<string, Set<string>>(),
+	zeroHeader: new Set<string>(),
+};
+const note = (
+	map: Map<string | number, Set<string>>,
+	key: string | number,
+	v: string,
+) => {
+	const set = map.get(key) ?? new Set<string>();
+	set.add(v);
+	map.set(key, set);
+};
+function indexPayload(hex: string): void {
+	const m = parseMndp(Buffer.from(hex, "hex"));
+	const v = versionOf(hex);
+	if (!v || m.trailing) return;
+	index.versions.add(v);
+	if (m.header === "00000000") index.zeroHeader.add(v);
+	for (const t of m.tlvs) {
+		note(index.tlvs as Map<string | number, Set<string>>, t.type, v);
+		if ([14, 18, 19].includes(t.type))
+			note(
+				index.values as Map<string | number, Set<string>>,
+				`${t.type}:${Number.parseInt(t.hex, 16)}`,
+				v,
+			);
+	}
+}
+function walk(node: unknown): void {
+	if (Array.isArray(node)) for (const x of node) walk(x);
+	else if (node && typeof node === "object") {
+		const hex = (node as { payloadHex?: unknown }).payloadHex;
+		if (typeof hex === "string") indexPayload(hex);
+		for (const x of Object.values(node)) walk(x);
+	}
+}
+for (const name of new Bun.Glob("*.json").scanSync(resolve(here, "evidence")))
+	if (name !== "field-summary.json") walk(evidence(name));
+for (const row of field.rows as {
+	version: string;
+	tlvOrder: string;
+	tlv14: string;
+	tlv18: string | null;
+	tlv19: string | null;
+}[]) {
+	const v = row.version.split(" ")[0] as string;
+	index.versions.add(v);
+	for (const t of row.tlvOrder.split(","))
+		note(index.tlvs as Map<string | number, Set<string>>, Number(t), v);
+	for (const [type, hex] of [
+		[14, row.tlv14],
+		[18, row.tlv18],
+		[19, row.tlv19],
+	] as const)
+		if (hex !== null)
+			note(
+				index.values as Map<string | number, Set<string>>,
+				`${type}:${Number.parseInt(hex, 16)}`,
+				v,
+			);
+}
+const sorted = (s: Set<string>) => [...s].sort();
+const versionsIndex = {
+	versions: sorted(index.versions),
+	tlvs: Object.fromEntries(
+		[...index.tlvs].sort((a, b) => a[0] - b[0]).map(([t, s]) => [t, sorted(s)]),
+	),
+	values: Object.fromEntries(
+		[...index.values].sort().map(([k, s]) => [k, sorted(s)]),
+	),
+	zeroHeader: sorted(index.zeroHeader),
+};
 
 mkdirSync(outDir, { recursive: true });
 const write = (file: string, body: unknown) =>
@@ -219,6 +372,22 @@ write("requests.json", {
 	},
 	records: requests,
 });
+write("ttl.json", {
+	provenance: {
+		generator: "work/2026-11-mndp-grounding/make-fixtures.ts",
+		notes:
+			"TLV 19 of the subject's last announcement in each discover-interval step.",
+	},
+	records: ttlSamples,
+});
+write("versions-index.json", {
+	provenance: {
+		generator: "work/2026-11-mndp-grounding/make-fixtures.ts",
+		notes:
+			"Versions each TLV, each TLV 14/18/19 value (key type:value, decimal) and the zero header were seen on, across every evidence payload with TLV 7 plus the field rows. Payloads with trailing bytes are skipped.",
+	},
+	...versionsIndex,
+});
 write("field-summary.json", {
 	provenance: {
 		generator: "work/2026-11-mndp-grounding/make-fixtures.ts",
@@ -228,6 +397,13 @@ write("field-summary.json", {
 	rows: field.rows,
 });
 
+// Normalize to the repo's JSON formatting so a regeneration diffs cleanly.
+const fmt = Bun.spawnSync(["bunx", "biome", "format", "--write", outDir], {
+	stdout: "ignore",
+	stderr: "inherit",
+});
+if (fmt.exitCode !== 0) throw new Error("biome format failed on fixtures/mndp");
+
 console.log(
-	`fixtures/mndp: ${announcements.length} announcements, ${requests.length} requests, ${field.rows.length} field rows`,
+	`fixtures/mndp: ${announcements.length} announcements, ${requests.length} requests, ${ttlSamples.length} TTL samples, ${field.rows.length} field rows, ${versionsIndex.versions.length} versions indexed`,
 );

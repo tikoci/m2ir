@@ -19,14 +19,16 @@ transport:
   protocol: udp
   port: 5678
   notes: |
-    Both directions use UDP port 5678. Announcements go to the IPv4
-    limited broadcast and, when the interface has IPv6, to ff02::1. See
+    Announcements and replies are sent from and to UDP port 5678; a request
+    may come from any source port. Announcements go to the IPv4 limited
+    broadcast and, when the interface has IPv6, to ff02::1. See
     profiles/mndp/profile.yaml `transport` for when each copy is sent.
 
 endian-policy: |
   The TLV header (type and length) is big-endian. Value byte order is per
-  TLV and set by the profile: addresses are in network order, but the
-  uptime and aggregated-size integers are little-endian. The 4-byte
+  TLV and set by the profile: addresses are in network order, uptime is
+  little-endian, and aggregated-size is little-endian on x86 senders and
+  unverified elsewhere. The 4-byte
   datagram header is in the SENDER's CPU byte order, so a receiver cannot
   pick one fixed order for it.
 
@@ -40,8 +42,11 @@ evidence:
     ref: "Wireshark MNDP dissector (TLV header: u16be type, u16be length)"
     url: "https://github.com/wireshark/wireshark/blob/ffc784d8541ac6bfb038d2186195252603d1f602/epan/dissectors/packet-mndp.c"
   - source: code
-    ref: "MAC-Telnet mndp.c / protocol.h (u16be type and length)"
-    url: "https://github.com/haakonnessjoen/MAC-Telnet/blob/de620882c73e235ab319f3cb55481888d7d8f71d/src/protocol.h"
+    ref: "MAC-Telnet protocol.c mndp_add_attribute / parse_mndp (type and length converted to and from network byte order)"
+    url: "https://github.com/haakonnessjoen/MAC-Telnet/blob/de620882c73e235ab319f3cb55481888d7d8f71d/src/protocol.c#L272-L330"
+  - source: code
+    ref: "MAC-Telnet protocol.h struct mt_mndp_hdr (4-byte header)"
+    url: "https://github.com/haakonnessjoen/MAC-Telnet/blob/de620882c73e235ab319f3cb55481888d7d8f71d/src/protocol.h#L82-L87"
   - source: sample
     ref: "m2ir MNDP grounding lab, 6.49.23 to 7.26beta5 CHRs plus a sanitized field capture; see work/2026-11-mndp-grounding/FINDINGS.md"
 
@@ -110,6 +115,9 @@ value-encodings:
     size: null
     body: utf8
     role: "UTF-8 bytes, not NUL-terminated, no length prefix beyond the TLV length"
+  bytes:
+    size: null
+    role: "raw bytes, no interpretation; used where the byte order is not known for every sender (the profile gives the length)"
   bitmask-u8:
     size: 1
     role: "one byte of flag bits; the profile names each bit"

@@ -47,8 +47,10 @@ existing fixture does not constitute a new live observation.
 
 [`mndp/`](mndp/) holds slices of the MNDP grounding lab: announcement
 payloads by version and setting (with the observer's neighbor row where
-the lab read one), request forms with how many routers answered, and the
-sanitized field-capture summary.
+the lab read one), request forms with how many routers answered and
+whether a never-seen sender got a neighbor row, TTL by discover-interval,
+the sanitized field-capture summary, and a versions index (which versions
+each TLV and value was seen on, across every evidence payload).
 [`make-fixtures.ts`](../work/2026-11-mndp-grounding/make-fixtures.ts)
 regenerates them from `work/2026-11-mndp-grounding/evidence/`, and
 [`mndp-profile.test.ts`](../test/profiles/mndp/mndp-profile.test.ts)
