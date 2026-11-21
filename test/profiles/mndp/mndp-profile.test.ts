@@ -387,8 +387,14 @@ function isRequest(hex: string): boolean {
 	).getUint32(0);
 	return rule["any-of"].some((clause) => {
 		if (clause.header !== undefined) return header === clause.header;
-		if (clause["has-tlv"] !== undefined)
-			return d.records.some((r) => r.type === clause["has-tlv"]);
+		if (clause["has-tlv"] !== undefined) {
+			const lengths = clause["tested-value-lengths"];
+			return d.records.some(
+				(r) =>
+					r.type === clause["has-tlv"] &&
+					(lengths === undefined || lengths.includes(r.value.length)),
+			);
+		}
 		throw new Error(`unknown request clause ${JSON.stringify(clause)}`);
 	});
 }
@@ -656,6 +662,15 @@ describe("MNDP schema shape", () => {
 		}
 	});
 
+	test("the request rule matches TLV 6 only at its tested value lengths", () => {
+		// Non-zero header + empty TLV 6: the TLV 6 clause alone (grounded).
+		expect(isRequest("0100000000060000")).toBe(true);
+		// Zero header + 1-byte TLV 6: a request through the header clause.
+		expect(isRequest("000000000006000100")).toBe(true);
+		// Non-zero header + 1-byte TLV 6: no grounded clause matches.
+		expect(isRequest("010000000006000100")).toBe(false);
+	});
+
 	test("the recommended request satisfies the request rule", () => {
 		expect(isRequest(profile.requests.recommended.hex)).toBe(true);
 	});
@@ -812,8 +827,6 @@ describe("versions-seen matches the evidence in both directions", () => {
 
 // ── announcement replay ──────────────────────────────────────────────────
 
-const oneOfHits: { group: OrderItem; seq: string; version: string }[] = [];
-
 describe("lab announcements decode by the YAML", () => {
 	test("fixture coverage", () => {
 		expect(announcements.length).toBeGreaterThanOrEqual(35);
@@ -878,9 +891,7 @@ describe("lab announcements decode by the YAML", () => {
 			const layouts = layoutFor(rec.kind, version);
 			expect(layouts.length, `layout for ${rec.kind} ${version}`).toBe(1);
 			expect(
-				matchesOrder(types, layouts[0]?.order ?? [], (group, seq) => {
-					oneOfHits.push({ group, seq: seq.join(","), version });
-				}),
+				matchesOrder(types, layouts[0]?.order ?? []),
 				`order ${types.join(",")}`,
 			).toBe(true);
 		});
@@ -894,6 +905,16 @@ describe("lab announcements decode by the YAML", () => {
 			),
 		);
 		expect(groups.length).toBeGreaterThan(0);
+		// Collect the matches here so the test also works when run alone.
+		const oneOfHits: { group: OrderItem; seq: string; version: string }[] = [];
+		for (const rec of announcements) {
+			const types = mustParse(rec.payloadHex).records.map((r) => r.type);
+			const version = rec.version as string;
+			for (const layout of layoutFor(rec.kind, version))
+				matchesOrder(types, layout.order, (group, seq) =>
+					oneOfHits.push({ group, seq: seq.join(","), version }),
+				);
+		}
 		for (const g of groups) {
 			const hits = oneOfHits.filter((h) => h.group === g);
 			expect(sortedSet(hits.map((h) => h.seq))).toEqual(

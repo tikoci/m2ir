@@ -778,9 +778,17 @@ requests:
   # A datagram that passes physical/mndp.yaml framing-rule is a request when
   # ANY of `any-of` holds. A request asks every router on the segment to
   # announce now. Malformed datagrams are not requests: no router answered
-  # one (see framing-rule receiver-behavior). `tested-value-lengths` on a
-  # clause lists the TLV value lengths for which that clause ALONE (with no
-  # other clause true) was shown to draw replies.
+  # one (see framing-rule receiver-behavior).
+  #
+  # A `has-tlv` clause with `tested-value-lengths` matches only when the TLV's
+  # value length is in that list: those are the lengths for which the clause
+  # ALONE (no other clause true) was shown to draw replies. A datagram that
+  # matches no clause is not a grounded request; receiver behavior for it is
+  # unknown unless a form below records it. `untested` is an observation
+  # note, not part of the match. So:
+  #   0100000000060000    non-zero header, empty TLV 6     → request
+  #   000000000006000100  zero header, 1-byte TLV 6        → request (header)
+  #   010000000006000100  non-zero header, 1-byte TLV 6    → no grounded match
   rule:
     requires: framing-rule
     any-of:
