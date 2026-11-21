@@ -64,7 +64,6 @@ DDNS
 donny
 dogtail
 dotenv
-datagram
 datagrams
 DSL # domain specific language
 EVP

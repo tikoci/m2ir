@@ -64,6 +64,10 @@ scope:
     - "7.25.1"
     - "7.26beta5"
   architectures-observed: [x86_64, arm, arm64, mipsbe]
+  # Architectures backed by committed samples: x86_64 (lab CHRs), arm and
+  # mipsbe (field summary rows). arm64 rests on FINDINGS.md's account of the
+  # field capture; the committed summary records no arm64 row.
+  architectures-in-committed-samples: [x86_64, arm, mipsbe]
   evidence-sets:
     lab:
       role: "quickchr CHRs 6.49.23, 7.24.6, 7.25 and 7.26beta5 on socket links, one setting changed per step, both routers' sniffers streamed to the host"
@@ -189,8 +193,13 @@ header:
 # /ip/neighbor field RouterOS 7.26beta5 prints for it (null when none).
 # `length` is the value length a decoder accepts, in bytes, or `any`; when
 # a sender should use one specific length that `length` does not pin down,
-# `emit-length` gives it. `in` lists the datagram
-# kinds that carry the TLV: announcement, request, dying-gasp. `repeat`
+# `emit-length` gives it. `in` lists the kinds of datagram whose sender
+# layout carries the TLV: announcement, request, dying-gasp. It describes
+# what senders put in, not how a receiver classifies the datagram: a boot
+# announcement (kind announcement, header 0) also satisfies the request
+# rule. `versions-seen` lists sender versions, except where
+# `versions-seen-of: receiver` says the versions are the routers that
+# received and answered it (TLV 6, which only the lab station sent). `repeat`
 # is true when one datagram can carry the TLV more than once. `since` is
 # the first version seen sending it, when older versions did not;
 # `introduced`, where given, is the release whose changelog adds it.
@@ -283,15 +292,20 @@ tlvs:
     accepted-lengths-seen: [0, 1]
     in: [request]
     confidence: observed-only
+    versions-seen-of: receiver
     versions-seen: ["6.49.23", "7.17.2", "7.18.2", "7.20.8", "7.26beta5"]
     notes: |
-      "Send your announcement now". Never seen in an announcement. Any
-      well-formed datagram that carries it draws replies, whatever the header,
-      and a 7.x receiver does not list its sender as a neighbor. Send it
-      empty (`emit-length: 0`), as in the recommended request. Receivers
-      ignore the value, so a decoder accepts any length: a 1-byte value
-      (000000000006000100) also drew replies; longer values were not
-      tried. See `requests`.
+      "Send your announcement now". Never seen in an announcement. An EMPTY
+      TLV 6 makes a well-formed datagram a request whatever the header: the
+      non-zero-header probes (0100000000060000, 0000000100060000) drew
+      replies. A 7.x receiver did not list the sender of 0000000000060000 as
+      a neighbor. Send it empty (`emit-length: 0`). A 1-byte value was sent
+      only with a zero header (000000000006000100), which is a request on its
+      own, so that probe shows the datagram is accepted, not that a
+      non-empty TLV 6 triggers a reply; a non-empty TLV 6 with a non-zero
+      header was not tested. `accepted-lengths-seen` lists the lengths in
+      datagrams that drew replies; `length: any` keeps decoding permissive.
+      See `requests`.
     evidence:
       - source: sample
         ref: "hub lab request forms; see work/2026-11-mndp-grounding/evidence/requests-forms.json and requests-fresh.json"
@@ -357,7 +371,8 @@ tlvs:
     versions-seen: ["7.26beta5"]
     notes: |
       The /ip/packing aggregated-size, sent only with TLV 2. Little-endian on
-      x86 (CHR): 1500 → dc 05 00 00, 1000 → e8 03 00 00. No /ip/neighbor
+      x86_64 (CHR): 1500 → dc 05 00 00, 1000 → e8 03 00 00; unverified on
+      every other architecture, 32-bit x86 included. No /ip/neighbor
       field shows it. Decode it as u32le only for an x86_64 sender and keep
       the raw bytes otherwise; a receiver can only guess the sender's
       architecture, for example from TLV 12 board.
@@ -761,14 +776,16 @@ unpack-derivation:
 # ── requests ─────────────────────────────────────────────────────────────
 requests:
   # A datagram that passes physical/mndp.yaml framing-rule is a request when
-  # ANY of `any-of` holds. Malformed datagrams are not requests; every
-  # malformed form tested was dropped whole (see framing-rule). A request
-  # asks every router on the segment to announce now.
+  # ANY of `any-of` holds. A request asks every router on the segment to
+  # announce now. Malformed datagrams are not requests: no router answered
+  # one (see framing-rule receiver-behavior). `tested-value-lengths` on a
+  # clause lists the TLV value lengths for which that clause ALONE (with no
+  # other clause true) was shown to draw replies.
   rule:
     requires: framing-rule
     any-of:
       - { header: 0x00000000 }
-      - { has-tlv: 6 }
+      - { has-tlv: 6, tested-value-lengths: [0], untested: "a non-empty TLV 6 with a non-zero header" }
   confidence: observed-only
   versions-seen: ["6.49.23", "7.17.2", "7.18.2", "7.20.8", "7.26beta5"]
   recommended:
@@ -783,9 +800,11 @@ requests:
   # datagram is not refreshed by one that creates none (fresh-z9-after-z4:
   # age 55 s). Whether 6.49.23 lists a requester was not checked.
   neighbor-row-rule: |
-    On the 7.x receivers, every well-formed datagram checked created a
-    neighbor row for its sender except one carrying TLV 6. Malformed
-    datagrams created none.
+    On the five 7.x receivers, of the forms read in requests-fresh.json,
+    00000000 and 01000000 created a row for a never-seen sender and
+    0000000000060000 (empty TLV 6) did not. The three malformed forms read
+    there (one byte after the last complete TLV) created none. Other forms,
+    and 6.49.23, were not checked.
   forms:
     - { hex: "00000000", form: "header 0 (MAC-Telnet)", replies: true, requester-row: created-or-refreshed }
     - { hex: "0000000000000000", form: "header 0 + empty TLV 0", replies: true, requester-row: not-checked }
@@ -832,15 +851,21 @@ requests:
   open: "WinBox's own request bytes were not captured, nor whether RoMON or the Dude send requests."
 
 # ── TLV order by version ─────────────────────────────────────────────────
-# `sampled` lists the versions a layout was captured on; `from`/`to` are
-# the lowest and highest of them (null = open-ended), and versions in
-# between are assumed, not sampled. `order` lists TLV types. An `optional`
-# group's TLVs may each be left out but keep their relative order;
-# `repeat: true` lets each appear more than once (TLV 15, one per IPv6
-# address). A `one-of` group is exactly one of the listed sequences, or
-# none when `optional: true`. TLVs 15 and 17 are left out when the
-# interface has no such address, including right after boot. No receiver
-# was seen to depend on the order; that was not tested.
+# Layouts describe the order senders were seen to use. They are not
+# validation rules: a decoder should accept TLVs in any order, and no
+# receiver was seen to depend on the order (not tested).
+#
+# `sampled` lists the versions a layout was captured on. `from`/`to` are
+# advisory bounds, the lowest and highest sampled version (`to: null` =
+# open-ended); any version other than a sampled one is extrapolation.
+# `order` lists TLV types. An `optional` group's TLVs may each be left out
+# but keep their relative order; `repeat: true` lets each appear more than
+# once (TLV 15, one per IPv6 address). A `one-of` group is exactly one of
+# its sequences, or none when `optional: true`; its `versions-seen` records
+# the versions on which those sequences were observed (narrower than the
+# layout's bounds), so outside those versions the group is extrapolation
+# too. TLVs 15 and 17 are left out when the interface has no such address,
+# including right after boot.
 layouts:
   - kind: announcement
     from: "6.49.21"

@@ -28,8 +28,8 @@ transport:
 endian-policy: |
   The TLV header (type and length) is big-endian. Value byte order is per
   TLV and set by the profile: addresses are in network order, uptime is
-  little-endian, and aggregated-size is little-endian on x86 senders and
-  unverified elsewhere. The 4-byte
+  little-endian, and aggregated-size is little-endian on x86_64 senders
+  and unverified on every other architecture. The 4-byte
   datagram header is in the SENDER's CPU byte order, so a receiver cannot
   pick one fixed order for it.
 
@@ -74,13 +74,21 @@ framing-rule:
     shorter than the 4-byte header, or with bytes left over that do not
     form a whole record (including a record whose length runs past the
     end), is malformed.
-  receiver-behavior: |
-    RouterOS dropped every malformed form tested whole: no reply to it and
-    no neighbor row for its sender, even when it started with a valid
-    request. The forms tested were shorter than a header (empty, 3 bytes),
-    or had bytes left over that do not form a whole TLV header (1 to 4
-    trailing bytes). A complete TLV header whose length runs past the end
-    was not sent to a router; a decoder still treats it as malformed.
+  # What RouterOS did with the malformed forms the lab sent. Each claim is
+  # limited to its own sample; a complete TLV header whose length runs past
+  # the end was never sent to a router (a decoder still treats it as
+  # malformed).
+  receiver-behavior:
+    replies: |
+      No router answered any malformed form, even one that started with a
+      valid request. Forms: shorter than a header (empty, 3 bytes), and 1 or
+      3 bytes left after the last complete TLV. Six routers (6.49.23 to
+      7.26beta5), requests-forms.json and requests-main-run2.json.
+    neighbor-row: |
+      No 7.x receiver created a neighbor row for a never-seen sender of
+      000000000000000000, 000000000006000000 or 0000000000 (one byte after
+      the last complete TLV). Five 7.x receivers, requests-fresh.json. Other
+      malformed forms, and 6.49.23, were not checked.
   confidence: observed-only
   versions-seen: ["6.49.23", "7.17.2", "7.18.2", "7.20.8", "7.26beta5"]
   evidence:

@@ -38,8 +38,10 @@ interface Encoding {
 }
 interface SeqItem {
 	name: string;
-	size?: number;
+	size?: number | string;
 	width?: string;
+	kind?: string;
+	repeat?: string;
 }
 interface PhysicalDoc {
 	id: string;
@@ -93,7 +95,7 @@ interface Tlv extends Scoped {
 type OrderItem =
 	| number
 	| { optional: number[]; repeat?: boolean }
-	| { "one-of": number[][]; optional?: boolean };
+	| { "one-of": number[][]; optional?: boolean; "versions-seen"?: string[] };
 interface Layout {
 	kind: Kind;
 	from: string;
@@ -104,6 +106,7 @@ interface Layout {
 interface RuleClause {
 	header?: number;
 	"has-tlv"?: number;
+	"tested-value-lengths"?: number[];
 }
 type RequesterRow = "created-or-refreshed" | "none" | "not-checked";
 interface ProfileDoc {
@@ -331,7 +334,11 @@ function ipv6Hex(addr: string): string {
 }
 
 /** Does `types` follow `order`? See the layouts comment in profile.yaml. */
-function matchesOrder(types: number[], order: OrderItem[]): boolean {
+function matchesOrder(
+	types: number[],
+	order: OrderItem[],
+	onOneOf?: (group: OrderItem, seq: number[]) => void,
+): boolean {
 	let i = 0;
 	for (const item of order) {
 		if (typeof item === "number") {
@@ -341,8 +348,10 @@ function matchesOrder(types: number[], order: OrderItem[]): boolean {
 			const hit = item["one-of"].find((seq) =>
 				seq.every((t, k) => types[i + k] === t),
 			);
-			if (hit) i += hit.length;
-			else if (!item.optional) return false;
+			if (hit) {
+				i += hit.length;
+				onOneOf?.(item, hit);
+			} else if (!item.optional) return false;
 		} else {
 			for (const member of item.optional) {
 				if (types[i] === member) {
@@ -418,9 +427,128 @@ describe("MNDP schema shape", () => {
 	});
 
 	test("the physical grammar is the one RouterOS sends", () => {
+		const pick = (seq: SeqItem[]) =>
+			seq.map(({ name, size, width, kind, repeat }) => ({
+				name,
+				size,
+				width,
+				kind,
+				repeat,
+			}));
+		expect(pick(physical.structure.datagram.seq)).toEqual([
+			{
+				name: "header",
+				size: 4,
+				width: undefined,
+				kind: undefined,
+				repeat: undefined,
+			},
+			{
+				name: "records",
+				size: undefined,
+				width: undefined,
+				kind: "tlv",
+				repeat: "eos",
+			},
+		]);
+		expect(pick(physical.structure.tlv.seq)).toEqual([
+			{
+				name: "type",
+				size: undefined,
+				width: "u16be",
+				kind: undefined,
+				repeat: undefined,
+			},
+			{
+				name: "length",
+				size: undefined,
+				width: "u16be",
+				kind: undefined,
+				repeat: undefined,
+			},
+			{
+				name: "value",
+				size: "length",
+				width: undefined,
+				kind: undefined,
+				repeat: undefined,
+			},
+		]);
 		expect(HEADER_SIZE).toBe(4);
-		expect(TYPE_WIDTH).toBe("u16be");
-		expect(LENGTH_WIDTH).toBe("u16be");
+	});
+
+	test("a TLV with an architecture binding falls back to raw bytes", () => {
+		for (const [type, t] of Object.entries(profile.tlvs)) {
+			if (!t["encoding-by-architecture"]) continue;
+			expect(
+				physical["value-encodings"][t.encoding]?.size,
+				`TLV ${type}`,
+			).toBeNull();
+		}
+		// TLV 9's byte order is known only for x86_64 senders.
+		const [, aggregatedSize] = tlvNamed("aggregated-size");
+		expect(aggregatedSize.encoding).toBe("bytes");
+		const x86 = aggregatedSize["encoding-by-architecture"]?.find((b) =>
+			b.architectures.includes("x86_64"),
+		);
+		expect(x86?.encoding).toBe("u32le");
+		expect(
+			aggregatedSize["encoding-by-architecture"]?.flatMap(
+				(b) => b.architectures,
+			),
+		).toEqual(["x86_64"]);
+	});
+
+	test("a bitmask TLV names a mask for every bit seen", () => {
+		for (const [type, t] of Object.entries(profile.tlvs)) {
+			if (t.encoding !== "bitmask-u8") continue;
+			expect(t.bits?.length ?? 0, `TLV ${type} bits`).toBeGreaterThan(0);
+			const named = (t.bits ?? []).reduce((m, b) => m | b.mask, 0);
+			const seen = Object.keys(versionsIndex.values)
+				.filter((k) => k.startsWith(`${type}:`))
+				.map((k) => Number(k.split(":")[1]));
+			expect(seen.length, `TLV ${type} values in the index`).toBeGreaterThan(0);
+			for (const v of seen)
+				expect(v & ~named, `TLV ${type} value ${v}`).toBe(0);
+			for (const b of t.bits ?? [])
+				expect(
+					seen.some((v) => (v & b.mask) !== 0),
+					`${t.name} mask ${b.mask} seen`,
+				).toBe(true);
+		}
+	});
+
+	test("a request clause holds alone only at its tested value lengths", () => {
+		for (const clause of profile.requests.rule["any-of"]) {
+			const tested = clause["tested-value-lengths"];
+			const type = clause["has-tlv"];
+			if (tested === undefined || type === undefined) continue;
+			const others = profile.requests.rule["any-of"].filter(
+				(c) => c !== clause,
+			);
+			const lengths = new Set<number>();
+			for (const form of profile.requests.forms) {
+				const d = parseDatagram(form.hex);
+				if (!d || !form.replies) continue;
+				const header = new DataView(
+					d.header.buffer,
+					d.header.byteOffset,
+					4,
+				).getUint32(0);
+				const otherHolds = others.some(
+					(c) =>
+						(c.header !== undefined && header === c.header) ||
+						(c["has-tlv"] !== undefined &&
+							d.records.some((r) => r.type === c["has-tlv"])),
+				);
+				if (otherHolds) continue;
+				for (const r of d.records)
+					if (r.type === type) lengths.add(r.value.length);
+			}
+			expect([...lengths].sort(), `has-tlv ${type} alone`).toEqual(
+				[...tested].sort(),
+			);
+		}
 	});
 
 	test("the parser rejects what framing-rule calls malformed", () => {
@@ -557,16 +685,17 @@ describe("MNDP schema shape", () => {
 			);
 		}
 		expect(checked).toBeGreaterThan(0);
-		// The recommended request uses each TLV's emit-length.
+		// Every TLV in the recommended request tells a sender what length to
+		// use (a fixed `length`, or `emit-length`), and the request uses it.
 		const rec = mustParse(profile.requests.recommended.hex);
+		expect(rec.records.length).toBeGreaterThan(0);
 		for (const r of rec.records) {
 			const t = profile.tlvs[r.type];
-			if (t?.["emit-length"] !== undefined)
-				expect(r.value.length, `recommended TLV ${r.type}`).toBe(
-					t["emit-length"],
-				);
-			if (t && t["emit-length"] !== undefined)
-				expect(accepts(t, t["emit-length"])).toBe(true);
+			if (!t) throw new Error(`recommended TLV ${r.type} not in profiles/mndp`);
+			const send = t.length === "any" ? t["emit-length"] : t.length;
+			expect(send, `recommended TLV ${r.type}: length to send`).toBeDefined();
+			expect(r.value.length, `recommended TLV ${r.type}`).toBe(send as number);
+			expect(accepts(t, send as number)).toBe(true);
 		}
 	});
 
@@ -596,14 +725,13 @@ describe("versions-seen matches the evidence in both directions", () => {
 		}
 	});
 
-	test("each TLV's since is no later than its first sighting", () => {
+	test("each TLV's since is its earliest sighting", () => {
 		for (const [type, t] of Object.entries(profile.tlvs)) {
 			if (!t.since) continue;
-			for (const v of versionsIndex.tlvs[type] ?? [])
-				expect(
-					compareVersions(v, t.since),
-					`TLV ${type} on ${v}`,
-				).toBeGreaterThanOrEqual(0);
+			const earliest = [...(versionsIndex.tlvs[type] ?? [])].sort(
+				compareVersions,
+			)[0];
+			expect(t.since, `TLV ${type} since`).toBe(earliest as string);
 			const before = versionsIndex.versions.filter(
 				(v) => compareVersions(v, t.since as string) < 0,
 			);
@@ -684,6 +812,8 @@ describe("versions-seen matches the evidence in both directions", () => {
 
 // ── announcement replay ──────────────────────────────────────────────────
 
+const oneOfHits: { group: OrderItem; seq: string; version: string }[] = [];
+
 describe("lab announcements decode by the YAML", () => {
 	test("fixture coverage", () => {
 		expect(announcements.length).toBeGreaterThanOrEqual(35);
@@ -748,11 +878,38 @@ describe("lab announcements decode by the YAML", () => {
 			const layouts = layoutFor(rec.kind, version);
 			expect(layouts.length, `layout for ${rec.kind} ${version}`).toBe(1);
 			expect(
-				matchesOrder(types, layouts[0]?.order ?? []),
+				matchesOrder(types, layouts[0]?.order ?? [], (group, seq) => {
+					oneOfHits.push({ group, seq: seq.join(","), version });
+				}),
 				`order ${types.join(",")}`,
 			).toBe(true);
 		});
 	}
+
+	test("each one-of group: every sequence observed, only on its versions-seen", () => {
+		const groups = profile.layouts.flatMap((l) =>
+			l.order.filter(
+				(o): o is Extract<OrderItem, { "one-of": number[][] }> =>
+					typeof o === "object" && "one-of" in o,
+			),
+		);
+		expect(groups.length).toBeGreaterThan(0);
+		for (const g of groups) {
+			const hits = oneOfHits.filter((h) => h.group === g);
+			expect(sortedSet(hits.map((h) => h.seq))).toEqual(
+				sortedSet(g["one-of"].map((seq) => seq.join(","))),
+			);
+			for (const h of hits)
+				expect(g["versions-seen"] ?? [], `${h.seq} on ${h.version}`).toContain(
+					h.version,
+				);
+			// The group's versions are where any of its TLVs was ever seen.
+			const union = g["one-of"]
+				.flat()
+				.flatMap((t) => versionsIndex.tlvs[t] ?? []);
+			expect(sortedSet(g["versions-seen"] ?? [])).toEqual(sortedSet(union));
+		}
+	});
 });
 
 describe("neighbor rows match the YAML's neighbor-field bindings", () => {

@@ -222,6 +222,11 @@ function requesterRow(
 	id: string,
 	listedBy: Record<string, { age: string } | null>,
 ): "created-or-refreshed" | "none" {
+	const receivers = Object.keys(listedBy);
+	if (receivers.length !== 5)
+		throw new Error(
+			`requests-fresh ${id}: expected reads from 5 7.x receivers, got ${receivers.length}`,
+		);
 	const ages = Object.values(listedBy).map((row) =>
 		row ? Number.parseInt(row.age, 10) : null,
 	);

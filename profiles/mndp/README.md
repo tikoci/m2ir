@@ -29,9 +29,9 @@ hits first, each with its entry in `profile.yaml`:
   depends on the sender's version. `unpack=` comes from TLVs 2–4.
 - **A request** must first pass the framing rule: its TLVs end exactly at
   the end of the datagram. Then it is a request if the header is
-  `00000000` or it carries TLV 6. Every malformed form tested (trailing
-  bytes, shorter than a header) was dropped whole. Send
-  `00 00 00 00 00 06 00 00`.
+  `00000000` or it carries an empty TLV 6 (a non-empty TLV 6 alone was not
+  tested). No router answered any malformed form tested (trailing bytes,
+  shorter than a header). Send `00 00 00 00 00 06 00 00`.
 
 ## Evidence
 
