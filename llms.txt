@@ -16,8 +16,8 @@ protocol, or a topic that does not fit them, start with Other formats and
 protocol research below and the format/research index. Use Returning new
 discoveries to contribute what you learn.
 `physical/` defines bytes, `profiles/` assigns meaning in a usage context,
-and `concepts/` is a placeholder for shared semantic identity. The WinBox
-and Dude profiles have content; CDB and MNDP profiles remain placeholders.
+and `concepts/` is a placeholder for shared semantic identity. The WinBox,
+Dude and MNDP profiles have content; the CDB profile remains a placeholder.
 
 ## Packet capture and decoding
 
@@ -155,7 +155,7 @@ forum theories about future protocol changes are not established behavior.
 - [Format and research index](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/README.md): Maintained routes across populated schemas, file-based formats, placeholder profiles, shared mechanisms, experimental tooling, and adjacent source leads. If a topic is missing, inspect the tracked physical/, profiles/, and work/ trees; an untracked local artifact is not a public source.
 - [The Dude profile](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/dude-on-disk/profile.yaml) → [object classes](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/dude-on-disk/object-classes.yaml) → [fields](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/dude-on-disk/fields.yaml): Initial populated schema for dude.db object blobs. Follow evidence to donny / TheDudeToHuman. Preserve object-class/tag identity and marker rules; WinBox naming and compact rules do not transfer unchanged.
 - [CDB saved-connections guide](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-cdb/README.md): Placeholder profile with pinned centrs reader/test references; use the source inventory below for WBX saved sessions and conversion leads. Saved RoMON neighbor/target records do not establish the RoMON tunnel protocol.
-- [MNDP guide](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/mndp/README.md): Placeholder for a separate TLV grammar; pinned external codec/tests provide implementation evidence. No canonical MNDP YAML is populated yet.
+- [MNDP guide](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/mndp/README.md) → [datagram grammar](https://raw.githubusercontent.com/tikoci/m2ir/main/physical/mndp.yaml) → [profile](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/mndp/profile.yaml): Separate TLV grammar. Header counter, TLVs 1–19 with encodings, byte order, values and version scope, requests, layout by version, and timing, grounded on RouterOS 6.49 to 7.26beta5. Read each entry's confidence and versions-seen before treating it as general.
 - [CHR extraction](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-chr-extraction/README.md) and [x3parse.ts](https://raw.githubusercontent.com/tikoci/m2ir/main/work/2026-10-chr-extraction/x3parse.ts): RouterOS image/.x3 metadata research and experimental decoding, not a standalone canonical file-format profile.
 - [SYS keys](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/sys-keys.yaml), especially SYS_OWNER / 0xff001e, and Live probe findings above: selected /rw/store/cfg.* persistence evidence; not a general store-file grammar.
 - [WinBox guide's implementation trail](https://raw.githubusercontent.com/tikoci/m2ir/main/profiles/winbox-ipc/README.md): Shared EC-SRP5 findings consumed by MAC-Telnet and bandwidth-test code. This does not constitute complete m2ir profiles for those protocols. Profile/Processes/mproxy/Private commands above route internal IPC and the seeded terminal surface.

@@ -1,8 +1,8 @@
 # MNDP grounding lab (2026-11-15, hub lab 2026-11-16)
 
 Live grounding for the MNDP wire map. [`FINDINGS.md`](FINDINGS.md) holds
-the conclusions, and [`profiles/mndp/`](../../profiles/mndp/README.md)
-points to it. This file holds the method, the harness and the evidence.
+the conclusions, now promoted into
+[`profiles/mndp/profile.yaml`](../../profiles/mndp/profile.yaml). This file holds the method, the harness and the evidence.
 
 ## Method
 
@@ -57,6 +57,7 @@ router.
 | [`station.ts`](station.ts) | Host L2 hub + station over QEMU `listen-connect` sockets; frame builders for UDP over IPv4/IPv6 |
 | [`hub.ts`](hub.ts) | Long-running hub with a control API: `POST /send` injects a request, `GET /frames` returns what came back |
 | [`requests.ts`](requests.ts) | Request study: sets `main` (transports, ports, bursts), `forms` (payload variants, `--rounds` shuffled) and `fresh` (never-seen hosts, then reads every router's neighbor table) |
+| [`make-fixtures.ts`](make-fixtures.ts) | Writes `fixtures/mndp/*.json` from `evidence/` for the anchor test in `test/profiles/mndp/` |
 | [`hubstudy.ts`](hubstudy.ts) | Setting studies on the hub: `ipv6` (TLV 14 vs `disable-ipv6`, across reboots) and `running` (TLV 18 with CAPsMAN and CMR) |
 
 ## Reproduce

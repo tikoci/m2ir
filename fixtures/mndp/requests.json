@@ -1,0 +1,394 @@
+{
+	"provenance": {
+		"generator": "work/2026-11-mndp-grounding/make-fixtures.ts",
+		"routers": "six hub-lab routers: 6.49.23, 7.17.2, 7.18.2, 7.20.8 and two 7.26beta5",
+		"windowMs": 4000,
+		"notes": "responders = distinct routers that announced within the window after the send. Not every announcement in a window is a reply: 6.49.23's 60 s periodic can fall in one."
+	},
+	"records": [
+		{
+			"id": "nz4#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[0]",
+			"payloadHex": "01000000",
+			"responders": 0
+		},
+		{
+			"id": "nz-t6-9#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[1]",
+			"payloadHex": "010000000006000000",
+			"responders": 0
+		},
+		{
+			"id": "t6-8#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[2]",
+			"payloadHex": "0000000000060000",
+			"responders": 6
+		},
+		{
+			"id": "z4#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[3]",
+			"payloadHex": "00000000",
+			"responders": 6
+		},
+		{
+			"id": "z9#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[4]",
+			"payloadHex": "000000000000000000",
+			"responders": 0
+		},
+		{
+			"id": "t6-t0-9#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[5]",
+			"payloadHex": "00000000000600000000000000",
+			"responders": 0
+		},
+		{
+			"id": "nz-t6-8#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[6]",
+			"payloadHex": "0100000000060000",
+			"responders": 6
+		},
+		{
+			"id": "nzbe-t6-8#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[7]",
+			"payloadHex": "0000000100060000",
+			"responders": 6
+		},
+		{
+			"id": "ann-h0-trailing#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[8]",
+			"payloadHex": "00000000000100060244444444440005000570726f626500",
+			"responders": 0
+		},
+		{
+			"id": "nz-t0-8#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[9]",
+			"payloadHex": "0100000000000000",
+			"responders": 0
+		},
+		{
+			"id": "z8#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[10]",
+			"payloadHex": "0000000000000000",
+			"responders": 6
+		},
+		{
+			"id": "z0-garbage#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[11]",
+			"payloadHex": "0000000000000000ffffff",
+			"responders": 0
+		},
+		{
+			"id": "t6-9#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[12]",
+			"payloadHex": "000000000006000000",
+			"responders": 0
+		},
+		{
+			"id": "z5#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[13]",
+			"payloadHex": "0000000000",
+			"responders": 1
+		},
+		{
+			"id": "t6-len1#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[14]",
+			"payloadHex": "000000000006000100",
+			"responders": 6
+		},
+		{
+			"id": "z8#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[15]",
+			"payloadHex": "0000000000000000",
+			"responders": 6
+		},
+		{
+			"id": "nzbe-t6-8#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[16]",
+			"payloadHex": "0000000100060000",
+			"responders": 6
+		},
+		{
+			"id": "z9#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[17]",
+			"payloadHex": "000000000000000000",
+			"responders": 0
+		},
+		{
+			"id": "nz-t6-8#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[18]",
+			"payloadHex": "0100000000060000",
+			"responders": 6
+		},
+		{
+			"id": "nz-t6-9#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[19]",
+			"payloadHex": "010000000006000000",
+			"responders": 0
+		},
+		{
+			"id": "t6-len1#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[20]",
+			"payloadHex": "000000000006000100",
+			"responders": 6
+		},
+		{
+			"id": "z5#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[21]",
+			"payloadHex": "0000000000",
+			"responders": 0
+		},
+		{
+			"id": "t6-t0-9#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[22]",
+			"payloadHex": "00000000000600000000000000",
+			"responders": 0
+		},
+		{
+			"id": "nz4#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[23]",
+			"payloadHex": "01000000",
+			"responders": 0
+		},
+		{
+			"id": "ann-h0-trailing#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[24]",
+			"payloadHex": "00000000000100060244444444440005000570726f626500",
+			"responders": 0
+		},
+		{
+			"id": "t6-8#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[25]",
+			"payloadHex": "0000000000060000",
+			"responders": 6
+		},
+		{
+			"id": "t6-9#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[26]",
+			"payloadHex": "000000000006000000",
+			"responders": 0
+		},
+		{
+			"id": "nz-t0-8#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[27]",
+			"payloadHex": "0100000000000000",
+			"responders": 0
+		},
+		{
+			"id": "z4#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[28]",
+			"payloadHex": "00000000",
+			"responders": 6
+		},
+		{
+			"id": "z0-garbage#1",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[29]",
+			"payloadHex": "0000000000000000ffffff",
+			"responders": 0
+		},
+		{
+			"id": "nz4#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[30]",
+			"payloadHex": "01000000",
+			"responders": 1
+		},
+		{
+			"id": "t6-len1#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[31]",
+			"payloadHex": "000000000006000100",
+			"responders": 6
+		},
+		{
+			"id": "ann-h0-trailing#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[32]",
+			"payloadHex": "00000000000100060244444444440005000570726f626500",
+			"responders": 0
+		},
+		{
+			"id": "nzbe-t6-8#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[33]",
+			"payloadHex": "0000000100060000",
+			"responders": 6
+		},
+		{
+			"id": "t6-9#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[34]",
+			"payloadHex": "000000000006000000",
+			"responders": 0
+		},
+		{
+			"id": "z9#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[35]",
+			"payloadHex": "000000000000000000",
+			"responders": 0
+		},
+		{
+			"id": "nz-t6-8#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[36]",
+			"payloadHex": "0100000000060000",
+			"responders": 6
+		},
+		{
+			"id": "nz-t0-8#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[37]",
+			"payloadHex": "0100000000000000",
+			"responders": 0
+		},
+		{
+			"id": "t6-t0-9#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[38]",
+			"payloadHex": "00000000000600000000000000",
+			"responders": 0
+		},
+		{
+			"id": "z4#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[39]",
+			"payloadHex": "00000000",
+			"responders": 6
+		},
+		{
+			"id": "t6-8#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[40]",
+			"payloadHex": "0000000000060000",
+			"responders": 6
+		},
+		{
+			"id": "z5#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[41]",
+			"payloadHex": "0000000000",
+			"responders": 0
+		},
+		{
+			"id": "z0-garbage#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[42]",
+			"payloadHex": "0000000000000000ffffff",
+			"responders": 0
+		},
+		{
+			"id": "nz-t6-9#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[43]",
+			"payloadHex": "010000000006000000",
+			"responders": 0
+		},
+		{
+			"id": "z8#2",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-forms.json requests[44]",
+			"payloadHex": "0000000000000000",
+			"responders": 6
+		},
+		{
+			"id": "fresh-z4#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[0]",
+			"payloadHex": "00000000",
+			"responders": 6
+		},
+		{
+			"id": "fresh-z9#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[1]",
+			"payloadHex": "000000000000000000",
+			"responders": 0
+		},
+		{
+			"id": "fresh-z9-again#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[2]",
+			"payloadHex": "000000000000000000",
+			"responders": 0
+		},
+		{
+			"id": "fresh-t6-9#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[3]",
+			"payloadHex": "000000000006000000",
+			"responders": 0
+		},
+		{
+			"id": "fresh-z5#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[4]",
+			"payloadHex": "0000000000",
+			"responders": 0
+		},
+		{
+			"id": "fresh-nz4#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[5]",
+			"payloadHex": "01000000",
+			"responders": 0
+		},
+		{
+			"id": "fresh-t6-8#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[6]",
+			"payloadHex": "0000000000060000",
+			"responders": 6
+		},
+		{
+			"id": "fresh-z9-after-z4#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-fresh.json requests[7]",
+			"payloadHex": "000000000000000000",
+			"responders": 1
+		},
+		{
+			"id": "z4-bcast#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-main-run2.json requests[1]",
+			"payloadHex": "00000000",
+			"responders": 6
+		},
+		{
+			"id": "z9-bcast#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-main-run2.json requests[2]",
+			"payloadHex": "000000000000000000",
+			"responders": 0
+		},
+		{
+			"id": "t6-8-bcast#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-main-run2.json requests[3]",
+			"payloadHex": "0000000000060000",
+			"responders": 6
+		},
+		{
+			"id": "t6-9-bcast#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-main-run2.json requests[4]",
+			"payloadHex": "000000000006000000",
+			"responders": 0
+		},
+		{
+			"id": "nz4-bcast#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-main-run2.json requests[5]",
+			"payloadHex": "01000000",
+			"responders": 0
+		},
+		{
+			"id": "nz-t6-bcast#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-main-run2.json requests[6]",
+			"payloadHex": "0100000000060000",
+			"responders": 6
+		},
+		{
+			"id": "nzbe4-bcast#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-main-run2.json requests[7]",
+			"payloadHex": "00000001",
+			"responders": 0
+		},
+		{
+			"id": "empty-bcast#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-main-run2.json requests[8]",
+			"payloadHex": "",
+			"responders": 0
+		},
+		{
+			"id": "z3-bcast#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-main-run2.json requests[9]",
+			"payloadHex": "000000",
+			"responders": 0
+		},
+		{
+			"id": "fake-ann-h0#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-main-run2.json requests[10]",
+			"payloadHex": "00000000000100060244444444440005000570726f6265",
+			"responders": 6
+		},
+		{
+			"id": "fake-ann-h5#0",
+			"source": "work/2026-11-mndp-grounding/evidence/requests-main-run2.json requests[11]",
+			"payloadHex": "05000000000100060244444444440005000570726f6265",
+			"responders": 0
+		}
+	]
+}

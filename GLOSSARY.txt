@@ -64,6 +64,8 @@ DDNS
 donny
 dogtail
 dotenv
+datagram
+datagrams
 DSL # domain specific language
 EVP
 env
@@ -100,6 +102,9 @@ MIB
 MikroTik
 mikropkl
 MNDP
+MNDPTYPE # MAC-Telnet MT_MNDPTYPE_* constants for MNDP TLV types (with SOFTID, IFNAME)
+IFNAME # MAC-Telnet MT_MNDPTYPE_IFNAME, MNDP TLV 16
+SOFTID # MAC-Telnet MT_MNDPTYPE_SOFTID, MNDP TLV 11
 netmiko # [Multi-vendor library to simplify Paramiko SSH connections to network devices](https://github.com/ktbyers/netmiko)
 netwatch
 npk # MikroTik package format

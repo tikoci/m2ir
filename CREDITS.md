@@ -59,6 +59,14 @@ notes in [`work/2026-05-m2ir-bootstrap/`](work/2026-05-m2ir-bootstrap/),
 and the `PROTOCOL.md` notes that drove the v0.1 strawman drain. License:
 MIT; both folders keep the upstream notice in their own `LICENSE`.
 
+### [Wireshark MNDP dissector](https://github.com/wireshark/wireshark/blob/ffc784d8541ac6bfb038d2186195252603d1f602/epan/dissectors/packet-mndp.c) and [haakonnessjoen / MAC-Telnet](https://github.com/haakonnessjoen/MAC-Telnet)
+
+The public TLV names behind `profiles/mndp/` (types 1, 5, 7, 8, 10, 11,
+12, 14 to 17) and the big-endian TLV header in `physical/mndp.yaml`.
+Only names and numbers were taken; the encodings, byte order, versions
+and the TLV 14 correction come from m2ir's own MNDP grounding lab
+(`work/2026-11-mndp-grounding/`). License: GPL-2.0 for both.
+
 ## Adding a new source
 
 If you drain a substantial new source — a project repo, a research

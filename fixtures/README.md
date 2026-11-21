@@ -43,6 +43,17 @@ indexes completed experiments and remaining gaps. The
 reproducible live probes and their dependencies/controls; replaying an
 existing fixture does not constitute a new live observation.
 
-Dude and MNDP fixture collections remain unpopulated. Broader format
+## MNDP evidence
+
+[`mndp/`](mndp/) holds slices of the MNDP grounding lab: announcement
+payloads by version and setting (with the observer's neighbor row where
+the lab read one), request forms with how many routers answered, and the
+sanitized field-capture summary.
+[`make-fixtures.ts`](../work/2026-11-mndp-grounding/make-fixtures.ts)
+regenerates them from `work/2026-11-mndp-grounding/evidence/`, and
+[`mndp-profile.test.ts`](../test/profiles/mndp/mndp-profile.test.ts)
+replays them against the YAML.
+
+The Dude fixture collection remains unpopulated. Broader format
 discovery starts at the [profile index](../profiles/README.md); a profile
 placeholder does not imply a decoder or fixture corpus exists.
