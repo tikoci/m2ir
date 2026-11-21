@@ -179,9 +179,9 @@ describe("sessions [13,4] GETALL replay", () => {
 		expect(fields.get(2)?.name).toBe("username");
 		expect(fields.get(3)?.name).toBe("peer-ipv4");
 		expect(fields.get(4)?.name).toBe("transport");
-		expect(fields.get(5)?.name).toBe("unknown-5");
-		expect(fields.get(6)?.name).toBe("unknown-6");
-		expect(fields.get(8)?.name).toBe("unknown-8");
+		expect(fields.get(5)?.name).toBe("radius");
+		expect(fields.get(6)?.name).toBe("type");
+		expect(fields.get(8)?.name).toBe("group");
 		// The f4 transport enum lives in the YAML role, not here.
 		const role = required(fields.get(4)?.role, "transport role");
 		expect(role).toContain("1=winbox");
@@ -231,12 +231,8 @@ describe("sessions [13,4] GETALL replay", () => {
 		).toEqual([13, 9, 1]);
 		// Const fields: 2 / 3 on every observed row.
 		for (const row of rows) {
-			expect(requiredEntry(row, keyOf(fields, "unknown-6"), "f6").value).toBe(
-				2,
-			);
-			expect(requiredEntry(row, keyOf(fields, "unknown-8"), "f8").value).toBe(
-				3,
-			);
+			expect(requiredEntry(row, keyOf(fields, "type"), "f6").value).toBe(2);
+			expect(requiredEntry(row, keyOf(fields, "group"), "f8").value).toBe(3);
 		}
 		// f1 is a u32 login time on every row; f3 is present on rows
 		// 0/2 and absent on row 1 (present-iff-addressed).
@@ -351,15 +347,13 @@ describe("sessions [13,4] GETALL replay", () => {
 					),
 				);
 				for (const row of rows) {
-					expect(
-						requiredEntry(row, keyOf(fields, "unknown-5"), "f5").value,
-					).toBe(false);
-					expect(
-						requiredEntry(row, keyOf(fields, "unknown-6"), "f6").value,
-					).toBe(2);
-					expect(
-						requiredEntry(row, keyOf(fields, "unknown-8"), "f8").value,
-					).toBe(3);
+					expect(requiredEntry(row, keyOf(fields, "radius"), "f5").value).toBe(
+						false,
+					);
+					expect(requiredEntry(row, keyOf(fields, "type"), "f6").value).toBe(2);
+					expect(requiredEntry(row, keyOf(fields, "group"), "f8").value).toBe(
+						3,
+					);
 				}
 			}
 		}

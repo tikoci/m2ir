@@ -81,6 +81,12 @@ matches only `.jg` ids with the same type letter.
 | jg-unnamed | 17 | `.jg` uses the id only inside an unnamed sub-control |
 | yaml-only | 113 | seen on the wire but in no `.jg` dialog |
 
+After step 1 of [`plan.md`](plan.md) (promotion, 2026-11-21) the same
+diff reads: unknown-named 0, agree 201, name-differs 25 (intentional:
+CLI names kept, `.jg` text in `label:`), jg-unnamed 17, yaml-only 113,
+type-differs 0. The 51 `unknown-*` fields left in the YAML appear in no
+`.jg` dialog and need probes.
+
 `.jg` also has 470 routes on 7.25 with no YAML handler, plus 1,199 field
 ids on the 34 modeled routes that the YAML does not list. mrz's claim
 holds for naming and enums. It does not cover wire-only fields, version

@@ -8,17 +8,13 @@ decisions:
   - "Step 3 uses a headless browser with sessionStorage seeded (name/password) and a hook above the Session cipher; a Bun-native JSProxy client is deferred because it would be our client, not MikroTik's."
 steps:
   0-typed-identity: done
-  1-promote-jg: queued
+  1-promote-jg: done
   2-conversation-census: queued
   3-webfig-instrumentation: queued
   4-acceptance-bridge: queued
   5-mitm-proxy: queued
 open:
-  conflicts-before-promotion:
-    - "routerboard [24,17] f1/f4 look like non-CHR license [65] s1/u4 (typed diff: f1 is type-differs, YAML string vs .jg u1 Baud Rate)"
-    - "license [65] f12: RESOLVED by typed identity: YAML nlevel (u) = CHR uc Level; sc Serial Number is a separate attribute (non-CHR)"
-    - "boot-flags [24,10] f1: .jg 'Multi CPU' (x86, 6.49.23 only) vs exists(DISABLE_SMP); polarity"
-    - "policy-catalog [13,3] f1/f2: .jg Name/Alias vs YAML description/policy-name"
+  conflicts-before-promotion: "all four resolved in step 1 (see step1-record)"
   evidence-source-for-jg: "decided: source: doc (vendor-authored, machine-readable declaration served by the router); WebFig JS is source: code. Revisit at review if you disagree."
   leads:
     - ".jg declares Q (u64 array, 0x90) fields on [20,0] interface stats (multibignumber, 148 on 7.25) and R (raw array, 0xb0) fields (multiraw). physical/nv-message.yaml calls 0x90 declared-unwired and has no 0xb0 entry. Confirm on the wire with a native [20,0] stats read."
@@ -36,3 +32,18 @@ step0-record:
     - "work/2026-11-jg-descriptors/jg-diff.ts: typed matching, type-differs class"
     - "GLOSSARY.txt: typed-key and .jg vocabulary"
   gates: "bun run lint green; bun run test 555/0; harness tests 64/0; cspell clean on touched files"
+step1-record:
+  date: 2026-11-21
+  promoted: "125 fields named from .jg (120 unknown-* + 5 unnamed bridge values); CLI names from restraml 7.25 deep-inspect proplists; .jg text kept as label: where it differs; enums as values: or values-from: [route]"
+  schema-additions: "observed-values: on enums whose values map now holds declared values (NAT f40: 12 observed of 15; filter f11: 1/6/17 of 33)"
+  conflicts:
+    - "routerboard [24,17]: route board-gated to non-x86 in every .jg; f1 baud-rate, f4 enter-setup-on (old software-id/nlevel were license [65] non-CHR fields); open question answered"
+    - "license [65]: f12 level (CHR enum free/p1/p10/p-unlimited), f13 system-id; non-CHR sc Serial Number is a different typed attribute"
+    - "boot-flags [24,10] f1: 6.49 .jg 'Multi CPU' has inv:1, so Multi CPU = not disable-smp-flag; consistent"
+    - "policy-catalog [13,3]: wire values confirm description/policy-name; .jg Name/Alias kept as labels"
+  corrections:
+    - "NAT can jump: .jg 1=jump in all versions + 7.25 CLI completion; old 'NAT cannot jump' claim and f41 role corrected"
+    - "interface ns1 f5 renamed kernel-name (eth0/br0/lo/vrf1); CLI default-name is f49 (ether1)"
+    - "interface ns1 f102 = vrf (u32 row-id over [20,101], the UI control); f106 renamed vrf-name (string readback)"
+  parser: "jg-parse records inv:1 (client shows the inverse of a bool); 25 uses on 7.25"
+  tests-updated: "vrf-6a, sessions-13-4, nat-same-20-5, tail-census-1a, thread-5-adjunct, nat-f40-enum, explain-demo (unknown-* -> promoted names; declared vs observed values)"

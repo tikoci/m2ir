@@ -28,6 +28,8 @@ export type JgOcc = {
 	values?: unknown;
 	nonpublic: boolean;
 	ro: boolean;
+	/** inv:1 — the client shows the inverse of a bool field. */
+	inv: boolean;
 };
 export type JgField = {
 	id: string;
@@ -147,6 +149,7 @@ export function loadDir(dir: string): Map<string, JgItem> {
 					file,
 					values: node["values"],
 					nonpublic: !!node["nonpublic"],
+					inv: !!node["inv"],
 					ro: here.ro || !!node["ro"],
 				});
 			}

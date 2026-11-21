@@ -5,7 +5,7 @@
 
 - .jg coverage: 6.49.23: 465 routes / 7119 field ids; 7.25: 498 routes / 9335 field ids; 7.26beta4: 667 routes / 11754 field ids
 - YAML: 356 fields on 34 routes
-- Classes: type-differs 1, unknown-named 120, name-differs 22, jg-unnamed 17, yaml-only 113, agree 83
+- Classes: type-differs 0, unknown-named 0, name-differs 25, jg-unnamed 17, yaml-only 113, agree 201
 - 7.25 .jg routes with no YAML handler: 470; .jg field ids on modeled routes with no YAML entry: 1199
 - Dialog filters: [20, 0] ns0 -> ^Bridge typevalue=12$
 
@@ -13,132 +13,11 @@
 
 | handler | route | ns | field | type | YAML name | .jg occurrences | versions | values |
 |---|---|---|---|---|---|---|---|---|
-| routerboard | [24, 17] | 0 | 1 | s | software-id | type u1 only |  |  |
 
 ## unknown-named
 
 | handler | route | ns | field | type | YAML name | .jg occurrences | versions | values |
 |---|---|---|---|---|---|---|---|---|
-| interface | [20, 0] | 1 | 12 | u | unknown-12 | "Queue Type" u1000c:enm @ Interface Queues | 6.49.23, 7.25, 7.26beta4 | rows of [20,10] |
-| interface | [20, 0] | 1 | 47 | u | unknown-47 | "Default Queue Type" u1002f:enm @ Interface Queues | 6.49.23, 7.25, 7.26beta4 | rows of [20,10] |
-| interface | [20, 0] | 1 | 49 | s | unknown-49 | "Default Name" s10031:string @ Interface | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 1 | 56 | u | unknown-56 | "Last Link Up Time" u10038:dateandtime @ Interface | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 1 | 57 | u | unknown-57 | "Link Downs" u10039:number @ Interface | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 1 | 58 | u | unknown-58 | "Active Queue Type" u1003a:enm @ Interface Queues | 6.49.23, 7.25, 7.26beta4 | defenum |
-| interface | [20, 0] | 1 | 59 | u | unknown-59 | "ARP Timeout" u1003b:interval @ VPLS typevalue=47<br>"ARP Timeout" u1003b:interval @ Ethernet typevalue=1<br>"ARP Timeout" u1003b:interval @ PWR typevalue=63<br>"ARP Timeout" u1003b:interval @ EoIP Tunnel typevalue=17<br>"ARP Timeout" u1003b:interval @ VLAN typevalue=30<br>"ARP Timeout" u1003b:interval @ VRRP typevalue=3<br>"ARP Timeout" u1003b:interval @ Bonding typevalue=40<br>"ARP Timeout" u1003b:interval @ Bridge typevalue=12<br>"ARP Timeout" u1003b:interval @ Mesh typevalue=46<br>"ARP Timeout" u1003b:interval @ Virtual Ethernet typevalue=50 [board-cond]<br>"ARP Timeout" u1003b:interval @ WiFi Interfaces typevalue=4294967295<br>"ARP Timeout" u1003b:interval @ W60G typevalue=62 [board-cond]<br>"ARP Timeout" u1003b:interval @ W60G Station typevalue=64<br>"ARP Timeout" u1003b:interval @ CAP Interface typevalue=61<br>"ARP Timeout" u1003b:interval @ EoIPv6 Tunnel typevalue=57<br>"ARP Timeout" u1003b:interval @ VXLAN typevalue=66<br>(unnamed) u1003b:interval @ WiFi typevalue=68 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 1 | 102 | u | unknown-102 | "VRF" u10066:enm @ Interface | 7.25, 7.26beta4 | rows of [20,101] |
-| interface | [20, 0] | 0 | 2 | u | unknown-2 | "Priority" u2:number @ Bridge typevalue=12<br>(unnamed) u2:number @ Bridge typevalue=12<br>(unnamed) u2:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 0=0x0000, 4096=0x1000, 8192=0x2000, 12288=0x3000, 16384=0x4000, 20480=0x5000, 24576=0x6000, 28672=0x7000, 32768=0x8000, 36864=0x9000, 40960=0xa000, 45056=0xb000, 49152=0xc000, 53248=0xd000, 57344=0xe000, 61440=0xf000 |
-| interface | [20, 0] | 0 | 4 | u | unknown-4 | "Ageing Time" u4:interval @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 5 | u | unknown-5 | "Forward Delay" u5:interval @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 8 | u | unknown-8 | "Max Message Age" u8:interval @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 19 | u | unknown-19 | "Max Hops" u13:number @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 100 | u | unknown-100 | "Protocol Mode" u64:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 0=none, 1=STP, 2=RSTP, 3=MSTP |
-| interface | [20, 0] | 0 | 101 | b | unknown-101 | "Admin. MAC Address" b65:opt @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 103 | u | unknown-103 | "Transmit Hold Count" u67:number @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 104 | b | unknown-104 | "Fast Forward" b68:bool @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 105 | b | unknown-105 | "IGMP Snooping" b69:bool @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 106 | b | unknown-106 | "VLAN Filtering" b6a:bool @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 107 | u | unknown-107 | "PVID" u6b:number @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 108 | u | unknown-108 | "Frame Types" u6c:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 0=admit all, 1=admit only VLAN tagged, 2=admit only untagged and priority tagged |
-| interface | [20, 0] | 0 | 109 | b | unknown-109 | "Ingress Filtering" b6d:bool @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 110 | u | unknown-110 | "EtherType" u6e:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 33024=0x8100, 34984=0x88a8, 37120=0x9100 |
-| interface | [20, 0] | 0 | 111 | b | unknown-111 | "DHCP Snooping" b6f:bool @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 112 | b | unknown-112 | "Add DHCP Option 82" b70:bool @ Bridge typevalue=12 | 6.49.23 |  |
-| interface | [20, 0] | 0 | 113 | u | unknown-113 | "Multicast Router" u71:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 0=Disabled, 1=Temporary Query, 2=Permanent |
-| interface | [20, 0] | 0 | 114 | u | unknown-114 | "Startup Query Count" u72:number @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 115 | u | unknown-115 | "Last Member Query Count" u73:number @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 116 | u | unknown-116 | "Last Member Interval" u74:fixedpoint @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 117 | u | unknown-117 | "Membership Interval" u75:fixedpoint @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 118 | u | unknown-118 | "Querier Interval" u76:fixedpoint @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 119 | u | unknown-119 | "Query Interval" u77:fixedpoint @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 120 | u | unknown-120 | "Query Response Interval" u78:fixedpoint @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 121 | u | unknown-121 | "Startup Query Interval" u79:fixedpoint @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 122 | b | unknown-122 | "Multicast Querier" b7a:bool @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 123 | u | unknown-123 | "IGMP Version" u7b:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 2=2, 3=3 |
-| interface | [20, 0] | 0 | 124 | u | unknown-124 | "MLD Version" u7c:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 0=, 1=1, 2=2 |
-| interface | [20, 0] | 0 | 125 | b | unknown-125 | "Port Cost Mode" b7d:enm @ Bridge typevalue=12 | 7.25, 7.26beta4 | 0=short, 1=long |
-| interface | [20, 0] | 0 | 126 | b | unknown-126 | "MVRP" b7e:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 128 | b | unknown-128 | "Forward Reserved" b80:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 129 | u | unknown-129 | "Max Learned Entries" u81:enm @ Bridge typevalue=12 | 7.25, 7.26beta4 | 0=unlimited, 4294967295=auto |
-| interface | [20, 0] | 0 | 132 | u | unknown-132 | "Peer Port" u84:enm @ Bridge typevalue=12 | 7.25, 7.26beta4 | pair |
-| interface | [20, 0] | 0 | 133 | u | unknown-133 | "Priority" u85:number @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 134 | u | unknown-134 | "Heartbeat" u86:interval @ Bridge typevalue=12 | 7.25, 7.26beta4 | 0=none |
-| interface | [20, 0] | 0 | 135 | b | unknown-135 | "RA Guard" b87:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 138 | b | unknown-138 | "DHCPv6 Snooping" b8a:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 139 | b | unknown-139 | "DHCPv6 Agent Circuit ID" b8b:opt @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 140 | b | unknown-140 | "DHCPv6 Agent Remote ID" b8c:opt @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 143 | b | unknown-143 | "DHCP Agent Circuit ID" b8f:opt @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 144 | b | unknown-144 | "DHCP Agent Remote ID" b90:opt @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 145 | b | unknown-145 | "Querier Uses Bridge Address" b91:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 146 | b | unknown-146 | "IP Source Guard" b92:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 147 | b | unknown-147 | "ARP Inspection" b93:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 148 | u | unknown-148 | "Init Delay" u94:interval @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 149 | b | unknown-149 | "LACP Fallback" b95:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 1002 | u | unknown-1002 | "ARP" u3ea:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 0=disabled, 1=enabled, 2=proxy-arp, 3=reply-only, 4=local-proxy-arp |
-| ipv6-address | [20, 37] | 0 | 4 | b | unknown-bool-f | "EUI64" b4:bool @ Address | 7.25, 7.26beta4 |  |
-| ipv6-address | [20, 37] | 0 | 5 | u | unknown-u8 | (unnamed) u5:numflag @ Address<br>"scope" u5:number @ Address (nonpublic) | 7.25, 7.26beta4 |  |
-| ipv6-address | [20, 37] | 0 | 6 | b | unknown-bool-f | "Advertise" b6:bool @ Address | 7.25, 7.26beta4 |  |
-| ipv6-address | [20, 37] | 0 | 8 | s | unknown-empty-string | "From Pool" s8:string @ Address | 7.25, 7.26beta4 | rows of [30,1] |
-| ipv6-address | [20, 37] | 0 | 9 | b | unknown-bool-f | "No DAD" b9:bool @ Address | 7.25, 7.26beta4 |  |
-| ipv6-address | [20, 37] | 0 | 14 | b | unknown-bool-f | "slave" be:flag @ Address | 7.25, 7.26beta4 |  |
-| ipv6-address | [20, 37] | 0 | 15 | b | unknown-bool-f | "deprecated" bf:flag @ Address | 7.25, 7.26beta4 |  |
-| ipv6-address | [20, 37] | 0 | 16 | b | unknown-bool-t | "Auto Link-Local" b10:bool @ Address | 7.25, 7.26beta4 |  |
-| ipv6-address | [20, 37] | 0 | 17 | u | unknown-u8-zero | "VRF" u11:enm @ Address | 7.25, 7.26beta4 | rows of [20,101] |
-| ipv6-address | [20, 37] | 0 | 19 | u | unknown-u8-zero | "From Pool Policy" u13:enm @ Address | 7.25, 7.26beta4 | 0=Recommended, 1=Strict, 2=Without Acquire |
-| bridge-port | [16, 2] | 0 | 1 | u | unknown-1 | "Path Cost" u1:number @ Ports<br>(unnamed) u1:number @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 2 | u | unknown-2 | "Priority" u2:number @ Ports<br>"Priority" u2:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | 0=0x00, 16=0x10, 32=0x20, 48=0x30, 64=0x40, 80=0x50, 96=0x60, 112=0x70, 128=0x80, 144=0x90, 160=0xa0, 176=0xb0, 192=0xc0, 208=0xd0, 224=0xe0, 240=0xf0 |
-| bridge-port | [16, 2] | 0 | 10 | u | unknown-10 | "Edge" ua:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | 0=auto, 1=yes, 2=no, 3=yes discover, 4=no discover |
-| bridge-port | [16, 2] | 0 | 11 | u | unknown-11 | "Point To Point" ub:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | 0=auto, 1=yes, 2=no |
-| bridge-port | [16, 2] | 0 | 12 | u | unknown-12 | "Learn" uc:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | 0=auto, 1=no, 2=yes |
-| bridge-port | [16, 2] | 0 | 13 | u | unknown-13 | "Horizon" ud:number @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 14 | b | unknown-14 | "Auto Isolate" be:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 15 | b | unknown-15 | "Hardware Offload" bf:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 16 | b | unknown-16 | "Restricted Role" b10:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 17 | b | unknown-17 | "Restricted TCN" b11:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 18 | u | unknown-18 | "Internal Path Cost" u12:number @ Ports<br>(unnamed) u12:number @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 20 | u | unknown-20 | "Frame Types" u14:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | 0=admit all, 1=admit only VLAN tagged, 2=admit only untagged and priority tagged |
-| bridge-port | [16, 2] | 0 | 21 | b | unknown-21 | "Ingress Filtering" b15:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 23 | b | unknown-23 | "Unknown Unicast Flood" b17:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 24 | b | unknown-24 | "Unknown Multicast Flood" b18:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 25 | b | unknown-25 | "Broadcast Flood" b19:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 27 | b | unknown-27 | "Tag Stacking" b1b:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 28 | b | unknown-28 | "BPDU Guard" b1c:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 29 | b | unknown-29 | "Trusted" b1d:bool @ Ports<br>"Trusted DHCP" b1d:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 30 | u | unknown-30 | "Multicast Router" u1e:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | 0=Disabled, 1=Temporary Query, 2=Permanent |
-| bridge-port | [16, 2] | 0 | 31 | b | unknown-31 | "Fast Leave" b1f:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 32 | b | unknown-32 | "Path Cost" b20:opt @ Ports | 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 33 | b | unknown-33 | "Internal Path Cost" b21:opt @ Ports | 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 34 | u | unknown-34 | "MVRP Registrar State" u22:enm @ Ports | 7.25, 7.26beta4 | 0=normal, 1=fixed |
-| bridge-port | [16, 2] | 0 | 35 | u | unknown-35 | "MVRP Applicant State" u23:enm @ Ports | 7.25, 7.26beta4 | 0=normal participant, 1=non participant |
-| bridge-port | [16, 2] | 0 | 37 | b | unknown-37 | "Trusted RA" b25:bool @ Ports | 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 38 | b | unknown-38 | "Trusted DHCPv6" b26:bool @ Ports | 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 39 | b | unknown-39 | "Trusted ARP" b27:bool @ Ports | 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | 0 | 215 | b | unknown-215 | "Hw. Offload" bd7:bool @ Ports<br>"Hw. Offload" bd7:flag @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-port | [16, 2] | fe | 8 | b | unknown-8 | "inactive" bfe0008:flag @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-host | [16, 3] | 0 | 1 | u | unknown-1 | "Interface" u1:enm @ Hosts | 6.49.23, 7.25, 7.26beta4 | rows of [20,0] |
-| bridge-host | [16, 3] | 0 | 4 | u | unknown-4 | "Bridge" u4:enm @ Hosts | 6.49.23, 7.25, 7.26beta4 | rows of [20,0] |
-| bridge-host | [16, 3] | 0 | 7 | b | unknown-7 | "VID" b7:opt @ Hosts | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-host | [16, 3] | 0 | 101 | u | unknown-101 | "On Interface" u65:enm @ Hosts | 6.49.23, 7.25, 7.26beta4 | rows of [20,0] |
-| bridge-host | [16, 3] | 0 | 102 | b | unknown-102 | "local" b66:flag @ Hosts | 6.49.23, 7.25, 7.26beta4 |  |
-| bridge-host | [16, 3] | 0 | 104 | b | unknown-104 | "external" b68:flag @ Hosts<br>"external fdb" b68:flag @ Hosts | 6.49.23, 7.25, 7.26beta4 |  |
-| unknown-20-121 | [20, 121] | 0 | 7 | u | unknown-7 | "Traffic Class" u7:number @ Tx Queue | 7.25, 7.26beta4 |  |
-| unknown-20-121 | [20, 121] | 0 | 9 | u | unknown-9 | "Tx Manager" u9:enm @ Tx Queue | 7.25, 7.26beta4 | rows of [20,120] |
-| unknown-20-121 | [20, 121] | 0 | 10 | u | unknown-10 | "Schedule" ua:enm @ Tx Queue | 7.25, 7.26beta4 | 0=Strict, 1=Low, 2=High |
-| unknown-20-121 | [20, 121] | 0 | 11 | u | unknown-11 | "Weight" ub:number @ Tx Queue | 7.25, 7.26beta4 |  |
-| unknown-20-121 | [20, 121] | 0 | 13 | b | unknown-13 | "Use Shared Buffers" bd:bool @ Tx Queue | 7.25, 7.26beta4 |  |
-| unknown-20-121 | [20, 121] | 0 | 15 | b | unknown-15 | "WRED" bf:bool @ Tx Queue | 7.25, 7.26beta4 |  |
-| unknown-20-121 | [20, 121] | 0 | 19 | b | unknown-19 | "ECN" b13:bool @ Tx Queue | 7.25, 7.26beta4 |  |
-| unknown-20-121 | [20, 121] | 0 | 32 | b | unknown-32 | "WRED Actual" b20:bool @ Tx Queue | 7.25, 7.26beta4 |  |
-| unknown-20-121 | [20, 121] | 0 | 33 | b | unknown-33 | "ECN Actual" b21:bool @ Tx Queue | 7.25, 7.26beta4 |  |
-| filter-20-3 | [20, 3] | 0 | 22 | b | unknown-22 | "Protocol-Not" b16:not @ Filter Rules | 6.49.23, 7.25, 7.26beta4 |  |
-| filter-20-3 | [20, 3] | 0 | 404 | b | unknown-404 | "Protocol" b194:opt @ Filter Rules | 6.49.23, 7.25, 7.26beta4 |  |
-| filter-20-3 | [20, 3] | 0 | 454 | b | unknown-454 | "Hw. Offload" b1c6:bool @ Filter Rules | 7.25, 7.26beta4 |  |
-| nat-20-5 | [20, 5] | 0 | 1006 | b | unknown-f1006 | "To Addresses" b3ee:opt @ NAT | 6.49.23, 7.25, 7.26beta4 |  |
-| user-group-13-2 | [13, 2] | 0 | 4 | b | unknown-4 | "System" b4:flag @ Groups | 6.49.23, 7.25, 7.26beta4 |  |
-| user-group-13-2 | [13, 2] | 0 | 5 | u | unknown-5 | "Skin" u5:enm @ Groups | 6.49.23, 7.25, 7.26beta4 | rows of [13,8] |
-| active-sessions-13-4 | [13, 4] | 0 | 5 | b | unknown-5 | "radius" b5:flag @ Active Users | 6.49.23, 7.25, 7.26beta4 |  |
-| active-sessions-13-4 | [13, 4] | 0 | 6 | u | unknown-6 | "Type" u6:number @ Active Users (nonpublic) | 6.49.23, 7.25, 7.26beta4 |  |
-| active-sessions-13-4 | [13, 4] | 0 | 8 | u | unknown-8 | "Group" u8:enm @ Active Users | 6.49.23, 7.25, 7.26beta4 | rows of [13,2] |
 
 ## name-differs
 
@@ -149,11 +28,14 @@
 | system-resource | [24, 2] | 0 | 19 | q | write-sect-total | "Total Sector Writes" q13:bigdecimal @ Resources | 6.49.23, 7.25, 7.26beta4 |  |
 | system-resource | [24, 2] | 0 | 20 | q | write-sect-since-reboot | "Sector Writes Since Reboot" q14:bigdecimal @ Resources | 6.49.23, 7.25, 7.26beta4 |  |
 | system-identity | [24, 1] | 0 | 12 | s | name | "Identity" sc:string @ Identity | 6.49.23, 7.25, 7.26beta4 |  |
-| routerboard | [24, 17] | 0 | 4 | u | nlevel | "Enter Setup On" u4:enm @ Settings [board!=x86] | 6.49.23, 7.25, 7.26beta4 | 0=any key, 1=delete key |
-| license | [65] | 0 | 13 | s | software-id | "System ID" sd:string @ License [board=CHR] | 6.49.23, 7.25, 7.26beta4 |  |
 | interface | [20, 0] | 1 | 2 | u | flags-a | "caps" u10002:number @ Interface (nonpublic) | 6.49.23, 7.25, 7.26beta4 |  |
 | interface | [20, 0] | 1 | 4 | u | kernel-ifindex | "link" u10004:number @ Interface (nonpublic) | 6.49.23, 7.25, 7.26beta4 |  |
 | interface | [20, 0] | 1 | 101 | u | l2mtu | "L2 MTU" u10065:number @ Interface<br>"L2 MTU" u10065:number @ Ethernet typevalue=1<br>"L2 MTU" u10065:number @ PWR typevalue=63<br>"L2 MTU" u10065:number @ WiFi Interfaces typevalue=4294967295<br>"L2 MTU" u10065:number @ W60G typevalue=62 [board-cond]<br>(unnamed) u10065:number @ CAP Interface typevalue=61<br>"L2 MTU" u10065:number @ WireGuard typevalue=70 (nonpublic)<br>(unnamed) u10065:number @ WiFi typevalue=68 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 101 | b | auto-mac | "Admin. MAC Address" b65:opt @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 110 | u | ether-type | "EtherType" u6e:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 33024=0x8100, 34984=0x88a8, 37120=0x9100 |
+| interface | [20, 0] | 0 | 112 | b | add-dhcp-option82 | "Add DHCP Option 82" b70:bool @ Bridge typevalue=12 | 6.49.23 |  |
+| ipv6-address | [20, 37] | 0 | 4 | b | eui-64 | "EUI64" b4:bool @ Address | 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 15 | b | hw | "Hardware Offload" bf:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
 | system-clock | [24, 0] | 0 | 30 | u | seconds-since-midnight | "Time" u1e:clocktime @ Clock | 6.49.23, 7.25, 7.26beta4 |  |
 | system-clock | [24, 0] | 0 | 31 | u | day-start | "Date" u1f:clockdate @ Clock | 6.49.23, 7.25, 7.26beta4 |  |
 | neighbor-discovery-settings | [20, 17] | 0 | 79 | s | suffix-or-mode | "Add DNS Entries Suffix" s4f:string @ Discovery Settings | 7.25, 7.26beta4 |  |
@@ -173,11 +55,11 @@
 |---|---|---|---|---|---|---|---|---|
 | system-resource | [24, 2] | 0 | 28 | u | used-hdd-kib | (unnamed) u1c:kbytes @ statusbar | 6.49.23, 7.25, 7.26beta4 |  |
 | system-resource | [24, 2] | 0 | 29 | u | free-hdd-percent | (unnamed) u1d:number @ statusbar | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 102 | r | unknown-102 | (unnamed) r66:macaddr @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 136 | s | unknown-136 | (unnamed) s88:string @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 137 | s | unknown-137 | (unnamed) s89:string @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 141 | s | unknown-141 | (unnamed) s8d:string @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
-| interface | [20, 0] | 0 | 142 | s | unknown-142 | (unnamed) s8e:string @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 102 | r | admin-mac | (unnamed) r66:macaddr @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 136 | s | dhcp-agent-circuit-id | (unnamed) s88:string @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 137 | s | dhcp-agent-remote-id | (unnamed) s89:string @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 141 | s | dhcpv6-agent-circuit-id | (unnamed) s8d:string @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 142 | s | dhcpv6-agent-remote-id | (unnamed) s8e:string @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
 | unknown-20-120 | [20, 120] | 0 | 30 | u | unknown-30 | (unnamed) u1e:number @ Tx Manager | 7.25, 7.26beta4 | 255=auto |
 | unknown-20-121 | [20, 121] | 0 | 30 | u | unknown-30 | (unnamed) u1e:number @ Tx Queue | 7.25, 7.26beta4 | 255=auto |
 | ros-mode-safepkgs-gate | [24, 31] | 0 | 7 | s | safepkgs-floors | (unnamed) s7:string @ Device Mode | 7.25, 7.26beta4 |  |
@@ -208,12 +90,12 @@
 | system-resource | [24, 2] | 0 | 43 | q | free-hdd-space |  |  |  |
 | routerboard | [24, 17] | 0 | 32 | s | board-name |  |  |  |
 | interface | [20, 0] | 1 | 3 | u | flags-b |  |  |  |
-| interface | [20, 0] | 1 | 5 | s | default-name |  |  |  |
+| interface | [20, 0] | 1 | 5 | s | kernel-name |  |  |  |
 | interface | [20, 0] | 1 | 13 | b | unknown-13 |  |  |  |
 | interface | [20, 0] | 1 | 30 | s | type |  |  |  |
 | interface | [20, 0] | 1 | 46 | u | unknown-46 |  |  |  |
 | interface | [20, 0] | 1 | 60 | U | unknown-60 |  |  |  |
-| interface | [20, 0] | 1 | 106 | s | vrf |  |  |  |
+| interface | [20, 0] | 1 | 106 | s | vrf-name |  |  |  |
 | interface | [20, 0] | 0 | 3 | b | unknown-3 |  |  |  |
 | interface | [20, 0] | 0 | 130 | r | second-mac-address |  |  |  |
 | interface | [20, 0] | 0 | 131 | u | unknown-131 |  |  |  |
@@ -326,6 +208,8 @@
 | system-resource | [24, 2] | 0 | 45 | s | minimum-version | "Factory Software" s2d:string @ Resources<br>"Minimum Version" s2d:string @ Resources<br>"Factory Software" s2d:string @ About | 6.49.23, 7.25, 7.26beta4 |  |
 | system-resource | [24, 2] | 0 | 46 | u | jiffies | "jiffies" u2e:number @ Resources (nonpublic) | 6.49.23, 7.25, 7.26beta4 |  |
 | system-identity | [24, 1] | 0 | 13 | s | version | "Version" sd:string @ Identity (nonpublic) | 6.49.23, 7.25, 7.26beta4 |  |
+| routerboard | [24, 17] | 0 | 1 | u | baud-rate | "Baud Rate" u1:enm @ Settings [board!=x86] | 6.49.23, 7.25, 7.26beta4 | 0=115200, 1=57600, 2=38400, 3=19200, 4=9600, 5=4800, 6=2400, 7=1200, 8=off |
+| routerboard | [24, 17] | 0 | 4 | u | enter-setup-on | "Enter Setup On" u4:enm @ Settings [board!=x86] | 6.49.23, 7.25, 7.26beta4 | 0=any key, 1=delete key |
 | routerboard | [24, 17] | 0 | 7 | s | current-firmware | "Current Firmware" s7:string @ RouterBOARD [board!=x86] | 6.49.23, 7.25, 7.26beta4 |  |
 | routerboard | [24, 17] | 0 | 9 | s | factory-firmware | "Factory Firmware" s9:string @ RouterBOARD [board!=x86]<br>"Minimum Version" s9:string @ RouterBOARD [board!=x86] | 6.49.23, 7.25, 7.26beta4 |  |
 | routerboard | [24, 17] | 0 | 10 | s | model | "Model" sa:string @ RouterBOARD [board!=x86] | 6.49.23, 7.25, 7.26beta4 |  |
@@ -333,15 +217,69 @@
 | routerboard | [24, 17] | 0 | 15 | s | upgrade-firmware | "Upgrade Firmware" sf:string @ RouterBOARD [board!=x86] | 6.49.23, 7.25, 7.26beta4 |  |
 | routerboard | [24, 17] | 0 | 16 | b | routerboard | "RouterBOARD" b10:bool @ RouterBOARD [board!=x86] | 6.49.23, 7.25, 7.26beta4 |  |
 | routerboard | [24, 17] | 0 | 24 | s | firmware-type | "Firmware Type" s18:string @ RouterBOARD [board!=x86] | 6.49.23, 7.25, 7.26beta4 |  |
-| license | [65] | 0 | 12 | u | nlevel | "Level" uc:enm @ License [board=CHR] | 6.49.23, 7.25, 7.26beta4 | 0=, 1=P1, 2=P10, 3=P unlimited |
+| license | [65] | 0 | 12 | u | level | "Level" uc:enm @ License [board=CHR] | 6.49.23, 7.25, 7.26beta4 | 0=, 1=P1, 2=P10, 3=P unlimited |
+| license | [65] | 0 | 13 | s | system-id | "System ID" sd:string @ License [board=CHR] | 6.49.23, 7.25, 7.26beta4 |  |
 | interface | [20, 0] | 1 | 1 | u | type-code | "type" u10001:number @ Interface (nonpublic) | 6.49.23, 7.25, 7.26beta4 |  |
 | interface | [20, 0] | 1 | 6 | s | name | "Name" s10006:string @ Interface | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 1 | 12 | u | queue | "Queue Type" u1000c:enm @ Interface Queues | 6.49.23, 7.25, 7.26beta4 | rows of [20,10] |
 | interface | [20, 0] | 1 | 14 | b | running | "running" b1000e:flag @ Interface | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 1 | 47 | u | default-queue | "Default Queue Type" u1002f:enm @ Interface Queues | 6.49.23, 7.25, 7.26beta4 | rows of [20,10] |
+| interface | [20, 0] | 1 | 49 | s | default-name | "Default Name" s10031:string @ Interface | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 1 | 56 | u | last-link-up-time | "Last Link Up Time" u10038:dateandtime @ Interface | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 1 | 57 | u | link-downs | "Link Downs" u10039:number @ Interface | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 1 | 58 | u | active-queue | "Active Queue Type" u1003a:enm @ Interface Queues | 6.49.23, 7.25, 7.26beta4 | defenum |
+| interface | [20, 0] | 1 | 59 | u | arp-timeout | "ARP Timeout" u1003b:interval @ VPLS typevalue=47<br>"ARP Timeout" u1003b:interval @ Ethernet typevalue=1<br>"ARP Timeout" u1003b:interval @ PWR typevalue=63<br>"ARP Timeout" u1003b:interval @ EoIP Tunnel typevalue=17<br>"ARP Timeout" u1003b:interval @ VLAN typevalue=30<br>"ARP Timeout" u1003b:interval @ VRRP typevalue=3<br>"ARP Timeout" u1003b:interval @ Bonding typevalue=40<br>"ARP Timeout" u1003b:interval @ Bridge typevalue=12<br>"ARP Timeout" u1003b:interval @ Mesh typevalue=46<br>"ARP Timeout" u1003b:interval @ Virtual Ethernet typevalue=50 [board-cond]<br>"ARP Timeout" u1003b:interval @ WiFi Interfaces typevalue=4294967295<br>"ARP Timeout" u1003b:interval @ W60G typevalue=62 [board-cond]<br>"ARP Timeout" u1003b:interval @ W60G Station typevalue=64<br>"ARP Timeout" u1003b:interval @ CAP Interface typevalue=61<br>"ARP Timeout" u1003b:interval @ EoIPv6 Tunnel typevalue=57<br>"ARP Timeout" u1003b:interval @ VXLAN typevalue=66<br>(unnamed) u1003b:interval @ WiFi typevalue=68 | 6.49.23, 7.25, 7.26beta4 |  |
 | interface | [20, 0] | 1 | 100 | u | mtu-config | "MTU" u10064:number @ VPLS typevalue=47<br>"MTU" u10064:number @ Traffic Eng Interface typevalue=48<br>"MTU" u10064:number @ Interface typevalue=4294967295<br>"MTU" u10064:number @ Interface (nonpublic)<br>"MTU" u10064:number @ Ethernet typevalue=1<br>"MTU" u10064:number @ PWR typevalue=63<br>"MTU" u10064:number @ EoIP Tunnel typevalue=17<br>"MTU" u10064:number @ IP Tunnel typevalue=21<br>"MTU" u10064:number @ GRE Tunnel typevalue=55<br>"MTU" u10064:number @ VLAN typevalue=30<br>"MTU" u10064:number @ VRRP typevalue=3<br>"MTU" u10064:number @ Bonding typevalue=40<br>"MTU" u10064:number @ LTE typevalue=58<br>"MTU" u10064:number @ Bridge typevalue=12<br>"MTU" u10064:number @ Mesh typevalue=46<br>"MTU" u10064:number @ Virtual Ethernet typevalue=50 [board-cond]<br>"MTU" u10064:number @ WiFi Interfaces typevalue=4294967295<br>"MTU" u10064:number @ W60G typevalue=62 [board-cond]<br>"MTU" u10064:number @ W60G Station typevalue=64<br>(unnamed) u10064:number @ CAP Interface typevalue=61<br>"MTU" u10064:number @ 6to4 Tunnel typevalue=43<br>"MTU" u10064:number @ IPIPv6 Tunnel typevalue=56<br>"MTU" u10064:number @ EoIPv6 Tunnel typevalue=57<br>"MTU" u10064:number @ GRE6 Tunnel typevalue=59<br>"MTU" u10064:number @ VXLAN typevalue=66<br>"MTU" u10064:number @ MACsec typevalue=65<br>"MTU" u10064:number @ MACVLAN typevalue=75<br>"MTU" u10064:number @ WireGuard typevalue=70<br>(unnamed) u10064:number @ WiFi typevalue=68 | 6.49.23, 7.25, 7.26beta4 | 0=auto |
+| interface | [20, 0] | 1 | 102 | u | vrf | "VRF" u10066:enm @ Interface | 7.25, 7.26beta4 | rows of [20,101] |
 | interface | [20, 0] | 1 | 105 | u | actual-mtu | "Actual MTU" u10069:number @ Interface<br>"Actual MTU" u10069:number @ EoIP Tunnel typevalue=17<br>"Actual MTU" u10069:number @ IP Tunnel typevalue=21<br>"Actual MTU" u10069:number @ GRE Tunnel typevalue=55<br>"Actual MTU" u10069:number @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 2 | u | priority | "Priority" u2:number @ Bridge typevalue=12<br>(unnamed) u2:number @ Bridge typevalue=12<br>(unnamed) u2:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 0=0x0000, 4096=0x1000, 8192=0x2000, 12288=0x3000, 16384=0x4000, 20480=0x5000, 24576=0x6000, 28672=0x7000, 32768=0x8000, 36864=0x9000, 40960=0xa000, 45056=0xb000, 49152=0xc000, 53248=0xd000, 57344=0xe000, 61440=0xf000 |
+| interface | [20, 0] | 0 | 4 | u | ageing-time | "Ageing Time" u4:interval @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 5 | u | forward-delay | "Forward Delay" u5:interval @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 8 | u | max-message-age | "Max Message Age" u8:interval @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
 | interface | [20, 0] | 0 | 16 | u | region-revision | "Region Revision" u10:number @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
 | interface | [20, 0] | 0 | 16 | s | region-name | "Region Name" s10:string @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 19 | u | max-hops | "Max Hops" u13:number @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 100 | u | protocol-mode | "Protocol Mode" u64:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 0=none, 1=STP, 2=RSTP, 3=MSTP |
+| interface | [20, 0] | 0 | 103 | u | transmit-hold-count | "Transmit Hold Count" u67:number @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 104 | b | fast-forward | "Fast Forward" b68:bool @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 105 | b | igmp-snooping | "IGMP Snooping" b69:bool @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 106 | b | vlan-filtering | "VLAN Filtering" b6a:bool @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 107 | u | pvid | "PVID" u6b:number @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 108 | u | frame-types | "Frame Types" u6c:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 0=admit all, 1=admit only VLAN tagged, 2=admit only untagged and priority tagged |
+| interface | [20, 0] | 0 | 109 | b | ingress-filtering | "Ingress Filtering" b6d:bool @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 111 | b | dhcp-snooping | "DHCP Snooping" b6f:bool @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 113 | u | multicast-router | "Multicast Router" u71:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 0=Disabled, 1=Temporary Query, 2=Permanent |
+| interface | [20, 0] | 0 | 114 | u | startup-query-count | "Startup Query Count" u72:number @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 115 | u | last-member-query-count | "Last Member Query Count" u73:number @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 116 | u | last-member-interval | "Last Member Interval" u74:fixedpoint @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 117 | u | membership-interval | "Membership Interval" u75:fixedpoint @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 118 | u | querier-interval | "Querier Interval" u76:fixedpoint @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 119 | u | query-interval | "Query Interval" u77:fixedpoint @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 120 | u | query-response-interval | "Query Response Interval" u78:fixedpoint @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 121 | u | startup-query-interval | "Startup Query Interval" u79:fixedpoint @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 122 | b | multicast-querier | "Multicast Querier" b7a:bool @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 123 | u | igmp-version | "IGMP Version" u7b:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 2=2, 3=3 |
+| interface | [20, 0] | 0 | 124 | u | mld-version | "MLD Version" u7c:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 0=, 1=1, 2=2 |
+| interface | [20, 0] | 0 | 125 | b | port-cost-mode | "Port Cost Mode" b7d:enm @ Bridge typevalue=12 | 7.25, 7.26beta4 | 0=short, 1=long |
+| interface | [20, 0] | 0 | 126 | b | mvrp | "MVRP" b7e:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 128 | b | forward-reserved-addresses | "Forward Reserved" b80:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 129 | u | max-learned-entries | "Max Learned Entries" u81:enm @ Bridge typevalue=12 | 7.25, 7.26beta4 | 0=unlimited, 4294967295=auto |
+| interface | [20, 0] | 0 | 132 | u | mlag-peer-port | "Peer Port" u84:enm @ Bridge typevalue=12 | 7.25, 7.26beta4 | pair |
+| interface | [20, 0] | 0 | 133 | u | mlag-priority | "Priority" u85:number @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 134 | u | mlag-heartbeat | "Heartbeat" u86:interval @ Bridge typevalue=12 | 7.25, 7.26beta4 | 0=none |
+| interface | [20, 0] | 0 | 135 | b | ra-guard | "RA Guard" b87:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 138 | b | dhcpv6-snooping | "DHCPv6 Snooping" b8a:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 139 | b | dhcpv6-agent-circuit-id-set | "DHCPv6 Agent Circuit ID" b8b:opt @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 140 | b | dhcpv6-agent-remote-id-set | "DHCPv6 Agent Remote ID" b8c:opt @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 143 | b | dhcp-agent-circuit-id-set | "DHCP Agent Circuit ID" b8f:opt @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 144 | b | dhcp-agent-remote-id-set | "DHCP Agent Remote ID" b90:opt @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 145 | b | querier-uses-bridge-address | "Querier Uses Bridge Address" b91:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 146 | b | ip-source-guard | "IP Source Guard" b92:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 147 | b | arp-inspection | "ARP Inspection" b93:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 148 | u | mlag-init-delay | "Init Delay" u94:interval @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 149 | b | mlag-lacp-fallback | "LACP Fallback" b95:bool @ Bridge typevalue=12 | 7.25, 7.26beta4 |  |
 | interface | [20, 0] | 0 | 1001 | r | mac-address | "MAC Address" r3e9:macaddr @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 |  |
+| interface | [20, 0] | 0 | 1002 | u | arp | "ARP" u3ea:enm @ Bridge typevalue=12 | 6.49.23, 7.25, 7.26beta4 | 0=disabled, 1=enabled, 2=proxy-arp, 3=reply-only, 4=local-proxy-arp |
 | ip-address | [20, 1] | 0 | 1 | u | address | "Address" u1:network @ Address | 6.49.23, 7.25, 7.26beta4 |  |
 | ip-address | [20, 1] | 0 | 2 | u | network | "Network" u2:ipaddr @ Address | 6.49.23, 7.25, 7.26beta4 |  |
 | ip-address | [20, 1] | 0 | 6 | u | vrf | "VRF" u6:enm @ Address | 7.25, 7.26beta4 | rows of [20,101] |
@@ -349,10 +287,54 @@
 | ip-address | [20, 1] | 0 | 11 | b | slave | "slave" bb:flag @ Address | 7.25, 7.26beta4 |  |
 | ipv6-address | [20, 37] | 0 | 1 | a | address | "Address" a1:network6 @ Address | 7.25, 7.26beta4 |  |
 | ipv6-address | [20, 37] | 0 | 3 | u | interface | "Interface" u3:enm @ Address | 7.25, 7.26beta4 | rows of [20,0] |
+| ipv6-address | [20, 37] | 0 | 5 | u | scope | (unnamed) u5:numflag @ Address<br>"scope" u5:number @ Address (nonpublic) | 7.25, 7.26beta4 |  |
+| ipv6-address | [20, 37] | 0 | 6 | b | advertise | "Advertise" b6:bool @ Address | 7.25, 7.26beta4 |  |
+| ipv6-address | [20, 37] | 0 | 8 | s | from-pool | "From Pool" s8:string @ Address | 7.25, 7.26beta4 | rows of [30,1] |
+| ipv6-address | [20, 37] | 0 | 9 | b | no-dad | "No DAD" b9:bool @ Address | 7.25, 7.26beta4 |  |
+| ipv6-address | [20, 37] | 0 | 14 | b | slave | "slave" be:flag @ Address | 7.25, 7.26beta4 |  |
+| ipv6-address | [20, 37] | 0 | 15 | b | deprecated | "deprecated" bf:flag @ Address | 7.25, 7.26beta4 |  |
+| ipv6-address | [20, 37] | 0 | 16 | b | auto-link-local | "Auto Link-Local" b10:bool @ Address | 7.25, 7.26beta4 |  |
+| ipv6-address | [20, 37] | 0 | 17 | u | vrf | "VRF" u11:enm @ Address | 7.25, 7.26beta4 | rows of [20,101] |
+| ipv6-address | [20, 37] | 0 | 19 | u | from-pool-policy | "From Pool Policy" u13:enm @ Address | 7.25, 7.26beta4 | 0=Recommended, 1=Strict, 2=Without Acquire |
+| bridge-port | [16, 2] | 0 | 1 | u | path-cost | "Path Cost" u1:number @ Ports<br>(unnamed) u1:number @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 2 | u | priority | "Priority" u2:number @ Ports<br>"Priority" u2:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | 0=0x00, 16=0x10, 32=0x20, 48=0x30, 64=0x40, 80=0x50, 96=0x60, 112=0x70, 128=0x80, 144=0x90, 160=0xa0, 176=0xb0, 192=0xc0, 208=0xd0, 224=0xe0, 240=0xf0 |
 | bridge-port | [16, 2] | 0 | 3 | u | interface | "Interface" u3:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | pair |
 | bridge-port | [16, 2] | 0 | 4 | u | bridge | "Bridge" u4:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | rows of [20,0] |
+| bridge-port | [16, 2] | 0 | 10 | u | edge | "Edge" ua:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | 0=auto, 1=yes, 2=no, 3=yes discover, 4=no discover |
+| bridge-port | [16, 2] | 0 | 11 | u | point-to-point | "Point To Point" ub:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | 0=auto, 1=yes, 2=no |
+| bridge-port | [16, 2] | 0 | 12 | u | learn | "Learn" uc:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | 0=auto, 1=no, 2=yes |
+| bridge-port | [16, 2] | 0 | 13 | u | horizon | "Horizon" ud:number @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 14 | b | auto-isolate | "Auto Isolate" be:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 16 | b | restricted-role | "Restricted Role" b10:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 17 | b | restricted-tcn | "Restricted TCN" b11:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 18 | u | internal-path-cost | "Internal Path Cost" u12:number @ Ports<br>(unnamed) u12:number @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
 | bridge-port | [16, 2] | 0 | 19 | u | pvid | "PVID" u13:number @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 20 | u | frame-types | "Frame Types" u14:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | 0=admit all, 1=admit only VLAN tagged, 2=admit only untagged and priority tagged |
+| bridge-port | [16, 2] | 0 | 21 | b | ingress-filtering | "Ingress Filtering" b15:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 23 | b | unknown-unicast-flood | "Unknown Unicast Flood" b17:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 24 | b | unknown-multicast-flood | "Unknown Multicast Flood" b18:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 25 | b | broadcast-flood | "Broadcast Flood" b19:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 27 | b | tag-stacking | "Tag Stacking" b1b:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 28 | b | bpdu-guard | "BPDU Guard" b1c:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 29 | b | trusted | "Trusted" b1d:bool @ Ports<br>"Trusted DHCP" b1d:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 30 | u | multicast-router | "Multicast Router" u1e:enm @ Ports | 6.49.23, 7.25, 7.26beta4 | 0=Disabled, 1=Temporary Query, 2=Permanent |
+| bridge-port | [16, 2] | 0 | 31 | b | fast-leave | "Fast Leave" b1f:bool @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 32 | b | path-cost-set | "Path Cost" b20:opt @ Ports | 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 33 | b | internal-path-cost-set | "Internal Path Cost" b21:opt @ Ports | 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 34 | u | mvrp-registrar-state | "MVRP Registrar State" u22:enm @ Ports | 7.25, 7.26beta4 | 0=normal, 1=fixed |
+| bridge-port | [16, 2] | 0 | 35 | u | mvrp-applicant-state | "MVRP Applicant State" u23:enm @ Ports | 7.25, 7.26beta4 | 0=normal participant, 1=non participant |
+| bridge-port | [16, 2] | 0 | 37 | b | trusted-ra | "Trusted RA" b25:bool @ Ports | 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 38 | b | trusted-dhcpv6 | "Trusted DHCPv6" b26:bool @ Ports | 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 39 | b | trusted-arp | "Trusted ARP" b27:bool @ Ports | 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | 0 | 215 | b | hw-offload | "Hw. Offload" bd7:bool @ Ports<br>"Hw. Offload" bd7:flag @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-port | [16, 2] | fe | 8 | b | inactive | "inactive" bfe0008:flag @ Ports | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-host | [16, 3] | 0 | 1 | u | interface | "Interface" u1:enm @ Hosts | 6.49.23, 7.25, 7.26beta4 | rows of [20,0] |
 | bridge-host | [16, 3] | 0 | 2 | r | mac-address | "MAC Address" r2:macaddr @ Hosts | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-host | [16, 3] | 0 | 4 | u | bridge | "Bridge" u4:enm @ Hosts | 6.49.23, 7.25, 7.26beta4 | rows of [20,0] |
+| bridge-host | [16, 3] | 0 | 7 | b | vid-set | "VID" b7:opt @ Hosts | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-host | [16, 3] | 0 | 101 | u | on-interface | "On Interface" u65:enm @ Hosts | 6.49.23, 7.25, 7.26beta4 | rows of [20,0] |
+| bridge-host | [16, 3] | 0 | 102 | b | local | "local" b66:flag @ Hosts | 6.49.23, 7.25, 7.26beta4 |  |
+| bridge-host | [16, 3] | 0 | 104 | b | external | "external" b68:flag @ Hosts<br>"external fdb" b68:flag @ Hosts | 6.49.23, 7.25, 7.26beta4 |  |
 | bridge-vlan | [16, 13] | 0 | 1 | U | vlan-ids | "VLAN IDs" U1:multinumberrange @ VLANs | 6.49.23, 7.25, 7.26beta4 |  |
 | bridge-vlan | [16, 13] | 0 | 2 | u | bridge | "Bridge" u2:enm @ VLANs | 6.49.23, 7.25, 7.26beta4 | rows of [20,0] |
 | bridge-vlan | [16, 13] | 0 | 3 | U | tagged | "Tagged" U3:multinumber @ VLANs | 6.49.23, 7.25, 7.26beta4 |  |
@@ -364,6 +346,15 @@
 | updater | [24, 24] | 0 | 1 | s | version | "Installed Version" s1:string @ Check For Updates | 6.49.23, 7.25, 7.26beta4 |  |
 | packet-mark-registry | [20, 13] | fe | 16 | s | mark-name | "Name" sfe0010:string @ Flow Mark | 6.49.23, 7.25, 7.26beta4 |  |
 | connection-mark-registry | [20, 14] | fe | 16 | s | mark-name | "Name" sfe0010:string @ Conn Mark | 6.49.23, 7.25, 7.26beta4 |  |
+| unknown-20-121 | [20, 121] | 0 | 7 | u | traffic-class | "Traffic Class" u7:number @ Tx Queue | 7.25, 7.26beta4 |  |
+| unknown-20-121 | [20, 121] | 0 | 9 | u | tx-manager | "Tx Manager" u9:enm @ Tx Queue | 7.25, 7.26beta4 | rows of [20,120] |
+| unknown-20-121 | [20, 121] | 0 | 10 | u | schedule | "Schedule" ua:enm @ Tx Queue | 7.25, 7.26beta4 | 0=Strict, 1=Low, 2=High |
+| unknown-20-121 | [20, 121] | 0 | 11 | u | weight | "Weight" ub:number @ Tx Queue | 7.25, 7.26beta4 |  |
+| unknown-20-121 | [20, 121] | 0 | 13 | b | use-shared-buffers | "Use Shared Buffers" bd:bool @ Tx Queue | 7.25, 7.26beta4 |  |
+| unknown-20-121 | [20, 121] | 0 | 15 | b | wred | "WRED" bf:bool @ Tx Queue | 7.25, 7.26beta4 |  |
+| unknown-20-121 | [20, 121] | 0 | 19 | b | ecn | "ECN" b13:bool @ Tx Queue | 7.25, 7.26beta4 |  |
+| unknown-20-121 | [20, 121] | 0 | 32 | b | wred-actual | "WRED Actual" b20:bool @ Tx Queue | 7.25, 7.26beta4 |  |
+| unknown-20-121 | [20, 121] | 0 | 33 | b | ecn-actual | "ECN Actual" b21:bool @ Tx Queue | 7.25, 7.26beta4 |  |
 | sms-20-125 | [20, 125] | 0 | 7 | b | receive-enabled | "Receive Enabled" b7:bool @ SMS | 7.25, 7.26beta4 |  |
 | sms-20-125 | [20, 125] | 0 | 9 | s | secret | "Secret" s9:secret @ SMS | 7.25, 7.26beta4 |  |
 | sms-20-125 | [20, 125] | 0 | 12 | u | channel | "Channel" uc:number @ SMS<br>"Channel" uc:number @ Send SMS | 7.25, 7.26beta4 |  |
@@ -374,10 +365,13 @@
 | sysnote-24-33 | [24, 33] | 0 | 503 | b | show-at-cli-login | "Show At CLI Login" b1f7:bool @ System Note | 7.25, 7.26beta4 |  |
 | fcc-regulatory | [24, 38] | 0 | 1 | s | fcc-statement | "FCC" s1:script @ Regulatory | 7.25, 7.26beta4 |  |
 | filter-20-3 | [20, 3] | 0 | 11 | u | protocol | "Protocol-Num" ub:number @ Filter Rules | 6.49.23, 7.25, 7.26beta4 | 1=icmp, 2=igmp, 3=ggp, 4=ip-encap, 5=st, 6=tcp, 8=egp, 12=pup, 17=udp, 20=hmp, 22=xns-idp, 27=rdp, 29=iso-tp4, 33=dccp, 36=xtp, 37=ddp, 38=idpr-cmtp, 41=ipv6-encap, 46=rsvp, 47=gre, 50=ipsec-esp, 51=ipsec-ah, 73=rspf, 81=vmtp, 89=ospf, 94=ipip, 97=etherip, 98=encap, 103=pim, 112=vrrp, 115=l2tp, 132=sctp, 136=udp-lite |
+| filter-20-3 | [20, 3] | 0 | 22 | b | protocol-not | "Protocol-Not" b16:not @ Filter Rules | 6.49.23, 7.25, 7.26beta4 |  |
 | filter-20-3 | [20, 3] | 0 | 39 | s | chain | "Chain" s27:string @ Filter Rules | 6.49.23, 7.25, 7.26beta4 | rows of [20,2] |
 | filter-20-3 | [20, 3] | 0 | 40 | u | action | "Action" u28:enm @ Filter Rules | 6.49.23, 7.25, 7.26beta4 | 0=accept, 1=jump, 2=return, 3=log, 4=passthrough, 5=add src to address list, 6=add dst to address list, 10=drop, 11=reject, 12=tarpit, 40=fasttrack connection |
 | filter-20-3 | [20, 3] | 0 | 41 | s | jump-target | "Jump Target" s29:string @ Filter Rules | 6.49.23, 7.25, 7.26beta4 | rows of [20,2] |
 | filter-20-3 | [20, 3] | 0 | 91 | s | address-list | "Address List" s5b:string @ Filter Rules | 6.49.23, 7.25, 7.26beta4 | rows of [20,34] |
+| filter-20-3 | [20, 3] | 0 | 404 | b | protocol-set | "Protocol" b194:opt @ Filter Rules | 6.49.23, 7.25, 7.26beta4 |  |
+| filter-20-3 | [20, 3] | 0 | 454 | b | hw-offload | "Hw. Offload" b1c6:bool @ Filter Rules | 7.25, 7.26beta4 |  |
 | nat-20-5 | [20, 5] | 0 | 11 | u | protocol | "Protocol-Num" ub:number @ NAT | 6.49.23, 7.25, 7.26beta4 | 1=icmp, 2=igmp, 3=ggp, 4=ip-encap, 5=st, 6=tcp, 8=egp, 12=pup, 17=udp, 20=hmp, 22=xns-idp, 27=rdp, 29=iso-tp4, 33=dccp, 36=xtp, 37=ddp, 38=idpr-cmtp, 41=ipv6-encap, 46=rsvp, 47=gre, 50=ipsec-esp, 51=ipsec-ah, 73=rspf, 81=vmtp, 89=ospf, 94=ipip, 97=etherip, 98=encap, 103=pim, 112=vrrp, 115=l2tp, 132=sctp, 136=udp-lite |
 | nat-20-5 | [20, 5] | 0 | 39 | s | chain | "Chain" s27:string @ NAT | 6.49.23, 7.25, 7.26beta4 | rows of [20,4] |
 | nat-20-5 | [20, 5] | 0 | 40 | u | action | "Action" u28:enm @ NAT | 6.49.23, 7.25, 7.26beta4 | 0=accept, 1=jump, 2=return, 3=log, 4=passthrough, 5=add src to address list, 6=add dst to address list, 20=src-nat, 21=masquerade, 22=dst-nat, 23=redirect, 24=same, 25=netmap |
@@ -386,6 +380,7 @@
 | nat-20-5 | [20, 5] | 0 | 91 | s | address-list | "Address List" s5b:string @ NAT | 6.49.23, 7.25, 7.26beta4 | rows of [20,34] |
 | nat-20-5 | [20, 5] | 0 | 128 | b | log | "Log" b80:bool @ NAT | 6.49.23, 7.25, 7.26beta4 |  |
 | nat-20-5 | [20, 5] | 0 | 1005 | b | same-not-by-dst | "Not by Dst." b3ed:bool @ NAT | 6.49.23, 7.25, 7.26beta4 |  |
+| nat-20-5 | [20, 5] | 0 | 1006 | b | to-addresses-set | "To Addresses" b3ee:opt @ NAT | 6.49.23, 7.25, 7.26beta4 |  |
 | nat-20-5 | [20, 5] | 0 | 1011 | u | socksify-service | "Socksify Service" u3f3:enm @ NAT | 7.25, 7.26beta4 | rows of [164,0] |
 | nat-20-5 | [20, 5] | 0 | 1013 | u | socks5-port | "SOCKS5 Port" u3f5:number @ NAT | 7.25, 7.26beta4 |  |
 | raw-20-87 | [20, 87] | 0 | 39 | s | chain | "Chain" s27:string @ Raw | 6.49.23, 7.25, 7.26beta4 | rows of [20,86] |
@@ -393,7 +388,12 @@
 | user-list-13-1 | [13, 1] | 0 | 1 | s | username | "Name" s1:string @ Users | 6.49.23, 7.25, 7.26beta4 |  |
 | user-list-13-1 | [13, 1] | 0 | 2 | u | group-id | "Group" u2:enm @ Users | 6.49.23, 7.25, 7.26beta4 | rows of [13,2] |
 | user-group-13-2 | [13, 2] | 0 | 1 | s | group-name | "Name" s1:string @ Groups | 6.49.23, 7.25, 7.26beta4 |  |
+| user-group-13-2 | [13, 2] | 0 | 4 | b | system | "System" b4:flag @ Groups | 6.49.23, 7.25, 7.26beta4 |  |
+| user-group-13-2 | [13, 2] | 0 | 5 | u | skin | "Skin" u5:enm @ Groups | 6.49.23, 7.25, 7.26beta4 | rows of [13,8] |
 | active-sessions-13-4 | [13, 4] | 0 | 2 | s | username | "Name" s2:string @ Active Users | 6.49.23, 7.25, 7.26beta4 |  |
+| active-sessions-13-4 | [13, 4] | 0 | 5 | b | radius | "radius" b5:flag @ Active Users | 6.49.23, 7.25, 7.26beta4 |  |
+| active-sessions-13-4 | [13, 4] | 0 | 6 | u | type | "Type" u6:number @ Active Users (nonpublic) | 6.49.23, 7.25, 7.26beta4 |  |
+| active-sessions-13-4 | [13, 4] | 0 | 8 | u | group | "Group" u8:enm @ Active Users | 6.49.23, 7.25, 7.26beta4 | rows of [13,2] |
 
 ## 7.25 routes with no YAML handler
 

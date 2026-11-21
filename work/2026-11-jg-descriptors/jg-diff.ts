@@ -17,10 +17,11 @@ import YAML from "yaml";
 import { TCODE_LETTER } from "../../src/tooling/lint-yaml.ts";
 import { type JgItem, type JgOcc, loadDir } from "./jg-parse.ts";
 
-const [yamlPath, jgRoot, outPath] = process.argv.slice(2) as [
+const [yamlPath, jgRoot, outPath, jsonPath] = process.argv.slice(2) as [
 	string,
 	string,
 	string,
+	string | undefined,
 ];
 const VERSIONS = ["6.49.23", "7.25", "7.26beta4"];
 const NS: Record<string, number> = { user: 0, "1": 1, session: 0xfe };
@@ -78,6 +79,8 @@ type Row = {
 	versions: string[];
 	enm?: string;
 	cls: Cls;
+	/** Matching .jg occurrences (same type letter), for promotion tooling. */
+	detail: Array<JgOcc & { id: string; version: string }>;
 };
 
 const rows: Row[] = [];
@@ -122,6 +125,7 @@ for (const [handler, h] of Object.entries<Record<string, unknown>>(
 				const versions: string[] = [];
 				const occ = new Map<string, string>();
 				const otherType = new Set<string>();
+				const detail: Row["detail"] = [];
 				let enm: string | undefined;
 				for (const v of VERSIONS) {
 					const item = jg.get(v)?.get(route);
@@ -140,6 +144,7 @@ for (const [handler, h] of Object.entries<Record<string, unknown>>(
 					if (!os.length) continue;
 					versions.push(v);
 					for (const o of os) {
+						detail.push({ ...o, version: v });
 						const where = `${o.dialog}${o.board ? ` [${o.board}]` : ""}`;
 						const label = `${o.name ? `"${o.name}"` : "(unnamed)"} ${o.id}:${o.type} @ ${where}${o.nonpublic ? " (nonpublic)" : ""}`;
 						occ.set(label, o.name);
@@ -157,7 +162,7 @@ for (const [handler, h] of Object.entries<Record<string, unknown>>(
 						: "yaml-only"
 					: !names.length
 						? "jg-unnamed"
-						: /^unknown/i.test(yname)
+						: /^unknown-(f?\d+|bool|u8|empty)/i.test(yname)
 							? "unknown-named"
 							: names.some(agrees)
 								? "agree"
@@ -175,6 +180,7 @@ for (const [handler, h] of Object.entries<Record<string, unknown>>(
 					versions,
 					enm,
 					cls,
+					detail,
 				});
 			}
 		}
@@ -233,4 +239,5 @@ out += `\n## 7.25 routes with no YAML handler\n\n| route | file | first dialog |
 for (const it of unmodeled.sort((a, b) => a.route.localeCompare(b.route)))
 	out += `| ${it.route} | ${it.file} | ${esc(it.dialogs[0] ?? "")} | ${it.fields.size} |\n`;
 writeFileSync(outPath, out);
+if (jsonPath) writeFileSync(jsonPath, JSON.stringify(rows, null, 1));
 console.log(out.split("\n").slice(4, 9).join("\n"));

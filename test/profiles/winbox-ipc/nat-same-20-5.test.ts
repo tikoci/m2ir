@@ -67,7 +67,7 @@ describe("nat same f40=24 [20,5] replay", () => {
 		expect(user["40"]?.values?.["24"]).toBe("same");
 		expect(user["1005"]?.name).toBe("same-not-by-dst");
 		expect(user["1005"]?.tcode).toBe("bool");
-		expect(user["1006"]?.name).toBe("unknown-f1006");
+		expect(user["1006"]?.name).toBe("to-addresses-set");
 		expect(user["1006"]?.tcode).toBe("bool");
 	});
 
