@@ -572,6 +572,16 @@ webfig # RouterOS web client (/webfig/); serves .jg descriptors and speaks M2 ov
 typevalue # .jg sub-dialog selector on a generic template route (interface type-code on [20,0])
 getcmd # .jg dialog attribute: command a dialog uses to read (also setcmd, pollcmd, cancelcmd)
 setcmd # .jg dialog attribute: command a dialog uses to save (WebFig default 0xfe000e)
+getallcmd # .jg dialog attribute: list command (WebFig default 0xfe0004 CMD_GETALL)
+startcmd # .jg action attribute: start command (often 0xfe000f CMD_START)
+pollcmd # .jg action attribute: poll command (WebFig default 0xfe0010 CMD_POLL)
+cancelcmd # .jg action attribute: cancel command (0xfe0011 CMD_CANCEL; 0xffffffff = none)
+autorefresh # .jg dialog attribute: client refetch interval in ms
+refreshfilter # .jg dialog attribute: bits OR-ed into the STD_FILTER (0xfe000c) request word
+refetchonopen # .jg dialog attribute: bits OR-ed into STD_FILTER when a dialog opens
+nonaddable # .jg list attribute: no add button
+mfe # typed-key prefix: message in the 0xfe STD namespace (mfe001d = STD_FIRST_ROW)
+Mfe # typed-key prefix: message array in the 0xfe STD namespace (Mfe0002 = STD_OBJS)
 multibignumber # .jg field type for a u64 array (type letter Q)
 multiraw # .jg field type for a raw-bytes array (type letter R)
 uff # typed-key prefix: u32 in the 0xff SYS namespace (uff0007 = SYS_CMD)

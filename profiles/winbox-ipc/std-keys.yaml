@@ -248,6 +248,15 @@ keys:
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): flags values ignored for content; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): [24,31] bit-28 leg ev/7.25-getone-24-31-bit28.json vs bare ev/7.25-getone-24-31.json (no 0xfe0024 either version); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: code
+        ref: "RouterOS 7.25 WebFig master.js (served at /webfig/master-<hash>.js): ObjectMap.getall, ObjectItem.fetch, setDefaultConf; see work/2026-11-jg-descriptors/README.md"
+    client-usage: |
+      WebFig 7.25 sends 0x10000005 | refetchonopen | refreshfilter on every
+      list GETALL and object GET: the documented default 5 plus bit 28,
+      with per-dialog bits OR-ed in from the .jg refreshfilter attribute
+      (values 2, 6, 131072, ... on 7.25). For a new row's defaults it sends
+      GETALL with 0x20000000 (bit 29) and STD_MAXOBJS (0xfe0018) = 0, and reads
+      them from 0xfe001d. Not yet compared with a native WinBox request.
     revision-history:
       - date: 2026-11-01
         belief: "0xfe000c is a nested message (STD_FILTER), with a conflicting u32-flags reading of unknown context split"
@@ -421,6 +430,9 @@ keys:
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25) — GETALL first-row use negative; see work/2026-10-chr-extraction/ws3c-prober-findings.md §8"
       - source: sample
         ref: "live CHR interrogation (singleton batch, 7.25): ev/7.25-getone-24-33-bit29.json + ev/7.25-getone-24-10-bit29.json (nested 0xfe001d defaults); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
+      - source: code
+        ref: "RouterOS 7.25 WebFig master.js (served at /webfig/master-<hash>.js): ObjectMap.getall, ObjectItem.fetch, setDefaultConf; see work/2026-11-jg-descriptors/README.md"
+    client-usage: "WebFig 7.25 setDefaultConf: GETALL with 0xfe000c=0x20000000 and 0xfe0018=0, then reads the defaults for a new row from 0xfe001d (drops 0xfe0008 and the name field). This is the GETALL form of the bit-29 defaults reading; the native harness has only probed it on singletons."
     revision-history:
       - date: 2026-10-31
         belief: "0xfe001d never observed live in any context"

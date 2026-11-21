@@ -9,7 +9,7 @@ decisions:
 steps:
   0-typed-identity: done
   1-promote-jg: done
-  2-conversation-census: queued
+  2-conversation-census: done
   3-webfig-instrumentation: queued
   4-acceptance-bridge: queued
   5-mitm-proxy: queued
@@ -47,3 +47,18 @@ step1-record:
     - "interface ns1 f102 = vrf (u32 row-id over [20,101], the UI control); f106 renamed vrf-name (string readback)"
   parser: "jg-parse records inv:1 (client shows the inverse of a bool); 25 uses on 7.25"
   tests-updated: "vrf-6a, sessions-13-4, nat-same-20-5, tail-census-1a, thread-5-adjunct, nat-f40-enum, explain-demo (unknown-* -> promoted names; declared vs observed values)"
+step2-record:
+  date: 2026-11-21
+  outputs:
+    - "work/2026-11-jg-descriptors/jg-commands.ts + conversation-census.md (generated)"
+    - "README: census summary + WebFig client model table (static reading of 7.25 master.js)"
+    - "jg-parse: per-dialog conversation attrs (meta) and command buttons"
+    - "std-keys.yaml: client-usage on 0xfe000c (WebFig sends 0x10000005 | refetchonopen | refreshfilter; bit 29 + maxobjs 0 for defaults) and 0xfe001d (GETALL defaults), source: code"
+  findings:
+    - "all declared std commands exist in std-commands.yaml; 0xffffffff = step disabled"
+    - "WebFig lists always SUBSCRIBE + GETALL; autorefresh adds timed GETALL; objects use autorefresh XOR subscribe"
+    - "notification rows: _id, ufe0005 next-id, ufe0013 removed, ufe0019 count; empty Mfe0002 = refetch"
+    - ".jg names handler-local opcodes, e.g. [20,0] 10 Reset Traffic Counters, 1005 Power Cycle, 1006 Cable Test"
+  leads:
+    - "0xfe0026: WebFig strips mfe0026 when copying a row; no std-keys entry yet"
+    - "cross-check commands.yaml private opcodes against conversation-census.md private table"

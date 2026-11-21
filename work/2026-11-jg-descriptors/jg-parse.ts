@@ -38,10 +38,45 @@ export type JgField = {
 	field: number;
 	occ: JgOcc[];
 };
+/** Dialog-level attributes that shape the client conversation. */
+export const CONVERSATION_ATTRS = [
+	"getcmd",
+	"getallcmd",
+	"setcmd",
+	"startcmd",
+	"pollcmd",
+	"cancelcmd",
+	"autorefresh",
+	"refreshfilter",
+	"refetchonopen",
+	"maxobjs",
+	"ordered",
+	"nonaddable",
+	"removable",
+	"autostart",
+	"cmd",
+] as const;
+export type JgDialog = {
+	title: string;
+	type: string;
+	board: string;
+	file: string;
+	attrs: Partial<Record<(typeof CONVERSATION_ATTRS)[number], unknown>>;
+};
+/** A control inside a dialog that sends its own command (doit, contextmenu, ...). */
+export type JgButton = {
+	dialog: string;
+	type: string;
+	name: string;
+	cmd: number;
+	path?: number[];
+};
 export type JgItem = {
 	route: string;
 	file: string;
 	dialogs: string[];
+	meta: JgDialog[];
+	buttons: JgButton[];
 	fields: Map<string, JgField>;
 };
 
@@ -124,6 +159,8 @@ export function loadDir(dir: string): Map<string, JgItem> {
 					route,
 					file,
 					dialogs: [],
+					meta: [],
+					buttons: [],
 					fields: new Map<string, JgField>(),
 				};
 				items.set(route, item);
@@ -134,7 +171,25 @@ export function loadDir(dir: string): Map<string, JgItem> {
 				item.dialogs.push(
 					`${dialog} (${String(node["type"])}${board ? `, ${board}` : ""}${getcmd}) @${file}`,
 				);
+				const attrs: JgDialog["attrs"] = {};
+				for (const a of CONVERSATION_ATTRS)
+					if (node[a] !== undefined) attrs[a] = node[a];
+				item.meta.push({
+					title: dialog,
+					type: String(node["type"]),
+					board,
+					file,
+					attrs,
+				});
 				here = { item, dialog, board, ro: !!node["ro"] };
+			} else if (here && typeof node["cmd"] === "number") {
+				here.item.buttons.push({
+					dialog: here.dialog,
+					type: String(node["type"] ?? ""),
+					name: String(node["name"] ?? node["title"] ?? ""),
+					cmd: node["cmd"],
+					...(isRoute(path) ? { path } : {}),
+				});
 			}
 			const id = node["id"];
 			const parsed = typeof id === "string" ? parseId(id) : null;

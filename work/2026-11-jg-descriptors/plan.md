@@ -75,8 +75,10 @@ and 7.26beta4:
 2. Identify one row by `ufe0001`.
 3. Change its comment (`0xfe0009`) from a second session, via REST or
    the native harness.
-4. Record how WebFig learns of the change. `autorefresh` suggests polling;
-   do not assume push.
+4. Record how WebFig learns of the change. Static reading of `master.js`
+   (README, WebFig client model) predicts CMD_SUBSCRIBE plus GETALL, then
+   a GETALL every 2 s because of `autorefresh`, with notifications as
+   well. Confirm or refute it on the wire.
 5. Close and reopen; record any cancel, unsubscribe or restart.
 
 Record the RouterOS build, the WebFig asset hashes and the `.jg` unique
