@@ -715,3 +715,10 @@ psk # pre-shared key; SECRET_ARG pattern
 preshared # WireGuard preshared-key property
 wpa # Wi-Fi Protected Access key names; SECRET_ARG pattern
 dateandtime # .jg control type (address-list Creation Time)
+# RouterOS package .jg file names (work/2026-11-jg-descriptors, plan step 4c)
+userman5 # user-manager .jg
+oflow # openflow .jg
+netinstaller # netinstall .jg
+cmr # .jg file shipped with the 7.26beta4 extra packages (package not identified)
+openflow # RouterOS extra package
+advtool # advanced-tools .jg (base)

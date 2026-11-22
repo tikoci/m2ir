@@ -249,6 +249,6 @@ try {
 }
 writeFileSync(
 	join(outDir, "q1.json"),
-	`${JSON.stringify({ routeros_version: target.version, steps }, null, "\t")}\n`,
+	`${JSON.stringify({ machine, routeros_version: target.version, steps }, null, "\t")}\n`,
 );
 console.log(`q1: wrote ${join(outDir, "q1.json")}`);

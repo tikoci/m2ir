@@ -1360,8 +1360,10 @@ handlers:
     set:
       cmd: { value: 0xfe000e, name: CMD_SET, ref: "./std-commands.yaml 0xfe000e" }
       scope: "singleton; one request carries only the fields written (no-op SETs of one CLI property write exactly that property's keys)"
-      versions: ["7.25"]
+      versions: ["7.25", "7.26beta4"]
     evidence:
+      - source: sample
+        ref: "[17] undo oracle rerun (7.26beta4, plan step 4b q6): same route, command and typed keys — fixtures/winbox-ipc/7.26beta4-undo-oracle.json; work/2026-11-jg-descriptors/undo-oracle-mapping-7.26beta4.md"
       - source: sample
         ref: "[17] undo oracle (7.25, plan step 4b): no-op SET per CLI property, typed keys from the history row m1 — fixtures/winbox-ipc/7.25-undo-oracle.json; full mapping in work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md"
       - source: doc
@@ -3155,8 +3157,10 @@ handlers:
     set:
       cmd: { value: 0xfe000e, name: CMD_SET, ref: "./std-commands.yaml 0xfe000e" }
       scope: "singleton; only the written fields; the [17] inverse (m2) carries the fields that differ from the stored record, so a no-op SET's inverse is empty or holds only the read-only cache-used counter (f5) when it moved"
-      versions: ["7.25"]
+      versions: ["7.25", "7.26beta4"]
     evidence:
+      - source: sample
+        ref: "[17] undo oracle rerun (7.26beta4, plan step 4b q6): same route, command and typed keys — fixtures/winbox-ipc/7.26beta4-undo-oracle.json; work/2026-11-jg-descriptors/undo-oracle-mapping-7.26beta4.md"
       - source: sample
         ref: "[17] undo oracle (7.25, plan step 4b): one no-op SET per CLI property — fixtures/winbox-ipc/7.25-undo-oracle.json (marks '/ip/dns set:*', q1-noop-dns); full table in work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md"
       - source: doc
@@ -3189,8 +3193,10 @@ handlers:
     set:
       cmd: { value: 0xfe000e, name: CMD_SET, ref: "./std-commands.yaml 0xfe000e" }
       scope: "singleton; only the written fields"
-      versions: ["7.25"]
+      versions: ["7.25", "7.26beta4"]
     evidence:
+      - source: sample
+        ref: "[17] undo oracle rerun (7.26beta4, plan step 4b q6): same route, command and typed keys — work/2026-11-jg-descriptors/undo-oracle-mapping-7.26beta4.md; work/2026-11-jg-descriptors/undo-oracle-mapping-7.26beta4.md"
       - source: sample
         ref: "[17] undo oracle (7.25, plan step 4b): one no-op SET per CLI property; work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md (not in the fixture: the record carries the community and the engine id)"
       - source: doc
@@ -3225,8 +3231,10 @@ handlers:
     set:
       cmd: { value: 0xfe0003, name: CMD_SETOBJ, ref: "./std-commands.yaml 0xfe0003" }
       scope: "row path; request carries 0xfe0001 = row id plus the written fields. When the CLI picks the row with [find ...], the request also carries sfd002a = '' (key 0xfd002a, not in std-keys.yaml yet); with numbers=*N it does not"
-      versions: ["7.25"]
+      versions: ["7.25", "7.26beta4"]
     evidence:
+      - source: sample
+        ref: "[17] undo oracle rerun (7.26beta4, plan step 4b q6): same route, command and typed keys — fixtures/winbox-ipc/7.26beta4-undo-oracle.json; work/2026-11-jg-descriptors/undo-oracle-mapping-7.26beta4.md"
       - source: sample
         ref: "[17] undo oracle (7.25, plan step 4b): add, one no-op SET per property, remove; plus undo/redo — fixtures/winbox-ipc/7.25-undo-oracle.json (marks '/ip/firewall/address-list *', q1-table-*); work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md"
       - source: doc

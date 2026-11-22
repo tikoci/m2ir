@@ -191,6 +191,10 @@ function fixValue(v: unknown): unknown {
 
 const records: Array<Record<string, unknown>> = [];
 const versions = new Set<string>();
+// The machine name comes from the oracle run (undo-q1.ts runs on the same CHR).
+const oracleMeta = JSON.parse(
+	readFileSync(`${oracleDir}/meta.json`, "utf8"),
+) as { machine: string };
 for (const [label, dir] of [
 	["oracle", oracleDir],
 	["q1", q1Dir],
@@ -239,7 +243,7 @@ for (const [label, dir] of [
 		records.push({
 			id: `${label}/${l.mark}/A${l.seq}`,
 			role: `${l.mark} ${kind}`,
-			source: `${meta.machine ?? "twin3"} ${meta.routeros_version} ${label === "oracle" ? "undo-oracle.ts" : "undo-q1.ts"} ${l.mark} session A seq ${l.seq}`,
+			source: `${meta.machine ?? oracleMeta.machine} ${meta.routeros_version} ${label === "oracle" ? "undo-oracle.ts" : "undo-q1.ts"} ${l.mark} session A seq ${l.seq}`,
 			mark: l.mark,
 			session: "A",
 			tMs: l.tMs,

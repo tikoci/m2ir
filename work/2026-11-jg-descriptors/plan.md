@@ -5,8 +5,8 @@
 Status: approved 2026-11-21 after a review that combined Claude's and
 Codex's proposals. [`handoff.yaml`](handoff.yaml) tracks progress; steps
 0-4 are done (step 4 results: README, "Native replay (plan step 4)"), and
-step 4b is done on 7.25 except the version rerun (README, "`[17]`
-undo-history oracle (plan step 4b)").
+step 4b is done on 7.25 and 7.26beta4 (README, "`[17]` undo-history
+oracle (plan step 4b)"). Next: step 5, then step 4c (handoff.yaml `next`).
 [`README.md`](README.md) holds the `.jg` format notes and the first diff.
 
 ## Research question
@@ -34,6 +34,12 @@ when it passes the acceptance test in step 4.
   MikroTik's.
 - `/console/inspect` and Rosetta remain the bridge from a native field to
   the CLI name a RouterOS user knows.
+- **Same package set across versions.** The router serves one `.jg` per
+  installed package, so a version diff compares CHRs with the same
+  packages, or only the `.jg` files both serve. Record the package list
+  with every `.jg` set.
+- **v7 first.** 6.49 is used only where it helps correlate a v7 finding
+  (user, 2026-11-21).
 
 ## Steps
 
@@ -45,11 +51,36 @@ when it passes the acceptance test in step 4.
 | 3 | Instrument WebFig for the Bridge window (see below) | Sanitized plaintext transcript, first JSProxy notes | None |
 | 4 | Acceptance test: replay the step 3 workflow with the native harness; compare with WebFig and with what `.jg` declares | Shared fixture for the client and the dissector | Steps 2 and 3 |
 | 4b | `[17]` undo-history oracle: one reversible write per menu, read the history natively, map CLI path and properties to route, command and typed keys; cross-check with `.jg` | Generated mapping report, a sanitized fixture, promotion rules | Step 4 |
+| 4c | Extra packages: a 7.25 CHR with `--install-all-packages`; fetch its `.jg`, diff per package file against the base set, then run the `[17]` oracle on package menus (restraml `extra/deep-inspect.json`) | Per-package route list, oracle mapping for package menus | Step 4b |
 | 5 | Decrypting MITM proxy (EC-SRP is known); rerun step 4 with WinBox 4 | WinBox-specific behavior, such as subscribe vs poll | Step 4 |
 
 The 470 7.25 routes with no handler wait until step 4 passes for Bridge.
 Step 4 passed on 2026-11-21. Step 4b (added the same day, after the step 4
 probe in the README) runs before step 5 and is the first pass over them.
+Those 470 are base-package routes only: the 7.25 lab CHR had no extra
+packages. Extra packages add their own `.jg` files (169 more routes on
+the all-packages 7.26beta4 CHR), which step 4c covers.
+
+## Step 4c: extra packages
+
+Why: each package (container, dude, iot, user-manager, wireless, gps,
+tr069-client, openflow, rose-storage, calea, ...) ships its own `.jg`,
+so WinBox and WebFig gain routes when a package is installed. Neither
+`gui-handlers.yaml` nor the oracle has looked at them, and the earlier
+7.25 vs 7.26beta4 totals mixed packages with version drift (README,
+"Result").
+
+1. Start a 7.25 CHR with `quickchr ... --install-all-packages` (validated
+   on 7.20.8+) and record `/system/package print`.
+2. `jg-fetch.ts`, then count routes and field ids per `.jg` file; diff the
+   base files against twin3's and the package files against
+   winbox-beta4's (same packages, 7.25 vs 7.26beta4).
+3. Run the `[17]` oracle on package menus, with the CLI tree from
+   restraml `docs/7.25/extra/deep-inspect.json`. Some package menus hold
+   credentials (user-manager users, container registry), so apply
+   `SECRET_ARG` / `SKIP_MENUS` first and extend them.
+4. Note which package each route belongs to in the report, so a handler
+   entry can carry its package scope.
 
 ## Step 3: WebFig instrumentation
 

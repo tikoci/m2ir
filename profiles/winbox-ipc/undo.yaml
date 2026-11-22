@@ -2,7 +2,7 @@
 # undo — winbox-ipc
 #
 # The configuration change history behind /system history, /undo and
-# /redo, served as route [17]. Live-grounded on 7.25 (plan step 4b of
+# /redo, served as route [17]. Live-grounded on 7.25 and 7.26beta4 (plan step 4b of
 # work/2026-11-jg-descriptors/plan.md); the process-id seed below is the
 # older Cisco-Talos hint.
 ---
@@ -34,7 +34,7 @@ commands:
 row-keys:
   "0x000009": { name: redo-cli, tcode: string_array, rest-name: redo, role: "CLI text of the change, canonical form (units added: cache-size=2048KiB; row ids as *N). Several commands joined by '; ' when one change touches two menus" }
   "0x00000a": { name: undo-cli, tcode: string_array, rest-name: undo, role: "CLI text of the inverse. For a SET: the written fields that changed (empty for a no-op), except handlers that send the whole record (/snmp). For a remove: an add with the whole record. For an add: remove *N" }
-  "0x000008": { name: source, tcode: string, rest-name: trace, role: "'<proto>:<user>@<address>[/action:N][/undo|/redo]': api = REST, tcp-msg(winbox) = native session. Lab address: redact" }
+  "0x000008": { name: source, tcode: string, rest-name: trace, role: "'<proto>:<user>@<address>[/action:N][/undo|/redo]': REST is 'api' on 7.25 and 'rest' on 7.26beta4; tcp-msg(winbox) = native session. Lab address: redact" }
   "0x000006": { name: user, tcode: string, rest-name: by }
   "0x000003": { name: description, tcode: string, rest-name: action, role: "e.g. 'dns changed', 'address list entry added'" }
   "0x000007": { name: time, tcode: u32, rest-name: time, role: "Unix seconds (wall clock)" }
@@ -88,6 +88,8 @@ notes: |
 evidence:
   - source: sample
     ref: "live CHR interrogation (7.25, plan step 4b): undo/redo, peek, no-op SETs, removal rows — fixtures/winbox-ipc/7.25-undo-oracle.json; cap, replay and GETALL paging from work/2026-11-jg-descriptors/undo-q1.ts runs (README, '[17] undo-history oracle')"
+  - source: sample
+    ref: "live CHR interrogation (7.26beta4, plan step 4b q6): same commands, row keys and behaviour; REST source text 'rest:' — fixtures/winbox-ipc/7.26beta4-undo-oracle.json"
   - source: code
     ref: "RouterOS 7.25 WebFig master.js undo/redo buttons (static reading); see work/2026-11-jg-descriptors/README.md"
   - source: code

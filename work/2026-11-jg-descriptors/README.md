@@ -68,7 +68,16 @@ never commit them. Only the derived report is committed.
 ## Result (2026-11-21)
 
 `.jg` lists 465, 498 and 667 routes on 6.49.23, 7.25 and 7.26beta4. That
-is about 7.1k, 9.3k and 11.8k field ids. `gui-handlers.yaml` models 356
+is about 7.1k, 9.3k and 11.8k field ids. These totals mix version and
+package set: the router serves one `.jg` per installed package, the 7.25
+CHR (twin3) had no extra packages, and the 7.26beta4 CHR (winbox-beta4)
+was built with `--install-all-packages`. Counting only the nine files
+both serve (`roteros`, `ipv6`, `wave2`, `dhcp`, `ppp`, `hotspot`,
+`secure`, `advtool`, `ups`), 7.26beta4 has the same 498 routes as 7.25
+and 99 more field ids (9,434). The other 169 routes come from ten package
+files: `dude` 42, `wlan6` 36, `iot` 30, `cmr` 22, `container` 14,
+`userman5` 14, `oflow` 5, `netinstaller` 4, `gps` 1, `tr069` 1 (counted
+2026-11-21, see plan step 4c). `gui-handlers.yaml` models 356
 typed fields on 34 routes. Counts are from the typed diff: a YAML field
 matches only `.jg` ids with the same type letter.
 
@@ -294,12 +303,14 @@ names, and IP/array encodings need care. Nothing is promoted from it yet.
 
 <!-- cspell:ignore centiseconds sfd002a icmp mangle netwatch -->
 
-Status: questions 1-5 answered on 7.25 (2026-11-21); question 6 (version
-drift) is below as far as it got. Profile entry:
-[`undo.yaml`](../../profiles/winbox-ipc/undo.yaml). Fixture:
-[`7.25-undo-oracle.json`](../../fixtures/winbox-ipc/7.25-undo-oracle.json),
-replayed by [`undo-oracle.test.ts`](../../test/profiles/winbox-ipc/undo-oracle.test.ts).
-Generated mapping: [`undo-oracle-mapping-7.25.md`](undo-oracle-mapping-7.25.md).
+Status: questions 1-5 answered on 7.25 and question 6 on 7.26beta4
+(2026-11-21); 6.49 not checked (v7 first, see plan.md). Profile entry:
+[`undo.yaml`](../../profiles/winbox-ipc/undo.yaml). Fixtures:
+[`7.25`](../../fixtures/winbox-ipc/7.25-undo-oracle.json) and
+[`7.26beta4`](../../fixtures/winbox-ipc/7.26beta4-undo-oracle.json)
+`-undo-oracle.json`, both replayed by [`undo-oracle.test.ts`](../../test/profiles/winbox-ipc/undo-oracle.test.ts).
+Generated mappings: [`undo-oracle-mapping-7.25.md`](undo-oracle-mapping-7.25.md)
+and [`undo-oracle-mapping-7.26beta4.md`](undo-oracle-mapping-7.26beta4.md).
 
 ```sh
 quickchr start twin3
@@ -310,6 +321,8 @@ bun undo-oracle.ts --quickchr twin3 --out <scratch>/w1 --deep-inspect $DI --allo
 bun undo-report.ts <scratch>/w1 --jg <scratch>/jg/7.25 --deep-inspect $DI --out undo-oracle-mapping-7.25.md
 bun undo-fixture.ts ../../fixtures/winbox-ipc/7.25-undo-oracle.json <scratch>/w1 <scratch>/q1
 quickchr stop twin3
+# question 6: the same on winbox-beta4 with docs/7.26beta4/deep-inspect.json
+# and the 7.26beta4 .jg (q1 with --cap-writes 150)
 ```
 
 [`undo-lib.ts`](undo-lib.ts) holds the `[17]` listener (a `MessagePump`
@@ -439,6 +452,24 @@ for 4, and 6 `.jg` controls are unnamed. `.jg` declares 519 writable and
 only the properties that are set, so properties left at their default
 were not written.
 
+### q6: version drift (7.26beta4)
+
+The same q1 probe and wave-1 run on winbox-beta4 (7.26beta4, all
+packages installed): 34 menus, the same write counts, no REST failures.
+
+- **Mapping:** 256 of 257 properties give the same route, command, typed
+  keys, values and encoding. The other one is `/system/scheduler
+  start-time`, a wall-clock value.
+- **`.jg` cross-check:** the same counts. On these routes the 7.26beta4
+  `.jg` adds only `b401`/`b402` on `[97,1]` (Traffic Flow "NAT Src./Dst.
+  IPv6 Address"), which no wave-1 write reached.
+- **History behaviour:** the same (no-op rows, undo/redo re-notify, cap
+  100, replay only to the first subscriber, GETALL paging).
+- **Drift:** REST changes are now sourced `rest:admin@<address>` in `s8`
+  and `m1` `Sff001c`; 7.25 says `api:admin@<address>`.
+- 6.49.23 was not checked: v7 first (plan.md); `[17]` on 6.49 stays an
+  open question in `undo.yaml`.
+
 ### Promotion rule
 
 An oracle mapping enters `gui-handlers.yaml` when all of these hold:
@@ -454,7 +485,7 @@ An oracle mapping enters `gui-handlers.yaml` when all of these hold:
    `label:` when the `.jg` label differs. A `.jg` miss or a name conflict
    keeps the field in the report as a proposal.
 4. Version scope is the version of the run (`set.versions`); another
-   version needs its own run.
+   version needs its own run (7.26beta4 added after question 6).
 5. Handler entries stay `confidence: observed-only`. The read command
    comes from the `.jg` dialog type (item = GET, map = GETALL) until a
    native read is captured; the entry says so.
@@ -493,5 +524,5 @@ property, so enums get one value each; `[find]`-selected SETs add
 5. Plan step 5: the decrypting MITM proxy, to see what WinBox 4 itself
    sends (subscribe words, MOVE shape, polling).
 6. Widen the `[17]` oracle past wave 1 (34 menus, 30 routes) toward the
-   470 7.25 routes with no handler, and rerun it on 7.26beta4 (plan step
-   4b, question 6).
+   470 7.25 base-package routes with no handler, then cover extra
+   packages (plan step 4c).

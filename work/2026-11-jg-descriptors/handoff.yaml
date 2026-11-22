@@ -4,6 +4,9 @@ plan: work/2026-11-jg-descriptors/plan.md
 approved: 2026-11-21
 decisions:
   - "Step 4b, the [17] undo-history oracle, runs before the WinBox 4 MITM step, in its own session (user, 2026-11-21)."
+  - "v7 first: 6.49 only where it helps correlate a v7 finding (user, 2026-11-21, after step 4b)."
+  - "Extra packages (each ships its own .jg) go in the plan as step 4c; not urgent (user, 2026-11-21)."
+  - "Branch jg-descriptors pushed to origin after step 4b (user, 2026-11-21); earlier steps were local only."
   - "Typed field identity (step 0) lands before any .jg promotion (user, 2026-11-21)."
   - "WebFig instrumentation (step 3) is tried before the MITM proxy (user, 2026-11-21)."
   - "Step 3 uses a headless browser with sessionStorage seeded (name/password) and a hook above the Session cipher; a Bun-native JSProxy client is deferred because it would be our client, not MikroTik's."
@@ -15,7 +18,8 @@ steps:
   2-conversation-census: done
   3-webfig-instrumentation: done
   4-acceptance-bridge: done (questions 1-5 on 6.49.23, 7.25, 7.26beta4)
-  4b-undo-oracle: "q1-q5 done on 7.25 (see step4b-record); q6 drift open"
+  4b-undo-oracle: "done: q1-q5 on 7.25, q6 on 7.26beta4 (see step4b-record); 6.49 not checked (v7 first)"
+  4c-extra-packages: "queued, not urgent (plan.md 'Step 4c'; prompt in step4c-handoff-prompt.md)"
   5-mitm-proxy: queued
 open:
   conflicts-before-promotion: "all four resolved in step 1 (see step1-record)"
@@ -116,7 +120,7 @@ step4-record:
   lab: "twin3 (7.25), winbox-beta4 (7.26beta4), ws3c6 (6.49.23); all stopped after use"
   gates: "bun run lint green; bun run test 594/0; harness tests 70/0; markdownlint + cspell clean on touched files"
   optional-undo-oracle: "Done (7.25, time-boxed): undo-oracle.ts. SUBSCRIBE [17] replays the full history; each row gives CLI (S9) -> m1 route + command + typed keys, e.g. /snmp set -> [34] CMD_SET s2/s3, /ip dns set -> [14,2] u4, address-list -> [20,35] ADDOBJ u3/u4/sfe0010/sfe0009. SET/remove inverses carry the whole prior record (Sa CLI names + m2 typed keys with the same values) -> name-by-value mapping. Verdict: worth its own plan step. Nothing promoted."
-  next: "step 5: MITM proxy for WinBox 4 (what words WinBox subscribes with, MOVE shape, polling vs notify)"
+  next: "superseded by top-level next:"
 step4b-record:
   date: 2026-11-21
   outputs:
@@ -124,28 +128,37 @@ step4b-record:
     - "work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md (generated)"
     - "fixtures/winbox-ipc/7.25-undo-oracle.json (34 records; biome formatter off) + test/profiles/winbox-ipc/undo-oracle.test.ts"
     - "profiles/winbox-ipc/undo.yaml rewritten from the samples (route [17], commands, row keys, behaviour)"
-    - "README section '[17] undo-history oracle (plan step 4b)' with the promotion rule"
+    - "README section '[17] undo-history oracle (plan step 4b)' with the promotion rule and q6"
+    - "fixtures/winbox-ipc/7.26beta4-undo-oracle.json + undo-oracle-mapping-7.26beta4.md; the test runs every fixture check on both versions"
+    - "README 'Result' corrected: the 498 -> 667 route growth is package set, not version (7.26beta4 base files: the same 498 routes, +99 field ids; 169 routes from 10 package .jg files). plan.md: step 4c + 'same package set' and 'v7 first' rules"
   answers:
     q1-reversibility: "no-op SET records a row (S9 + m1 = the written keys; Sa empty; m2 empty or a moved read-only counter; /snmp always sends the whole record). Changing SET inverse = changed fields only (probe overstated it). Remove inverse = full record. Native 0x80001/0x80002 and REST /undo /redo restore cleanly; the row is re-notified with u4 toggled and s8 suffixed /undo|/redo. A change after undo drops the redo branch (removal rows). Cap 100 rows, eviction notified. Replay only to the first subscriber; GETALL pages 20 newest-first. Stop/start clears it."
     q2-secrets: "SECRET_ARG (55 of 319 menus have one; never written), SKIP_MENUS (38), no add plan on a menu with secrets; fixture redaction: source strings -> @<lab>, secret values -> <redacted>, u7 and address-list ua -> 0; builder and test scan decoded strings"
     q3-selection: "deep-inspect 7.25: 319 menus with set (65 singletons, 254 tables). Wave 1: 34 menus -> 30 routes (2 modeled before: [20,17], [24,33]). Five CLI menus share [20,17]"
     q4-matching: "257 properties: 244 one key, 13 several; 270 keys: 210 confirmed by value, 59 explained (enum/ref/keyword/nested), 1 unexplained (queue target b75). Encodings: IPv4 u32 LE, ranges as [start,end], prefixes as {address, netmask} messages, intervals in s / ms / centiseconds, KiB or bytes, x1000 decimals, enum sets as bit masks, keywords = 0xFFFFFFFF. Value-only matching fails on equal values and picks the wrong snmp trap-community key"
     q5-jg: "243 agree, 0 type-letter conflicts, 21 std 0xfe keys, 6 oracle-only; labels 233 agree / 4 differ / 6 unnamed; 519 writable + 128 ro .jg fields untouched (REST prints only set properties)"
-    q6-drift: "not run in this session"
+    q6-drift: "7.26beta4 (winbox-beta4, all packages): 256/257 property mappings identical (the other: scheduler start-time, wall clock); .jg counts identical, + b401/b402 on [97,1]; history behaviour identical; drift: REST source text 'rest:' (7.25 'api:'). Fixture 7.26beta4-undo-oracle.json; report undo-oracle-mapping-7.26beta4.md. 6.49.23 not checked (v7 first)"
   promoted:
     - "gui-handlers [20,17]: role = shared net-settings singleton (5 CLI menus); 13 discovery-settings fields; f79 suffix-or-mode -> add-dns-entries-suffix (revision-history); E3-R GET reads the same keys/values"
     - "gui-handlers new: dns-settings-14-2 (17 fields), snmp-settings-34 (9), address-list-20-35 (7; u4 kept unknown-4)"
+    - "all four: set.versions [7.25, 7.26beta4] after q6"
   corrections:
     - "step-4 probe: 'SET inverses carry the full prior record' holds for /snmp only"
     - "sfd002a = '' rides SETOBJ only when the CLI picks the row with [find ...]"
     - "Talos UNDO = 0x080000 matches the [17] command range 0x8000x (inference, in undo.yaml notes)"
-  gates: "bun run lint green; bun run test 603/0; harness tests 70/0; markdownlint + cspell clean on touched files; fixture scanned for lab addresses and secrets"
-  lab: "twin3 (7.25) started and stopped"
+  gates: "bun run lint green; bun run test 612/0; harness tests 70/0; markdownlint, cspell and secretlint clean; fixtures scanned for lab addresses and secrets"
+  lab: "twin3 (7.25) and winbox-beta4 (7.26beta4) started and stopped"
   leads:
-    - "q6: rerun undo-q1.ts + undo-oracle.ts on winbox-beta4 (7.26beta4) and diff the mapping; check whether 6.49.23 serves [17] (native SUBSCRIBE/GETALL; writes via the native API)"
+    - "6.49.23 [17]: only if it helps correlate a v7 finding (native SUBSCRIBE/GETALL; writes via the native API)"
+    - "Package scope: twin3 has no extra packages, winbox-beta4 all of them. Earlier .jg version diffs (gui-handlers-vs-jg.md totals) mix package set with version; rerun jg-diff per .jg file or with matched package sets (step 4c)"
     - "Widen past wave 1: tables with default rows (ipsec profile, hotspot profiles, bgp template, logging rules) and more add plans; REST prints only set properties, so defaults need another source (print with detail, or .jg + a write of a non-default value)"
     - "[17] commands 0x80003..0x80006 unused by WebFig: probe on a disposable CHR"
     - "snmp trap-community: .jg says u11 (row reference), value matching says s4 (community name); settle with one write"
     - "sfd002a (key 0xfd002a): what the [find] selector adds; not in std-keys.yaml"
     - "three no-op SETs recorded no row (/queue/type pfifo-limit, /system/logging/action memory-lines, memory-stop-on-full): property not applicable to the row's kind?"
     - "queue target writes b75 = true next to the M72 list; .jg does not declare it"
+next:
+  queue:
+    - "step 5: decrypting MITM proxy for WinBox 4 (subscribe words, MOVE shape, polling vs notify). Needs a setup decision first: how WinBox 4 reaches the lab CHR (user's desktop, or scripted). No prompt written yet."
+    - "step 4c: extra packages (not urgent): prompt ready in step4c-handoff-prompt.md"
+    - "widen the [17] oracle past wave 1 (base packages), any time"
