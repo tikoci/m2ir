@@ -69,6 +69,8 @@ errors:
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): GETOBJ [20,1] without 0xfe0001 -> UNKNOWNID from=[20,1]; GET bare/f7/f999 [20,61] -> UNKNOWNID from=[20,61]; no total/errstr — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json and {6.49,7.25,7.26beta4}-neg-20-61.json"
       - source: sample
         ref: "live CHR interrogation (queue-3 mutation capture batch, 7.25 + 7.26beta4, 2026-11-01): GETOBJ [20,125] obj=1 -> UNKNOWNID from the full route — fixtures/winbox-ipc/{7.25,7.26beta4}-set-20-125-map.json"
+      - source: sample
+        ref: "WinBox 4.4 recovery run (step 5 follow-up, 7.25, 2026-11-22): the edit dialog's GETOBJ [16,2] for a row removed over REST -> UNKNOWNID, no errstr; WinBox closed the dialog — fixtures/winbox-ipc/7.25-winbox4-recovery.json mark instruct-r2"
   0xfe0005: { canonical-name: ERROR_MISSING,        confidence: documented }
   0xfe0006:
     canonical-name: ERROR_FAILED
@@ -79,6 +81,8 @@ errors:
         ref: "live CHR interrogation (queue-3 read-only capture batch, 6.49.23 + 7.25 + 7.26beta4, 2026-11-01): bare GET [13,6]/[13,7] -> FAILED + errstr — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-error-census.json"
       - source: sample
         ref: "live CHR interrogation (queue-3 mutation capture batch, 7.25, 2026-11-01): SET{} [13,7] -> FAILED + errstr (write-path mirror) — fixtures/winbox-ipc/7.25-set-13-7-overwrite.json"
+      - source: sample
+        ref: "WinBox 4.4 recovery run (step 5 follow-up, 7.25, 2026-11-22): SETOBJ [16,2] moving a port onto an interface that is already a port -> FAILED + errstr 'device already added as bridge port' (a validation error, not a malformed request) — fixtures/winbox-ipc/7.25-winbox4-recovery.json marks instruct-r0+r1, ui-r1c"
   0xfe0007: { canonical-name: ERROR_EXISTS,         confidence: documented }
   0xfe0009: { canonical-name: ERROR_NOTALLOWED,     confidence: documented }
   0xfe000a: { canonical-name: ERROR_TOOBIG,         confidence: documented }

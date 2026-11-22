@@ -43,6 +43,30 @@ indexes completed experiments and remaining gaps. The
 reproducible live probes and their dependencies/controls; replaying an
 existing fixture does not constitute a new live observation.
 
+### WebFig plaintext transcripts
+
+`*-webfig-bridge-workflow.jsonl` record what MikroTik's own WebFig client
+sends and receives during the plan step 3 Bridge workflow. Each file is
+JSONL. Line 1 is the provenance: RouterOS build, WebFig asset SHA-256
+hashes, `.jg` unique names, and the lab row ids. Each later line is one
+event: a driver `mark`, a `tx` or `rx` message (WebFig's letter-keyed
+object plus the exact plaintext hex), an `http` completion, or a `uri`
+file fetch. The login password and session token are redacted. The
+transcripts are compacted (`transcript.ts --compact`), so only selected
+replies keep their full object and plaintext hex: every notification on
+the workflow's focus paths and the first one elsewhere, and a non-notify
+reply only when it is the first for its path since the last mark and is
+on a focus path, or is the first ever for its path with at most 20 rows.
+Router errors (`uff0008`) are always kept. Every other reply, including
+some initial replies (for example seq 14 in the 7.25 file), is reduced
+to its SYS routing keys, `ufe0003`, `ufe0019` and `row_ids` when it had
+rows, with `"hex": null` and `"elided": true`. The transcripts
+therefore cannot be replayed message by message on their own. The
+[capture guide](../work/2026-11-jg-descriptors/webfig/README.md)
+explains the hook and how to reproduce a run; the
+[findings](../work/2026-11-jg-descriptors/README.md#webfig-client-model-7x-master-js-tested-in-step-3)
+cite these files by `seq`.
+
 ## MNDP evidence
 
 [`mndp/`](mndp/) holds slices of the MNDP grounding lab: announcement

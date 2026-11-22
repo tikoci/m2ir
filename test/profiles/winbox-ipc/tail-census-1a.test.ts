@@ -74,7 +74,7 @@ describe("tail census 1a replay", () => {
 			"121 namespace-user",
 		);
 		expect(Object.keys(f121).length).toBe(10);
-		expect(required(f121["7"], "121 f7").name).toBe("unknown-7");
+		expect(required(f121["7"], "121 f7").name).toBe("traffic-class");
 	});
 
 	test("schema carries the defconf/QoS gating notes", () => {

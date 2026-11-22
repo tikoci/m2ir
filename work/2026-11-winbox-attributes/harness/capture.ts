@@ -64,7 +64,11 @@ export function losslessValue(v: M2Value): unknown {
 			return (v as M2Message[]).map(losslessMessage);
 		}
 		return (v as unknown[]).map((x) =>
-			x instanceof Uint8Array ? `hex:${hexFull(x)}` : x,
+			x instanceof Uint8Array
+				? `hex:${hexFull(x)}`
+				: typeof x === "bigint"
+					? `u64:${x.toString()}`
+					: x,
 		);
 	}
 	if (typeof v === "object") return losslessMessage(v as M2Message);

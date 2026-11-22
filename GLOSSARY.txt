@@ -109,6 +109,7 @@ netwatch
 npk # MikroTik package format
 nvme-over-tcp # supported by RouterOS **with** rose-storage.npk extra-package
 OID
+omarchy # Linux distribution (Arch + Hyprland) of the lab host that ran WinBox 4.4 in the jg-descriptors step 5 captures
 PII # Personally Identifiable Information
 POV
 proplist
@@ -457,6 +458,9 @@ safepkgs # nv::SafePkgs class-name fragment, lowercase key form
 testb # x86 test-byte mnemonic in objdump listings
 tostr # nv::SafePkgs::tostr() version-floor-list renderer (v7 sys2 handler 31)
 ack # acknowledgement shorthand (empty SET reply)
+acked # past tense of ack: the router answered ok
+acks # plural of ack
+unsub # mark-name shorthand for CMD_UNSUBSCRIBE 0xfe0013 (step 4 native replay fixtures, e.g. q3-unsub-iface)
 ffhunt # transcript tag for the 0xff001e exotic-row hunt (batch §19)
 macvlan # MAC-level virtual LAN interface type (RouterOS /interface/macvlan)
 noncross # analytic shorthand: a neighbor NOT strictly between old and new names (no rename-fixup crossing)
@@ -568,6 +572,51 @@ roteros # WebFig roteros.*.jg.gz descriptor bundle basename
 rsrc # PE resource section shorthand (WinBox client .rsrc)
 socksify # RouterOS SOCKS5-redirect subsystem (pid 164, /ip/socksify)
 wfig # WebFig descriptor bundle shorthand (/tmp/wfig.js, §39 batch)
+webfig # RouterOS web client (/webfig/); serves .jg descriptors and speaks M2 over /jsproxy
+typevalue # .jg sub-dialog selector on a generic template route (interface type-code on [20,0])
+getcmd # .jg dialog attribute: command a dialog uses to read (also setcmd, pollcmd, cancelcmd)
+setcmd # .jg dialog attribute: command a dialog uses to save (WebFig default 0xfe000e)
+getallcmd # .jg dialog attribute: list command (WebFig default 0xfe0004 CMD_GETALL)
+startcmd # .jg action attribute: start command (often 0xfe000f CMD_START)
+pollcmd # .jg action attribute: poll command (WebFig default 0xfe0010 CMD_POLL)
+cancelcmd # .jg action attribute: cancel command (0xfe0011 CMD_CANCEL; 0xffffffff = none)
+autorefresh # .jg dialog attribute: client refetch interval in ms
+refreshfilter # .jg dialog attribute: bits OR-ed into the STD_FILTER (0xfe000c) request word
+refetchonopen # .jg dialog attribute: bits OR-ed into STD_FILTER when a dialog opens
+nonaddable # .jg list attribute: no add button
+mfe # typed-key prefix: message in the 0xfe STD namespace (mfe001d = STD_FIRST_ROW)
+Mfe # typed-key prefix: message array in the 0xfe STD namespace (Mfe0002 = STD_OBJS)
+multibignumber # .jg field type for a u64 array (type letter Q)
+multiraw # .jg field type for a raw-bytes array (type letter R)
+uff # typed-key prefix: u32 in the 0xff SYS namespace (uff0007 = SYS_CMD)
+Uff # typed-key prefix: u32 array in the 0xff SYS namespace (Uff0001 = SYS_TO)
+ufe # typed-key prefix: u32 in the 0xfe STD namespace (ufe0001 = STD_ID)
+sfe # typed-key prefix: string in the 0xfe STD namespace (sfe0010 = STD_NAME)
+Sff # typed-key prefix: string array in the 0xff SYS namespace (Sff001c = client tag WebFig adds to every request)
+jsproxy # WebFig's encrypted M2 transport endpoint (POST /jsproxy; notifications ride a long poll)
+keepalive # periodic no-op that keeps a session alive (WebFig: CMD_NOOP to [1] every 20 s)
+unlisten # WebFig Listeners method; removing the last listener sends CMD_UNSUBSCRIBE
+extrastats # .jg condition gating the per-queue Ethernet statistics tab (Q480 Tx Packets)
+XHR # XMLHttpRequest (browser HTTP API WebFig uses for /jsproxy)
+buqasmr # type letters by physical type_class 0-6 (profiles/winbox-ipc/profile.yaml key-id)
+MSTP # Multiple Spanning Tree Protocol (bridge region-name / region-revision)
+RSTP # Rapid Spanning Tree Protocol (bridge protocol-mode)
+MLAG # multi-chassis link aggregation (bridge mlag-* properties)
+LACP # Link Aggregation Control Protocol (bonding, mlag-lacp-fallback)
+BPDU # bridge protocol data unit (bridge port bpdu-guard)
+TCN # STP topology change notification (bridge port restricted-tcn)
+IGMP # Internet Group Management Protocol (bridge igmp-snooping)
+MLD # Multicast Listener Discovery (bridge mld-version)
+ECN # explicit congestion notification (switch tx queue)
+WRED # weighted random early detection (switch tx queue)
+OSPF # routing protocol (IP protocol 89)
+PIM # Protocol Independent Multicast (IP protocol 103)
+dhcpv # cspell fragment of dhcpv6 (bridge dhcpv6-snooping)
+prestera # Marvell Prestera switch family (.jg board predicate for hw-offload)
+defenum # .jg enum with a default entry (defid/defname)
+numflag # .jg flag-column type
+readback # value read back after a write; repo term
+proplists # CLI print proplist completions (restraml deep-inspect)
 bootrace # /tmp boot-race prober (M2 rounds over a reboot, §38 batch)
 slotprobe # /tmp proxy-slot probe (dead-pid pair capture, §38 batch)
 iface # interface shorthand (mproxy 100ms iface-log timer)
@@ -653,3 +702,26 @@ NDP
 netdev
 nzbe
 tpa
+
+# [17] undo-history oracle (work/2026-11-jg-descriptors, plan step 4b)
+undoable # REST /system/history field; the [17] row is undoable until undone
+centiseconds # wire unit of conntrack and routing timers (1d = 8640000)
+conntrack # /ip firewall connection tracking
+pfifo # /queue type kind (pfifo-limit property)
+upnp # /ip upnp menu
+mdns # /ip dns mdns-repeat-ifaces
+phy # LLDP MAC/PHY configuration TLV (lldp-mac-phy-config)
+PHY
+psk # pre-shared key; SECRET_ARG pattern
+preshared # WireGuard preshared-key property
+wpa # Wi-Fi Protected Access key names; SECRET_ARG pattern
+dateandtime # .jg control type (address-list Creation Time)
+# RouterOS package .jg file names (work/2026-11-jg-descriptors, plan step 4c)
+userman5 # user-manager .jg
+oflow # openflow .jg
+netinstaller # netinstall .jg
+cmr # .jg file shipped with the 7.26beta4 extra packages (package not identified)
+openflow # RouterOS extra package
+advtool # advanced-tools .jg (base)
+gdb # GNU debugger (WinBox client-hook capture option, plan step 5)
+tcpdump # packet capture tool

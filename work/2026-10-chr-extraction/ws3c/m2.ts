@@ -12,6 +12,7 @@ export type M2Value =
 	| number[]
 	| string[]
 	| Uint8Array[]
+	| bigint[]
 	| M2Message[];
 
 export interface M2Entry {
@@ -66,9 +67,11 @@ const TCODE_NAMES: Record<number, string> = {
 	48: "bytes",
 	49: "bytes_c",
 	136: "u32_array",
+	144: "u64_array",
 	152: "bytes16_array",
 	160: "string_array",
 	168: "msg_array",
+	176: "bytes_array",
 };
 
 export function tcodeName(tcode: number): string {
@@ -175,6 +178,14 @@ function decodeValue(c: Cursor, tcode: number): M2Value {
 			for (let i = 0; i < count; i++) out.push(c.u32le());
 			return out;
 		}
+		case 0x90: {
+			// Decode-only: .jg declares Q (u64 array) fields; the encoder
+			// still refuses 0x90 (declared-unwired until a capture shows it).
+			const count = c.u16le();
+			const out: bigint[] = [];
+			for (let i = 0; i < count; i++) out.push(c.u64le());
+			return out;
+		}
 		case 0x98: {
 			const count = c.u16le();
 			const out: Uint8Array[] = [];
@@ -193,6 +204,14 @@ function decodeValue(c: Cursor, tcode: number): M2Value {
 			const out: M2Message[] = [];
 			for (let i = 0; i < count; i++)
 				out.push(decodeNested(c.bytes(c.u16le())));
+			return out;
+		}
+		case 0xb0: {
+			// Decode-only: .jg R (raw array, multiraw); u16 count, then
+			// u16-length-prefixed byte strings (WebFig buffer2msg layout).
+			const count = c.u16le();
+			const out: Uint8Array[] = [];
+			for (let i = 0; i < count; i++) out.push(c.bytes(c.u16le()));
 			return out;
 		}
 		default: {
@@ -542,7 +561,7 @@ export function fmtValue(v: M2Value, indent = ""): string {
 				.join("\n");
 			return `${rows.length} rows\n${body}`;
 		}
-		return `[${(v as (number | string | Uint8Array)[]).map((x) => (typeof x === "number" ? x : x instanceof Uint8Array ? `bytes[${x.length}] ${fmtHex(x)}` : JSON.stringify(x))).join(", ")}]`;
+		return `[${(v as (number | bigint | string | Uint8Array)[]).map((x) => (typeof x === "number" || typeof x === "bigint" ? x : x instanceof Uint8Array ? `bytes[${x.length}] ${fmtHex(x)}` : JSON.stringify(x))).join(", ")}]`;
 	}
 	const m = v as M2Message;
 	return `${m.entries.length} fields\n${fmtMessage(m, `${indent}  `)}`;

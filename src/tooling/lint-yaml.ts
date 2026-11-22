@@ -112,6 +112,101 @@ function walkNode(node: unknown, path: string, errors: string[]): void {
 	}
 }
 
+// ── Typed field identity (profiles/winbox-ipc/profile.yaml key-id) ───────────
+
+/** tcode spellings used in handler field maps -> RouterOS type letter. */
+export const TCODE_LETTER: Record<string, string> = {
+	bool: "b",
+	u32: "u",
+	u8: "u",
+	be32: "u",
+	u64: "q",
+	bytes_16: "a",
+	string: "s",
+	bytes: "r",
+	message: "m",
+	u32_array: "U",
+	u64_array: "Q",
+	bytes16_array: "A",
+	string_array: "S",
+	message_array: "M",
+	bytes_array: "R",
+	bool_array: "B",
+};
+const TYPE_LETTERS = new Set(Object.values(TCODE_LETTER));
+
+function isRecord(v: unknown): v is Record<string, unknown> {
+	return typeof v === "object" && v !== null && !Array.isArray(v);
+}
+
+function validateFieldEntry(
+	entry: unknown,
+	path: string,
+	errors: string[],
+): void {
+	if (!isRecord(entry)) return;
+	const tcode = entry["tcode"];
+	if (typeof tcode === "string" && !(tcode in TCODE_LETTER)) {
+		errors.push(
+			`${path}.tcode: unknown tcode "${tcode}" (known: ${Object.keys(TCODE_LETTER).join(", ")})`,
+		);
+	}
+	const variants = entry["variants"];
+	if (variants === undefined) return;
+	if (!isRecord(variants) || Object.keys(variants).length < 2) {
+		errors.push(
+			`${path}.variants: expected a map of at least two type letters (use a plain entry for one type)`,
+		);
+		return;
+	}
+	for (const k of ["name", "tcode"])
+		if (k in entry)
+			errors.push(
+				`${path}.${k}: not allowed next to variants; put it on each variant`,
+			);
+	for (const [letter, v] of Object.entries(variants)) {
+		const vp = `${path}.variants.${letter}`;
+		if (!TYPE_LETTERS.has(letter)) {
+			errors.push(
+				`${vp}: "${letter}" is not a type letter (allowed: ${[...TYPE_LETTERS].join(" ")})`,
+			);
+			continue;
+		}
+		if (!isRecord(v) || typeof v["name"] !== "string") {
+			errors.push(`${vp}: expected an entry with a string name`);
+			continue;
+		}
+		const vt = v["tcode"];
+		if (typeof vt === "string" && TCODE_LETTER[vt] !== letter)
+			errors.push(
+				`${vp}.tcode: "${vt}" belongs to type letter "${TCODE_LETTER[vt] ?? "?"}", not "${letter}"`,
+			);
+		validateFieldEntry(v, vp, errors);
+	}
+}
+
+/**
+ * Checks handler field maps (gui-handlers.yaml shape): `fields.map` and
+ * every `fields.namespace-*` map. A field number with two types must use
+ * `variants:` keyed by type letter.
+ */
+function validateHandlerFields(doc: unknown, errors: string[]): void {
+	if (!isRecord(doc) || !isRecord(doc["handlers"])) return;
+	for (const [h, handler] of Object.entries(doc["handlers"])) {
+		if (!isRecord(handler) || !isRecord(handler["fields"])) continue;
+		for (const [group, map] of Object.entries(handler["fields"])) {
+			if (group !== "map" && !group.startsWith("namespace-")) continue;
+			if (!isRecord(map)) continue;
+			for (const [field, entry] of Object.entries(map))
+				validateFieldEntry(
+					entry,
+					`handlers.${h}.fields.${group}.${field}`,
+					errors,
+				);
+		}
+	}
+}
+
 /**
  * Validates a parsed YAML document object and returns error strings
  * prefixed with `filePath`.
@@ -119,6 +214,7 @@ function walkNode(node: unknown, path: string, errors: string[]): void {
 export function validateYamlDocument(doc: unknown, filePath: string): string[] {
 	const inner: string[] = [];
 	walkNode(doc, "", inner);
+	validateHandlerFields(doc, inner);
 	return inner.map((err) => `${filePath}: ${err}`);
 }
 

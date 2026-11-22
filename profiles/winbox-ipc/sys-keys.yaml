@@ -210,9 +210,15 @@ keys:
 
   0xff0012:
     canonical-name: SYS_ORIGINATOR
-    physical: { tcodes: [0x88] }
+    physical: { tcodes: [0x88, 0x08] }
     semantic: handler-path
     confidence: documented
+    notes: "Two wire forms, two meanings by type: 0x88 (u32 array) is the SYS_ORIGINATOR handler path (6.49.23 notifications); 0x08 (u32) is the WinBox 4.4 SUBSCRIBE/UNSUBSCRIBE form below, whose meaning is open. Typed-identity case: WinBox 4.4 (7.25) sends a u32 0xff0012 = 1000 (tcode 0x08, letter u), not the 0x88 handler path, on every worded SUBSCRIBE and UNSUBSCRIBE. Natively, SUBSCRIBE with and without it behaved the same (snapshot, acks and notifications); its meaning is open (a 1000 ms notify interval is a guess, not tested)."
+    evidence:
+      - source: sample
+        ref: "WinBox 4.4 (Linux) through the decrypting proxy (plan step 5, 7.25, 2026-11-22): fixtures/winbox-ipc/7.25-winbox4-bridge-workflow.json and 7.25-winbox4-recovery.json (SUBSCRIBE / UNSUBSCRIBE records)"
+      - source: sample
+        ref: "native probe (7.25, 2026-11-22): variant pairs e1/e3, e4/e2 and e5/e6 differ only by u32 0xff0012=1000 and behave the same — fixtures/winbox-ipc/7.25-native-subscribe-snapshot.json"
 
   0xff0013:
     canonical-name: SYS_RADDR6
@@ -226,6 +232,19 @@ keys:
     semantic: u32
     confidence: documented
     notes: "Scope open: presumably a disconnect-reason code traveling with CMD_DISCONNECTED / cmdDisconnected contexts; no live sighting yet to confirm."
+
+  0xff0017:
+    canonical-name: SYS_SNAPSHOT
+    physical: { tcodes: [0x01] }
+    semantic: bool
+    role: "on CMD_SUBSCRIBE: true = answer at once with a CMD_NOTIFY holding every row (project-named; no documented label)"
+    confidence: observed-only
+    notes: "Native probe on 7.25: SUBSCRIBE with b ff0017=true is followed within a few ms by one CMD_NOTIFY 0xfe000b from the path, TO the subscriber's FROM, carrying all rows plus 0xfe0019 (count); the rows carry the groups the 0xfe000c word selects (83/60 keys on [20,0] with 0x1004000f, 48/30 without a word), as a GETALL with that word does. It works with or without SYS_REPLYEXP / SYS_REQID. A SUBSCRIBE that only repeats a live subscription (same session, path and word) sends no snapshot; after UNSUBSCRIBE it does again. GETALL ignores the key. Without it no snapshot, whatever came before (defaults GETALL, GETPOLICIES, another FROM handler). WinBox 4.4 sends it on every worded SUBSCRIBE (and UNSUBSCRIBE) except one: its [16,2] reopen in the step 5 workflow left it off and got no snapshot. After a reconnect WinBox rebuilds each open list from this snapshot."
+    evidence:
+      - source: sample
+        ref: "native probe (7.25, 2026-11-22): 22 variants over [16,2] and [20,0], work/2026-11-jg-descriptors/winbox4/first-notify.ts — fixtures/winbox-ipc/7.25-native-subscribe-snapshot.json"
+      - source: sample
+        ref: "WinBox 4.4 (Linux) through the decrypting proxy (plan step 5, 7.25, 2026-11-22): fixtures/winbox-ipc/7.25-winbox4-bridge-workflow.json (first open and reopens) and 7.25-winbox4-recovery.json (rebuild after reconnect)"
 
   0xff001c:
     canonical-name: SYS_PROXY_BANNER

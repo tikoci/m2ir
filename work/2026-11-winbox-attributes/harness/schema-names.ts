@@ -17,7 +17,20 @@ export interface KeyInfo {
 
 export type NameResolution =
 	| { name: string; source: string }
-	| { name: null; reason: "absent-coverage"; fallback: string };
+	| {
+			name: null;
+			reason: "absent-coverage" | "type-ambiguous";
+			fallback: string;
+	  };
+
+/**
+ * RouterOS type letter for a wire tcode (physical/nv-message.yaml
+ * type_class + is_array): b u q a s m r, uppercase for arrays.
+ */
+export function typeLetter(tcode: number): string {
+	const letter = "buqasmr".charAt((tcode & 0x78) >> 3) || "?";
+	return tcode & 0x80 ? letter.toUpperCase() : letter;
+}
 
 export type TcodeCheck =
 	| { agree: true }
@@ -66,8 +79,13 @@ function loadKeysDoc(rel: string, table: Map<number, KeyInfo>): void {
 export interface NameTables {
 	keys: Map<number, KeyInfo>;
 	commands: Map<number, KeyInfo>;
-	/** Route "pid,hid" -> fullKey -> info for pilot handler fields. */
+	/** Route "pid,hid" -> fullKey -> info for single-type handler fields. */
 	routes: Map<string, Map<number, KeyInfo>>;
+	/**
+	 * Route "pid,hid" -> "fullKey:letter" -> info for field numbers that
+	 * carry more than one type (`variants:` in gui-handlers.yaml).
+	 */
+	typedRoutes: Map<string, Map<string, KeyInfo>>;
 }
 
 function loadRouteFields(
@@ -81,6 +99,7 @@ function loadRouteFields(
 			fields?: {
 				map?: unknown;
 				"namespace-user"?: unknown;
+				"namespace-1"?: unknown;
 				"namespace-session"?: unknown;
 			};
 		};
@@ -92,29 +111,37 @@ function loadRouteFields(
 		const f = h.fields;
 		if (typeof f !== "object" || f === null) continue;
 		const route = new Map<number, KeyInfo>();
+		const typed = new Map<string, KeyInfo>();
 		const takeMap = (node: unknown, byte2: number, nsLabel: string): void => {
 			if (typeof node !== "object" || node === null) return;
+			const source = `profiles/winbox-ipc/gui-handlers.yaml ${handlerName} ${nsLabel}`;
 			for (const [rawId, rawEntry] of Object.entries(
 				node as Record<string, unknown>,
 			)) {
 				const keyId = Number(rawId);
-				if (!Number.isInteger(keyId)) continue;
-				const entry = rawEntry as { name?: unknown };
-				const name = entry.name;
-				if (typeof name !== "string") continue;
-				route.set((byte2 << 16) | keyId, {
-					name,
-					source: `profiles/winbox-ipc/gui-handlers.yaml ${handlerName} ${nsLabel}`,
-					tcodes: [],
-				});
+				if (!Number.isInteger(keyId) || typeof rawEntry !== "object") continue;
+				const fullKey = (byte2 << 16) | keyId;
+				const entry = rawEntry as { name?: unknown; variants?: unknown };
+				if (typeof entry.variants === "object" && entry.variants !== null) {
+					for (const [letter, v] of Object.entries(entry.variants)) {
+						const name = (v as { name?: unknown } | null)?.name;
+						if (typeof name === "string")
+							typed.set(`${fullKey}:${letter}`, { name, source, tcodes: [] });
+					}
+					continue;
+				}
+				if (typeof entry.name !== "string") continue;
+				route.set(fullKey, { name: entry.name, source, tcodes: [] });
 			}
 		};
 		// Singleton shape: fields: { namespace, map }.
 		takeMap(f.map ?? null, 0x00, "user");
-		// Row shape: fields: { namespace-user, namespace-session }.
+		// Row shape: fields: { namespace-user, namespace-1, namespace-session }.
 		takeMap(f["namespace-user"], 0x00, "user");
+		takeMap(f["namespace-1"], 0x01, "ns-1");
 		takeMap(f["namespace-session"], 0xfe, "session");
 		if (route.size > 0) tables.routes.set(routeKey, route);
+		if (typed.size > 0) tables.typedRoutes.set(routeKey, typed);
 	}
 }
 
@@ -124,6 +151,7 @@ export function loadNameTables(): NameTables {
 		keys: new Map(),
 		commands: new Map(),
 		routes: new Map(),
+		typedRoutes: new Map(),
 	};
 	loadKeysDoc("profiles/winbox-ipc/sys-keys.yaml", tables.keys);
 	const stdKeys = new Map<number, KeyInfo>();
@@ -195,14 +223,31 @@ export function resolveCommandName(cmd: number): NameResolution {
 }
 
 /**
- * Resolve a handler-route-scoped field (user/session namespaces).
- * Falls back to the global tables, then to numeric fallback.
+ * Resolve a handler-route-scoped field (user/ns-1/session namespaces).
+ * Pass the wire tcode: a field number with more than one type resolves
+ * only with it, and reports `type-ambiguous` without it. Falls back to
+ * the global tables, then to numeric fallback.
  */
 export function resolveRouteField(
 	route: number[],
 	fullKey: number,
+	tcode?: number,
 ): NameResolution {
-	const routeHit = nameTables().routes.get(route.join(","))?.get(fullKey);
+	const key = route.join(",");
+	const typed = nameTables().typedRoutes.get(key);
+	if (typed) {
+		if (tcode !== undefined) {
+			const hit = typed.get(`${fullKey}:${typeLetter(tcode)}`);
+			if (hit) return { name: hit.name, source: hit.source };
+		} else if ([...typed.keys()].some((k) => k.startsWith(`${fullKey}:`))) {
+			return {
+				name: null,
+				reason: "type-ambiguous",
+				fallback: fallbackKey(fullKey),
+			};
+		}
+	}
+	const routeHit = nameTables().routes.get(key)?.get(fullKey);
 	if (routeHit) return { name: routeHit.name, source: routeHit.source };
 	return resolveKeyName(fullKey);
 }

@@ -27,6 +27,7 @@ interface FieldDef {
 	tcode: string;
 	access?: string;
 	values?: Record<string, string>;
+	"observed-values"?: number[];
 }
 
 interface GuiHandlersDoc {
@@ -84,7 +85,12 @@ describe("nat f40 enum [20,5] replay", () => {
 		expect(action.name).toBe("action");
 		expect(action.access).toBe("read-write");
 		const values = required(action.values, "f40 values map");
-		expect(Object.keys(values)).toHaveLength(12);
+		// 15 declared by .jg (2026-11-21); 12 of them observed on the wire.
+		expect(Object.keys(values)).toHaveLength(15);
+		expect(action["observed-values"]).toHaveLength(12);
+		expect(values["1"]).toBe("jump");
+		expect(values["26"]).toBe("endpoint-independent-nat");
+		expect(values["27"]).toBe("socksify");
 		// The full expected map comes from the schema itself; spot-check
 		// the wire-critical members the inverse leg depends on.
 		expect(values["0"]).toBe("accept");
@@ -149,13 +155,15 @@ describe("nat f40 enum [20,5] replay", () => {
 		// comment names the same action — and no value outside the map.
 		// Redirect (23) rides the dedicated leg below and same (24) rides
 		// nat-same-20-5.test.ts; neither is in this pilot matrix fixture.
+		const observed = required(
+			actionField(gui)["observed-values"],
+			"observed-values",
+		);
 		expect([...seen.keys()].sort((a, b) => a - b)).toEqual(
-			Object.keys(values)
-				.map(Number)
-				.filter((n) => n !== 23 && n !== 24)
-				.sort((a, b) => a - b),
+			observed.filter((n) => n !== 23 && n !== 24).sort((a, b) => a - b),
 		);
 		for (const [num, name] of Object.entries(values)) {
+			if (!observed.includes(Number(num))) continue;
 			if (num === "23" || num === "24") continue;
 			expect(seen.get(Number(num))).toContain(name);
 		}

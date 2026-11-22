@@ -68,6 +68,11 @@ export class ChunkConn {
 		});
 	}
 
+	/** Wrap an already connected socket (the server side of a proxy). */
+	static fromSocket(sock: Socket): ChunkConn {
+		return new ChunkConn(sock);
+	}
+
 	static open(
 		host: string,
 		port: number,

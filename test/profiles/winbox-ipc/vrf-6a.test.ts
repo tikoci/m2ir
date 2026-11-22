@@ -65,8 +65,12 @@ describe("vrf alias 0x01006a [20,0] replay", () => {
 		);
 		const handler = ifaceHandler(gui);
 		expect(handler["sys-to"]).toEqual([20, 0]);
-		expect(handler.fields["namespace-1"]["106"]?.name).toBe("vrf");
+		// 2026-11-21: string readback renamed vrf-name; the .jg VRF control is
+		// the u32 row-id at f102 (u10066, values from [20,101]).
+		expect(handler.fields["namespace-1"]["106"]?.name).toBe("vrf-name");
 		expect(handler.fields["namespace-1"]["106"]?.tcode).toBe("string");
+		expect(handler.fields["namespace-1"]["102"]?.name).toBe("vrf");
+		expect(handler.fields["namespace-1"]["102"]?.tcode).toBe("u32");
 	});
 
 	test("promoted evidence references resolve to tracked files", () => {

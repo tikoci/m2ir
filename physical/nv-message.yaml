@@ -77,10 +77,28 @@ header:
   derived:
     full_key:
       formula: "(byte_2 << 16) | (key_high << 8) | key_low"
-      role: "canonical 24-bit identifier used in cross-tool tables"
+      role: "24-bit key used in cross-tool tables. Not unique on its own: one message can carry the same full_key under two type classes (see typed_key)."
     key_id:
       formula: "key_low | (key_high << 8)"
       role: "16-bit key index inside the chosen byte_2 role"
+    type_class:
+      formula: "(tcode & 0x78) >> 3"
+      values: { 0: bool, 1: u32, 2: u64, 3: bytes16, 4: string, 5: msg, 6: bytes }
+      role: "value type with the compact bit (bit 0) and the array bit (bit 7) removed. Compact pairs (0x08/0x09, 0x20/0x21, ...) and bool_false/bool_true share a class."
+      confidence: inferred
+      notes: "Consistent with every tcode in the table below. RouterOS's own UI descriptors and WebFig use one letter per class (see profiles/winbox-ipc/profile.yaml key-id.type-letters)."
+    is_array:
+      formula: "(tcode & 0x80) != 0"
+      confidence: inferred
+    typed_key:
+      formula: "(full_key, type_class, is_array)"
+      role: "attribute identity. Two entries with the same full_key and different type classes are two attributes, not a repeat or a conflict."
+      confidence: observed-only
+      evidence:
+        - source: sample
+          ref: "7.25 bridge row on [20,0] carries 0x000010 as u32 (0x09) and as string (0x21) in one message; see profiles/winbox-ipc/gui-handlers.yaml interface"
+        - source: doc
+          ref: "RouterOS 6.49.23/7.25/7.26beta4 roteros.jg Bridge dialog: u10 'Region Revision' and s10 'Region Name'; see work/2026-11-jg-descriptors/README.md"
 
 # ── tcode -> payload-rule table ──────────────────────────────────────────
 # Each tcode is its own enumerant; profiles may pair adjacent tcodes
@@ -158,7 +176,9 @@ tcodes:
       Forward-declared in RouterOS source but never registered in the
       Cisco-Talos dispatch table. Not observed in any public capture.
       Encountering one in real traffic should stop the parse and capture
-      the bytes for analysis.
+      the bytes for analysis. Lead (2026-11-21): RouterOS UI descriptors
+      declare one bool-array field ('B' letter) on 6.49.23 and 7.25; not
+      yet seen on the wire.
   0x88:
     name: u32_array
     payload: { count: u16le, item: u32_wide }
@@ -184,6 +204,11 @@ tcodes:
       Forward-declared in RouterOS source, never wired up in the dispatch
       table per Cisco-Talos source review. Sample sightings reported in
       public sources but no parse implementation; treat as unknown.
+      Lead (2026-11-21): RouterOS UI descriptors declare u64-array
+      fields ('Q' letter, type 'multibignumber') on [20,0] interface
+      statistics: 69 on 6.49.23, 148 on 7.25. A native [20,0] statistics
+      read should show whether 0x90 is wired; the payload shape is
+      unconfirmed until then.
   0xa0:
     name: string_array
     payload: { count: u16le, item: string_wide }
@@ -193,6 +218,16 @@ tcodes:
     payload: { count: u16le, item: msg_wide }
     confidence: documented
     recursion: true
+  0xb0:
+    name: bytes_array
+    status: descriptor-only
+    confidence: inferred
+    notes: |
+      Not in any public dispatch table. Inferred from the type_class
+      formula (class 6 bytes | array bit) and from RouterOS UI
+      descriptors, which declare raw-array fields ('R' letter, type
+      'multiraw'), for example DHCP client [43,3] Valid Servers. Not seen
+      on the wire; stop the parse and keep the bytes if one appears.
 
 # ── recursion ────────────────────────────────────────────────────────────
 recursion:
@@ -231,3 +266,10 @@ investigation-trail:
       magnitude (u8/u32, string_c/string_wide). A from-scratch M2 codec
       reproduces a real-client capture byte-for-byte (asserted on every
       WS-3C prober login).
+  - date: 2026-11-21
+    finding: |
+      Typed identity: full_key alone does not identify an attribute. A
+      bridge row carries 0x000010 as u32 and as string; RouterOS's own UI
+      descriptors name them separately (u10 Region Revision, s10 Region
+      Name). Added type_class / is_array / typed_key, plus descriptor
+      leads for 0x80, 0x90 and a new 0xb0 entry.

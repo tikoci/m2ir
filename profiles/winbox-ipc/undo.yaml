@@ -1,14 +1,57 @@
-# undo seed — winbox-ipc
+# cspell:ignore sfd002a
+# undo — winbox-ipc
 #
-# Public sources confirm that undo exists as a protocol concept, but the
-# process/binary shape is still only partially grounded.
+# The configuration change history behind /system history, /undo and
+# /redo, served as route [17]. Live-grounded on 7.25 and 7.26beta4 (plan step 4b of
+# work/2026-11-jg-descriptors/plan.md); the process-id seed below is the
+# older Cisco-Talos hint.
 ---
 m2ir-version: 0.1
 schema-version: 0.1
 
 profile: winbox-ipc
 canonical-name: undo
-maturity: speculative
+maturity: exploratory
+
+route: [17]
+role: |
+  Change history: one row per configuration change, from any source
+  (REST, CLI, WinBox, the native API, undo/redo themselves). Each row
+  carries the CLI text of the change, its inverse, the source, and the
+  native M2 request the router built for it with its native inverse. A
+  client that subscribes to [17] therefore learns the route, command and
+  typed keys behind a REST or CLI change without probing.
+confidence: observed-only
+
+commands:
+  - { value: 0xfe0012, name: CMD_SUBSCRIBE, ref: "./std-commands.yaml 0xfe0012", role: "subscribe; the first subscriber also gets the whole history as CMD_NOTIFY (see replay)" }
+  - { value: 0xfe0004, name: CMD_GETALL, ref: "./std-commands.yaml 0xfe0004", role: "pages the history newest first, 20 rows per page, token 0xfe0003, total 0xfe0019; GETALL rows have no 0xfe0005" }
+  - { value: 0x80001, name: undo, role: "undo the newest undoable row; the reply FROM is [17, <owner route>] (e.g. [17,20,35]); the row is re-notified with 0x04 = 1" }
+  - { value: 0x80002, name: redo, role: "redo the newest undone row; re-notified with 0x04 = 0" }
+  - { value: 0x80007, name: peek-undo, role: "reply = the row undo would revert (0x03 description, S9, Sa, m1, m2); error when empty" }
+  - { value: 0x80008, name: peek-redo, role: "reply = the row redo would apply; error 0xfe0006 'nothing to redo' when empty" }
+
+row-keys:
+  "0x000009": { name: redo-cli, tcode: string_array, rest-name: redo, role: "CLI text of the change, canonical form (units added: cache-size=2048KiB; row ids as *N). Several commands joined by '; ' when one change touches two menus" }
+  "0x00000a": { name: undo-cli, tcode: string_array, rest-name: undo, role: "CLI text of the inverse. For a SET: the written fields that changed (empty for a no-op), except handlers that send the whole record (/snmp). For a remove: an add with the whole record. For an add: remove *N" }
+  "0x000008": { name: source, tcode: string, rest-name: trace, role: "'<proto>:<user>@<address>[/action:N][/undo|/redo]': REST is 'api' on 7.25 and 'rest' on 7.26beta4; tcp-msg(winbox) = native session. Lab address: redact" }
+  "0x000006": { name: user, tcode: string, rest-name: by }
+  "0x000003": { name: description, tcode: string, rest-name: action, role: "e.g. 'dns changed', 'address list entry added'" }
+  "0x000007": { name: time, tcode: u32, rest-name: time, role: "Unix seconds (wall clock)" }
+  "0x000004": { name: undone, tcode: u32, role: "0 normal, 1 after undo (REST undoable stays true)" }
+  "0x000005": { name: policy, tcode: u32, rest-name: policy, role: "128 for every observed row (REST policy=write)" }
+  "0x000001": { name: request, tcode: message, role: "the native M2 request: SYS_TO = owner route, SYS_CMD (CMD_SET, SETOBJ, ADDOBJ, REMOVEOBJ), the written typed keys, plus SYS keys (0xff001c source text, 0xff000a user, 0xff000b policy)" }
+  "0x000002": { name: inverse-request, tcode: message, role: "the native inverse, same shape. For a SET: the fields that differ from the stored record, which can include a read-only counter that moved (DNS cache-used f5) even on a no-op. A REMOVEOBJ's inverse is an ADDOBJ with the whole record" }
+  "0xfe0001": { name: row-id, tcode: u32, role: "history row id; ids keep growing as old rows are evicted" }
+  "0xfe0005": { name: previous-row, tcode: u32, role: "id of the previous row in notifications (0xFFFFFFFF for the oldest)" }
+  "0xfe0013": { name: removed, tcode: u32, role: "removal row {0xfe0001, 0xfe0013 = 1}: eviction at the cap, or a redo branch dropped by a new change" }
+
+behaviour:
+  replay: "SUBSCRIBE replays the whole history as CMD_NOTIFY only when no other session is subscribed to [17]. A second subscriber gets no replay; use GETALL (paged) to read the history."
+  cap: "100 rows. Each change beyond that notifies a removal row for the oldest one."
+  no-op-set: "A SET to the current value records a row: S9 holds the written property, m1 the typed keys written, Sa is empty, and m2 is empty except for a read-only counter that moved (DNS cache-used f5) and for /snmp, which always sends the whole record. Each no-op row takes an undo step."
+  undo-redo: "Undo and redo do not add rows; they re-notify the same row with 0x04 toggled, the source suffixed /undo or /redo, and S9/Sa swapped to what a redo would do. A new change after an undo drops the undone rows (removal rows)."
+  restart: "A CHR stop/start clears it (observed once: 131 rows before; after, only the one change made since)."
 
 process-id-observations:
   - version-source: "Cisco-Talos reference version"
@@ -21,13 +64,34 @@ process-id-observations:
 
 protocol-links:
   - { field: 0xfe0006, name: STD_UNDOID, file: ./std-keys.yaml, role: "undo transaction id in the standard namespace" }
+  - { field: 0xfe0012, name: CMD_SUBSCRIBE, file: ./std-commands.yaml, role: "how a client follows the history" }
+
+client-usage:
+  - client: webfig
+    source: code
+    ref: "RouterOS 7.25 WebFig master.js (static reading): subscribe([17]) then peek 0x80007 / 0x80008 after each notification to label the Undo and Redo buttons ('Undo: ' + reply s3); the buttons send 0x80001 / 0x80002"
 
 notes: |
-  The protocol clearly carries an undo transaction identifier through
-  STD_UNDOID, but public source material does not yet expose a command
-  catalog or a stable binary/handler mapping for an undo implementation.
+  The command numbers 0x80001..0x80008 share the 0x08 top byte that
+  Cisco-Talos lists as UNDO = 0x080000; that dissector value may be this
+  command range rather than a process id (inference, not checked against
+  the dissector source).
+
+  As an oracle (work/2026-11-jg-descriptors/README.md, plan step 4b):
+  one no-op SET per CLI property over REST isolates that property's
+  typed keys in m1, without writing new values. Matching names by value
+  on a full record instead is ambiguous when values repeat and can pick
+  the wrong key (/snmp trap-community: value matching picks s4, the .jg
+  declares u11). A SETOBJ whose CLI text picked the row with [find ...]
+  also carries sfd002a = ''; with numbers=*N it does not.
 
 evidence:
+  - source: sample
+    ref: "live CHR interrogation (7.25, plan step 4b): undo/redo, peek, no-op SETs, removal rows — fixtures/winbox-ipc/7.25-undo-oracle.json; cap, replay and GETALL paging from work/2026-11-jg-descriptors/undo-q1.ts runs (README, '[17] undo-history oracle')"
+  - source: sample
+    ref: "live CHR interrogation (7.26beta4, plan step 4b q6): same commands, row keys and behaviour; REST source text 'rest:' — fixtures/winbox-ipc/7.26beta4-undo-oracle.json"
+  - source: code
+    ref: "RouterOS 7.25 WebFig master.js undo/redo buttons (static reading); see work/2026-11-jg-descriptors/README.md"
   - source: code
     ref: "Cisco-Talos Winbox_Dissector.lua (UNDO process-id hint)"
     url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L260"
@@ -35,14 +99,28 @@ evidence:
     ref: "tenable/routeros msg_re/find_handlers (6.41.4 handler survey)"
     url: "https://github.com/tenable/routeros/blob/master/msg_re/find_handlers/README.md"
 
+revision-history:
+  - date: 2026-11-21
+    belief: "public sources expose no undo command catalog; undo surface unresolved"
+    outcome: superseded
+    evidence:
+      - source: sample
+        ref: "live CHR interrogation (7.25): route [17], commands 0x80001/0x80002/0x80007/0x80008, row keys — fixtures/winbox-ipc/7.25-undo-oracle.json"
+
 investigation-trail:
   - date: 2026-05-04
     finding: |
       Tenable's 6.41.4 handler survey does not show a standalone
       `/nova/bin/undo` binary, so this seed keeps the Cisco-Talos process-id
       hint but marks the rest of the surface as unresolved.
+  - date: 2026-11-21
+    finding: |
+      7.25: [17] answers SUBSCRIBE, GETALL and the undo commands. Which
+      binary owns route 17 was not checked (processes.yaml lists 0x11 as
+      console from Cisco-Talos).
 
 open-questions:
-  - "Is undo a standalone binary in some RouterOS versions, or only a handler family within another process?"
-  - "Which command flows actually populate STD_UNDOID in WinBox IPC?"
-  - "How should undo be modeled once fixture-backed command examples exist?"
+  - "Which command flows actually populate STD_UNDOID in WinBox IPC? (none of the [17] rows or requests seen on 7.25 carry 0xfe0006 as a key)"
+  - "Does 6.49 serve [17], and with the same row keys?"
+  - "What do 0x80003..0x80006 do (not used by WebFig)?"
+  - "Is the 100-row cap fixed or a setting?"

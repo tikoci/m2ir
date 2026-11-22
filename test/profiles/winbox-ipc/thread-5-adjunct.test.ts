@@ -34,7 +34,12 @@ interface GuiHandlersDoc {
 			fields?: {
 				"namespace-user"?: Record<
 					string,
-					{ name?: string; role?: string; values?: Record<string, string> }
+					{
+						name?: string;
+						role?: string;
+						values?: Record<string, string>;
+						"observed-values"?: number[];
+					}
 				>;
 			};
 		}
@@ -69,11 +74,13 @@ describe("thread-5 adjunct replay", () => {
 		);
 		const f11 = required(fields["11"], "f11");
 		expect(f11.name).toBe("protocol");
-		expect(f11.values).toEqual({ 1: "icmp", 6: "tcp", 17: "udp" });
-		expect(required(fields["22"], "f22").name).toBe("unknown-22");
-		expect(required(fields["404"], "f404").name).toBe("unknown-404");
+		expect(f11["observed-values"]).toEqual([1, 6, 17]);
+		expect(f11.values).toMatchObject({ 1: "icmp", 6: "tcp", 17: "udp" });
+		expect(Object.keys(f11.values ?? {})).toHaveLength(33);
+		expect(required(fields["22"], "f22").name).toBe("protocol-not");
+		expect(required(fields["404"], "f404").name).toBe("protocol-set");
 		const f454 = required(fields["454"], "f454");
-		expect(f454.name).toBe("unknown-454");
+		expect(f454.name).toBe("hw-offload");
 		expect(required(f454.role, "f454 role")).toContain("DIVERGENT");
 	});
 

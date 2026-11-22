@@ -208,14 +208,19 @@ export function resolveQuickchr(name: string): {
 	// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
 	const services = asRecord(insp["services"] ?? {});
 	const rest = asRecord(services["rest-api"] ?? {});
-	// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
-	const auth = asRecord(rest["auth"] ?? {});
+	// 6.49 has no REST; quickchr then reports the same credentials on the
+	// native-api service.
+	const api = asRecord(services["native-api"] ?? {});
+	const auth = asRecord(
+		// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
+		rest["auth"] ?? api["auth"] ?? {},
+	);
 	// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
 	const user = auth["username"];
 	// biome-ignore lint/complexity/useLiteralKeys: TS4111 requires bracket access on index signatures
 	const pass = auth["password"];
 	if (typeof user !== "string" || typeof pass !== "string") {
-		throw new Error("quickchr: no rest-api auth");
+		throw new Error("quickchr: no rest-api or native-api auth");
 	}
 	return { host: "127.0.0.1", port, user, pass };
 }
@@ -402,7 +407,11 @@ function jsonValue(v: M2Value): unknown {
 			return (v as M2Message[]).map(toJSON);
 		}
 		return (v as unknown[]).map((x) =>
-			x instanceof Uint8Array ? `bytes:${fmtHex(x, 256)}` : x,
+			x instanceof Uint8Array
+				? `bytes:${fmtHex(x, 256)}`
+				: typeof x === "bigint"
+					? `u64:${x}`
+					: x,
 		);
 	}
 	if (typeof v === "object") return toJSON(v as M2Message);

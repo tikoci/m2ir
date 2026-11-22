@@ -123,9 +123,10 @@ function decodeValue(c: Cursor, tcode: number, text: TextDecoder): unknown {
 		case 0x10: {
 			const v = c.view.getBigUint64(c.pos, true);
 			c.pos += 8;
+			// Exact either way: a number when safe, else the decimal string
+			// (the fixture builders write the same form).
 			const n = Number(v);
-			if (!Number.isSafeInteger(n)) throw new Error("u64 beyond safe int");
-			return n;
+			return Number.isSafeInteger(n) ? n : v.toString();
 		}
 		case 0x18: {
 			const v = `hex:${[...c.buf.slice(c.pos, c.pos + 16)].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
