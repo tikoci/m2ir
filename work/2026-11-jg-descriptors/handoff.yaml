@@ -1,4 +1,4 @@
-# cspell:ignore jsproxy webfig typevalue multibignumber multiraw quickchr extrastats refreshfilter autorefresh nextid sfd002a
+# cspell:ignore jsproxy webfig typevalue multibignumber multiraw quickchr extrastats refreshfilter autorefresh nextid sfd002a omarchy guifiles
 # Declared-schema-first plan: progress handoff. Read plan.md first.
 plan: work/2026-11-jg-descriptors/plan.md
 approved: 2026-11-21
@@ -8,6 +8,7 @@ decisions:
   - "Extra packages (each ships its own .jg) go in the plan as step 4c; not urgent (user, 2026-11-21)."
   - "Branch jg-descriptors pushed to origin after step 4b (user, 2026-11-21); earlier steps were local only."
   - "Steps 0-4b get reviewed as their own checkpoint; step 5 goes on a separate branch (Codex review, accepted by user 2026-11-21)."
+  - "Step 5 capture method: A, the decrypting proxy (server-side EC-SRP5 + relay), over B/C/D/E (user, 2026-11-22, after phase 0 in README 'WinBox 4 capture method'). The user clicks in WinBox; scripts make the second-session edits and marks."
   - "Typed field identity (step 0) lands before any .jg promotion (user, 2026-11-21)."
   - "WebFig instrumentation (step 3) is tried before the MITM proxy (user, 2026-11-21)."
   - "Step 3 uses a headless browser with sessionStorage seeded (name/password) and a hook above the Session cipher; a Bun-native JSProxy client is deferred because it would be our client, not MikroTik's."
@@ -21,7 +22,7 @@ steps:
   4-acceptance-bridge: done (questions 1-5 on 6.49.23, 7.25, 7.26beta4)
   4b-undo-oracle: "done: q1-q5 on 7.25, q6 on 7.26beta4 (see step4b-record); 6.49 not checked (v7 first)"
   4c-extra-packages: "queued, not urgent (plan.md 'Step 4c'; prompt in step4c-handoff-prompt.md)"
-  5-winbox4-workflow: queued
+  5-winbox4-workflow: "done on 7.25 with WinBox 4.4 Linux, items 1-4 (branch jg-winbox4; see step5-record); recovery path not run"
 open:
   conflicts-before-promotion: "all four resolved in step 1 (see step1-record)"
   evidence-source-for-jg: "decided: source: doc (vendor-authored, machine-readable declaration served by the router); WebFig JS is source: code. Revisit at review if you disagree."
@@ -158,8 +159,37 @@ step4b-record:
     - "sfd002a (key 0xfd002a): what the [find] selector adds; not in std-keys.yaml"
     - "three no-op SETs recorded no row (/queue/type pfifo-limit, /system/logging/action memory-lines, memory-stop-on-full): property not applicable to the row's kind?"
     - "queue target writes b75 = true next to the M72 list; .jg does not declare it"
+step5-record:
+  date: 2026-11-22
+  branch: jg-winbox4 (from jg-descriptors)
+  phase0: "README 'WinBox 4 capture method': WinBox 4.4 links Qt + OpenSSL statically and is stripped; only libc socket calls are dynamic. A chosen (proxy); B [17] answers only the MOVE; C needs per-build reverse engineering; D closed (no legacy/secure mode in WinBox 4; tag 0x01 login is < 6.43); E sizes/timing only. Server-side EC-SRP5 spike agreed with clientShared 20/20."
+  client: "WinBox 4.4 Linux x86_64 (Arch winbox 4.4-1, ELF BuildID 9d89314280d8c62256ab79961936bb90fe54d2ce), omarchy/Hyprland XWayland; operator-driven"
+  router: "twin3 7.25, routeros only; .jg unique names = WebFig's 9 on 7.25"
+  outputs:
+    - "work/2026-11-jg-descriptors/winbox4/: srp-server.ts (server-side EC-SRP5), proxy.ts (decrypting relay, JSONL), drive.ts (REST second session, marks, [17] history, setup/cleanup behind requireMutationGate), fixture.ts, list-model.ts (display rebuild), trace.ts (typed-key trace with schema names, --list)"
+    - "ws3c/chunk.ts: ChunkConn.fromSocket (server side)"
+    - "work/2026-11-winbox-attributes/harness/tests/srp-server.test.ts"
+    - "fixtures/winbox-ipc/7.25-winbox4-bridge-workflow.json (221 records; [2,2] file transfer dropped, unchanged poll replies dropped by config content; provenance: client, .jg names, timeline, history_winbox) + biome formatter override"
+    - "test/profiles/winbox-ipc/winbox4-bridge-workflow.test.ts: offline check on the WinBox, WebFig and native 7.25 fixtures"
+    - "README section 'WinBox 4 Bridge workflow (plan step 5)'"
+  answers:
+    subscription: "SUBSCRIBE carries the dialog's GETALL word ([16,2] 0x10000007, [20,0] 0x1004000f, maps 0x10000005), so notification rows carry the status group (66 keys on [16,2]). First open of a path adds a defaults GETALL (0xfe000c 0x20000000 + 0xfe0004=0 -> 0xfe001d) and GETPOLICIES; reopen sends SUBSCRIBE + GETALL only. Resubscribes on every reopen."
+    timed-reads: "GETALL with the subscription word every 2.0 s on [16,2], ~1.05 s on [20,0] while shown; stops with the tab/window. Status bar: GET [24,2] 1 s, [24,0] SUB+GET+UNSUB once a minute. Polling and notifications coexist."
+    correlation: "NOTIFY ~196 ms after the REST change, TO=[0,22] = the per-path handler id WinBox uses as FROM; rows by 0xfe0001."
+    close: "Window close sends UNSUBSCRIBE [16,2] and [20,51] with their words; nothing arrives while closed; reopen reads the change. Tab switch unsubscribes [20,101]. [20,0], [20,90], [24,24] stay subscribed until disconnect; disconnect unsubscribes [24,1], [24,2] then closes the socket."
+    move: "Drag and drop: MOVEOBJ {0xfe000c=0x10000007, 0xfe0001=1, 0xfe0005=0} (before-id + word); ack; NOTIFY of the moved row only; REST .nextid and the reopened list agree; [17] m1 identical (source tcp-msg(winbox))."
+    offline-check: "list-model.ts: every list read equals prior state + notifications in the WinBox (between SUBSCRIBE and UNSUBSCRIBE), WebFig and native 7.25 fixtures; displayed comments/order checked at each UI step."
+  promoted:
+    - "std-commands: WinBox 4.4 client-usage + evidence on 0xfe0007 MOVEOBJ, 0xfe0012 SUBSCRIBE, 0xfe0013 UNSUBSCRIBE"
+  leads:
+    - "Immediate NOTIFY with all rows 2-3 ms after the first SUBSCRIBE of [20,0], [20,101], [16,2], [20,90]; none on [16,2] reopen. Trigger: defaults GETALL, GETPOLICIES, or first subscription per handler? Settle natively."
+    - "WinBox caches .jg.gz by unique name in ~/.cache/MikroTik/WinBox/guifiles and fetches only missing ones over [2,2] (list, then file reads)."
+    - "WinBox gives each path its own handler id ([0,7] [20,0], [0,22] [16,2], ...); replies and notifications address it."
+  not-run: "recovery path (rejected edit + fresh read, reconnect rebuild); 7.26beta4; Mac WinBox; RoMON/MAC sessions"
+  gates: "bun run lint green; bun run test 625/0; harness tests 74/0; markdownlint + cspell clean on touched files; fixture scanned for lab addresses, ports, ipv4-mapped client address and the lab password (empty on twin3)"
+  lab: "twin3 (7.25) started and stopped; lab rows removed; proxy stopped"
 next:
   queue:
-    - "step 5: follow plan.md 'Step 5 handoff for the midpoint review'; prompt in step5-handoff-prompt.md. Phase 0 picks the capture method (decrypting proxy needs server-side EC-SRP5; [17] history gives WinBox's writes without capture; client hooks; tcpdump/tzsp-sniff for timing only) and asks the user before building. Run on orca: WinBox 4.4 native Linux + twin3, on a new branch jg-winbox4 from jg-descriptors."
+    - "step 5 follow-ups (WinBox through winbox4/proxy.ts): recovery path (rejected edit then fresh read, or reconnect that rebuilds the list), the immediate-NOTIFY lead (native), a second client build (Mac WinBox) or 7.26beta4"
     - "step 4c: extra packages (not urgent): prompt ready in step4c-handoff-prompt.md"
     - "widen the [17] oracle past wave 1 when a consumer needs the mapping"

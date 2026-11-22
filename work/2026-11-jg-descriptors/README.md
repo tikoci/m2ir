@@ -1,6 +1,6 @@
 # .jg UI descriptors as an attribute source
 
-<!-- cspell:ignore typevalue nonpublic getcmd roteros athhw igmp mrz webfig nextid sfd002a -->
+<!-- cspell:ignore typevalue nonpublic getcmd roteros athhw igmp mrz webfig nextid sfd002a usr omarchy sendmsg recvmsg guifiles -->
 
 Status: exploratory, 2026-11-21. Steps 1-3 promoted their stable
 findings into `profiles/winbox-ipc/*.yaml`; the rest stays here. [`gui-handlers-vs-jg.md`](gui-handlers-vs-jg.md)
@@ -506,6 +506,115 @@ properties REST prints (set, non-default) are reached; one value per
 property, so enums get one value each; `[find]`-selected SETs add
 `sfd002a` = "" (not with `numbers=*N`).
 
+## WinBox 4 capture method (plan step 5, phase 0)
+
+Phase 0 of step 5 (2026-11-22, branch `jg-winbox4`). The client is
+WinBox 4.4 for Linux (`/usr/bin/WinBox`, Arch package `winbox 4.4-1`,
+ELF x86-64, stripped, BuildID `9d89314280d8c62256ab79961936bb90fe54d2ce`)
+on orca (omarchy, Hyprland with XWayland). The router is twin3 (7.25,
+base packages, WinBox service on `127.0.0.1:9125`).
+
+What the binary shows: Qt and OpenSSL 3 are linked in statically
+(`QTlsBackendOpenSSL`, the OpenSSL cipher and error tables). From libc it
+imports only `socket`, `connect`, `send`, `recv`, `sendmsg`, `recvmsg`,
+`read` and `write`. No crypto library is loaded dynamically, and the
+binary has no symbols.
+
+| Option | Feasibility on orca | Reaches plaintext? | Leaves open |
+|---|---|---|---|
+| A. Decrypting proxy | WinBox accepts `host:port` in "Connect to" (manual, Login section), so it can log in to a local proxy port. The server side of EC-SRP5 is small: salt, `V = v·G`, blinded public key `sB·G + REDP1(x(V), parity 0)`, `Z = sB·(A + j·V)`. A scratch spike (about 40 lines over `ws3c/ec-srp5.ts`) agreed with `clientShared` in 20 of 20 handshakes, padded and minimal. Still to write: phase-1/phase-2 framing on the server side, server keys (the two magic strings swapped), a relay that decrypts each message and encrypts it again for the router session (`ws3c/probe.ts` `login`), and a JSONL log with direction, time and decoded M2. Estimate: half a day with tests | Yes, every message in both directions, with exact timing | Whether WinBox accepts the proxy: it sees a different salt per login, which only matters if it caches salts. MSCHAP (RADIUS users) is not handled. The proxy runs as a second TCP hop, so timing has about a millisecond of added latency |
+| B. `[17]` history only | Ready (`undo-lib.ts`); no capture | Only for WinBox's own writes, from the router's history (`m1` with source `tcp-msg(winbox)`) | In this workflow WinBox writes only the MOVE (the comments come from the second session), so B answers the MOVE arguments and nothing else: no SUBSCRIBE word, no GETALL word or period, no notification handling, no close behavior |
+| C. Client-side hooks | `LD_PRELOAD` on `send`/`recv` works (dynamic glibc imports) but sees only ciphertext. Plaintext needs the session cipher and M2 encoder inside a stripped 55 MB static binary, found by reverse engineering, with offsets that change with each build. `ptrace_scope` is 1, so gdb must start WinBox itself rather than attach | Not without reverse engineering the binary | Repeated for every WinBox build (the Mac build is a different binary), so it is the most fragile option |
+| D. Unencrypted or legacy login | WinBox 4's login has address, user, password, workspace and RoMON agent; no "Secure mode" or "Legacy mode" (manual, Login section; those were WinBox 3 options). No such UI string in the binary. The tag 0x01 MD5 login is RouterOS < 6.43 only (`transport.yaml`) | No | Nothing to build; closed |
+| E. Encrypted capture | `tcpdump` needs root (sudo asks for a password on orca), so `LD_PRELOAD` on `send`/`recv` gives the same record without root. tzsp-sniff on the router works but adds a hop | No: sizes and timing only | Infers a periodic GETALL from paired message sizes, but cannot tell GETALL from GET, or read any word, key or row |
+
+Recommendation: **A**, with B as an independent cross-check of the MOVE
+(the router's own record of what WinBox sent) and E for free from the
+proxy's timestamps. A is the only option that answers the step 5
+questions (subscription word, timed reads, update handling, MOVE, close)
+without per-build reverse engineering. The same proxy also works for the
+Mac WinBox build later, since it needs only `host:port`. If A fails
+because WinBox rejects the proxy, fall back to B plus E and record the
+read-side questions as open.
+
+Decision (user, 2026-11-22): A. WinBox 4.4 accepted the proxy on the
+first login.
+
+## WinBox 4 Bridge workflow (plan step 5)
+
+Run 2026-11-22 on orca: WinBox 4.4 for Linux (above) against twin3
+(7.25, `routeros` 7.25 only), through [`winbox4/proxy.ts`](winbox4/proxy.ts).
+The user drove WinBox. [`winbox4/drive.ts`](winbox4/drive.ts) made the
+second-session edits over REST, marked each UI step and read the `[17]`
+history. The fixture is
+[`7.25-winbox4-bridge-workflow.json`](../../fixtures/winbox-ipc/7.25-winbox4-bridge-workflow.json)
+(221 records; `provenance` holds the client build, `.jg` names, the
+timeline and dropped counts). Its records carry `mark`, `session` W and
+`tMs` like the native fixtures. UI marks are the operator's confirmation
+after a step, so the messages, not the marks, give the exact click time.
+
+```sh
+quickchr start twin3
+bun winbox4/proxy.ts --quickchr twin3 --listen 127.0.0.1:18291 --out <scratch>/wb4   # leave running
+bun winbox4/drive.ts --quickchr twin3 --out <scratch>/wb4 --allow-mutations --disposable setup
+# WinBox: connect to 127.0.0.1:18291; then per step:
+bun winbox4/drive.ts --quickchr twin3 --out <scratch>/wb4 mark "ui-1: ..."
+bun winbox4/drive.ts --quickchr twin3 --out <scratch>/wb4 --allow-mutations --disposable comment 1 m2ir-p1-c1
+bun winbox4/drive.ts --quickchr twin3 --out <scratch>/wb4 history     # after WinBox's own writes
+bun winbox4/fixture.ts <scratch>/wb4 ../../fixtures/winbox-ipc/7.25-winbox4-bridge-workflow.json
+bun winbox4/trace.ts ../../fixtures/winbox-ipc/7.25-winbox4-bridge-workflow.json --route 16,2 --list
+bun winbox4/drive.ts --quickchr twin3 --out <scratch>/wb4 --allow-mutations --disposable cleanup
+quickchr stop twin3
+```
+
+`proxy.ts` accepts WinBox's login with server-side EC-SRP5
+([`srp-server.ts`](winbox4/srp-server.ts), tested against the client
+math in `harness/tests/srp-server.test.ts`). It then logs in to the
+router and relays each M2 message, decrypting it, logging it and
+encrypting it again. The router assigns the session; WinBox's own
+`[13,4]` request does the adoption.
+
+| Question (plan step 5) | WinBox 4.4 on 7.25 | WebFig (step 3) / native (step 4) |
+|---|---|---|
+| Session start | `[13,4]` cmd 7 (the harness's adoption request, FROM `[0,1]`), `[120]` cmd 5, GET `[24,2]` and `[48,5]`, then `[2,2]` `list` and the `.jg.gz` files missing from its cache (`~/.cache/MikroTik/WinBox/guifiles`, keyed by unique name; this run fetched roteros, wave2, ups, ppp and dhcp). The nine unique names equal WebFig's on the same build. `skins/default.json` answers "cannot open source file" | WebFig loads `.jg` over HTTP |
+| Opening a list | First open of a path: GETALL with `0xfe000c=0x20000000` and `0xfe0004=0`, which returns no rows, only `0xfe001d` (the defaults row) and `0xfe0019` (count), then GETPOLICIES `0xfe0001`, then SUBSCRIBE. On reopen it sends only SUBSCRIBE and GETALL, in the same millisecond | SUBSCRIBE then GETALL |
+| Subscription word | SUBSCRIBE carries the dialog's GETALL word: `[16,2]` `0x10000007`, `[20,0]` `0x1004000f`, `[20,51]` Switch, `[20,90]` Interface Lists and `[20,101]` VRF maps `0x10000005`. Notification rows therefore carry the status group (66 keys on `[16,2]`), as step 4 q2b predicted for a worded subscription | WebFig subscribes without a word (config-only rows) |
+| Timed reads | GETALL with the same word every 2.0 s on `[16,2]` (median), about every 1.05 s on `[20,0]` while the Bridge tab is shown. Polling stops when the tab or window goes away. Status bar: GET `[24,2]` every 1 s; `[24,0]` SUBSCRIBE + GET + UNSUBSCRIBE once a minute. Polling and notifications coexist | Same periods as WebFig's `autorefresh` |
+| Update delivery | The REST comment change at `tMs` 91552 arrived as CMD_NOTIFY at 91748 (196 ms), one row, `TO=[0,22]`. That is the handler id WinBox used as FROM for `[16,2]` (each path gets its own: `[0,7]` `[20,0]`, `[0,10]` `[20,90]`, `[0,33]` `[20,51]`), and rows match by `0xfe0001`. The display (operator) showed it before the next poll | WebFig `TO=[]`, native `TO=[0,11]` |
+| Close | Closing the Bridge window sends UNSUBSCRIBE `[16,2]` and `[20,51]` with their words, and polling stops. Nothing on `[16,2]` arrived while closed. The change made then (c2) was not notified and showed on reopen from the first GETALL. Leaving the Bridge tab unsubscribed `[20,101]`. `[20,0]`, `[20,90]` and `[24,24]` stayed subscribed until disconnect | WebFig never unsubscribes; the router kept notifying closed pages |
+| MOVE | Drag and drop sends MOVEOBJ `{0xfe000c=0x10000007, 0xfe0001=1, 0xfe0005=0}` (the before-id form plus the word). Bare ack, then a NOTIFY of the moved row only (`next=0`) 200 ms later. REST `.nextid` and the reopened list agree (vl2, vl1). The `[17]` row has the same `m1` with source `tcp-msg(winbox)` and `s3` "bridge port changed" (`provenance.history_winbox`) | Same shape as WebFig's `moveObjectAfter` and native q4 |
+| Disconnect | UNSUBSCRIBE `[24,1]` and `[24,2]`, then WinBox closes the socket | |
+
+Offline check: [`winbox4/list-model.ts`](winbox4/list-model.ts) rebuilds
+the Bridge Ports list a client shows (order and comments) from list reads
+and notifications. A notification row merges by `0xfe0001`, `0xfe0013=1`
+removes it, and `0xfe0005` moves it to just before that row.
+[`winbox4-bridge-workflow.test.ts`](../../test/profiles/winbox-ipc/winbox4-bridge-workflow.test.ts)
+replays all three 7.25 fixtures. In each, every list read equals what
+the previous state plus the notifications since predicted. For WinBox
+this holds between SUBSCRIBE and UNSUBSCRIBE, and a release resets it.
+The test also checks the displayed comments and order at each UI step,
+the MOVE keys against `[17]`, and the 2 s period.
+[`winbox4/trace.ts`](winbox4/trace.ts) prints any of these fixtures with
+direction, route, command, word and typed keys, named from the schema
+(`?` where none exists); `--list` shows the rebuilt display.
+
+Open questions and leads:
+
+- **Immediate NOTIFY on first SUBSCRIBE.** On first open, `[20,0]`,
+  `[20,101]`, `[16,2]` and `[20,90]` each answered SUBSCRIBE with a
+  NOTIFY carrying every row, 2 to 3 ms later. WinBox then read nothing
+  until its first timed poll. On reopen there was none for `[16,2]`. The
+  candidate triggers are the defaults GETALL (bit `0x20000000` with
+  `0xfe0004=0`), GETPOLICIES before it, or a first subscription per
+  handler. Native step 4 SUBSCRIBEs (no defaults query) got none. Settle
+  it natively.
+- `0xfe000c` bit 29 with `0xfe0004=0` is WinBox's defaults query (reply
+  `0xfe001d` STD_FIRST_ROW). This matches the step 2 reading of WebFig's
+  "bit 29 + maxobjs 0 for defaults" (`std-keys.yaml` `0xfe000c`).
+- Not run: the recovery path (rejected edit, reconnect), WinBox on
+  7.26beta4, the Mac build, and RoMON or MAC connections.
+
 ## Next steps
 
 1. Promote the named unknowns and enum values into `gui-handlers.yaml`
@@ -522,8 +631,9 @@ property, so enums get one value each; `[find]`-selected SETs add
    against. m2ir does not cover Safe Mode yet. Subscription, notification
    and autorefresh are now recorded (step 3); actions, Safe Mode and
    terminal are not.
-5. Plan step 5: the decrypting MITM proxy, to see what WinBox 4 itself
-   sends (subscribe words, MOVE shape, polling).
+5. Plan step 5 follow-ups: the recovery path (rejected edit, reconnect),
+   the immediate-NOTIFY lead, and a second WinBox build (Mac) or
+   7.26beta4 through the same proxy.
 6. Widen the `[17]` oracle past wave 1 (34 menus, 30 routes) toward the
    470 7.25 base-package routes with no handler, then cover extra
    packages (plan step 4c).

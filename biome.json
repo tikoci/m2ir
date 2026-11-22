@@ -47,7 +47,8 @@
 		{
 			"includes": [
 				"fixtures/winbox-ipc/*-native-bridge-workflow.json",
-				"fixtures/winbox-ipc/*-undo-oracle.json"
+				"fixtures/winbox-ipc/*-undo-oracle.json",
+				"fixtures/winbox-ipc/*-winbox4-bridge-workflow.json"
 			],
 			"formatter": {
 				"enabled": false

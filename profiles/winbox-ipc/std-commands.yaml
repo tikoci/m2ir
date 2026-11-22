@@ -141,7 +141,7 @@ commands:
       0xFFFFFFFF, which WebFig sends for "move to the end", and a
       rowid-only MOVE are acked no-ops there. 6.49.23 acks the same
       before-id request but keeps the order; its reorder shape is unknown.
-    client-usage: "WebFig 7.25 moveObjectAfter(obj, after) sends {0xfe0001 = obj id, 0xfe0005 = id of the row after `after`, or 0xFFFFFFFF when `after` is last}. On [16,2] the router honours the before-id form only (step 4)."
+    client-usage: "WebFig 7.25 moveObjectAfter(obj, after) sends {0xfe0001 = obj id, 0xfe0005 = id of the row after `after`, or 0xFFFFFFFF when `after` is last}. On [16,2] the router honours the before-id form only (step 4). WinBox 4.4 (drag and drop in Bridge > Ports, 7.25) sends the before-id form too, plus the dialog's 0xfe000c word: {0xfe000c = 0x10000007, 0xfe0001 = 1, 0xfe0005 = 0}; the [17] history records the same m1, and only the moved row is notified (step 5)."
     evidence:
       - source: sample
         ref: "live CHR interrogation (phase-C pilot item 4, 7.25, 2026-11-02): MOVEOBJ rowid-only negative — fixtures/winbox-ipc/7.25-moveobj-20-5.json"
@@ -153,6 +153,8 @@ commands:
         ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): [16,2] before-id MOVE, 0xFFFFFFFF and rowid-only no-ops — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json marks q4-move-*"
       - source: code
         ref: "RouterOS 7.25 WebFig master.js ObjectMap.moveObjectAfter; see work/2026-11-jg-descriptors/README.md"
+      - source: sample
+        ref: "WinBox 4.4 (Linux) through the decrypting proxy (plan step 5, 7.25, 2026-11-22): fixtures/winbox-ipc/7.25-winbox4-bridge-workflow.json"
   0xfe0008: { canonical-name: CMD_SETFORM,      confidence: documented }
   0xfe0009:
     canonical-name: UNHANDLED_0x09
@@ -275,12 +277,14 @@ commands:
       66-key rows instead of 38. Rows shrink back when that subscription
       is removed or its session closes. 6.49.23 keeps the key behaviour
       but always sends config-only rows. The ack is SYS-only.
-    client-usage: "WebFig 7.25 and 7.26beta4 subscribe each list path once per session, without a 0xfe000c word, when it first opens the path, and fetch it with GETALL right after. Changes then arrive as CMD_NOTIFY 0xfe000b on the long poll, including while the page is closed. Without the word the rows are config-only, which is why WebFig also polls with autorefresh GETALL for status."
+    client-usage: "WebFig 7.25 and 7.26beta4 subscribe each list path once per session, without a 0xfe000c word, when it first opens the path, and fetch it with GETALL right after. Changes then arrive as CMD_NOTIFY 0xfe000b on the long poll, including while the page is closed. Without the word the rows are config-only, which is why WebFig also polls with autorefresh GETALL for status. WinBox 4.4 (7.25, step 5) subscribes each path a window shows with the dialog's GETALL word (0x10000007 on [16,2], 0x1004000f on [20,0], 0x10000005 on the [20,51] / [20,90] / [20,101] maps), so its notification rows carry the status group, and still polls with the same word (2 s on [16,2], about 1 s on [20,0]). It subscribes again on every reopen."
     evidence:
       - source: sample
         ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 97, 174, 448, 451"
       - source: sample
         ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): subscription ladder on session C (marks q3c-1 .. q3c-12) — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json"
+      - source: sample
+        ref: "WinBox 4.4 (Linux) through the decrypting proxy (plan step 5, 7.25, 2026-11-22): fixtures/winbox-ipc/7.25-winbox4-bridge-workflow.json"
   0xfe0013:
     canonical-name: CMD_UNSUBSCRIBE
     confidence: documented
@@ -292,7 +296,7 @@ commands:
       = the plain one); a plain UNSUBSCRIBE leaves a worded one in place.
       Repeating it is acked ok and changes nothing. Closing the session
       drops its subscriptions.
-    client-usage: "WebFig 7.25 posts it only when the last listener for a path goes away. Leaving a list tab did not trigger it in any step 3 run (7.25, 7.26beta4), so the router kept notifying for closed pages."
+    client-usage: "WebFig 7.25 posts it only when the last listener for a path goes away. Leaving a list tab did not trigger it in any step 3 run (7.25, 7.26beta4), so the router kept notifying for closed pages. WinBox 4.4 (7.25, step 5) does send it: closing the Bridge window unsubscribed [16,2] and [20,51] with the same word they were subscribed with, and leaving the Bridge tab for Ports unsubscribed [20,101]. [20,0] and [20,90] stayed subscribed until the session closed; on disconnect WinBox unsubscribed only [24,1] and [24,2] before closing the socket."
     evidence:
       - source: sample
         ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): marks q3-unsub-iface, q3-unsub-port, q3c-3 .. q3c-10 — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json"
@@ -300,6 +304,8 @@ commands:
         ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): no 0xfe0013 request in fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl or the 7.26beta4 file"
       - source: code
         ref: "RouterOS 7.25 WebFig master.js unsubscribe() (Listeners.unlisten); see work/2026-11-jg-descriptors/README.md"
+      - source: sample
+        ref: "WinBox 4.4 (Linux) through the decrypting proxy (plan step 5, 7.25, 2026-11-22): fixtures/winbox-ipc/7.25-winbox4-bridge-workflow.json"
   0xfe0014:
     canonical-name: CMD_DISCONNECTED
     confidence: documented
