@@ -45,7 +45,10 @@
 			}
 		},
 		{
-			"includes": ["fixtures/winbox-ipc/*-native-bridge-workflow.json"],
+			"includes": [
+				"fixtures/winbox-ipc/*-native-bridge-workflow.json",
+				"fixtures/winbox-ipc/*-undo-oracle.json"
+			],
 			"formatter": {
 				"enabled": false
 			}

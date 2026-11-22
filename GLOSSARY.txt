@@ -701,3 +701,17 @@ NDP
 netdev
 nzbe
 tpa
+
+# [17] undo-history oracle (work/2026-11-jg-descriptors, plan step 4b)
+undoable # REST /system/history field; the [17] row is undoable until undone
+centiseconds # wire unit of conntrack and routing timers (1d = 8640000)
+conntrack # /ip firewall connection tracking
+pfifo # /queue type kind (pfifo-limit property)
+upnp # /ip upnp menu
+mdns # /ip dns mdns-repeat-ifaces
+phy # LLDP MAC/PHY configuration TLV (lldp-mac-phy-config)
+PHY
+psk # pre-shared key; SECRET_ARG pattern
+preshared # WireGuard preshared-key property
+wpa # Wi-Fi Protected Access key names; SECRET_ARG pattern
+dateandtime # .jg control type (address-list Creation Time)

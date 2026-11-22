@@ -261,7 +261,11 @@ Step 3 statements, rechecked natively:
 
 ### `[17]` undo history as a REST/CLI → M2 oracle (time-boxed probe)
 
-[`undo-oracle.ts`](undo-oracle.ts) subscribes to `[17]` natively and makes
+Superseded by plan step 4b below, which replaced the probe script and
+corrected one claim (a SET inverse carries the whole record only for
+some handlers). The probe text is kept as it was.
+
+The probe subscribed to `[17]` natively and made
 four REST changes on menus that `gui-handlers.yaml` has no handler for,
 then restores them (7.25, 30-minute box). The SUBSCRIBE alone replays the
 whole history (131 rows, including this session's native harness writes,
@@ -286,6 +290,190 @@ with one write each on a disposable CHR, and no field guessing. Limits:
 config only (no status or counters), values must be distinct to match
 names, and IP/array encodings need care. Nothing is promoted from it yet.
 
+## `[17]` undo-history oracle (plan step 4b)
+
+<!-- cspell:ignore centiseconds sfd002a icmp mangle netwatch -->
+
+Status: questions 1-5 answered on 7.25 (2026-11-21); question 6 (version
+drift) is below as far as it got. Profile entry:
+[`undo.yaml`](../../profiles/winbox-ipc/undo.yaml). Fixture:
+[`7.25-undo-oracle.json`](../../fixtures/winbox-ipc/7.25-undo-oracle.json),
+replayed by [`undo-oracle.test.ts`](../../test/profiles/winbox-ipc/undo-oracle.test.ts).
+Generated mapping: [`undo-oracle-mapping-7.25.md`](undo-oracle-mapping-7.25.md).
+
+```sh
+quickchr start twin3
+DI=~/Projects/tikoci/restraml/docs/7.25/deep-inspect.json
+bun undo-q1.ts --quickchr twin3 --out <scratch>/q1 --allow-mutations --disposable
+bun undo-menus.ts survey --deep-inspect $DI --quickchr twin3 --out <scratch>/survey.json
+bun undo-oracle.ts --quickchr twin3 --out <scratch>/w1 --deep-inspect $DI --allow-mutations --disposable
+bun undo-report.ts <scratch>/w1 --jg <scratch>/jg/7.25 --deep-inspect $DI --out undo-oracle-mapping-7.25.md
+bun undo-fixture.ts ../../fixtures/winbox-ipc/7.25-undo-oracle.json <scratch>/w1 <scratch>/q1
+quickchr stop twin3
+```
+
+[`undo-lib.ts`](undo-lib.ts) holds the `[17]` listener (a `MessagePump`
+that subscribes and turns CMD_NOTIFY into history rows) and the centrs
+call. [`undo-menus.ts`](undo-menus.ts) holds the CLI tree reader, the
+safety rules and the wave-1 menu list.
+
+### Method
+
+For every settable property of a menu, centrs sets it over REST to the
+value REST prints for it (a no-op SET). Each such write records one
+history row, and that row's `m1` holds exactly the typed keys the router
+wrote for that one property. So the mapping comes from isolation, not
+from matching values. The value is then checked against the CLI text in
+`S9` for confirmation. Tables without rows get a disabled row with
+documentation addresses (add, no-op SETs, remove); the remove's inverse
+carries the full record. The configuration ends as it started.
+
+### q1: reversibility and noise
+
+| Behaviour | 7.25 |
+|---|---|
+| SET to the current value | Records a row. `S9` names the property, `m1` holds its keys, `Sa` is empty. `m2` is empty or holds a read-only counter that moved (DNS cache-used `u5`). `/snmp` is the exception: its inverse is always the whole record |
+| SET that changes a value | `Sa`/`m2` hold the fields that changed (address-list comment: `ufe0001` + `sfe0009`), not the whole record. The step-4 probe overstated this |
+| Remove | `Sa` is an add with every property, `m2` an ADDOBJ with every typed key |
+| Undo / redo | Native `0x80001` / `0x80002` and REST `/undo` / `/redo` both restore cleanly (REST read-back after each). No new row: the same row is re-notified with `u4` = 1 (undone) or 0, `s8` suffixed `/undo` or `/redo`, `S9`/`Sa` swapped. The undo reply comes FROM `[17, 20, 35]`, the owner route |
+| Peek | `0x80007` / `0x80008` return the row undo or redo would act on; empty redo = error `0xfe0006` "nothing to redo" |
+| A change after an undo | Drops the undone rows: removal row `{ufe0001, ufe0013 = 1}` |
+| Cap | 100 rows (1200 native SETs: GETALL total 100, REST history count 100). Each new row past the cap notifies a removal row for the oldest |
+| Replay | SUBSCRIBE replays the whole history only when no other session subscribes to `[17]`; a second concurrent subscriber gets nothing. GETALL pages it (20 rows a page, newest first, token `ufe0003`, total `ufe0019`) |
+| Reboot | After a CHR stop/start the history held only the one change made since (131 rows before) |
+| Noise | Every no-op row takes an undo step. A no-op SET re-applies the value; side effects were not checked beyond the REST and native sessions staying up for the whole run |
+
+Safest write per menu kind: singleton → no-op SET per property; table
+with rows → no-op SET per property on one row; empty table → add a
+disabled row with documentation addresses, no-op SET per property,
+remove. Comment SETs are not needed. Three no-op SETs recorded no row
+(`/queue/type pfifo-limit`, `/system/logging/action memory-lines` and
+`memory-stop-on-full`).
+
+### q2: secrets
+
+Rules in [`undo-menus.ts`](undo-menus.ts), applied before any write:
+
+- `SECRET_ARG` matches credential-valued properties (password,
+  passphrase, secret(s), psk, token, community, `*-key`, `ipsec-secret`,
+  `radius-password`, `trap-community`, ...). The oracle never writes
+  them. 55 of the 319 menus have at least one. A menu with one is never
+  run as `add`, since its remove inverse would carry the full record.
+- `SKIP_MENUS` (38 menus): a remove inverse or a full-record SET inverse
+  would carry a credential (`/user`, `/ppp/secret`, `/snmp/community`,
+  `/radius`, WireGuard, IPsec identity/peer, hotspot and SMB users,
+  wifi security, certificates, e-mail, RoMON, SMS, local-update mirror),
+  or a write has effects even when the value is unchanged (`/ip/service`
+  and its webserver, `/ip/ssh`, `/system/clock`, watchdog, package
+  update, `/ip/cloud`, MAC server and MAC WinBox, console settings).
+  `/system/identity` is already modeled and its value is the machine
+  name.
+- `SKIP_ARGS`: row identity and clock (`name`, `numbers`, `time`, `date`,
+  ...).
+
+Redaction ([`undo-fixture.ts`](undo-fixture.ts), applied to the decoded
+message, then re-encoded; decode → encode is byte-exact on all 2542
+captured messages): source strings (`s8`, `m1`/`m2` `Sff001c`) become
+`<proto>:<user>@<lab><rest>`. `SECRET_ARG` values in `S9`/`Sa` become
+`<redacted>`, and so does any string in the row equal to one of them.
+Row `u7` and address-list `ua` (wall-clock) become 0. The builder
+refuses to write a non-documentation IPv4 address or a secret, and the
+test scans the decoded strings again. `/snmp` is mapped in the report
+but left out of the fixture: its full record carries the community name
+and the engine id.
+
+### q3: menu selection
+
+restraml's 7.25 `deep-inspect.json` has 319 menus with a `set` command:
+65 singletons and 254 tables (`undo-menus.ts survey` reads each once
+over REST). Wave 1 takes 34: 20 singletons, 5 tables with a default row,
+9 empty tables with an added row. They reach **30 routes**, of which
+2 were modeled before this step (`[20,17]`, `[24,33]`, run as controls).
+Five CLI menus share `[20,17]`: `/ip settings`, `/ipv6 settings`,
+`/ip firewall connection tracking`, `/ip neighbor discovery-settings`
+and `/interface bridge settings`.
+
+### q4: name by isolation, then by value
+
+257 CLI properties: 244 map to one typed key, 13 to several (an IPv4
+address writes `u3` and `u4`; `discover-interface-list` writes a `not`
+flag `b34` and a list reference `u35`; rate and time pairs write one key
+per half). Of 270 keys, 210 equal an encoding of the CLI value, 59 are
+explained (enum values, references, keywords such as `disabled` =
+0xFFFFFFFF, nested messages) and 1 is unexplained (`/queue simple target`
+also writes `b75` = true). Encodings that need care:
+
+| CLI form | Wire | Example |
+|---|---|---|
+| IPv4 | u32 little-endian | 192.0.2.1 → 16908480 |
+| IPv4 range | `[start, end]` u32 array | `/ip pool ranges` → `Ub` |
+| IPv4 prefix | message list `{address, netmask}` | `/queue simple target` → `M72` |
+| IPv6 | 16 bytes; prefix length on its own key | `/ipv6 firewall address-list` → `a6` + `u7` |
+| Interval | seconds, milliseconds or **centiseconds**, per field | DNS cache-max-ttl 1w = 604800; query-server-timeout 2s = 2000; conntrack tcp-established-timeout 1d = 8640000 |
+| Size | KiB as shown, or bytes | cache-size=2048KiB → 2048; ipv4-high-fragment-thresh 4096.0KiB → 4194304 |
+| Decimal | x1000 | bucket-size 0.1 → 100 |
+| Enum | number | `mode=tx-and-rx` → 0; `trap-version=1` → 0 |
+| Enum set | bit mask | `protocol=cdp,lldp,mndp` → 7 |
+| Reference | object id | `vrf=main` → 0; interface list `static` → 33554435 |
+| Keyword | 0xFFFFFFFF | `lldp-med-net-policy-vlan=disabled`, `interfaces=all` |
+| Date | Unix time at UTC midnight | scheduler start-date |
+
+`.jg` field types often say which interval unit to expect (`interval` =
+seconds, `fixedpoint` = milliseconds). Name-by-value matching on full
+records alone is weaker: address-list has 0 unique matches (list and
+comment were both `m2ir`; `u3` = `u4`), and on `/snmp` it pairs
+`trap-community` with `s4` (the community name) while the `.jg` declares
+the property as `u11`, a reference to the community row. The report lists
+these per menu.
+
+### q5: cross-check with `.jg`
+
+For each isolated key, the same typed key on the same route in the 7.25
+`.jg`: **243 agree, 0 type-letter conflicts**, 21 are standard `0xfe`
+keys (comment, disabled, dynamic, name: `.jg` draws them with its own
+controls), 6 are oracle-only (`/ip settings icmp-rate-mask` `u1c`,
+`/tool sniffer` `Md5`/`u1e`, address-list `u4`, IPv6 address-list `u7`,
+queue `b75`). `.jg` labels agree with the CLI name for 233 keys, differ
+for 4, and 6 `.jg` controls are unnamed. `.jg` declares 519 writable and
+128 read-only fields on these routes that no write touched: REST prints
+only the properties that are set, so properties left at their default
+were not written.
+
+### Promotion rule
+
+An oracle mapping enters `gui-handlers.yaml` when all of these hold:
+
+1. A no-op SET (or an add) of one CLI property records a history row whose
+   `m1` names the route, the command and the property's typed keys, in a
+   committed fixture or generated report (`source: sample`).
+2. The key's type letter agrees with the wire tcode, and the value is
+   confirmed by an encoding of the CLI text or explained (enum value,
+   reference, keyword). Unexplained values stay out.
+3. The `.jg` of the same version declares the same typed key on the same
+   route (`source: doc`). The field takes the CLI name, `cli-alias`, and
+   `label:` when the `.jg` label differs. A `.jg` miss or a name conflict
+   keeps the field in the report as a proposal.
+4. Version scope is the version of the run (`set.versions`); another
+   version needs its own run.
+5. Handler entries stay `confidence: observed-only`. The read command
+   comes from the `.jg` dialog type (item = GET, map = GETALL) until a
+   native read is captured; the entry says so.
+
+Never promoted: values of `SECRET_ARG` properties, keys known only from
+a full record (not isolated), and value-only matches.
+
+Promoted (7.25): `[20,17]` (role corrected to the shared net-settings
+singleton; 13 discovery-settings fields; f79 `suffix-or-mode` →
+`add-dns-entries-suffix`), `[14,2]` dns-settings (17 fields), `[34]`
+snmp-settings (9 fields), `[20,35]` address-list (7 fields, `u4` kept as
+unknown-4). Proposed in the report: the other 26 routes, including the
+other four `[20,17]` groups.
+
+Limits: config only (status fields and counters are not written); only
+properties REST prints (set, non-default) are reached; one value per
+property, so enums get one value each; `[find]`-selected SETs add
+`sfd002a` = "" (not with `numbers=*N`).
+
 ## Next steps
 
 1. Promote the named unknowns and enum values into `gui-handlers.yaml`
@@ -304,6 +492,6 @@ names, and IP/array encodings need care. Nothing is promoted from it yet.
    terminal are not.
 5. Plan step 5: the decrypting MITM proxy, to see what WinBox 4 itself
    sends (subscribe words, MOVE shape, polling).
-6. Candidate plan step: the `[17]` undo-history oracle above, run across
-   the menus of the 470 7.25 routes with no handler to seed route, command and typed
-   keys with CLI names.
+6. Widen the `[17]` oracle past wave 1 (34 menus, 30 routes) toward the
+   470 7.25 routes with no handler, and rerun it on 7.26beta4 (plan step
+   4b, question 6).

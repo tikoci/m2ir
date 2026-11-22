@@ -4,7 +4,9 @@
 
 Status: approved 2026-11-21 after a review that combined Claude's and
 Codex's proposals. [`handoff.yaml`](handoff.yaml) tracks progress; steps
-0-4 are done (step 4 results: README, "Native replay (plan step 4)").
+0-4 are done (step 4 results: README, "Native replay (plan step 4)"), and
+step 4b is done on 7.25 except the version rerun (README, "`[17]`
+undo-history oracle (plan step 4b)").
 [`README.md`](README.md) holds the `.jg` format notes and the first diff.
 
 ## Research question

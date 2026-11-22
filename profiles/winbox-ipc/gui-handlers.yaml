@@ -1,4 +1,4 @@
-# cspell:ignore cmtp ddp egp encap etherip ggp hmp idpr rspf vmtp xns xtp
+# cspell:ignore cmtp ddp egp encap etherip ggp hmp idpr rspf vmtp xns xtp sfd002a
 # GUI management handlers — winbox-ipc
 #
 # The WinBox GUI's fast path for menus like /interface, /ip address,
@@ -1339,21 +1339,61 @@ handlers:
     process-id: 0x14
     process-ref: "./processes.yaml 0x14 (new)"
     cmd: GET_ONE
-    role: "neighbor discovery settings (/ip neighbor discovery-settings)"
+    role: "net-process settings singleton. Not only /ip neighbor discovery-settings: the [17] undo oracle (7.25) shows /ip settings, /ipv6 settings, /ip firewall connection tracking, /ip neighbor discovery-settings and /interface bridge settings all write CMD_SET to [20,17], and the .jg declares their dialogs (Settings, IPv6 Settings, Tracking, Discovery Settings, L3 Hw Settings) on this route. Fields below: the discovery-settings group; the other groups are proposed in work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md."
     confidence: observed-only
     fields:
       namespace: user
       map:
-        79: { name: suffix-or-mode, tcode: string, role: "'lan' = add-dns-entries-suffix here; 114 user fields total" }
+        49: { name: discover-interval, tcode: u32, cli-alias: "/ip/neighbor/discovery-settings discover-interval", label: "Discover Interval", role: "interval in seconds (30s = 30)" }
+        52: { name: discover-interface-list-negated, tcode: bool, cli-alias: "/ip/neighbor/discovery-settings discover-interface-list", label: "Discovery Interface List", role: ".jg control type 'not' (the '!' toggle in front of the list); written together with f53 by every discover-interface-list SET; false for discover-interface-list=static" }
+        53: { name: discover-interface-list, tcode: u32, cli-alias: "/ip/neighbor/discovery-settings discover-interface-list", label: "Interface", role: "interface-list reference (static = 33554435 = 0x02000003 on 7.25); written together with f52" }
+        54: { name: lldp-med-net-policy-vlan, tcode: u32, cli-alias: "/ip/neighbor/discovery-settings lldp-med-net-policy-vlan", label: "LLDP MED Network Policy VLAN", role: "VLAN id; 'disabled' = 0xFFFFFFFF" }
+        55: { name: protocol, tcode: u32, cli-alias: "/ip/neighbor/discovery-settings protocol", role: "bit set (.jg type set): cdp,lldp,mndp = 7; single-bit values not yet isolated" }
+        56: { name: mode, tcode: u32, semantic: enum-u32, cli-alias: "/ip/neighbor/discovery-settings mode", observed-values: [0], role: "enum; tx-and-rx = 0 (other values declared by .jg, not yet written)" }
+        57: { name: lldp-mac-phy-config, tcode: bool, cli-alias: "/ip/neighbor/discovery-settings lldp-mac-phy-config", label: "LLDP MAC/PHY Configuration/Status" }
+        58: { name: lldp-max-frame-size, tcode: bool, cli-alias: "/ip/neighbor/discovery-settings lldp-max-frame-size", label: "LLDP Maximum Frame Size" }
+        60: { name: lldp-vlan-info, tcode: bool, cli-alias: "/ip/neighbor/discovery-settings lldp-vlan-info", label: "LLDP VLAN Information" }
+        78: { name: add-dns-entries, tcode: bool, cli-alias: "/ip/neighbor/discovery-settings add-dns-entries" }
+        79: { name: add-dns-entries-suffix, tcode: string, cli-alias: "/ip/neighbor/discovery-settings add-dns-entries-suffix", role: "'lan' on a default CHR; 114 user fields total on the route" }
+        80: { name: lldp-med, tcode: bool, cli-alias: "/ip/neighbor/discovery-settings lldp-med", label: "LLDP MED" }
+        84: { name: dying-gasp, tcode: bool, cli-alias: "/ip/neighbor/discovery-settings dying-gasp" }
+    set:
+      cmd: { value: 0xfe000e, name: CMD_SET, ref: "./std-commands.yaml 0xfe000e" }
+      scope: "singleton; one request carries only the fields written (no-op SETs of one CLI property write exactly that property's keys)"
+      versions: ["7.25"]
     evidence:
+      - source: sample
+        ref: "[17] undo oracle (7.25, plan step 4b): no-op SET per CLI property, typed keys from the history row m1 — fixtures/winbox-ipc/7.25-undo-oracle.json; full mapping in work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md"
+      - source: doc
+        ref: "RouterOS 7.25 .jg UI descriptors (roteros.jg: Settings, IPv6 Settings, Tracking, Discovery Settings, L3 Hw Settings dialogs on [20,17]); see work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md"
       - source: sample
         ref: "live CHR interrogation (WS-3C prober, 6.49.23 + 7.25): field 79 + 30000ms discover-interval; see work/2026-10-chr-extraction/ws3c-prober-findings.md §10"
       - source: sample
         ref: "live CHR interrogation (E3-R read-only census, 7.25 + 7.26beta4, 2026-11-02): [20,17] GET value-identity + GETCOUNT ok/0xFFFFFFFF — work/2026-11-winbox-attributes/proof/E3-R-census/{step-7.25-census.jsonl,step-7.26beta4-census.jsonl,control-{ws21,e3-beta4}-neighbor-discovery.json}"
       - source: sample
         ref: "live CHR interrogation (E3-R read-only census, 7.25 + 7.26beta4, 2026-11-02): [20,17]+[20,124] GETCOUNT pair — fixtures/winbox-ipc/{7.25,7.26beta4}-getcount-20-17-124.json"
+    revision-history:
+      - date: 2026-11-21
+        belief: "field 79 suffix-or-mode: 'lan' = add-dns-entries-suffix here"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "[17] undo oracle (7.25): a no-op /ip/neighbor/discovery-settings set add-dns-entries-suffix=lan writes only s4f (0x4f = 79) — fixtures/winbox-ipc/7.25-undo-oracle.json mark '/ip/neighbor/discovery-settings set:add-dns-entries-suffix'"
+      - date: 2026-11-21
+        belief: "[20,17] is the /ip neighbor discovery-settings handler"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "[17] undo oracle (7.25): five CLI menus write CMD_SET to [20,17]; see work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md"
     notes: |
-      Full 114-field map not yet decoded — only field 79 identified.
+      Full 114-field map not yet decoded. Discovery-settings fields
+      (49-84 above) come from the [17] undo oracle: one no-op SET per
+      CLI property over REST, the property's typed keys read from the
+      history row's m1 (work/2026-11-jg-descriptors/README.md, plan
+      step 4b); every key also appears with the same type letter in
+      the 7.25 .jg Discovery Settings dialog. The E3-R census GET on
+      7.25 reads the same keys with the same values (f49=30, f53=
+      33554435, f55=7, f79='lan'), so the write keys are the read keys.
       E3-R census legs (ws21 7.25 + e3-beta4 7.26beta4, 2026-11-02):
       GET is value-identical across both versions (excl routes/banner/reqid).
       GETCOUNT answers ok + 4294967295 (0xFFFFFFFF) in 0xfe0019/0x8 (wire
@@ -3084,6 +3124,119 @@ handlers:
         evidence:
           - source: sample
             ref: "live CHR interrogation (queue-3 read-only capture batch, 3 versions): v6 GETALL -> UNKNOWNID (not NOTIMP); GETCOUNT -> ok + 0xFFFFFFFF all versions — see the neg-20-61 fixtures above"
+
+  dns-settings-14-2:
+    sys-to: [14, 2]
+    status: identified
+    process-id: 0x0e
+    cmd: GET_ONE
+    role: "/ip dns settings singleton (oracle demonstration route, plan step 4b). Read command from the .jg dialog type (item = GET), not yet sent natively."
+    confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        3: { name: allow-remote-requests, tcode: bool, cli-alias: "/ip/dns allow-remote-requests" }
+        4: { name: cache-size, tcode: u32, cli-alias: "/ip/dns cache-size", role: "KiB (cache-size=2048KiB -> 2048)" }
+        6: { name: cache-max-ttl, tcode: u32, cli-alias: "/ip/dns cache-max-ttl", role: "seconds (1w = 604800); .jg type interval" }
+        9: { name: max-udp-packet-size, tcode: u32, cli-alias: "/ip/dns max-udp-packet-size" }
+        10: { name: servers, tcode: message_array, cli-alias: "/ip/dns servers", role: "empty list on a default CHR; element shape not yet written" }
+        12: { name: query-server-timeout, tcode: u32, cli-alias: "/ip/dns query-server-timeout", role: "milliseconds (2s = 2000); .jg type fixedpoint" }
+        13: { name: query-total-timeout, tcode: u32, cli-alias: "/ip/dns query-total-timeout", role: "milliseconds (10s = 10000)" }
+        14: { name: max-concurrent-queries, tcode: u32, cli-alias: "/ip/dns max-concurrent-queries" }
+        15: { name: max-concurrent-tcp-sessions, tcode: u32, cli-alias: "/ip/dns max-concurrent-tcp-sessions" }
+        16: { name: use-doh-server, tcode: string, cli-alias: "/ip/dns use-doh-server" }
+        17: { name: verify-doh-cert, tcode: bool, cli-alias: "/ip/dns verify-doh-cert", label: "Verify DoH Certificate" }
+        18: { name: doh-max-server-connections, tcode: u32, cli-alias: "/ip/dns doh-max-server-connections" }
+        19: { name: doh-max-concurrent-queries, tcode: u32, cli-alias: "/ip/dns doh-max-concurrent-queries" }
+        20: { name: doh-timeout, tcode: u32, cli-alias: "/ip/dns doh-timeout", role: "milliseconds (5s = 5000)" }
+        21: { name: address-list-extra-time, tcode: u32, cli-alias: "/ip/dns address-list-extra-time", role: "seconds" }
+        22: { name: vrf, tcode: u32, cli-alias: "/ip/dns vrf", role: "VRF reference; main = 0" }
+        23: { name: mdns-repeat-ifaces, tcode: u32_array, cli-alias: "/ip/dns mdns-repeat-ifaces", label: "mDNS Repeater Interfaces", role: "interface references; empty on a default CHR" }
+    set:
+      cmd: { value: 0xfe000e, name: CMD_SET, ref: "./std-commands.yaml 0xfe000e" }
+      scope: "singleton; only the written fields; the [17] inverse (m2) carries the fields that differ from the stored record, so a no-op SET's inverse is empty or holds only the read-only cache-used counter (f5) when it moved"
+      versions: ["7.25"]
+    evidence:
+      - source: sample
+        ref: "[17] undo oracle (7.25, plan step 4b): one no-op SET per CLI property — fixtures/winbox-ipc/7.25-undo-oracle.json (marks '/ip/dns set:*', q1-noop-dns); full table in work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md"
+      - source: doc
+        ref: "RouterOS 7.25 .jg UI descriptors (roteros.jg Settings item on [14,2]: same typed keys, labels agree with the CLI names); see work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md"
+    notes: |
+      Not written by the oracle: f5 (.jg Cache Used, read-only) and f11
+      (.jg Dynamic Servers, read-only). Every key above was isolated by a
+      no-op SET of one CLI property and confirmed by value against the
+      CLI text (units: KiB, seconds, milliseconds as noted).
+
+  snmp-settings-34:
+    sys-to: [34]
+    status: identified
+    process-id: 0x22
+    cmd: GET_ONE
+    role: "/snmp settings singleton (oracle demonstration route, plan step 4b). The SET inverse in [17] carries the whole record, unlike most singletons. Read command from the .jg dialog type (item), not yet sent natively."
+    confidence: observed-only
+    fields:
+      namespace: user
+      map:
+        1: { name: enabled, tcode: bool, cli-alias: "/snmp enabled" }
+        2: { name: contact, tcode: string, cli-alias: "/snmp contact", label: "Contact Info" }
+        3: { name: location, tcode: string, cli-alias: "/snmp location" }
+        10: { name: engine-id-suffix, tcode: string, cli-alias: "/snmp engine-id-suffix", label: "Engine ID suffix" }
+        18: { name: trap-version, tcode: u32, semantic: enum-u32, cli-alias: "/snmp trap-version", observed-values: [0], role: "trap-version=1 -> 0" }
+        19: { name: trap-generators, tcode: u32_array, cli-alias: "/snmp trap-generators", role: "list of generator codes; temp-exception = 180092930 (0x0ABC0002)" }
+        26: { name: trap-target, tcode: message_array, cli-alias: "/snmp trap-target", role: "empty on a default CHR" }
+        28: { name: src-address, tcode: bytes_16, cli-alias: "/snmp src-address", role: "IPv6 form (:: by default); .jg also declares an IPv4 control f27 (u1b), not written here" }
+        29: { name: vrf, tcode: u32, cli-alias: "/snmp vrf", label: "VRF", role: "VRF reference; main = 0" }
+    set:
+      cmd: { value: 0xfe000e, name: CMD_SET, ref: "./std-commands.yaml 0xfe000e" }
+      scope: "singleton; only the written fields"
+      versions: ["7.25"]
+    evidence:
+      - source: sample
+        ref: "[17] undo oracle (7.25, plan step 4b): one no-op SET per CLI property; work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md (not in the fixture: the record carries the community and the engine id)"
+      - source: doc
+        ref: "RouterOS 7.25 .jg UI descriptors (roteros.jg SNMP Settings item on [34]); see work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md"
+    notes: |
+      trap-community is a credential property: the oracle does not write
+      it and redacts its value. The .jg declares it as u11 (Trap
+      Community, an enum over the community rows), while the full record
+      also holds s4 = the community name. Matching by value alone pairs
+      trap-community with s4; the .jg says the CLI property is the u11
+      reference. Unresolved until a write of trap-community on a
+      disposable CHR. f30 (s1e) is the engine id (.jg Engine ID).
+
+  address-list-20-35:
+    sys-to: [20, 35]
+    status: identified
+    process-id: 0x14
+    cmd: GET_ALL
+    role: "/ip firewall address-list rows (oracle demonstration route, plan step 4b). ADDOBJ / SETOBJ / REMOVEOBJ seen in [17] history rows; the REMOVEOBJ inverse is an ADDOBJ with the whole record. Read command from the .jg dialog type (map), not yet sent natively."
+    confidence: observed-only
+    fields:
+      row-id: { namespace: session, field: 1 }
+      namespace-user:
+        3: { name: address, tcode: u32, cli-alias: "/ip/firewall/address-list address", role: "IPv4 as u32 little-endian (192.0.2.1 -> 16908480); .jg control type network" }
+        4: { name: unknown-4, tcode: u32, role: "written with f3 by every address SET and ADD; equal to f3 for a single address. Not in the .jg. A range end is a guess, untested (needs a range or prefix write)" }
+        10: { name: creation-time, tcode: u32, label: "Creation Time", role: "Unix seconds; in the full record only (REMOVEOBJ inverse); .jg dateandtime" }
+      namespace-session:
+        7: { name: dynamic, tcode: bool, cli-alias: "/ip/firewall/address-list dynamic" }
+        9: { name: comment, tcode: string, cli-alias: "/ip/firewall/address-list comment" }
+        10: { name: disabled, tcode: bool, cli-alias: "/ip/firewall/address-list disabled" }
+        16: { name: list, tcode: string, cli-alias: "/ip/firewall/address-list list", label: "List" }
+    set:
+      cmd: { value: 0xfe0003, name: CMD_SETOBJ, ref: "./std-commands.yaml 0xfe0003" }
+      scope: "row path; request carries 0xfe0001 = row id plus the written fields. When the CLI picks the row with [find ...], the request also carries sfd002a = '' (key 0xfd002a, not in std-keys.yaml yet); with numbers=*N it does not"
+      versions: ["7.25"]
+    evidence:
+      - source: sample
+        ref: "[17] undo oracle (7.25, plan step 4b): add, one no-op SET per property, remove; plus undo/redo — fixtures/winbox-ipc/7.25-undo-oracle.json (marks '/ip/firewall/address-list *', q1-table-*); work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md"
+      - source: doc
+        ref: "RouterOS 7.25 .jg UI descriptors (roteros.jg Address Lists map on [20,35]: sfe0010 List, u3 network, ua Creation Time, u5 interval, u9 Parent)"
+    notes: |
+      .jg also declares u5 (interval, likely timeout) and u9 (Parent),
+      and the record carries u9 = 0xFFFFFFFF; neither was written by
+      the oracle. The IPv6 list is the same shape on [20,48] with the
+      address as bytes_16 a6 plus prefix length u7 (proposed, not
+      promoted).
 
 investigation-trail:
   - date: 2026-07-14

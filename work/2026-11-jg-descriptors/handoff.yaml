@@ -1,4 +1,4 @@
-# cspell:ignore jsproxy webfig typevalue multibignumber multiraw quickchr extrastats refreshfilter autorefresh nextid
+# cspell:ignore jsproxy webfig typevalue multibignumber multiraw quickchr extrastats refreshfilter autorefresh nextid sfd002a
 # Declared-schema-first plan: progress handoff. Read plan.md first.
 plan: work/2026-11-jg-descriptors/plan.md
 approved: 2026-11-21
@@ -15,14 +15,13 @@ steps:
   2-conversation-census: done
   3-webfig-instrumentation: done
   4-acceptance-bridge: done (questions 1-5 on 6.49.23, 7.25, 7.26beta4)
-  4b-undo-oracle: queued (prompt in step4b-handoff-prompt.md)
+  4b-undo-oracle: "q1-q5 done on 7.25 (see step4b-record); q6 drift open"
   5-mitm-proxy: queued
 open:
   conflicts-before-promotion: "all four resolved in step 1 (see step1-record)"
   evidence-source-for-jg: "decided: source: doc (vendor-authored, machine-readable declaration served by the router); WebFig JS is source: code. Revisit at review if you disagree."
   leads:
     - ".jg declares Q (u64 array, 0x90) fields on [20,0] interface stats (multibignumber, 148 on 7.25) and R (raw array, 0xb0) fields (multiraw). physical/nv-message.yaml calls 0x90 declared-unwired and has no 0xb0 entry. Confirm on the wire with a native [20,0] stats read. Step 3: no Q/R on CHR (ether1 lacks extrastats, which gates the Q480 tab); needs hardware. WebFig's decoder maps only FT_U64_ARRAY (0x90) to letter Q, so a Q key in a WebFig transcript does prove tcode 0x90."
-    - "[17] undo-history notifications embed the native M2 request (m1) and its inverse (m2) for every change, including changes made over REST or CLI (S9 CLI text, Sa inverse, s8 source). This gives REST/CLI -> M2 mappings without probing. Fixture seq 53. Step 4 probe (undo-oracle.ts, README): confirmed on [14,2], [34], [20,35]; SUBSCRIBE [17] replays the whole history; SET/remove inverses carry the full prior record for name-by-value matching. Proposed as its own plan step."
     - "Key 0x478 is a typed-identity case: .jg declares U478 and Q478 in different dialogs, and CHR ether1 sends U478 (0x88, empty) in [20,0] GETALL."
     - "GETALL reply bfe000b makes WebFig stop the autorefresh (ObjectMap.block); not seen live."
     - "6.49.23 MOVE: {0xfe0001, 0xfe0005=before-id} is acked but does not reorder [16,2]. The 6.49 WebFig is a classic script (not served at /webfig/ on ws3c6); its move request would give the 6.49 shape without guessing."
@@ -118,3 +117,35 @@ step4-record:
   gates: "bun run lint green; bun run test 594/0; harness tests 70/0; markdownlint + cspell clean on touched files"
   optional-undo-oracle: "Done (7.25, time-boxed): undo-oracle.ts. SUBSCRIBE [17] replays the full history; each row gives CLI (S9) -> m1 route + command + typed keys, e.g. /snmp set -> [34] CMD_SET s2/s3, /ip dns set -> [14,2] u4, address-list -> [20,35] ADDOBJ u3/u4/sfe0010/sfe0009. SET/remove inverses carry the whole prior record (Sa CLI names + m2 typed keys with the same values) -> name-by-value mapping. Verdict: worth its own plan step. Nothing promoted."
   next: "step 5: MITM proxy for WinBox 4 (what words WinBox subscribes with, MOVE shape, polling vs notify)"
+step4b-record:
+  date: 2026-11-21
+  outputs:
+    - "work/2026-11-jg-descriptors/undo-lib.ts ([17] listener + centrs call), undo-q1.ts (reversibility probe), undo-menus.ts (CLI tree, SECRET_ARG / SKIP_MENUS / SKIP_ARGS, wave-1 list, survey), undo-oracle.ts (replaces the step-4 probe: no-op SET per property), undo-report.ts, undo-fixture.ts (redact + re-encode)"
+    - "work/2026-11-jg-descriptors/undo-oracle-mapping-7.25.md (generated)"
+    - "fixtures/winbox-ipc/7.25-undo-oracle.json (34 records; biome formatter off) + test/profiles/winbox-ipc/undo-oracle.test.ts"
+    - "profiles/winbox-ipc/undo.yaml rewritten from the samples (route [17], commands, row keys, behaviour)"
+    - "README section '[17] undo-history oracle (plan step 4b)' with the promotion rule"
+  answers:
+    q1-reversibility: "no-op SET records a row (S9 + m1 = the written keys; Sa empty; m2 empty or a moved read-only counter; /snmp always sends the whole record). Changing SET inverse = changed fields only (probe overstated it). Remove inverse = full record. Native 0x80001/0x80002 and REST /undo /redo restore cleanly; the row is re-notified with u4 toggled and s8 suffixed /undo|/redo. A change after undo drops the redo branch (removal rows). Cap 100 rows, eviction notified. Replay only to the first subscriber; GETALL pages 20 newest-first. Stop/start clears it."
+    q2-secrets: "SECRET_ARG (55 of 319 menus have one; never written), SKIP_MENUS (38), no add plan on a menu with secrets; fixture redaction: source strings -> @<lab>, secret values -> <redacted>, u7 and address-list ua -> 0; builder and test scan decoded strings"
+    q3-selection: "deep-inspect 7.25: 319 menus with set (65 singletons, 254 tables). Wave 1: 34 menus -> 30 routes (2 modeled before: [20,17], [24,33]). Five CLI menus share [20,17]"
+    q4-matching: "257 properties: 244 one key, 13 several; 270 keys: 210 confirmed by value, 59 explained (enum/ref/keyword/nested), 1 unexplained (queue target b75). Encodings: IPv4 u32 LE, ranges as [start,end], prefixes as {address, netmask} messages, intervals in s / ms / centiseconds, KiB or bytes, x1000 decimals, enum sets as bit masks, keywords = 0xFFFFFFFF. Value-only matching fails on equal values and picks the wrong snmp trap-community key"
+    q5-jg: "243 agree, 0 type-letter conflicts, 21 std 0xfe keys, 6 oracle-only; labels 233 agree / 4 differ / 6 unnamed; 519 writable + 128 ro .jg fields untouched (REST prints only set properties)"
+    q6-drift: "not run in this session"
+  promoted:
+    - "gui-handlers [20,17]: role = shared net-settings singleton (5 CLI menus); 13 discovery-settings fields; f79 suffix-or-mode -> add-dns-entries-suffix (revision-history); E3-R GET reads the same keys/values"
+    - "gui-handlers new: dns-settings-14-2 (17 fields), snmp-settings-34 (9), address-list-20-35 (7; u4 kept unknown-4)"
+  corrections:
+    - "step-4 probe: 'SET inverses carry the full prior record' holds for /snmp only"
+    - "sfd002a = '' rides SETOBJ only when the CLI picks the row with [find ...]"
+    - "Talos UNDO = 0x080000 matches the [17] command range 0x8000x (inference, in undo.yaml notes)"
+  gates: "bun run lint green; bun run test 603/0; harness tests 70/0; markdownlint + cspell clean on touched files; fixture scanned for lab addresses and secrets"
+  lab: "twin3 (7.25) started and stopped"
+  leads:
+    - "q6: rerun undo-q1.ts + undo-oracle.ts on winbox-beta4 (7.26beta4) and diff the mapping; check whether 6.49.23 serves [17] (native SUBSCRIBE/GETALL; writes via the native API)"
+    - "Widen past wave 1: tables with default rows (ipsec profile, hotspot profiles, bgp template, logging rules) and more add plans; REST prints only set properties, so defaults need another source (print with detail, or .jg + a write of a non-default value)"
+    - "[17] commands 0x80003..0x80006 unused by WebFig: probe on a disposable CHR"
+    - "snmp trap-community: .jg says u11 (row reference), value matching says s4 (community name); settle with one write"
+    - "sfd002a (key 0xfd002a): what the [find] selector adds; not in std-keys.yaml"
+    - "three no-op SETs recorded no row (/queue/type pfifo-limit, /system/logging/action memory-lines, memory-stop-on-full): property not applicable to the row's kind?"
+    - "queue target writes b75 = true next to the M72 list; .jg does not declare it"
