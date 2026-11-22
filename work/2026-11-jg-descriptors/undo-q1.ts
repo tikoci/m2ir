@@ -84,6 +84,24 @@ const snmpBase = snmpBaseRead.data as Record<string, string>;
 
 const a = await UndoListener.open(target, "A", cap, () => mark);
 let aOpen = true;
+
+async function restoreState(): Promise<void> {
+	mark = "q1-restore";
+	try {
+		rest(["/ip/firewall/address-list/remove", '[find list="m2ir-q1"]']);
+		// The restoration contract: a failed restore fails the probe.
+		const restored = rest([
+			"/snmp/set",
+			`contact=${snmpBase["contact"] ?? ""}`,
+			`location=${snmpBase["location"] ?? ""}`,
+		]);
+		if (!restored.ok)
+			throw new Error(`q1: /snmp restore failed: ${restored.error}`);
+	} finally {
+		if (aOpen) await a.stop();
+	}
+}
+
 try {
 	const replay = await a.rows(2500, 500);
 	steps.push({
@@ -248,14 +266,7 @@ try {
 		await c.stop();
 	}
 } finally {
-	mark = "q1-restore";
-	rest(["/ip/firewall/address-list/remove", '[find list="m2ir-q1"]']);
-	rest([
-		"/snmp/set",
-		`contact=${snmpBase["contact"] ?? ""}`,
-		`location=${snmpBase["location"] ?? ""}`,
-	]);
-	if (aOpen) await a.stop();
+	await restoreState();
 }
 writeFileSync(
 	join(outDir, "q1.json"),

@@ -164,8 +164,10 @@ export function analyze(dir: string, webfig?: string) {
 	const acks = new Map<string, NativeEvent[]>();
 	for (const e of events) {
 		const t = replies.get(e);
+		// File the ack under its request's mark: a late ack belongs to the
+		// write that asked, not to the step it happened to arrive in.
 		if (t && WRITES.has(t.msg["uff0007"] as number))
-			acks.set(e.mark, [...(acks.get(e.mark) ?? []), e]);
+			acks.set(t.mark, [...(acks.get(t.mark) ?? []), e]);
 	}
 	const ackFor = (e: NativeEvent): NativeEvent | undefined => {
 		const list = acks.get(e.mark) ?? [];

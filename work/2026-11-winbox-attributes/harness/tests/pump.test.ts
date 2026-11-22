@@ -156,6 +156,23 @@ describe("MessagePump", () => {
 		await pump.stop(t.close);
 	});
 
+	test("listenFor rejects when the reader fails inside the settle window", async () => {
+		const t = fakeTransport();
+		let n = 0;
+		const pump = new MessagePump(t, {
+			label: "A",
+			onCapture: () => {
+				if (++n === 2) throw new Error("disk full");
+			},
+		});
+		setTimeout(() => t.push(notify()), 20);
+		setTimeout(() => t.push(notify()), 40);
+		await expect(
+			pump.listenFor((r) => r.cmd === 0xfe000b, 1000, 100),
+		).rejects.toThrow("disk full");
+		await pump.stop(t.close);
+	});
+
 	test("stop() ends the reader without recording a failure", async () => {
 		const t = fakeTransport();
 		const pump = new MessagePump(t, { label: "A" });

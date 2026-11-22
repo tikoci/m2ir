@@ -209,6 +209,8 @@ export class MessagePump {
 			await sleep(20);
 		}
 		await sleep(settleMs);
+		// A reader that died during the settle window gave a partial window.
+		if (this.failure) throw this.failure;
 		return this.drain();
 	}
 
