@@ -50,12 +50,18 @@ const CMD_NAME: Record<number, string> = {
 };
 
 /** Capture values -> the fixture form decoded by test/.../m2-replay.ts. */
+/**
+ * A u64 from the capture ("u64:<decimal>", tcode 0x10 or inside a 0x90
+ * array): a number when it is a safe integer, else the exact decimal
+ * string. Decided by tcode, never by a string prefix alone.
+ */
+function u64Value(v: unknown): unknown {
+	if (typeof v !== "string" || !v.startsWith("u64:")) return v;
+	const dec = v.slice(4);
+	const n = Number(dec);
+	return Number.isSafeInteger(n) ? n : dec;
+}
 function fixValue(v: unknown): unknown {
-	if (typeof v === "string" && v.startsWith("u64:")) {
-		const n = Number(v.slice(4));
-		if (!Number.isSafeInteger(n)) throw new Error(`u64 beyond safe int: ${v}`);
-		return n;
-	}
 	if (Array.isArray(v)) {
 		if (
 			v.length > 0 &&
@@ -75,7 +81,14 @@ function fixValue(v: unknown): unknown {
 	return v;
 }
 function fixEntry(e: Entry): Entry {
-	return { key: e.key, tcode: e.tcode, value: fixValue(e.value) };
+	const t = Number.parseInt(e.tcode, 16);
+	const value =
+		t === 0x10
+			? u64Value(e.value)
+			: t === 0x90 && Array.isArray(e.value)
+				? e.value.map(u64Value)
+				: fixValue(e.value);
+	return { key: e.key, tcode: e.tcode, value };
 }
 
 const args = process.argv.slice(2);

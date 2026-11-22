@@ -513,16 +513,23 @@ try {
 	if (p3 === null) {
 		// A timed-out ADDOBJ may still have created the row: look first, so
 		// the control add never duplicates a port (RouterOS rejects that).
+		// Only a successful read with usable rows can say "absent".
 		const check = await getall(
 			A,
 			PORT,
 			0x10000007,
 			"GETALL [16,2] after ADDOBJ without id",
 		);
-		try {
-			p3 = portOf(vl[2] as number, check);
-		} catch {
-			p3 = null;
+		if (check.status !== "ok")
+			throw new Error(`port lookup after ADDOBJ failed: ${check.status}`);
+		if (!check.reply.entries.some((e) => e.fullKey === 0xfe0002))
+			throw new Error("port lookup after ADDOBJ: reply has no rows key");
+		const hit = rows(check).find((r) => val(r, K.portIface) === vl[2]);
+		if (hit) {
+			const id = val(hit, K.id);
+			if (typeof id !== "number")
+				throw new Error("port row for m2ir-vl3 has no 0xfe0001 id");
+			p3 = id;
 		}
 	}
 	if (p3 === null) {

@@ -60,7 +60,7 @@ on a focus path, or is the first ever for its path with at most 20 rows.
 Router errors (`uff0008`) are always kept. Every other reply, including
 some initial replies (for example seq 14 in the 7.25 file), is reduced
 to its SYS routing keys, `ufe0003`, `ufe0019` and `row_ids` when it had
-rows, with `"hex": null` and `"elided": true`. The transcripts are
+rows, with `"hex": null` and `"elided": true`. The transcripts
 therefore cannot be replayed message by message on their own. The
 [capture guide](../work/2026-11-jg-descriptors/webfig/README.md)
 explains the hook and how to reproduce a run; the

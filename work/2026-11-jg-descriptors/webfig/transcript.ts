@@ -289,7 +289,8 @@ if (import.meta.main) {
 				"WebFig (MikroTik's browser client) in headless Chromium; plaintext hooked above the /jsproxy cipher",
 			capture: "work/2026-11-jg-descriptors/webfig/capture.ts",
 			routeros_version: meta.routeros_version,
-			captured: meta.captured,
+			// The day only: the sanitized fixture carries no wall-clock time.
+			captured_on: meta.captured?.slice(0, 10),
 			browser: meta.browser,
 			webfig_assets_sha256: meta.assets_sha256,
 			jg_unique_names: fetched

@@ -88,9 +88,22 @@ describe("MessagePump", () => {
 		setTimeout(() => t.push(notify()), 20);
 		setTimeout(() => t.push(notify()), 40);
 		const t0 = performance.now();
-		const got = await pump.listenFor((r) => r.cmd === 0xfe000b, 1000, 60);
-		// Returns after the first match + settle, well before maxMs.
-		expect(performance.now() - t0).toBeLessThan(500);
+		let settled = false;
+		const pending = pump
+			.listenFor((r) => r.cmd === 0xfe000b, 1000, 100)
+			.then((x) => {
+				settled = true;
+				return x;
+			});
+		// Inside the settle window (first match at ~20 ms + 100 ms settle):
+		// still pending, even though both notifications have arrived.
+		await sleep(70);
+		expect(settled).toBe(false);
+		const got = await pending;
+		const elapsed = performance.now() - t0;
+		// It waited the settle window, and returned well before maxMs.
+		expect(elapsed).toBeGreaterThanOrEqual(115);
+		expect(elapsed).toBeLessThan(500);
 		expect(got.length).toBe(2);
 		expect(await pump.listen(20)).toEqual([]);
 		await pump.stop(t.close);

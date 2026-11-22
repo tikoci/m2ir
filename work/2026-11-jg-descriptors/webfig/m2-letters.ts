@@ -39,6 +39,7 @@ export type LetterValue =
 	| boolean
 	| number[]
 	| string[]
+	| (number | string)[]
 	| boolean[]
 	| number[][]
 	| LetterMsg
@@ -162,7 +163,8 @@ export function decodeLetters(bytes: Uint8Array, path = ""): Decoded {
 			}
 			case 18: {
 				const n = len(tcode);
-				v = Array.from({ length: n }, u64) as number[];
+				// Exact values: a number when safe, else a decimal string.
+				v = Array.from({ length: n }, u64);
 				break;
 			}
 			case 19: {

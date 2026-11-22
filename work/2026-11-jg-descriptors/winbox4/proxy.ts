@@ -17,7 +17,8 @@
  * Connection loss (recovery cases): SIGUSR1 closes every relayed
  * connection on both sides, then holds new logins for holdMs from
  * <dir>/drop.json (default 0) so the driver can change the router while
- * WinBox is disconnected. The proxy writes its pid to <dir>/proxy.pid;
+ * WinBox is disconnected, and acknowledges the hold window (wall-clock
+ * start and end) in <dir>/hold.json. The proxy writes its pid to <dir>/proxy.pid;
  * `drive.ts drop` does all of this.
  */
 import {
@@ -267,7 +268,13 @@ function drop(): void {
 		holdMs =
 			(JSON.parse(readFileSync(dropPath, "utf8")) as { holdMs?: number })
 				.holdMs ?? 0;
-	holdUntil = Date.now() + holdMs;
+	const holdStart = Date.now();
+	holdUntil = holdStart + holdMs;
+	// The acknowledgement drive.ts classifies its edits against.
+	writeFileSync(
+		join(outDir, "hold.json"),
+		JSON.stringify({ holdStart, holdUntil, holdMs }),
+	);
 	write({ event: "drop", conns: [...active.keys()], holdMs });
 	console.log(`proxy: drop ${[...active.keys()].join(",")}, hold ${holdMs} ms`);
 	for (const { down, up } of active.values()) {

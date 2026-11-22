@@ -70,12 +70,18 @@ const CMD_NAME: Record<number, string> = {
 	16646163: "UNSUBSCRIBE",
 };
 
+/**
+ * A u64 from the capture ("u64:<decimal>", tcode 0x10 or inside a 0x90
+ * array): a number when it is a safe integer, else the exact decimal
+ * string. Decided by tcode, never by a string prefix alone.
+ */
+function u64Value(v: unknown): unknown {
+	if (typeof v !== "string" || !v.startsWith("u64:")) return v;
+	const dec = v.slice(4);
+	const n = Number(dec);
+	return Number.isSafeInteger(n) ? n : dec;
+}
 function fixValue(v: unknown): unknown {
-	if (typeof v === "string" && v.startsWith("u64:")) {
-		const n = Number(v.slice(4));
-		if (!Number.isSafeInteger(n)) throw new Error(`u64 beyond safe int: ${v}`);
-		return n;
-	}
 	if (Array.isArray(v)) {
 		if (
 			v.length > 0 &&
@@ -94,11 +100,16 @@ function fixValue(v: unknown): unknown {
 	}
 	return v;
 }
-const fixEntry = (e: Entry): Entry => ({
-	key: e.key,
-	tcode: e.tcode,
-	value: fixValue(e.value),
-});
+function fixEntry(e: Entry): Entry {
+	const t = Number.parseInt(e.tcode, 16);
+	const value =
+		t === 0x10
+			? u64Value(e.value)
+			: t === 0x90 && Array.isArray(e.value)
+				? e.value.map(u64Value)
+				: fixValue(e.value);
+	return { key: e.key, tcode: e.tcode, value };
+}
 
 const args = process.argv.slice(2);
 let entriesMax = 256;
@@ -120,11 +131,18 @@ if (!dir || !out) {
 	);
 	process.exit(2);
 }
+/** JSONL reader; a parse error names the file and line. */
 const readJsonl = <T>(p: string): T[] =>
 	readFileSync(p, "utf8")
 		.trim()
 		.split("\n")
-		.map((l) => JSON.parse(l) as T);
+		.map((l, i) => {
+			try {
+				return JSON.parse(l) as T;
+			} catch (e) {
+				throw new Error(`${p} line ${i + 1}: ${(e as Error).message}`);
+			}
+		});
 const cap = readJsonl<Line>(`${dir}/capture.jsonl`);
 const marks = readJsonl<{
 	wallMs: number;

@@ -468,9 +468,9 @@ keys:
     canonical-name: STD_FIRST_ROW
     physical: { tcodes: [0x28, 0x29] }
     semantic: nested-message
-    role: "nested-message carrier: GETALL first row (flag-gated) or singleton defaults (bit-29 legs) — project-named; no documented label"
+    role: "nested-message carrier: GETALL first row (flag-gated) or a route's defaults for a new row/record (bit-29 legs, singleton and table routes) — project-named; no documented label"
     confidence: observed-only
-    notes: "First-party: ConfigHandler::cmdGetAll emits 0xfe001d = first row when a flag selects it — that GETALL use is still never observed live (no truncation shape needed it; all truncated tests carried only 0xfe0003). SECOND use observed (§25): bit-29 request legs unfold nested 0xfe001d DEFAULTS ([24,33] {501:'',502:T,503:F}, [24,10] {1:F,2:F}, proven live)."
+    notes: "First-party: ConfigHandler::cmdGetAll emits 0xfe001d = first row when a flag selects it — that GETALL use is still never observed live (no truncation shape needed it; all truncated tests carried only 0xfe0003). SECOND use observed (§25): bit-29 request legs unfold nested 0xfe001d DEFAULTS ([24,33] {501:'',502:T,503:F}, [24,10] {1:F,2:F}, proven live). Table routes too (7.25, 2026-11-22): GETALL with 0xfe000c=0x20000000 and 0xfe0004=0 on [16,2], [20,0], [20,51], [20,90] and [20,101] returns rows=[] plus 0xfe001d (a new row's defaults) and 0xfe0019 — WinBox 4.4's first-open request, repeated by the native probe on [16,2] and [20,0]."
     evidence:
       - source: code
         ref: "RouterOS libumsg.so ConfigHandler::cmdGetAll (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
@@ -480,6 +480,8 @@ keys:
         ref: "live CHR interrogation (singleton batch, 7.25): ev/7.25-getone-24-33-bit29.json + ev/7.25-getone-24-10-bit29.json (nested 0xfe001d defaults); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
       - source: code
         ref: "RouterOS 7.25 WebFig master.js (served at /webfig/master-<hash>.js): ObjectMap.getall, ObjectItem.fetch, setDefaultConf; see work/2026-11-jg-descriptors/README.md"
+      - source: sample
+        ref: "WinBox 4.4 through the decrypting proxy + native probe (7.25, 2026-11-22): table-route defaults GETALL -> 0xfe001d — fixtures/winbox-ipc/7.25-winbox4-bridge-workflow.json, 7.25-native-subscribe-snapshot.json"
     client-usage: "WebFig 7.25 setDefaultConf (master.js): GETALL with 0xfe000c=0x20000000 and 0xfe0018=0, then reads the defaults for a new row from 0xfe001d (drops 0xfe0008 and the name field). WinBox 4.4 (7.25) on the wire: GETALL with 0xfe000c=0x20000000 and 0xfe0004=0 on the first open of [16,2], [20,0], [20,51], [20,90] and [20,101]; the reply has no rows, 0xfe001d and 0xfe0019. The native probe sent the same request on [16,2] and [20,0] (fixtures/winbox-ipc/7.25-native-subscribe-snapshot.json, steps 'defaults'). This is the GETALL form of the bit-29 defaults reading."
     revision-history:
       - date: 2026-10-31

@@ -33,6 +33,7 @@ import {
 	appendFileSync,
 	existsSync,
 	readFileSync,
+	unlinkSync,
 	writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
@@ -206,25 +207,39 @@ switch (cmd) {
 		const ids = plan.map(([, a]) => portId(a[0] as string));
 		writeFileSync(join(outDir, "drop.json"), JSON.stringify({ holdMs }));
 		const pid = Number(readFileSync(join(outDir, "proxy.pid"), "utf8"));
-		const signalled = Date.now();
+		const holdPath = join(outDir, "hold.json");
+		if (existsSync(holdPath)) unlinkSync(holdPath);
 		process.kill(pid, "SIGUSR1");
-		log({ action: "drop", holdMs });
+		// Wait for the proxy's acknowledgement: the hold it actually set.
+		let window: { holdStart: number; holdUntil: number } | null = null;
+		for (let t = 0; t < 40 && !window; t++) {
+			await Bun.sleep(50);
+			if (existsSync(holdPath))
+				window = JSON.parse(readFileSync(holdPath, "utf8"));
+		}
+		if (!window)
+			throw new Error("drop: no hold acknowledgement from the proxy");
+		log({ action: "drop", holdMs, hold: window });
 		console.log(`drop: proxy ${pid}, hold ${holdMs} ms`);
 		await Bun.sleep(300);
-		// Record per edit whether it finished inside the proxy's hold (the
-		// proxy starts the hold when the signal arrives, about now).
-		const when = () =>
-			Date.now() - signalled < holdMs ? "drop-hold" : "after-hold";
+		// Each edit is classified by its start and end against that window.
+		const ack = window;
+		const classify = (start: number, end: number) =>
+			start >= ack.holdStart && end <= ack.holdUntil
+				? "drop-hold"
+				: "outside-hold";
+		const when = (start: number) => classify(start, Date.now());
 		plan.forEach(([verb, a], i) => {
 			const id = ids[i] as string;
+			const start = Date.now();
 			if (verb === "comment") {
 				exec([`${PORT}/set`, `numbers=${id}`, `comment=${a[1]}`]);
-				const during = when();
+				const during = when(start);
 				log({ action: "comment", port: a[0], id, comment: a[1], during });
 				console.log(`drop: comment port ${a[0]} (${id}) = ${a[1]} [${during}]`);
 			} else {
 				exec([`${PORT}/remove`, `numbers=${id}`]);
-				const during = when();
+				const during = when(start);
 				log({ action: "remove", port: a[0], id, during });
 				console.log(`drop: remove port ${a[0]} (${id}) [${during}]`);
 			}
