@@ -457,9 +457,10 @@ were not written.
 The same q1 probe and wave-1 run on winbox-beta4 (7.26beta4, all
 packages installed): 34 menus, the same write counts, no REST failures.
 
-- **Mapping:** 256 of 257 properties give the same route, command, typed
-  keys, values and encoding. The other one is `/system/scheduler
-  start-time`, a wall-clock value.
+- **Mapping:** all 257 properties give the same route, command, typed
+  keys and encoding. Values are equal for 256; `/system/scheduler
+  start-time` (`u12e`, seconds on both) holds the clock time of the add,
+  so only the sampled value differs.
 - **`.jg` cross-check:** the same counts. On these routes the 7.26beta4
   `.jg` adds only `b401`/`b402` on `[97,1]` (Traffic Flow "NAT Src./Dst.
   IPv6 Address"), which no wave-1 write reached.

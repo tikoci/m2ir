@@ -18,8 +18,9 @@ mean?". The router serves its UI schema (`.jg`) and a working client
 first. Probes are kept for what neither source states: wire-only fields,
 write semantics, rejection, update delivery, and version drift.
 
-Field coverage is not client readiness. A route counts as supported only
-when it passes the acceptance test in step 4.
+Scope each support claim to a client, operation, route, build and package
+set. Step 4 establishes native harness behavior for the tested Bridge
+workflow. Step 5 asks which operations WinBox 4 itself selects.
 
 ## Rules
 
@@ -52,7 +53,7 @@ when it passes the acceptance test in step 4.
 | 4 | Acceptance test: replay the step 3 workflow with the native harness; compare with WebFig and with what `.jg` declares | Shared fixture for the client and the dissector | Steps 2 and 3 |
 | 4b | `[17]` undo-history oracle: one reversible write per menu, read the history natively, map CLI path and properties to route, command and typed keys; cross-check with `.jg` | Generated mapping report, a sanitized fixture, promotion rules | Step 4 |
 | 4c | Extra packages: a 7.25 CHR with `--install-all-packages`; fetch its `.jg`, diff per package file against the base set, then run the `[17]` oracle on package menus (restraml `extra/deep-inspect.json`) | Per-package route list, oracle mapping for package menus | Step 4b |
-| 5 | Decrypting MITM proxy (EC-SRP is known); rerun step 4 with WinBox 4 | WinBox-specific behavior, such as subscribe vs poll | Step 4 |
+| 5 | Observe WinBox 4 running the Bridge workflow | Build-scoped trace and offline replay of WinBox-specific behavior | Step 4 |
 
 The 470 7.25 routes with no handler wait until step 4 passes for Bridge.
 Step 4 passed on 2026-11-21. Step 4b (added the same day, after the step 4
@@ -60,6 +61,45 @@ probe in the README) runs before step 5 and is the first pass over them.
 Those 470 are base-package routes only: the 7.25 lab CHR had no extra
 packages. Extra packages add their own `.jg` files (169 more routes on
 the all-packages 7.26beta4 CHR), which step 4c covers.
+
+## Step 5 handoff for the midpoint review
+
+Start with one manually driven WinBox 4 desktop session against the 7.25
+base-package CHR used for both existing Bridge fixtures. This is the
+recommended first run. Record the exact client build and OS, router build,
+package manifest, descriptor identifiers and how each observation was made.
+Automate the second-session edit and offline replay first. Script the GUI
+when a second build or repeated comparison makes that effort worthwhile.
+
+1. Open Bridge Ports with two disposable port rows. Record their IDs and
+   order, let the window sit idle across several refresh intervals, and
+   change one comment from the second session. Close the window, change
+   the comment again, and reopen. Mark each UI action in the timeline.
+2. Move one port before the other. Record the order before and after and
+   check it again after reopening. A successful reply alone was already
+   shown to be an unreliable indicator of a move in step 4.
+3. Compare the observed WinBox requests, replies and unsolicited updates
+   against the existing WebFig and native fixtures. Identify the
+   subscription word, any timed reads, how updates correlate to a row,
+   the MOVE arguments, and what closing the window releases. Polling and
+   notifications can coexist. Record both when the trace shows both.
+4. Deliver a sanitized, marked fixture and an offline check that rebuilds
+   the displayed comments and row order from the messages. A decoder
+   should also expose direction, route, typed keys and unknown values so
+   someone investigating a discrepancy can follow the same trace.
+
+Check what the available capture can actually show before committing to
+capture infrastructure. A desktop run can establish visible state and
+timing. Claims about exact commands require plaintext evidence from that
+WinBox session. If it is unavailable, record the UI observations and the
+specific missing messages, leave those questions open, and use the two
+existing fixtures to exercise the offline check.
+
+After this slice, prioritize a client recovery case such as a rejected
+edit followed by a fresh read, or rebuilding the list after reconnect.
+Step 4c remains available when a package supplies the next consumer use
+case. Keep broader history-derived mappings generated until a specific
+decoder or client operation needs canonical evidence.
 
 ## Step 4c: extra packages
 

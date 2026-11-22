@@ -722,3 +722,5 @@ netinstaller # netinstall .jg
 cmr # .jg file shipped with the 7.26beta4 extra packages (package not identified)
 openflow # RouterOS extra package
 advtool # advanced-tools .jg (base)
+gdb # GNU debugger (WinBox client-hook capture option, plan step 5)
+tcpdump # packet capture tool
