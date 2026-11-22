@@ -20,7 +20,7 @@ open:
   evidence-source-for-jg: "decided: source: doc (vendor-authored, machine-readable declaration served by the router); WebFig JS is source: code. Revisit at review if you disagree."
   leads:
     - ".jg declares Q (u64 array, 0x90) fields on [20,0] interface stats (multibignumber, 148 on 7.25) and R (raw array, 0xb0) fields (multiraw). physical/nv-message.yaml calls 0x90 declared-unwired and has no 0xb0 entry. Confirm on the wire with a native [20,0] stats read. Step 3: no Q/R on CHR (ether1 lacks extrastats, which gates the Q480 tab); needs hardware. WebFig's decoder maps only FT_U64_ARRAY (0x90) to letter Q, so a Q key in a WebFig transcript does prove tcode 0x90."
-    - "[17] undo-history notifications embed the native M2 request (m1) and its inverse (m2) for every change, including changes made over REST or CLI (S9 CLI text, Sa inverse, s8 source). This gives REST/CLI -> M2 mappings without probing. Fixture seq 53."
+    - "[17] undo-history notifications embed the native M2 request (m1) and its inverse (m2) for every change, including changes made over REST or CLI (S9 CLI text, Sa inverse, s8 source). This gives REST/CLI -> M2 mappings without probing. Fixture seq 53. Step 4 probe (undo-oracle.ts, README): confirmed on [14,2], [34], [20,35]; SUBSCRIBE [17] replays the whole history; SET/remove inverses carry the full prior record for name-by-value matching. Proposed as its own plan step."
     - "Key 0x478 is a typed-identity case: .jg declares U478 and Q478 in different dialogs, and CHR ether1 sends U478 (0x88, empty) in [20,0] GETALL."
     - "GETALL reply bfe000b makes WebFig stop the autorefresh (ObjectMap.block); not seen live."
     - "6.49.23 MOVE: {0xfe0001, 0xfe0005=before-id} is acked but does not reorder [16,2]. The 6.49 WebFig is a classic script (not served at /webfig/ on ws3c6); its move request would give the 6.49 shape without guessing."
@@ -114,4 +114,5 @@ step4-record:
     still-untested: "empty Mfe0002 refetch, mfe0015 paging, GETALL errors, Q/R keys (hardware), WinBox 4's own requests (step 5)"
   lab: "twin3 (7.25), winbox-beta4 (7.26beta4), ws3c6 (6.49.23); all stopped after use"
   gates: "bun run lint green; bun run test 594/0; harness tests 70/0; markdownlint + cspell clean on touched files"
+  optional-undo-oracle: "Done (7.25, time-boxed): undo-oracle.ts. SUBSCRIBE [17] replays the full history; each row gives CLI (S9) -> m1 route + command + typed keys, e.g. /snmp set -> [34] CMD_SET s2/s3, /ip dns set -> [14,2] u4, address-list -> [20,35] ADDOBJ u3/u4/sfe0010/sfe0009. SET/remove inverses carry the whole prior record (Sa CLI names + m2 typed keys with the same values) -> name-by-value mapping. Verdict: worth its own plan step. Nothing promoted."
   next: "step 5: MITM proxy for WinBox 4 (what words WinBox subscribes with, MOVE shape, polling vs notify)"

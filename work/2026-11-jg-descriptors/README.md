@@ -1,6 +1,6 @@
 # .jg UI descriptors as an attribute source
 
-<!-- cspell:ignore typevalue nonpublic getcmd roteros athhw igmp mrz webfig nextid -->
+<!-- cspell:ignore typevalue nonpublic getcmd roteros athhw igmp mrz webfig nextid sfd002a -->
 
 Status: exploratory, 2026-11-21. Steps 1-3 promoted their stable
 findings into `profiles/winbox-ipc/*.yaml`; the rest stays here. [`gui-handlers-vs-jg.md`](gui-handlers-vs-jg.md)
@@ -259,6 +259,33 @@ Step 3 statements, rechecked natively:
 - Still untested: an empty `Mfe0002` refetch, `mfe0015` paging, GETALL
   errors, Q/R keys (hardware), and what WinBox 4 itself sends (step 5).
 
+### `[17]` undo history as a REST/CLI → M2 oracle (time-boxed probe)
+
+[`undo-oracle.ts`](undo-oracle.ts) subscribes to `[17]` natively and makes
+four REST changes on menus that `gui-handlers.yaml` has no handler for,
+then restores them (7.25, 30-minute box). The SUBSCRIBE alone replays the
+whole history (131 rows, including this session's native harness writes,
+source `tcp-msg(winbox)`). Each row names the native request (`m1`) and
+its inverse (`m2`):
+
+| CLI (`S9`) | `m1` route, command | Typed keys in `m1` |
+|---|---|---|
+| `/ip dns set cache-size=4096KiB` | `[14,2]` CMD_SET `0xfe000e` | `u4` = 4096 |
+| `/snmp set contact=... location=...` | `[34]` CMD_SET | `s2` contact, `s3` location |
+| `/ip firewall address-list add address=192.0.2.1 comment=... list=m2ir` | `[20,35]` ADDOBJ `0xfe0005` | `u3` = `u4` = 192.0.2.1 (u32 LE), `sfe0010` list, `sfe0009` comment |
+| `/ip firewall address-list set *2 comment=...` | `[20,35]` SETOBJ `0xfe0003` | `ufe0001`, `sfe0009`, plus `sfd002a` = "" |
+| `/ip firewall address-list remove *2` | `[20,35]` REMOVEOBJ `0xfe0006` | `ufe0001` |
+
+For a SET or a remove, the inverse carries the **whole prior record**:
+`Sa` lists every CLI property with its value and `m2` every typed key
+with the same values. For `/snmp set`, `trap-community=public` sits next
+to `s4 "public"`, and `engine-id-suffix` and `vrf` sit next to their keys,
+so CLI names map to typed keys by value. Verdict: worth its own plan
+step. It names route, command and typed keys for any configurable menu
+with one write each on a disposable CHR, and no field guessing. Limits:
+config only (no status or counters), values must be distinct to match
+names, and IP/array encodings need care. Nothing is promoted from it yet.
+
 ## Next steps
 
 1. Promote the named unknowns and enum values into `gui-handlers.yaml`
@@ -277,3 +304,6 @@ Step 3 statements, rechecked natively:
    terminal are not.
 5. Plan step 5: the decrypting MITM proxy, to see what WinBox 4 itself
    sends (subscribe words, MOVE shape, polling).
+6. Candidate plan step: the `[17]` undo-history oracle above, run across
+   the menus of the 470 7.25 routes with no handler to seed route, command and typed
+   keys with CLI names.
