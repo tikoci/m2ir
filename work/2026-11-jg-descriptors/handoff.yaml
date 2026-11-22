@@ -3,6 +3,7 @@
 plan: work/2026-11-jg-descriptors/plan.md
 approved: 2026-11-21
 decisions:
+  - "Step 4b, the [17] undo-history oracle, runs before the WinBox 4 MITM step, in its own session (user, 2026-11-21)."
   - "Typed field identity (step 0) lands before any .jg promotion (user, 2026-11-21)."
   - "WebFig instrumentation (step 3) is tried before the MITM proxy (user, 2026-11-21)."
   - "Step 3 uses a headless browser with sessionStorage seeded (name/password) and a hook above the Session cipher; a Bun-native JSProxy client is deferred because it would be our client, not MikroTik's."
@@ -14,6 +15,7 @@ steps:
   2-conversation-census: done
   3-webfig-instrumentation: done
   4-acceptance-bridge: done (questions 1-5 on 6.49.23, 7.25, 7.26beta4)
+  4b-undo-oracle: queued (prompt in step4b-handoff-prompt.md)
   5-mitm-proxy: queued
 open:
   conflicts-before-promotion: "all four resolved in step 1 (see step1-record)"

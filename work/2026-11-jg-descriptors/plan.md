@@ -42,9 +42,12 @@ when it passes the acceptance test in step 4.
 | 2 | Census of the dialog conversation attributes (`startcmd`, `getallcmd`, `pollcmd`, `cancelcmd`, `getcmd`, `setcmd`, `autorefresh`, `refreshfilter`) against `std-commands.yaml` | Table in this directory | None (offline) |
 | 3 | Instrument WebFig for the Bridge window (see below) | Sanitized plaintext transcript, first JSProxy notes | None |
 | 4 | Acceptance test: replay the step 3 workflow with the native harness; compare with WebFig and with what `.jg` declares | Shared fixture for the client and the dissector | Steps 2 and 3 |
+| 4b | `[17]` undo-history oracle: one reversible write per menu, read the history natively, map CLI path and properties to route, command and typed keys; cross-check with `.jg` | Generated mapping report, a sanitized fixture, promotion rules | Step 4 |
 | 5 | Decrypting MITM proxy (EC-SRP is known); rerun step 4 with WinBox 4 | WinBox-specific behavior, such as subscribe vs poll | Step 4 |
 
 The 470 7.25 routes with no handler wait until step 4 passes for Bridge.
+Step 4 passed on 2026-11-21. Step 4b (added the same day, after the step 4
+probe in the README) runs before step 5 and is the first pass over them.
 
 ## Step 3: WebFig instrumentation
 
