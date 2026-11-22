@@ -218,7 +218,12 @@ on ether1, two ports) and removes them. Every message goes through a
 loop that captures each frame on arrival, matches replies by SYS_REQID
 and keeps unsolicited frames for timed listen windows.
 
+This block and the later reproduction blocks (undo oracle, WinBox 4) run
+from this directory; the first block (`.jg` fetch) runs from the
+repository root.
+
 ```sh
+cd work/2026-11-jg-descriptors
 quickchr start twin3          # also winbox-beta4 (7.26beta4), ws3c6 (6.49.23)
 bun native-replay.ts --quickchr twin3 --out <scratch>/n725 --allow-mutations --disposable
 bun native-report.ts <scratch>/n725 ../../fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl
@@ -616,7 +621,7 @@ Run 2026-11-22 on orca with the same WinBox 4.4 build and twin3 (7.25,
 `routeros` only), through `proxy.ts`. The user drove WinBox; `drive.ts`
 made the REST changes. Fixture:
 [`7.25-winbox4-recovery.json`](../../fixtures/winbox-ipc/7.25-winbox4-recovery.json)
-(390 records, sessions W1 and W2 for the two connections; timed reads
+(394 records, sessions W1 and W2 for the two connections; timed reads
 whose reply did not change are dropped with their request, and
 `provenance.poll_periods` keeps the periods). Test:
 [`winbox4-recovery.test.ts`](../../test/profiles/winbox-ipc/winbox4-recovery.test.ts).

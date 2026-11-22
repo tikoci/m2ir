@@ -68,4 +68,13 @@ describe("srp-server (step 5 proxy)", () => {
 		expect(hello.reply.length).toBe(49);
 		expect([...hello.reply.subarray(33)]).toEqual([...hello.salt]);
 	});
+
+	test("rejects a salt override that is not 16 bytes", () => {
+		expect(() => serverHello("admin", "x", false, new Uint8Array(15))).toThrow(
+			"16 bytes",
+		);
+		expect(
+			serverHello("admin", "x", false, new Uint8Array(16)).reply.length,
+		).toBe(49);
+	});
 });

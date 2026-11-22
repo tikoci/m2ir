@@ -161,6 +161,9 @@ export function compactTranscript(events: TEvent[], focusPaths: Set<string>) {
 		if (e.mark) sinceMark = new Set();
 		const msg = e.msg;
 		if (e.dir !== "rx" || !(msg && at(msg, "Uff0002"))) return e;
+		// A router error is evidence: never shorten it, never let it
+		// mark a path as seen.
+		if (at(msg, "uff0008") !== undefined) return e;
 		const path = JSON.stringify(at(msg, "Uff0002"));
 		const notify = at(msg, "uff0007") === 0xfe000b;
 		// A SUBSCRIBE ack and a GETALL reply share a path; key on rows too.

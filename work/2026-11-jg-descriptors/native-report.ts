@@ -158,14 +158,23 @@ export function analyze(dir: string, webfig?: string) {
 	const replies = pairReplies(events);
 	const notes = notifications(events);
 
-	// q1: every notification with its trigger and latency.
-	const lastWrite = new Map<string, NativeEvent>();
-	const q1: Array<Record<string, unknown>> = [];
+	// q1: every notification with its trigger and latency. Index the write
+	// acks per mark first: a notification can arrive before the writer's
+	// ack (negative afterAckMs).
+	const acks = new Map<string, NativeEvent[]>();
 	for (const e of events) {
 		const t = replies.get(e);
-		if (t && WRITES.has(t.msg["uff0007"] as number)) lastWrite.set(e.mark, e);
+		if (t && WRITES.has(t.msg["uff0007"] as number))
+			acks.set(e.mark, [...(acks.get(e.mark) ?? []), e]);
+	}
+	const ackFor = (e: NativeEvent): NativeEvent | undefined => {
+		const list = acks.get(e.mark) ?? [];
+		return list.filter((a) => a.tMs <= e.tMs).at(-1) ?? list[0];
+	};
+	const q1: Array<Record<string, unknown>> = [];
+	for (const e of events) {
 		if (e.direction !== "rx" || e.msg["uff0007"] !== NOTIFY) continue;
-		const w = lastWrite.get(e.mark);
+		const w = ackFor(e);
 		const top = Object.keys(e.msg)
 			.filter((k) => k !== "Mfe0002")
 			.sort();

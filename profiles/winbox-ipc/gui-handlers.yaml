@@ -315,26 +315,18 @@ handlers:
         24: { name: firmware-type, tcode: string }
         32: { name: board-name, tcode: string }
     notes: |
-      Field 1 (software-id) and 4 (nlevel) are also read from the
-      dedicated license handler below; this implementation queries only
-      the license handler for those two and the routerboard handler for
-      the rest, but both appear to expose overlapping fields.
-      LIVE+STATIC WALL: [24,17] answers BRKPATH (from=[24] looper
-      default) on BOTH 6.49.23 and 7.25; sys2 registers no handler 17
-      (17-handler v6 census certain, both the addHandler sites and the
-      live hscan; v7 census 19 sites, still no 17); no function in
-      149 ELFs across both versions builds the RB row-shape (bool:16
-      anchor + signature strings); sys2 handler 16 is
-      /nova/store/chfont (console font), not an off-by-one RB.
-      NARROWED: v6 rbbios ANSWERS direct queries ([61,1]={1:F},
-      [61,2]={} — the handlers are live, only the sys2 relay is
-      absent); v7 routes pid-61 to the 1025 compat shim (see
-      processes.yaml 0x401). But no
-      reachable M2 path serves the full RB field ids (model/serial/
-      firmware). The sys-to is version-drifted or wrong — kept as
-      a suspect-shape record, NOT a working path. Queue-3 census
-      re-proves BRKPATH from=[24] on all 3 versions including
-      7.26beta4, with transcripts.
+      Current reading (2026-11-21, .jg): [24,17] is the RouterBOARD /
+      Settings path on non-x86 boards in 6.49.23, 7.25 and 7.26beta4;
+      the .jg gates both dialogs on board != x86. Fields 1 and 4 are the
+      Settings dialog's baud-rate and enter-setup-on, not License
+      fields. On CHR (x86) [24,17] answers BRKPATH from=[24] by design:
+      sys2 registers no handler 17 on x86 (v6 and v7 censuses), no x86
+      ELF builds the RB row shape, and sys2 handler 16 is
+      /nova/store/chfont (console font), not an off-by-one RB. v6 rbbios
+      answers direct queries ([61,1]={1:F}, [61,2]={}); v7 routes pid 61
+      to the 1025 compat shim (processes.yaml 0x401). The queue-3 census
+      re-proves BRKPATH from=[24] on all three versions. Live
+      confirmation of the field map needs RouterBOARD hardware.
     evidence:
       - source: doc
         ref: "RouterOS 6.49.23/7.25/7.26beta4 .jg UI descriptors (field names, types, enums, board gates); see work/2026-11-jg-descriptors/gui-handlers-vs-jg.md"
@@ -349,6 +341,19 @@ handlers:
     open-questions:
       - "ANSWERED by .jg (2026-11-21): the RB shape lives at [24,17] on non-x86 boards in all three versions; the x86/CHR build has no handler 17, which matches the 149-ELF x86 sweep. Live confirmation needs RouterBOARD hardware."
       - "RESOLVED (§23/§38, processes.yaml 0x401): v7 pid 1025 is the pid-61 compat shim (sole NOTIMP stub 3, subset of the ipsec family set; v7 PR names pid 61 ipsec-worker)."
+    revision-history:
+      - date: 2026-11-21
+        belief: "fields 1 (software-id) and 4 (nlevel) overlap with the license handler [65], which the private client read instead"
+        outcome: superseded
+        evidence:
+          - source: doc
+            ref: "RouterOS 6.49.23/7.25/7.26beta4 .jg: [24,17] Settings u1 baud-rate, u4 enter-setup-on (board != x86); License [65] s1 Software ID / u4 Level are separate non-CHR fields; see work/2026-11-jg-descriptors/handoff.yaml step1-record"
+      - date: 2026-11-21
+        belief: "the [24,17] sys-to is version-drifted or wrong; kept as a suspect-shape record, not a working path"
+        outcome: superseded
+        evidence:
+          - source: doc
+            ref: "RouterOS 6.49.23/7.25/7.26beta4 .jg board gate: RouterBOARD and Settings dialogs on [24,17] for board != x86 only; BRKPATH on CHR is expected"
 
   license:
     sys-to: [65]
@@ -421,7 +426,11 @@ handlers:
         2: { name: priority, tcode: u32, cli-alias: "/interface/bridge priority", values: { 0: "0x0000", 4096: "0x1000", 8192: "0x2000", 12288: "0x3000", 16384: "0x4000", 20480: "0x5000", 24576: "0x6000", 28672: "0x7000", 32768: "0x8000", 36864: "0x9000", 40960: "0xa000", 45056: "0xb000", 49152: "0xc000", 53248: "0xd000", 57344: "0xe000", 61440: "0xf000" }, role: "named by .jg Bridge typevalue=12 u2 (6.49.23, 7.25, 7.26beta4); observed 32768 = 0x8000 default; bridge-row-only: 32768 (t=0x08); absent on ether/lo; v6 bridge cell unobserved" }
         3: { name: unknown-3, tcode: bool, role: "OPEN — bridge-row-only: true (t=0x01); absent on ether/lo; v6 bridge cell unobserved; meaning UNKNOWN" }
         4: { name: ageing-time, tcode: u32, cli-alias: "/interface/bridge ageing-time", role: "named by .jg Bridge typevalue=12 u4 (6.49.23, 7.25, 7.26beta4); bridge-row-only: 300 (t=0x08); absent on ether/lo; v6 bridge cell unobserved" }
-        5: { name: forward-delay, tcode: u32, cli-alias: "/interface/bridge forward-delay", role: "named by .jg Bridge typevalue=12 u5 (6.49.23, 7.25, 7.26beta4); 15 on bridge rows (t=0x09); vrf-interface row carries \\\"vrf1\\\" (t=0x21, `050000210476726631`); absent on ether/lo; v6 bridge cell unobserved" }
+        5:
+          role: "two attributes sharing field number 5 (typed identity, see profile.yaml key-id.typed-identity); absent on ether/lo; v6 bridge cell unobserved"
+          variants:
+            u: { name: forward-delay, tcode: u32, cli-alias: "/interface/bridge forward-delay", role: "named by .jg Bridge typevalue=12 u5 (6.49.23, 7.25, 7.26beta4); 15 on bridge rows (t=0x09)" }
+            s: { name: unknown-5, tcode: string, role: "OPEN — the vrf-interface row carries \"vrf1\" (t=0x21, `050000210476726631`); meaning not established, not forward-delay" }
         8: { name: max-message-age, tcode: u32, cli-alias: "/interface/bridge max-message-age", role: "named by .jg Bridge typevalue=12 u8 (6.49.23, 7.25, 7.26beta4); bridge-row-only: 20 (t=0x09); absent on ether/lo; v6 bridge cell unobserved" }
         16:
           role: "two attributes sharing field number 16 on bridge rows (typed identity, see profile.yaml key-id.typed-identity); absent on ether/lo; v6 bridge cell unobserved"

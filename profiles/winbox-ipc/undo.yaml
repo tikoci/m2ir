@@ -49,7 +49,7 @@ row-keys:
 behaviour:
   replay: "SUBSCRIBE replays the whole history as CMD_NOTIFY only when no other session is subscribed to [17]. A second subscriber gets no replay; use GETALL (paged) to read the history."
   cap: "100 rows. Each change beyond that notifies a removal row for the oldest one."
-  no-op-set: "A SET to the current value records a row: S9 holds the written property, m1 the typed keys written, Sa and m2 are empty (except /snmp, which always sends the whole record). Each no-op row takes an undo step."
+  no-op-set: "A SET to the current value records a row: S9 holds the written property, m1 the typed keys written, Sa is empty, and m2 is empty except for a read-only counter that moved (DNS cache-used f5) and for /snmp, which always sends the whole record. Each no-op row takes an undo step."
   undo-redo: "Undo and redo do not add rows; they re-notify the same row with 0x04 toggled, the source suffixed /undo or /redo, and S9/Sa swapped to what a redo would do. A new change after an undo drops the undone rows (removal rows)."
   restart: "A CHR stop/start clears it (observed once: 131 rows before; after, only the one change made since)."
 

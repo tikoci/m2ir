@@ -68,7 +68,25 @@ function keyText(route: number[], e: Entry): string {
 	const name = r.name ?? "?";
 	return `${typeLetter(t)}${k.toString(16)}(${name})=${short(e.value)}`;
 }
-const view = new ListView();
+// One displayed list per session (connection): W2 must not show W1's rows.
+const views = new Map<string, ListView>();
+const viewOf = (session: string) => {
+	let v = views.get(session);
+	if (!v) {
+		v = new ListView();
+		views.set(session, v);
+	}
+	return v;
+};
+// SUBSCRIBE with SYS_SNAPSHOT 0xff0017=true: the next NOTIFY on that path
+// carries every row and replaces the list (sys-keys.yaml 0xff0017).
+const snapshotDue = new Set<string>();
+/** Decoded entries; large records keep hex only (entries: null). */
+function entriesOf(r: Rec): Entry[] {
+	if (r.entries) return r.entries;
+	const d = captureMessage(0, "rx", hexToBytes(r.hex));
+	return d.decode.ok ? (d.decode.entries as Entry[]) : [];
+}
 const upd = (row: Entry[]): RowUpdate => {
 	const v = (k: string) => row.find((e) => e.key === k)?.value;
 	return {
@@ -107,11 +125,12 @@ for (const r of fx.records) {
 			? "-"
 			: (resolveCommandName(cmd).name ?? `0x${cmd.toString(16)}`);
 	const dir = tx ? "->" : r.cmd === 0xfe000b ? "<~" : "<-";
-	// Large records keep hex only (entries: null): decode them here.
-	const decoded = r.entries ? null : captureMessage(0, "rx", hexToBytes(r.hex));
-	const entries =
-		r.entries ??
-		(decoded?.decode.ok ? (decoded.decode.entries as Entry[]) : []);
+	const entries = entriesOf(r);
+	if (tx && r.cmd === 0xfe0012 && JSON.stringify(route) === "[16,2]") {
+		const flag = entries.find((e) => e.key === "0xff0017")?.value === true;
+		if (flag) snapshotDue.add(r.session);
+		else snapshotDue.delete(r.session);
+	}
 	const top = entries
 		.filter((e) => !e.key.startsWith("0xff") && e.key !== "0xfe0002")
 		.map((e) => keyText(route, e));
@@ -127,15 +146,19 @@ for (const r of fx.records) {
 				`           row ${row.map((e) => keyText(route, e)).join(" ")}`,
 			);
 	if (showList && JSON.stringify(route) === "[16,2]" && rows && cmd !== null) {
-		const word = q?.entries?.find((e) => e.key === "0xfe000c")?.value;
+		const word = q
+			? entriesOf(q).find((e) => e.key === "0xfe000c")?.value
+			: undefined;
 		const defaults = typeof word === "number" && (word & 0x20000000) !== 0;
 		if (!defaults && (cmd === 0xfe000b || cmd === 0xfe0004)) {
+			const snapshot = cmd === 0xfe000b && snapshotDue.delete(r.session);
 			const ev: ListEvent = {
 				tMs: r.tMs,
-				kind: cmd === 0xfe000b ? "notify" : "list",
+				kind: cmd === 0xfe000b && !snapshot ? "notify" : "list",
 				rows: rows.map(upd),
 				ref: r.id,
 			};
+			const view = viewOf(r.session);
 			view.apply(ev);
 			const d = view.display();
 			console.log(

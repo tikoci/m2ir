@@ -61,6 +61,8 @@ export function serverHello(
 	salt: Uint8Array = new Uint8Array(randomBytes(16)),
 	privateKey: bigint = bytesToBigIntBE(new Uint8Array(randomBytes(32))),
 ): ServerHello {
+	if (salt.length !== 16)
+		throw new Error(`serverHello: salt must be 16 bytes, got ${salt.length}`);
 	const v = bytesToBigIntBE(srpId(user, pass, salt));
 	const V = scalarMul(v, G);
 	if (V === null) throw new Error("srp-server: validator hit infinity");

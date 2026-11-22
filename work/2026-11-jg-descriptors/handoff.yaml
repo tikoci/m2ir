@@ -198,7 +198,7 @@ step5-followup-record:
     - "winbox4/drive.ts: remove, readd, drop <hold-s> [comment n text] [remove n]"
     - "winbox4/fixture.ts: several connections (sessions W1, W2), GETOBJ polls, --meta, --collapse-polls (provenance.poll_periods), connection_events"
     - "winbox4/first-notify.ts + first-notify-fixture.ts: native SUBSCRIBE snapshot probe (22 variants x 2 paths)"
-    - "fixtures/winbox-ipc/7.25-winbox4-recovery.json (390 records), 7.25-native-subscribe-snapshot.json (164 records)"
+    - "fixtures/winbox-ipc/7.25-winbox4-recovery.json (394 records), 7.25-native-subscribe-snapshot.json (164 records)"
     - "test/profiles/winbox-ipc/winbox4-recovery.test.ts, subscribe-snapshot.test.ts; winbox4-events.ts (adapter shared with winbox4-bridge-workflow.test.ts; snapshotIsList, session change = release)"
     - "README section 'WinBox 4 recovery cases (step 5 follow-up)'"
   answers:

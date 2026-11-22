@@ -94,12 +94,27 @@ console.log(
 	`proxy: ${listen} -> ${machine} (${target.version}) ${target.host}:${target.port}; capture ${capPath}`,
 );
 
-/** Client-side login to the router, stopping after phase 2 (no adoption). */
-async function upstreamLogin(): Promise<{
+/**
+ * Client-side login to the router, stopping after phase 2 (no adoption).
+ * onOpen sees the socket as soon as it exists, so a drop during the login
+ * can close it; a failed login closes it here.
+ */
+async function upstreamLogin(onOpen: (c: ChunkConn) => void): Promise<{
 	conn: ChunkConn;
 	keys: SessionKeys;
 }> {
 	const conn = await ChunkConn.open(target.host, target.port, 3_600_000);
+	onOpen(conn);
+	try {
+		return await upstreamHandshake(conn);
+	} catch (e) {
+		conn.close();
+		throw e;
+	}
+}
+async function upstreamHandshake(
+	conn: ChunkConn,
+): Promise<{ conn: ChunkConn; keys: SessionKeys }> {
 	const kp = keygen();
 	const user = new TextEncoder().encode(target.user);
 	const p1 = new Uint8Array([...user, 0, ...kp.publicKey]);
@@ -137,8 +152,9 @@ async function handle(sock: Socket): Promise<void> {
 		conn,
 		peer: `${sock.remoteAddress}:${sock.remotePort}`,
 	});
-	let up: ChunkConn | null = null;
-	active.set(conn, { down, up: () => up });
+	// Set by upstreamLogin as soon as the router socket exists.
+	const ref: { up: ChunkConn | null } = { up: null };
+	active.set(conn, { down, up: () => ref.up });
 	try {
 		const wait = holdUntil - Date.now();
 		if (wait > 0) {
@@ -170,8 +186,9 @@ async function handle(sock: Socket): Promise<void> {
 		if (user !== target.user)
 			throw new Error(`conn ${conn}: WinBox user ${user} is not the lab user`);
 
-		const u = await upstreamLogin();
-		up = u.conn;
+		const u = await upstreamLogin((c) => {
+			ref.up = c;
+		});
 		const hello = serverHello(user, target.pass, padded32);
 		const pre = inner ? [0x06] : [];
 		await down.write(
@@ -215,7 +232,7 @@ async function handle(sock: Socket): Promise<void> {
 				);
 			}
 		};
-		const upc = up;
+		const upc = u.conn;
 		await Promise.race([
 			relay(
 				down,
@@ -239,7 +256,7 @@ async function handle(sock: Socket): Promise<void> {
 	} finally {
 		active.delete(conn);
 		down.close();
-		up?.close();
+		ref.up?.close();
 	}
 }
 

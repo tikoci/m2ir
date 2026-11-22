@@ -155,6 +155,16 @@ describe("handler field typed identity", () => {
 		expect(validateYamlDocument(doc, "g.yaml")).toEqual([]);
 	});
 
+	test("accepts a scalar message variant (letter m, tcode message)", () => {
+		const doc = withField({
+			variants: {
+				m: { name: "request", tcode: "message" },
+				u: { name: "count", tcode: "u32" },
+			},
+		});
+		expect(validateYamlDocument(doc, "g.yaml")).toEqual([]);
+	});
+
 	test("rejects a variant whose tcode is another type letter", () => {
 		const doc = withField({
 			variants: {

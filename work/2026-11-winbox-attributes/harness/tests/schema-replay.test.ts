@@ -252,6 +252,16 @@ describe("typed field identity", () => {
 		});
 	});
 
+	test("bridge field 5: forward-delay only for the numeric attribute", () => {
+		expect(resolveRouteField([20, 0], 0x000005, 0x09)).toMatchObject({
+			name: "forward-delay",
+		});
+		// The vrf-interface row's string ("vrf1", t=0x21) is not forward-delay.
+		expect(resolveRouteField([20, 0], 0x000005, 0x21)).toMatchObject({
+			name: "unknown-5",
+		});
+	});
+
 	test("namespace-1 interface fields load", () => {
 		expect(resolveRouteField([20, 0], 0x010006)).toMatchObject({
 			name: "name",

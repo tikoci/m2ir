@@ -87,9 +87,59 @@ describe("MessagePump", () => {
 		const pump = new MessagePump(t, { label: "A" });
 		setTimeout(() => t.push(notify()), 20);
 		setTimeout(() => t.push(notify()), 40);
+		const t0 = performance.now();
 		const got = await pump.listenFor((r) => r.cmd === 0xfe000b, 1000, 60);
+		// Returns after the first match + settle, well before maxMs.
+		expect(performance.now() - t0).toBeLessThan(500);
 		expect(got.length).toBe(2);
 		expect(await pump.listen(20)).toEqual([]);
+		await pump.stop(t.close);
+	});
+
+	test("a failed send drops its waiter; a retry with the same reqid gets the reply", async () => {
+		const t = fakeTransport();
+		const pump = new MessagePump(t, { label: "A" });
+		const send = t.send;
+		t.send = async () => {
+			throw new Error("send failed");
+		};
+		await expect(pump.request(reply(5), 5, 1000)).rejects.toThrow(
+			"send failed",
+		);
+		t.send = send;
+		const pending = pump.request(reply(5), 5, 1000);
+		t.push(reply(5));
+		const out = await pending;
+		expect(out.status).toBe("ok");
+		await pump.stop(t.close);
+	});
+
+	test("a stalled send times out within the request budget", async () => {
+		const t = fakeTransport();
+		const pump = new MessagePump(t, { label: "A" });
+		t.send = () => new Promise<void>(() => {});
+		const t0 = performance.now();
+		const out = await pump.request(reply(6), 6, 40);
+		expect(out.status).toBe("timeout");
+		expect(performance.now() - t0).toBeLessThan(500);
+		// The tx record exists even though the send never settled.
+		if (out.status === "timeout") expect(out.tx.reqId).toBe(6);
+		await pump.stop(t.close);
+	});
+
+	test("a capture sink failure is a reader failure, not a timeout", async () => {
+		const t = fakeTransport();
+		let n = 0;
+		const pump = new MessagePump(t, {
+			label: "A",
+			onCapture: () => {
+				if (++n === 2) throw new Error("disk full");
+			},
+		});
+		const pending = pump.request(reply(8), 8, 1000);
+		t.push(reply(8));
+		await expect(pending).rejects.toThrow("disk full");
+		expect(pump.error?.message).toBe("disk full");
 		await pump.stop(t.close);
 	});
 

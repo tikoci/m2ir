@@ -124,6 +124,7 @@ export const TCODE_LETTER: Record<string, string> = {
 	bytes_16: "a",
 	string: "s",
 	bytes: "r",
+	message: "m",
 	u32_array: "U",
 	u64_array: "Q",
 	bytes16_array: "A",
@@ -132,7 +133,7 @@ export const TCODE_LETTER: Record<string, string> = {
 	bytes_array: "R",
 	bool_array: "B",
 };
-const TYPE_LETTERS = new Set(Object.values(TCODE_LETTER).concat("m"));
+const TYPE_LETTERS = new Set(Object.values(TCODE_LETTER));
 
 function isRecord(v: unknown): v is Record<string, unknown> {
 	return typeof v === "object" && v !== null && !Array.isArray(v);

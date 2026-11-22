@@ -120,9 +120,15 @@ export class UndoListener {
 				),
 		});
 		const l = new UndoListener(pump, s.sourceId, s.close);
-		const sub = await l.request(CMD_SUBSCRIBE);
-		if (sub.status !== "ok")
-			throw new Error(`SUBSCRIBE [17] failed: ${sub.status}`);
+		try {
+			const sub = await l.request(CMD_SUBSCRIBE);
+			if (sub.status !== "ok")
+				throw new Error(`SUBSCRIBE [17] failed: ${sub.status}`);
+		} catch (e) {
+			// The caller gets no handle on failure: release the session here.
+			await l.stop();
+			throw e;
+		}
 		return l;
 	}
 

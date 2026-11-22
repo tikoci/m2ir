@@ -28,7 +28,7 @@
  * address redacted. No hosts, ports, credentials or capture wall-clock
  * time (the lab CHR's own clock rides in [24,*] replies).
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { captureMessage } from "../../2026-11-winbox-attributes/harness/capture.ts";
 import {
 	decodeLetters,
@@ -172,8 +172,15 @@ const pollTimes = new Map<string, number[]>();
 const jgList: Array<{ name?: string; unique?: string; version?: string }> = [];
 const lastReply = new Map<string, string>();
 const records: Array<Record<string, unknown> | null> = [];
+// The proxy forwards non-M2 frames (tag != 0x06) as raw: count, never decode.
+const rawFrames = cap.filter((l) => conns.has(l.conn) && l["raw"] === true);
+if (rawFrames.length) dropped["raw (non-M2) frames"] = rawFrames.length;
 const msgs = cap.filter(
-	(l) => conns.has(l.conn) && typeof l.hex === "string" && !l.event,
+	(l) =>
+		conns.has(l.conn) &&
+		typeof l.hex === "string" &&
+		!l.event &&
+		l["raw"] !== true,
 );
 for (const l of msgs) {
 	const session = sessionOf(l.conn);
@@ -198,8 +205,11 @@ for (const l of msgs) {
 		}
 	}
 	// A (re)subscription starts a new view: keep its first poll reply.
-	if (tx && (c.cmd === 0xfe0012 || c.cmd === 0xfe0013))
-		lastReply.delete(`${session} ${pathKey(c.to)}`);
+	if (tx && (c.cmd === 0xfe0012 || c.cmd === 0xfe0013)) {
+		const view = `${session} ${pathKey(c.to)} `;
+		for (const k of [...lastReply.keys()])
+			if (k.startsWith(view)) lastReply.delete(k);
+	}
 	const req = !tx && c.reqId !== null ? txByReq.get(reqKey) : undefined;
 	// The [2,2] file transfer: keep only the file names.
 	const fileRoute =
@@ -222,7 +232,9 @@ for (const l of msgs) {
 	const cmdOf = tx ? c.cmd : (c.cmd ?? req?.cmd ?? null);
 	// Timed polls: drop a reply whose config content equals the previous
 	// reply on the same route; the request stays, so the period is kept.
-	if (!tx && req && req.cmd !== null && POLL.has(req.cmd)) {
+	// A router error is never "unchanged": keep it and its request.
+	const failed = entries.some((e) => e.key === "0xff0008");
+	if (!tx && req && req.cmd !== null && POLL.has(req.cmd) && !failed) {
 		// Rows compare on their config group only (field id < 0xc8 or a
 		// 0xfe key): the status group (f200+) carries live counters.
 		const config = (e: Entry) => {
@@ -302,17 +314,24 @@ for (const l of msgs) {
 
 // [17] rows that WinBox wrote (history read by drive.ts after the run).
 const history: LetterMsg[] = [];
-try {
-	for (const r of readJsonl<{ direction?: string; plaintextHex?: string }>(
-		`${dir}/history-capture.jsonl`,
-	)) {
-		if (r.direction !== "rx" || !r.plaintextHex) continue;
-		const m = decodeLetters(hexToBytes(r.plaintextHex)).msg;
-		for (const row of (m["Mfe0002"] ?? []) as LetterMsg[])
-			if (String(row["s8"] ?? "").includes("winbox")) history.push(row);
-	}
-} catch {
-	// No history read for this capture.
+// No history read is fine; a broken one is an error, not partial history.
+const historyPath = `${dir}/history-capture.jsonl`;
+if (existsSync(historyPath)) {
+	readJsonl<{ direction?: string; plaintextHex?: string }>(historyPath).forEach(
+		(r, i) => {
+			if (r.direction !== "rx" || !r.plaintextHex) return;
+			let m: LetterMsg;
+			try {
+				m = decodeLetters(hexToBytes(r.plaintextHex)).msg;
+			} catch (e) {
+				throw new Error(
+					`${historyPath} line ${i + 1}: ${(e as Error).message}`,
+				);
+			}
+			for (const row of (m["Mfe0002"] ?? []) as LetterMsg[])
+				if (String(row["s8"] ?? "").includes("winbox")) history.push(row);
+		},
+	);
 }
 const LAB_SOURCE = /@[0-9a-f.:]+$/i;
 const redact = (o: LetterMsg): LetterMsg => {
@@ -335,7 +354,13 @@ const median = (xs: number[]) => {
 		.slice(1)
 		.map((x, i) => x - (xs[i] as number))
 		.sort((a, b) => a - b);
-	return d.length ? Math.round(d[Math.floor(d.length / 2)] as number) : null;
+	if (!d.length) return null;
+	const mid = Math.floor(d.length / 2);
+	const m =
+		d.length % 2
+			? (d[mid] as number)
+			: ((d[mid - 1] as number) + (d[mid] as number)) / 2;
+	return Math.round(m);
 };
 const pollPeriods = Object.fromEntries(
 	[...pollTimes]

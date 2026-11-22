@@ -354,11 +354,11 @@ const rowFor = (w: Write) => {
 	const rows = w.rows.filter(
 		(r) => Array.isArray(r["S9"]) && (r["S9"] as string[]).length,
 	);
-	return (
-		(w.arg
-			? rows.find((r) => (r["S9"] as string[])[0]?.includes(` ${w.arg}=`))
-			: undefined) ?? rows[0]
-	);
+	// A property write maps only to a row that names that property: a row
+	// left over from the previous write's window must not be attributed.
+	if (w.arg)
+		return rows.find((r) => (r["S9"] as string[])[0]?.includes(` ${w.arg}=`));
+	return rows[0];
 };
 
 function jgCheck(item: JgItem | undefined, key: string) {

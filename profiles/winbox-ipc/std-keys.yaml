@@ -158,7 +158,7 @@ keys:
         ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 182, 238 ([16,2]) and seq 53 ([17])"
       - source: sample
         ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): [16,2] GETALL rows chain id -> 0xfe0005 -> ... -> 0xFFFFFFFF in list order; MOVE before-id — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json marks q4-*"
-    notes: "Confirmed natively (plan step 4, all three versions): every [16,2] GETALL and notification row carries it, and GETALL rows chain in list order to 0xFFFFFFFF. REST shows the same value as .nextid (*FFFFFFFF on the last row). An added row is notified alone with 0xFFFFFFFF; the old tail is not re-sent, so a client must relink. As a MOVE operand it reorders [16,2] on 7.x only (see std-commands.yaml 0xfe0007)."
+    notes: "Confirmed natively (plan step 4, all three versions): every [16,2] GETALL row and every non-removal notification row carries it (a removal row is only {0xfe0001, 0xfe0013=1}), and GETALL rows chain in list order to 0xFFFFFFFF. REST shows the same value as .nextid (*FFFFFFFF on the last row). An added row is notified alone with 0xFFFFFFFF; the old tail is not re-sent, so a client must relink. As a MOVE operand it reorders [16,2] on 7.x only (see std-commands.yaml 0xfe0007)."
 
   0xfe0006:
     canonical-name: STD_UNDOID
@@ -269,7 +269,10 @@ keys:
       with per-dialog bits OR-ed in from the .jg refreshfilter attribute
       (values 2, 6, 131072, ... on 7.25). For a new row's defaults it sends
       GETALL with 0x20000000 (bit 29) and STD_MAXOBJS (0xfe0018) = 0, and reads
-      them from 0xfe001d. Seen on the wire (plan step 3, 7.25 and
+      them from 0xfe001d (master.js reading, not seen on the wire). WinBox
+      4.4 (7.25, plan step 5) sends the defaults GETALL with 0x20000000 and
+      STD_GETALLNO (0xfe0004) = 0 instead, on the first open of each list
+      path, and gets rows=[] plus 0xfe001d and 0xfe0019. Seen on the wire (plan step 3, 7.25 and
       7.26beta4): 0x1004000f on [20,0] (iface refreshfilter 0x4000a),
       0x10000007 on [16,2], and 0x10000005 on [20,90], [24,7] and the [24,0] GET.
       Notification rows lack the status and counter groups that these
@@ -477,7 +480,7 @@ keys:
         ref: "live CHR interrogation (singleton batch, 7.25): ev/7.25-getone-24-33-bit29.json + ev/7.25-getone-24-10-bit29.json (nested 0xfe001d defaults); see work/2026-10-chr-extraction/ws3c-prober-findings.md §25"
       - source: code
         ref: "RouterOS 7.25 WebFig master.js (served at /webfig/master-<hash>.js): ObjectMap.getall, ObjectItem.fetch, setDefaultConf; see work/2026-11-jg-descriptors/README.md"
-    client-usage: "WebFig 7.25 setDefaultConf: GETALL with 0xfe000c=0x20000000 and 0xfe0018=0, then reads the defaults for a new row from 0xfe001d (drops 0xfe0008 and the name field). This is the GETALL form of the bit-29 defaults reading; the native harness has only probed it on singletons."
+    client-usage: "WebFig 7.25 setDefaultConf (master.js): GETALL with 0xfe000c=0x20000000 and 0xfe0018=0, then reads the defaults for a new row from 0xfe001d (drops 0xfe0008 and the name field). WinBox 4.4 (7.25) on the wire: GETALL with 0xfe000c=0x20000000 and 0xfe0004=0 on the first open of [16,2], [20,0], [20,51], [20,90] and [20,101]; the reply has no rows, 0xfe001d and 0xfe0019. The native probe sent the same request on [16,2] and [20,0] (fixtures/winbox-ipc/7.25-native-subscribe-snapshot.json, steps 'defaults'). This is the GETALL form of the bit-29 defaults reading."
     revision-history:
       - date: 2026-10-31
         belief: "0xfe001d never observed live in any context"

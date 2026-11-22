@@ -160,13 +160,31 @@ async function run(v: Variant, p: { path: number[]; word: number }) {
 		},
 	);
 	const label = `${v.name}${JSON.stringify(p.path)}`;
-	write({ mark: label, steps: v.steps, from: v.from, tMs: clock() });
-	const pump = new MessagePump(s.transport, {
-		label,
-		clock,
-		onCapture: (r: PumpRecord) => write(r),
-	});
-	const fromId = v.from === "own" ? s.sourceId + 40 : s.sourceId;
+	// Everything after the login is protected: a capture write failure or a
+	// dead socket must still release the session.
+	let pump: MessagePump | null = null;
+	try {
+		write({ mark: label, steps: v.steps, from: v.from, tMs: clock() });
+		pump = new MessagePump(s.transport, {
+			label,
+			clock,
+			onCapture: (r: PumpRecord) => write(r),
+		});
+		await steps(v, p, s.sourceId, label, pump);
+	} finally {
+		if (pump) await pump.stop(s.close);
+		else s.close();
+	}
+}
+
+async function steps(
+	v: Variant,
+	p: { path: number[]; word: number },
+	sourceId: number,
+	label: string,
+	pump: MessagePump,
+): Promise<void> {
+	const fromId = v.from === "own" ? sourceId + 40 : sourceId;
 	let reqId = 1;
 	const notes: string[] = [];
 	for (const st of v.steps) {
@@ -214,6 +232,11 @@ async function run(v: Variant, p: { path: number[]; word: number }) {
 		}
 		// Notifications that arrived while this step was pending, then a window.
 		const unsolicited = [...pump.drain(), ...(await pump.listen(600))];
+		// A window cut short by a dead reader is not an observation of "none".
+		if (pump.error)
+			throw new Error(
+				`${label} ${st}: incomplete, reader failed: ${pump.error.message}`,
+			);
 		const n = unsolicited.filter((r) => r.cmd === CMD.NOTIFY);
 		const other = unsolicited.length - n.length;
 		notes.push(
@@ -221,7 +244,6 @@ async function run(v: Variant, p: { path: number[]; word: number }) {
 		);
 		write({ result: label, step: st, status, notify: n.length });
 	}
-	await pump.stop(s.close);
 	console.log(
 		`${label.padEnd(28)} from=${v.from.padEnd(7)} ${notes.join("  ")}`,
 	);

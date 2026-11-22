@@ -108,11 +108,17 @@ const rowId = (row: Row) => Number.parseInt((row[".id"] ?? "").slice(1), 16);
 // ── assets ──────────────────────────────────────────────────────────────
 
 async function assetMeta(): Promise<Record<string, string>> {
-	const html = await (await fetch(`${lab.base}/webfig/`)).text();
+	// An error page must never be hashed as WebFig provenance.
+	const get = async (url: string | URL) => {
+		const r = await fetch(url);
+		if (!r.ok) throw new Error(`GET ${url}: HTTP ${r.status}`);
+		return r;
+	};
+	const html = await (await get(`${lab.base}/webfig/`)).text();
 	const out: Record<string, string> = {};
 	for (const [, src] of html.matchAll(/src="([^"]+\.js)"/g)) {
 		const url = new URL(src as string, `${lab.base}/webfig/`);
-		const body = new Uint8Array(await (await fetch(url)).arrayBuffer());
+		const body = new Uint8Array(await (await get(url)).arrayBuffer());
 		out[url.pathname] = createHash("sha256").update(body).digest("hex");
 	}
 	return out;
@@ -193,7 +199,11 @@ const meta: Record<string, unknown> = {
 	chr: chrName,
 	captured: new Date().toISOString(),
 	browser: browser.version(),
-	assets_sha256: await assetMeta(),
+	// A failed asset fetch still closes the browser (the main try starts later).
+	assets_sha256: await assetMeta().catch(async (e) => {
+		await browser.close();
+		throw e;
+	}),
 };
 
 try {

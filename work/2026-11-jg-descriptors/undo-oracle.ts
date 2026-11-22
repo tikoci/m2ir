@@ -97,9 +97,12 @@ async function write(
 	step: string,
 	cli: string[],
 	extra: Partial<Write> = {},
+	/** Runs right after the router call, before any diagnostics can fail. */
+	onResult?: (r: ReturnType<typeof centrsExec>) => void,
 ) {
 	mark = `${p.path} ${step}`;
 	const r = centrsExec(machine, cli);
+	onResult?.(r);
 	const rows = r.ok ? await a.rows(2000, 300) : [];
 	const w: Write = {
 		menu: p.path,
@@ -144,17 +147,25 @@ try {
 		let rowsSeen = 0;
 		try {
 			if (p.how === "add") {
-				const { r } = await write(p, "add", [
-					`${p.path}/add`,
-					...(p.add ?? []),
-				]);
-				const ret = (r.data as { ret?: string } | null)?.ret;
+				// Take the new row id before collecting rows or appending the
+				// diagnostics, so the finally block can always remove it.
+				const retOf = (x: ReturnType<typeof centrsExec>) =>
+					x.ok ? (x.data as { ret?: string } | null)?.ret : undefined;
+				const { r } = await write(
+					p,
+					"add",
+					[`${p.path}/add`, ...(p.add ?? [])],
+					{},
+					(x) => {
+						added = retOf(x);
+					},
+				);
+				const ret = retOf(r);
 				if (!r.ok || !ret) {
 					console.log(`oracle: ${p.path}: add failed, skipping (${r.error})`);
 					summary.push({ menu: p.path, error: "add failed" });
 					continue;
 				}
-				added = ret;
 			}
 			const printed = centrsExec(machine, [`${p.path}/print`]);
 			const row =
@@ -171,10 +182,14 @@ try {
 				const printedValue = row[arg];
 				if (printedValue === undefined) continue;
 				// REST prints booleans as true/false; the CLI parser wants yes/no.
+				// Only for arguments the CLI declares boolean (completions yes
+				// and no): a string property holding "true" stays as it is.
+				const c = m.completions[arg] ?? [];
+				const isBool = c.includes("yes") && c.includes("no");
 				const value =
-					printedValue === "true"
+					isBool && printedValue === "true"
 						? "yes"
-						: printedValue === "false"
+						: isBool && printedValue === "false"
 							? "no"
 							: printedValue;
 				const { w } = await write(

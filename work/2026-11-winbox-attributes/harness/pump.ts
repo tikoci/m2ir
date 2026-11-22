@@ -88,24 +88,30 @@ export class MessagePump {
 	}
 
 	private async readLoop(): Promise<void> {
-		while (!this.stopped) {
-			let bytes: Uint8Array;
-			try {
-				bytes = await this.transport.recv();
-			} catch (e) {
-				if (!this.stopped) this.failure = e as Error;
-				break;
+		try {
+			while (!this.stopped) {
+				let bytes: Uint8Array;
+				try {
+					bytes = await this.transport.recv();
+				} catch (e) {
+					if (!this.stopped) this.failure = e as Error;
+					break;
+				}
+				// A capture sink failure (onCapture) is a reader failure too.
+				const rec = this.record("rx", bytes);
+				const w = this.waiters.findIndex((x) => x.match(rec));
+				if (w >= 0) {
+					const [hit] = this.waiters.splice(w, 1);
+					hit?.resolve(rec);
+				} else {
+					this.inbox.push(rec);
+				}
 			}
-			const rec = this.record("rx", bytes);
-			const w = this.waiters.findIndex((x) => x.match(rec));
-			if (w >= 0) {
-				const [hit] = this.waiters.splice(w, 1);
-				hit?.resolve(rec);
-			} else {
-				this.inbox.push(rec);
-			}
+		} catch (e) {
+			this.failure = e as Error;
+		} finally {
+			for (const w of this.waiters.splice(0)) w.resolve(null);
 		}
-		for (const w of this.waiters.splice(0)) w.resolve(null);
 	}
 
 	/** Reader failure (socket death), or null while healthy. */
@@ -120,6 +126,16 @@ export class MessagePump {
 		return rec;
 	}
 
+	/** Record tx now; the returned promise settles when the send does. */
+	private startSend(
+		plain: Uint8Array,
+		note?: string,
+	): { rec: PumpRecord; sent: Promise<void> } {
+		if (this.failure) throw this.failure;
+		const rec = this.record("tx", plain, note);
+		return { rec, sent: this.transport.send(plain) };
+	}
+
 	/**
 	 * Send and wait for the reply with the same SYS_REQID. Other traffic
 	 * that arrives meanwhile stays in the inbox for listen().
@@ -131,15 +147,26 @@ export class MessagePump {
 		note?: string,
 	): Promise<PumpOutcome> {
 		let waiter: Waiter | null = null;
+		// Register before sending so a fast reply still matches; the
+		// timeout covers the send too (a stalled write has no own deadline).
 		const got = new Promise<PumpRecord | null>((resolve) => {
 			waiter = { match: (r) => r.reqId === reqId, resolve };
 			this.waiters.push(waiter);
 		});
-		const tx = await this.send(plain, note);
-		const rx = await Promise.race([got, sleep(timeoutMs).then(() => null)]);
-		if (rx === null) {
-			// A late reply then lands in the inbox, visible to listen().
+		const timeout = sleep(timeoutMs).then(() => null);
+		let tx: PumpRecord;
+		let rx: PumpRecord | null;
+		try {
+			const s = this.startSend(plain, note);
+			tx = s.rec;
+			const sent = await Promise.race([s.sent.then(() => true), timeout]);
+			rx = sent === null ? null : await Promise.race([got, timeout]);
+		} finally {
+			// On any exit without a reply (timeout, send failure) drop the
+			// waiter; a late reply then lands in the inbox for listen().
 			this.waiters = this.waiters.filter((w) => w !== waiter);
+		}
+		if (rx === null) {
 			if (this.failure) throw this.failure;
 			return { status: "timeout", reqId, tx, waitedMs: timeoutMs };
 		}

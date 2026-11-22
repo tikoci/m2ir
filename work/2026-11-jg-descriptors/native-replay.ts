@@ -511,8 +511,23 @@ try {
 		p3 = typeof id === "number" ? id : null;
 	}
 	if (p3 === null) {
+		// A timed-out ADDOBJ may still have created the row: look first, so
+		// the control add never duplicates a port (RouterOS rejects that).
+		const check = await getall(
+			A,
+			PORT,
+			0x10000007,
+			"GETALL [16,2] after ADDOBJ without id",
+		);
+		try {
+			p3 = portOf(vl[2] as number, check);
+		} catch {
+			p3 = null;
+		}
+	}
+	if (p3 === null) {
 		write({
-			note: "native ADDOBJ gave no row id; adding the port via control",
+			note: "native ADDOBJ gave no row id and no row exists; adding the port via control",
 		});
 		control([
 			"/interface/bridge/port/add",

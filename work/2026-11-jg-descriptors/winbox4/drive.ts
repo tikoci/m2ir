@@ -20,7 +20,10 @@
  *                               (SIGUSR1), hold new logins for hold-s, and
  *                               make the given REST changes during the hold
  *   print                       REST port list: ids, comments, order
- *   history                     [17] rows written since the proxy started
+ *   history                     [17] rows with a winbox source in the router's
+ *                               whole undo history (up to 100 rows, kept
+ *                               across proxy runs: use a fresh CHR or check
+ *                               the rows belong to this run)
  *   cleanup                     remove the lab rows
  *
  * Mutating commands need --allow-mutations --disposable. Every command
@@ -203,26 +206,27 @@ switch (cmd) {
 		const ids = plan.map(([, a]) => portId(a[0] as string));
 		writeFileSync(join(outDir, "drop.json"), JSON.stringify({ holdMs }));
 		const pid = Number(readFileSync(join(outDir, "proxy.pid"), "utf8"));
+		const signalled = Date.now();
 		process.kill(pid, "SIGUSR1");
 		log({ action: "drop", holdMs });
 		console.log(`drop: proxy ${pid}, hold ${holdMs} ms`);
 		await Bun.sleep(300);
+		// Record per edit whether it finished inside the proxy's hold (the
+		// proxy starts the hold when the signal arrives, about now).
+		const when = () =>
+			Date.now() - signalled < holdMs ? "drop-hold" : "after-hold";
 		plan.forEach(([verb, a], i) => {
 			const id = ids[i] as string;
 			if (verb === "comment") {
 				exec([`${PORT}/set`, `numbers=${id}`, `comment=${a[1]}`]);
-				log({
-					action: "comment",
-					port: a[0],
-					id,
-					comment: a[1],
-					during: "drop",
-				});
-				console.log(`drop: comment port ${a[0]} (${id}) = ${a[1]}`);
+				const during = when();
+				log({ action: "comment", port: a[0], id, comment: a[1], during });
+				console.log(`drop: comment port ${a[0]} (${id}) = ${a[1]} [${during}]`);
 			} else {
 				exec([`${PORT}/remove`, `numbers=${id}`]);
-				log({ action: "remove", port: a[0], id, during: "drop" });
-				console.log(`drop: remove port ${a[0]} (${id})`);
+				const during = when();
+				log({ action: "remove", port: a[0], id, during });
+				console.log(`drop: remove port ${a[0]} (${id}) [${during}]`);
 			}
 		});
 		break;

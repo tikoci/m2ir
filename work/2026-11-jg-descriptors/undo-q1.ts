@@ -76,6 +76,12 @@ const addrList = () =>
 	(rest(["/ip/firewall/address-list/print", "where", "list=m2ir-q1"]).data ??
 		[]) as Array<Record<string, string>>;
 
+// SNMP baseline before any change: the finally block restores it exactly.
+const snmpBaseRead = rest(["/snmp/print"]);
+if (!snmpBaseRead.ok || !snmpBaseRead.data)
+	throw new Error(`q1: cannot read the /snmp baseline: ${snmpBaseRead.error}`);
+const snmpBase = snmpBaseRead.data as Record<string, string>;
+
 const a = await UndoListener.open(target, "A", cap, () => mark);
 let aOpen = true;
 try {
@@ -244,7 +250,11 @@ try {
 } finally {
 	mark = "q1-restore";
 	rest(["/ip/firewall/address-list/remove", '[find list="m2ir-q1"]']);
-	rest(["/snmp/set", 'contact=""', 'location=""']);
+	rest([
+		"/snmp/set",
+		`contact=${snmpBase["contact"] ?? ""}`,
+		`location=${snmpBase["location"] ?? ""}`,
+	]);
 	if (aOpen) await a.stop();
 }
 writeFileSync(
