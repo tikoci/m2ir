@@ -1,4 +1,4 @@
-# cspell:ignore jsproxy webfig typevalue multibignumber multiraw quickchr extrastats refreshfilter autorefresh nextid sfd002a omarchy guifiles
+# cspell:ignore jsproxy webfig nonpublic typevalue multibignumber multiraw quickchr extrastats refreshfilter autorefresh nextid sfd002a omarchy guifiles
 # Declared-schema-first plan: progress handoff. Read plan.md first.
 plan: work/2026-11-jg-descriptors/plan.md
 approved: 2026-11-21
@@ -22,7 +22,7 @@ steps:
   4-acceptance-bridge: done (questions 1-5 on 6.49.23, 7.25, 7.26beta4)
   4b-undo-oracle: "done: q1-q5 on 7.25, q6 on 7.26beta4 (see step4b-record); 6.49 not checked (v7 first)"
   4c-extra-packages: "queued, not urgent (plan.md 'Step 4c'; prompt in step4c-handoff-prompt.md)"
-  5-winbox4-workflow: "done on 7.25 with WinBox 4.4 Linux, items 1-4 (branch jg-winbox4; see step5-record); recovery path not run"
+  5-winbox4-workflow: "done on 7.25 with WinBox 4.4 Linux, items 1-4 (branch jg-winbox4; see step5-record); recovery path and the immediate-NOTIFY lead done (step5-followup-record)"
 open:
   conflicts-before-promotion: "all four resolved in step 1 (see step1-record)"
   evidence-source-for-jg: "decided: source: doc (vendor-authored, machine-readable declaration served by the router); WebFig JS is source: code. Revisit at review if you disagree."
@@ -188,8 +188,37 @@ step5-record:
   not-run: "recovery path (rejected edit + fresh read, reconnect rebuild); 7.26beta4; Mac WinBox; RoMON/MAC sessions"
   gates: "bun run lint green; bun run test 625/0; harness tests 74/0; markdownlint + cspell clean on touched files; fixture scanned for lab addresses, ports, ipv4-mapped client address and the lab password (empty on twin3)"
   lab: "twin3 (7.25) started and stopped; lab rows removed; proxy stopped"
+step5-followup-record:
+  date: 2026-11-22
+  branch: jg-winbox4
+  client: "same WinBox 4.4 Linux build (ELF BuildID 9d89314280d8c62256ab79961936bb90fe54d2ce), operator-driven"
+  router: "twin3 7.25, routeros only"
+  outputs:
+    - "winbox4/proxy.ts: SIGUSR1 drops every relayed connection and holds new logins (drop.json holdMs); proxy.pid"
+    - "winbox4/drive.ts: remove, readd, drop <hold-s> [comment n text] [remove n]"
+    - "winbox4/fixture.ts: several connections (sessions W1, W2), GETOBJ polls, --meta, --collapse-polls (provenance.poll_periods), connection_events"
+    - "winbox4/first-notify.ts + first-notify-fixture.ts: native SUBSCRIBE snapshot probe (22 variants x 2 paths)"
+    - "fixtures/winbox-ipc/7.25-winbox4-recovery.json (390 records), 7.25-native-subscribe-snapshot.json (164 records)"
+    - "test/profiles/winbox-ipc/winbox4-recovery.test.ts, subscribe-snapshot.test.ts; winbox4-events.ts (adapter shared with winbox4-bridge-workflow.test.ts; snapshotIsList, session change = release)"
+    - "README section 'WinBox 4 recovery cases (step 5 follow-up)'"
+  answers:
+    snapshot: "0xff0017=true on SUBSCRIBE -> one NOTIFY with every row (word's groups), with or without SYS_REPLYEXP; none for a repeat of a live key; GETALL ignores it; defaults GETALL / GETPOLICIES / FROM handler irrelevant. u32 0xff0012=1000 no visible effect."
+    dialog: "edit dialog polls GETOBJ {0xfe0001, word} every 1 s from the list handler"
+    r1-rejected: "SETOBJ with every non-ro .jg dialog field (35 keys incl. hidden nonpublic uc8 role / ud0 status) -> ERROR_FAILED + errstr; WinBox shows it, resets the field, sends no extra read; unchanged OK sends nothing"
+    r2-removed-row: "GETOBJ -> ERROR_UNKNOWNID (no errstr) 50 ms after the remove, removal NOTIFY 135 ms later; dialog closes, reads stop"
+    r3-reconnect: "auto retry after 10 s; session start again (no .jg downloads, cache); each open list replays defaults GETALL + GETPOLICIES + SUBSCRIBE 0xff0017 under the same handler ids; the snapshot rebuilt the list (comment change and removal during the outage never notified)"
+  promoted:
+    - "sys-keys: 0xff0017 SYS_SNAPSHOT (new, project-named); 0xff0012 typed-identity note (u32 1000 from WinBox)"
+    - "std-commands: SUBSCRIBE notes + client-usage + evidence; GETOBJ and SETOBJ WinBox client-usage + evidence"
+    - "std-errors: evidence on 0xfe0004 UNKNOWNID and 0xfe0006 FAILED"
+  leads:
+    - "[16,2] uc8 role / ud0 status: status-group fields WinBox writes back on SETOBJ; not in gui-handlers.yaml; router handling untested"
+    - "why WinBox dropped 0xff0017 on the step 5 [16,2] reopen only"
+    - "does GETOBJ UNKNOWNID alone (no removal NOTIFY) close a WinBox dialog?"
+  gates: "bun run lint:ci green (biome, tsc, YAML, markdownlint, cspell 0 issues, secretlint, agents); bun run test 635/0; harness tests 74/0; fixtures scanned for lab addresses, ports and paths (one 7f000001 hit is a u32 array in the [13,4] reply, same bytes as the step 5 fixture). cspell needed omarchy in GLOSSARY.txt, which the committed step 5 fixture already failed on"
+  lab: "twin3 (7.25) started and stopped; the driver stopped the proxy while WinBox was still connected"
 next:
   queue:
-    - "step 5 follow-ups (WinBox through winbox4/proxy.ts): recovery path (rejected edit then fresh read, or reconnect that rebuilds the list), the immediate-NOTIFY lead (native), a second client build (Mac WinBox) or 7.26beta4"
+    - "step 5 follow-ups (WinBox through winbox4/proxy.ts): a second client build (Mac WinBox) or 7.26beta4; the step5-followup-record leads"
     - "step 4c: extra packages (not urgent): prompt ready in step4c-handoff-prompt.md"
     - "widen the [17] oracle past wave 1 when a consumer needs the mapping"

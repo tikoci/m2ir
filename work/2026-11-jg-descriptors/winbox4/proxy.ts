@@ -13,8 +13,20 @@
  * credentials: SRP runs before logging starts and only the user name is
  * recorded. Marks come from drive.ts into <dir>/marks.jsonl. Lab use only;
  * never runs in CI.
+ *
+ * Connection loss (recovery cases): SIGUSR1 closes every relayed
+ * connection on both sides, then holds new logins for holdMs from
+ * <dir>/drop.json (default 0) so the driver can change the router while
+ * WinBox is disconnected. The proxy writes its pid to <dir>/proxy.pid;
+ * `drive.ts drop` does all of this.
  */
-import { appendFileSync, existsSync, mkdirSync } from "node:fs";
+import {
+	appendFileSync,
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	writeFileSync,
+} from "node:fs";
 import { createServer, type Socket } from "node:net";
 import { join } from "node:path";
 import {
@@ -110,6 +122,12 @@ async function upstreamLogin(): Promise<{
 }
 
 let connCount = 0;
+/** Relayed connections still open, for SIGUSR1. */
+const active = new Map<
+	number,
+	{ down: ChunkConn; up: () => ChunkConn | null }
+>();
+let holdUntil = 0;
 async function handle(sock: Socket): Promise<void> {
 	const conn = ++connCount;
 	const down = ChunkConn.fromSocket(sock);
@@ -120,7 +138,15 @@ async function handle(sock: Socket): Promise<void> {
 		peer: `${sock.remoteAddress}:${sock.remotePort}`,
 	});
 	let up: ChunkConn | null = null;
+	active.set(conn, { down, up: () => up });
 	try {
+		const wait = holdUntil - Date.now();
+		if (wait > 0) {
+			// WinBox's phase 1 waits in the socket buffer until the hold ends.
+			write({ event: "hold", conn, waitMs: wait });
+			await new Promise((r) => setTimeout(r, wait));
+			write({ event: "release", conn });
+		}
 		// Phase 1 from WinBox: [user]\0[pubkey:33], optionally behind an
 		// inner 0x06 byte (ws3c probe --inner-tag); mirror whatever it used.
 		const m1 = await down.readMessage();
@@ -211,8 +237,25 @@ async function handle(sock: Socket): Promise<void> {
 		write({ event: "close", conn, reason: msg });
 		console.log(`proxy: conn ${conn} closed: ${msg}`);
 	} finally {
+		active.delete(conn);
 		down.close();
 		up?.close();
+	}
+}
+
+function drop(): void {
+	let holdMs = 0;
+	const dropPath = join(outDir, "drop.json");
+	if (existsSync(dropPath))
+		holdMs =
+			(JSON.parse(readFileSync(dropPath, "utf8")) as { holdMs?: number })
+				.holdMs ?? 0;
+	holdUntil = Date.now() + holdMs;
+	write({ event: "drop", conns: [...active.keys()], holdMs });
+	console.log(`proxy: drop ${[...active.keys()].join(",")}, hold ${holdMs} ms`);
+	for (const { down, up } of active.values()) {
+		down.close();
+		up()?.close();
 	}
 }
 
@@ -225,3 +268,5 @@ const stop = () => {
 };
 process.on("SIGINT", stop);
 process.on("SIGTERM", stop);
+process.on("SIGUSR1", drop);
+writeFileSync(join(outDir, "proxy.pid"), `${process.pid}\n`);

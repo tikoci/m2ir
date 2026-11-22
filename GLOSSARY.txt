@@ -109,6 +109,7 @@ netwatch
 npk # MikroTik package format
 nvme-over-tcp # supported by RouterOS **with** rose-storage.npk extra-package
 OID
+omarchy # Linux distribution (Arch + Hyprland) of the lab host that ran WinBox 4.4 in the jg-descriptors step 5 captures
 PII # Personally Identifiable Information
 POV
 proplist

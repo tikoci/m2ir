@@ -5,6 +5,17 @@
  * fixtures/winbox-ipc/<version>-winbox4-bridge-workflow.json.
  *
  *   bun fixture.ts <capture-dir> <out.json> [--entries-max <bytes>]
+ *                  [--meta <provenance.json>] [--collapse-polls]
+ *
+ * --meta merges its keys over the provenance defaults (report, lab_rows,
+ * control, ...), for runs other than the step 5 Bridge workflow.
+ * --collapse-polls also drops the request of a timed read whose reply was
+ * dropped as unchanged; provenance.poll_periods keeps the median period
+ * per (session, route, command) from every request.
+ *
+ * Several WinBox connections (a reconnect) become sessions W1, W2, ...;
+ * one connection stays session W. Proxy connection events (drop, close,
+ * accept, login) go into provenance.connection_events.
  *
  * Kept: every message on [16,2] and [20,*] (the Bridge window), and the
  * first two messages per (route, direction, command) elsewhere, with the
@@ -47,6 +58,7 @@ const CMD_NAME: Record<number, string> = {
 	5: "CMD_5",
 	7: "CMD_7",
 	16646145: "GETPOLICIES",
+	16646146: "GETOBJ",
 	16646147: "SETOBJ",
 	16646148: "GETALL",
 	16646149: "ADDOBJ",
@@ -89,14 +101,22 @@ const fixEntry = (e: Entry): Entry => ({
 });
 
 const args = process.argv.slice(2);
-const eAt = args.indexOf("--entries-max");
-const entriesMax = eAt >= 0 ? Number(args[eAt + 1]) : 256;
-const [dir, out] = args.filter(
-	(a, i) => !a.startsWith("--") && (eAt < 0 || i !== eAt + 1),
-);
+let entriesMax = 256;
+let metaPath = "";
+let collapsePolls = false;
+const pos: string[] = [];
+for (let i = 0; i < args.length; i++) {
+	const a = args[i] ?? "";
+	if (a === "--entries-max") entriesMax = Number(args[++i]);
+	else if (a === "--meta") metaPath = args[++i] ?? "";
+	else if (a === "--collapse-polls") collapsePolls = true;
+	else if (a.startsWith("--")) throw new Error(`unknown option ${a}`);
+	else pos.push(a);
+}
+const [dir, out] = pos;
 if (!dir || !out) {
 	console.error(
-		"usage: fixture.ts <capture-dir> <out.json> [--entries-max <bytes>]",
+		"usage: fixture.ts <capture-dir> <out.json> [--entries-max <bytes>] [--meta <json>] [--collapse-polls]",
 	);
 	process.exit(2);
 }
@@ -113,10 +133,12 @@ const marks = readJsonl<{
 	[k: string]: unknown;
 }>(`${dir}/marks.jsonl`);
 const start = cap.find((l) => l.event === "proxy-start");
-const login = cap.find((l) => l.event === "phase2" && l["ok"] === true);
+const logins = cap.filter((l) => l.event === "phase2" && l["ok"] === true);
+const login = logins[0];
 if (!start || !login)
 	throw new Error("capture has no proxy-start or successful login");
-const conn = login.conn;
+const conns = new Set(logins.map((l) => l.conn));
+const sessionOf = (c: number | undefined) => (conns.size === 1 ? "W" : `W${c}`);
 const t0 = login.wallMs;
 const rel = (w: number) => Math.round((w - t0) * 10) / 10;
 
@@ -142,16 +164,19 @@ const seen = new Map<string, number>();
 const dropped: Record<string, number> = {};
 const jgFiles = new Set<string>();
 const txByReq = new Map<
-	number,
-	{ cmd: number | null; to: number[] | null; word: string }
+	string,
+	{ cmd: number | null; to: number[] | null; word: string; rec?: number }
 >();
+const POLL = new Set([0xfe0004, 0xfe000d, 0xfe0002]);
+const pollTimes = new Map<string, number[]>();
 const jgList: Array<{ name?: string; unique?: string; version?: string }> = [];
 const lastReply = new Map<string, string>();
-const records: Array<Record<string, unknown>> = [];
+const records: Array<Record<string, unknown> | null> = [];
 const msgs = cap.filter(
-	(l) => l.conn === conn && typeof l.hex === "string" && !l.event,
+	(l) => conns.has(l.conn) && typeof l.hex === "string" && !l.event,
 );
 for (const l of msgs) {
+	const session = sessionOf(l.conn);
 	const c = captureMessage(
 		l.seq ?? 0,
 		l.dir === "c2s" ? "tx" : "rx",
@@ -164,12 +189,18 @@ for (const l of msgs) {
 	const route = tx ? c.to : c.from;
 	const wordE = entries.find((e) => e.key === "0xfe000c")?.value;
 	const word = typeof wordE === "number" ? `0x${wordE.toString(16)}` : "absent";
-	if (tx && c.reqId !== null)
-		txByReq.set(c.reqId, { cmd: c.cmd, to: c.to, word });
+	const reqKey = `${l.conn}:${c.reqId}`;
+	if (tx && c.reqId !== null) {
+		txByReq.set(reqKey, { cmd: c.cmd, to: c.to, word });
+		if (c.cmd !== null && POLL.has(c.cmd)) {
+			const k = `${session} ${pathKey(c.to)} ${CMD_NAME[c.cmd] ?? c.cmd}`;
+			pollTimes.set(k, [...(pollTimes.get(k) ?? []), rel(l.wallMs)]);
+		}
+	}
 	// A (re)subscription starts a new view: keep its first poll reply.
 	if (tx && (c.cmd === 0xfe0012 || c.cmd === 0xfe0013))
-		lastReply.delete(pathKey(c.to));
-	const req = !tx && c.reqId !== null ? txByReq.get(c.reqId) : undefined;
+		lastReply.delete(`${session} ${pathKey(c.to)}`);
+	const req = !tx && c.reqId !== null ? txByReq.get(reqKey) : undefined;
 	// The [2,2] file transfer: keep only the file names.
 	const fileRoute =
 		pathKey(route) === "[2,2]" || pathKey(req?.to ?? null) === "[2,2]";
@@ -191,7 +222,7 @@ for (const l of msgs) {
 	const cmdOf = tx ? c.cmd : (c.cmd ?? req?.cmd ?? null);
 	// Timed polls: drop a reply whose config content equals the previous
 	// reply on the same route; the request stays, so the period is kept.
-	if (!tx && req && (req.cmd === 0xfe0004 || req.cmd === 0xfe000d)) {
+	if (!tx && req && req.cmd !== null && POLL.has(req.cmd)) {
 		// Rows compare on their config group only (field id < 0xc8 or a
 		// 0xfe key): the status group (f200+) carries live counters.
 		const config = (e: Entry) => {
@@ -210,16 +241,21 @@ for (const l of msgs) {
 						: e,
 				),
 		);
-		const k = pathKey(req.to);
+		const k = `${session} ${pathKey(req.to)} ${req.cmd}`;
 		if (lastReply.get(k) === body) {
-			const r = `${k} unchanged poll replies`;
+			const r = `${pathKey(req.to)} unchanged poll replies`;
 			dropped[r] = (dropped[r] ?? 0) + 1;
+			if (collapsePolls && req.rec !== undefined) {
+				records[req.rec] = null;
+				const q = `${pathKey(req.to)} poll requests (reply unchanged)`;
+				dropped[q] = (dropped[q] ?? 0) + 1;
+			}
 			continue;
 		}
 		lastReply.set(k, body);
 	}
 	if (!isBridge(route) && !isBridge(req?.to ?? null)) {
-		const k = `${pathKey(route)} ${l.dir} ${cmdOf}`;
+		const k = `${session} ${pathKey(route)} ${l.dir} ${cmdOf}`;
 		const n = (seen.get(k) ?? 0) + 1;
 		seen.set(k, n);
 		if (n > 2) {
@@ -246,12 +282,14 @@ for (const l of msgs) {
 		role = `${name(req.cmd)} ${pathKey(req.to)}${withWord(req.cmd, req.word)}, reply`;
 	else role = `rx from ${pathKey(c.from)}`;
 	const mark = markAt(l.wallMs);
+	const reqEntry = tx && c.reqId !== null ? txByReq.get(reqKey) : undefined;
+	if (reqEntry) reqEntry.rec = records.length;
 	records.push({
-		id: `${mark}/W${l.seq}`,
+		id: `${mark}/${session}${conns.size === 1 ? "" : "."}${l.seq}`,
 		role,
-		source: `WinBox 4.4 via proxy.ts, conn ${conn} seq ${l.seq}`,
+		source: `WinBox 4.4 via proxy.ts, conn ${l.conn} seq ${l.seq}`,
 		mark,
-		session: "W",
+		session,
 		tMs: rel(l.wallMs),
 		hex: l.hex,
 		cmd: c.cmd,
@@ -292,6 +330,27 @@ const redact = (o: LetterMsg): LetterMsg => {
 	return outRow;
 };
 
+const median = (xs: number[]) => {
+	const d = xs
+		.slice(1)
+		.map((x, i) => x - (xs[i] as number))
+		.sort((a, b) => a - b);
+	return d.length ? Math.round(d[Math.floor(d.length / 2)] as number) : null;
+};
+const pollPeriods = Object.fromEntries(
+	[...pollTimes]
+		.filter(([, t]) => t.length > 2)
+		.map(([k, t]) => [k, { requests: t.length, median_ms: median(t) }]),
+);
+const connectionEvents = cap
+	.filter((l) => l.event && l.event !== "proxy-start" && l.event !== "phase1")
+	.map((l) => {
+		const { wallMs, tMs: _t, peer: _p, ...rest } = l;
+		return { tMs: rel(wallMs), ...rest };
+	});
+const meta: Record<string, unknown> = metaPath
+	? (JSON.parse(readFileSync(metaPath, "utf8")) as Record<string, unknown>)
+	: {};
 const provenance = {
 	report:
 		"plan step 5: WinBox 4 running the Bridge workflow through the decrypting proxy (work/2026-11-jg-descriptors/winbox4/), 2026-11-22",
@@ -309,25 +368,35 @@ const provenance = {
 	},
 	capture_method:
 		"proxy.ts: WinBox logs in to the proxy (server-side EC-SRP5, srp-server.ts), the proxy logs in to the router and relays each M2 message decrypted; UI marks are the operator's confirmations after each step (not the exact click time)",
-	jg_unique_names: jgList.map((j) => j.unique).sort(),
+	jg_unique_names: [...new Set(jgList.map((j) => j.unique))].sort(),
 	files_fetched: [...jgFiles],
 	session:
-		"W = the one WinBox connection; replies address TO=[0,n] where n is the WinBox handler that asked",
+		conns.size === 1
+			? "W = the one WinBox connection; replies address TO=[0,n] where n is the WinBox handler that asked"
+			: `W<n> = WinBox proxy connection n (${[...conns].join(", ")}); replies address TO=[0,n] where n is the WinBox handler that asked`,
 	lab_rows:
 		"ports *0 (m2ir-vl1, comment m2ir-p1) and *1 (m2ir-vl2, comment m2ir-p2) on bridge m2ir-br; comments changed over REST to m2ir-p1-c1 (window open) and m2ir-p1-c2 (window closed)",
 	control:
 		"centrs over rest-api (drive.ts): setup, the two comment changes, print, cleanup",
 	timeline,
 	dropped,
+	...(collapsePolls ? { poll_periods: pollPeriods } : {}),
+	...(conns.size > 1 || connectionEvents.some((e) => e["event"] === "drop")
+		? { connection_events: connectionEvents }
+		: {}),
 	entries_max_bytes: entriesMax,
 	history_winbox: history.map(redact),
+	...meta,
 	note: "Sanitized M2 hex plus decoded entries: no hosts, ports, credentials or capture wall-clock time (tMs is ms since the WinBox login; the timeline uses the same origin). Router clock values inside [24,*] replies are the lab CHR's own. The plaintext starts after the SRP login. history_winbox: aff0013 (client address) redacted, u7 (time) zeroed, source address -> @<lab>.",
 };
-const body = records.map((r) => `\t\t${JSON.stringify(r)}`).join(",\n");
+const body = records
+	.filter((r) => r !== null)
+	.map((r) => `\t\t${JSON.stringify(r)}`)
+	.join(",\n");
 writeFileSync(
 	out,
 	`{\n\t"provenance": ${JSON.stringify(provenance)},\n\t"records": [\n${body}\n\t]\n}\n`,
 );
 console.log(
-	`fixture: ${records.length} records, dropped ${JSON.stringify(dropped)}, ${jgFiles.size} .jg names, ${history.length} history rows -> ${out}`,
+	`fixture: ${records.filter((r) => r !== null).length} records, dropped ${JSON.stringify(dropped)}, ${jgFiles.size} .jg names, ${history.length} history rows -> ${out}`,
 );

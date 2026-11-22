@@ -13,6 +13,12 @@
  *   mark <label...>             UI action marker (wall clock)
  *   comment <1|2> <text>        set a port comment over REST (second session)
  *   move <n> <before-n>         REST move (fallback if WinBox cannot move)
+ *   remove <n>                  remove port n over REST
+ *   readd <n>                   add port n back (comment m2ir-p<n>, new id)
+ *   drop <hold-s> [comment <n> <text>] [remove <n>]
+ *                               close WinBox's connection at the proxy
+ *                               (SIGUSR1), hold new logins for hold-s, and
+ *                               make the given REST changes during the hold
  *   print                       REST port list: ids, comments, order
  *   history                     [17] rows written since the proxy started
  *   cleanup                     remove the lab rows
@@ -20,7 +26,12 @@
  * Mutating commands need --allow-mutations --disposable. Every command
  * appends to <dir>/marks.jsonl ({wallMs, mark|action, ...}).
  */
-import { appendFileSync, existsSync } from "node:fs";
+import {
+	appendFileSync,
+	existsSync,
+	readFileSync,
+	writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import {
 	requireMutationGate,
@@ -141,6 +152,79 @@ switch (cmd) {
 		const dest = portId(before);
 		exec([`${PORT}/move`, `numbers=${id}`, `destination=${dest}`]);
 		log({ action: "rest-move", id, before: dest });
+		break;
+	}
+	case "remove": {
+		gate("step 5 remove");
+		const [n] = args;
+		if (!n) throw new Error("remove <n>");
+		const id = portId(n);
+		exec([`${PORT}/remove`, `numbers=${id}`]);
+		log({ action: "remove", port: n, id });
+		console.log(`remove: port ${n} (${id})`);
+		break;
+	}
+	case "readd": {
+		gate("step 5 readd");
+		const [n] = args;
+		if (!n) throw new Error("readd <n>");
+		exec([
+			`${PORT}/add`,
+			"bridge=m2ir-br",
+			`interface=m2ir-vl${n}`,
+			`comment=m2ir-p${n}`,
+		]);
+		const id = portId(n);
+		log({ action: "readd", port: n, id });
+		console.log(`readd: port ${n} (${id})`);
+		break;
+	}
+	case "drop": {
+		const [hold, ...rest2] = args;
+		const holdMs = Math.round(Number(hold) * 1000);
+		if (!Number.isFinite(holdMs) || holdMs < 0)
+			throw new Error("drop <hold-s> [comment <n> <text>] [remove <n>]");
+		const plan: Array<[string, string[]]> = [];
+		for (let i = 0; i < rest2.length; ) {
+			const verb = rest2[i];
+			if (verb === "comment") {
+				plan.push(["comment", [rest2[i + 1] ?? "", rest2[i + 2] ?? ""]]);
+				i += 3;
+			} else if (verb === "remove") {
+				plan.push(["remove", [rest2[i + 1] ?? ""]]);
+				i += 2;
+			} else throw new Error(`drop: unknown action ${verb}`);
+		}
+		if (plan.length) gate("step 5 drop with changes");
+		for (const [verb, a] of plan)
+			if (!a[0] || (verb === "comment" && !a[1]?.startsWith("m2ir")))
+				throw new Error(`drop: bad ${verb} ${a.join(" ")}`);
+		// Resolve ids before the drop so the hold is spent on writes only.
+		const ids = plan.map(([, a]) => portId(a[0] as string));
+		writeFileSync(join(outDir, "drop.json"), JSON.stringify({ holdMs }));
+		const pid = Number(readFileSync(join(outDir, "proxy.pid"), "utf8"));
+		process.kill(pid, "SIGUSR1");
+		log({ action: "drop", holdMs });
+		console.log(`drop: proxy ${pid}, hold ${holdMs} ms`);
+		await Bun.sleep(300);
+		plan.forEach(([verb, a], i) => {
+			const id = ids[i] as string;
+			if (verb === "comment") {
+				exec([`${PORT}/set`, `numbers=${id}`, `comment=${a[1]}`]);
+				log({
+					action: "comment",
+					port: a[0],
+					id,
+					comment: a[1],
+					during: "drop",
+				});
+				console.log(`drop: comment port ${a[0]} (${id}) = ${a[1]}`);
+			} else {
+				exec([`${PORT}/remove`, `numbers=${id}`]);
+				log({ action: "remove", port: a[0], id, during: "drop" });
+				console.log(`drop: remove port ${a[0]} (${id})`);
+			}
+		});
 		break;
 	}
 	case "print": {

@@ -17,82 +17,14 @@ import {
 	replay,
 	shownAt,
 } from "../../../work/2026-11-jg-descriptors/winbox4/list-model";
-import type { FixtureEntry, FixtureRecord } from "./m2-replay";
-import {
-	decodeFixtureEntries,
-	findEntry,
-	loadFixture,
-	repoPath,
-	rowsOf,
-} from "./m2-replay";
+import { findEntry, repoPath } from "./m2-replay";
+import { entryEvents, loadDecoded, PORT } from "./winbox4-events";
 
-const PORT = "[16,2]";
 const GETALL = 0xfe0004;
 const NOTIFY = 0xfe000b;
 const SUBSCRIBE = 0xfe0012;
 const UNSUBSCRIBE = 0xfe0013;
 const MOVEOBJ = 0xfe0007;
-
-interface Rec extends FixtureRecord {
-	mark: string;
-	session: string;
-	tMs: number;
-}
-interface Decoded extends Rec {
-	all: FixtureEntry[];
-}
-
-function rowUpdate(row: FixtureEntry[]): RowUpdate {
-	const v = (k: string) => findEntry(row, k)?.value;
-	const id = v("0xfe0001");
-	if (typeof id !== "number") throw new Error("row without 0xfe0001");
-	const next = v("0xfe0005");
-	const comment = v("0xfe0009");
-	return {
-		id,
-		...(typeof next === "number" ? { next } : {}),
-		...(typeof comment === "string" ? { comment } : {}),
-		...(v("0xfe0013") === 1 ? { removed: true } : {}),
-	};
-}
-
-/** Native and WinBox fixtures: entry-form records of one session. */
-function entryEvents(recs: Decoded[], session: string): ListEvent[] {
-	const asked = new Map<number, Decoded>();
-	const out: ListEvent[] = [];
-	for (const r of recs) {
-		if (r.session !== session) continue;
-		const to = JSON.stringify(r.to);
-		const from = JSON.stringify(r.from);
-		if (r.cmd !== null && to === PORT && r.reqId !== null)
-			asked.set(r.reqId, r);
-		if (r.cmd === UNSUBSCRIBE && to === PORT)
-			out.push({ tMs: r.tMs, kind: "release", rows: [], ref: r.id });
-		if (from !== PORT) continue;
-		const rowsE = findEntry(r.all, "0xfe0002");
-		if (r.cmd === NOTIFY) {
-			out.push({
-				tMs: r.tMs,
-				kind: "notify",
-				rows: rowsE ? rowsOf(rowsE).map(rowUpdate) : [],
-				ref: r.id,
-			});
-			continue;
-		}
-		const tx = r.reqId !== null ? asked.get(r.reqId) : undefined;
-		if (!tx || tx.cmd !== GETALL || !rowsE) continue;
-		// 0xfe000c bit 29 asks for the defaults row, not the list.
-		const word = findEntry(tx.all, "0xfe000c")?.value;
-		if (typeof word === "number" && (word & 0x20000000) !== 0) continue;
-		out.push({
-			tMs: r.tMs,
-			kind: "list",
-			rows: rowsOf(rowsE).map(rowUpdate),
-			ref: r.id,
-		});
-	}
-	return out;
-}
 
 /** WebFig transcript: letter-keyed messages. */
 type Letters = Record<string, unknown>;
@@ -141,20 +73,6 @@ function webfigEvents(lines: WebfigLine[]): ListEvent[] {
 		});
 	}
 	return out;
-}
-
-function loadDecoded(name: string): {
-	prov: Record<string, unknown>;
-	recs: Decoded[];
-} {
-	const fx = loadFixture(name);
-	return {
-		prov: fx.provenance as unknown as Record<string, unknown>,
-		recs: fx.records.map((r) => ({
-			...(r as Rec),
-			all: decodeFixtureEntries(r.hex),
-		})),
-	};
 }
 
 const wb = loadDecoded("7.25-winbox4-bridge-workflow.json");

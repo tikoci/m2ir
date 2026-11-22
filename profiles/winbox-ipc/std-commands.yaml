@@ -48,9 +48,12 @@ commands:
       obj>=2 UNKNOWNID); [24,34] obj=1 returns the security advisory
       (GETOBJ-only; bare GET stays UNKNOWNID); [20,61]/[13,6]/[13,7]
       answer NOTIMP (their GET selectors are NOT obj-id).
+    client-usage: "WinBox 4.4 (7.25) edit dialog: while a row's dialog is open it sends GETOBJ {0xfe0001=row, 0xfe000c=the list word} every 1 s from the list's own handler ([0,22] for [16,2]), next to the list's 2 s GETALL. When the row was removed elsewhere the next GETOBJ got ERROR_UNKNOWNID (no errstr), the removal NOTIFY followed 135 ms later, and WinBox closed the dialog and stopped reading the row."
     evidence:
       - source: sample
         ref: "live CHR interrogation (identity batch, 7.25): ev/7.25-getobj-{24-34-1,24-2-0,24-2-1,20-0-2}.json; see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
+      - source: sample
+        ref: "WinBox 4.4 recovery run (step 5 follow-up, 7.25, 2026-11-22): dialog reads, marks instruct-r0+r1 .. ui-r2 — fixtures/winbox-ipc/7.25-winbox4-recovery.json"
   0xfe0003:
     canonical-name: CMD_SETOBJ
     confidence: documented
@@ -72,6 +75,9 @@ commands:
         ref: "live CHR interrogation (phase-C pilot slice 2, 7.25, 2026-11-02): [20,1] SETOBJ + read-back — fixtures/winbox-ipc/7.25-verbs-20-1-ip.json"
       - source: sample
         ref: "live CHR interrogation (phase-C nat follow-up, 7.25, 2026-11-02): [20,5] inverse SETOBJ f40 0->4 — fixtures/winbox-ipc/7.25-nat-f40-enum.json"
+      - source: sample
+        ref: "WinBox 4.4 recovery run (step 5 follow-up, 7.25, 2026-11-22): rejected SETOBJ [16,2], marks instruct-r0+r1 .. ui-r1c — fixtures/winbox-ipc/7.25-winbox4-recovery.json"
+    client-usage: "WinBox 4.4 (7.25) bridge-port dialog: OK or Apply sends one SETOBJ with every dialog field the 7.25 .jg does not mark ro (35 keys on [16,2]: 30 fields below f200, the Status tab's hidden nonpublic numbers uc8 'role' and ud0 'status' that only worded reads carry, plus 0xfe0001, 0xfe0009 comment and 0xfe000a), not only the changed field, and only when the dialog differs from the last read; an OK with no change sends nothing. A rejected write (ERROR_FAILED + errstr 'device already added as bridge port' for a second port on m2ir-vl2) shows the errstr in red in the dialog, resets the field to the stored value and greys out Apply; WinBox sends no extra read, the dialog's 1 s GETOBJ carries on."
   0xfe0004:
     canonical-name: CMD_GETALL
     confidence: documented
@@ -277,7 +283,11 @@ commands:
       66-key rows instead of 38. Rows shrink back when that subscription
       is removed or its session closes. 6.49.23 keeps the key behaviour
       but always sends config-only rows. The ack is SYS-only.
-    client-usage: "WebFig 7.25 and 7.26beta4 subscribe each list path once per session, without a 0xfe000c word, when it first opens the path, and fetch it with GETALL right after. Changes then arrive as CMD_NOTIFY 0xfe000b on the long poll, including while the page is closed. Without the word the rows are config-only, which is why WebFig also polls with autorefresh GETALL for status. WinBox 4.4 (7.25, step 5) subscribes each path a window shows with the dialog's GETALL word (0x10000007 on [16,2], 0x1004000f on [20,0], 0x10000005 on the [20,51] / [20,90] / [20,101] maps), so its notification rows carry the status group, and still polls with the same word (2 s on [16,2], about 1 s on [20,0]). It subscribes again on every reopen."
+      Snapshot (7.25, 2026-11-22): with SYS_SNAPSHOT 0xff0017=true the
+      router also sends one CMD_NOTIFY with every row right away (see
+      sys-keys.yaml 0xff0017); a SUBSCRIBE that repeats a live key sends
+      none.
+    client-usage: "WebFig 7.25 and 7.26beta4 subscribe each list path once per session, without a 0xfe000c word, when it first opens the path, and fetch it with GETALL right after. Changes then arrive as CMD_NOTIFY 0xfe000b on the long poll, including while the page is closed. Without the word the rows are config-only, which is why WebFig also polls with autorefresh GETALL for status. WinBox 4.4 (7.25, step 5) subscribes each path a window shows with the dialog's GETALL word (0x10000007 on [16,2], 0x1004000f on [20,0], 0x10000005 on the [20,51] / [20,90] / [20,101] maps), so its notification rows carry the status group, and still polls with the same word (2 s on [16,2], about 1 s on [20,0]). It subscribes again on every reopen. WinBox sends SUBSCRIBE without SYS_REPLYEXP or SYS_REQID and with 0xff0017=true (snapshot) and u32 0xff0012=1000; the [16,2] reopen in the step 5 workflow omitted 0xff0017. After a dropped connection WinBox logs in again by itself (10 s retry), and for each list still open replays the first-open sequence (defaults GETALL, GETPOLICIES, SUBSCRIBE with 0xff0017) under the same handler ids; the snapshot NOTIFY carried the changes made while it was away (comment edit and row removal)."
     evidence:
       - source: sample
         ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 97, 174, 448, 451"
@@ -285,6 +295,10 @@ commands:
         ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): subscription ladder on session C (marks q3c-1 .. q3c-12) — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json"
       - source: sample
         ref: "WinBox 4.4 (Linux) through the decrypting proxy (plan step 5, 7.25, 2026-11-22): fixtures/winbox-ipc/7.25-winbox4-bridge-workflow.json"
+      - source: sample
+        ref: "native probe (7.25, 2026-11-22): SUBSCRIBE envelope variants — fixtures/winbox-ipc/7.25-native-subscribe-snapshot.json"
+      - source: sample
+        ref: "WinBox 4.4 recovery run (step 5 follow-up, 7.25, 2026-11-22): reconnect rebuild, marks instruct-r3 / ui-r3 — fixtures/winbox-ipc/7.25-winbox4-recovery.json"
   0xfe0013:
     canonical-name: CMD_UNSUBSCRIBE
     confidence: documented

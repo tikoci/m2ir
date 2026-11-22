@@ -8,8 +8,9 @@ Codex's proposals. [`handoff.yaml`](handoff.yaml) tracks progress; steps
 step 4b is done on 7.25 and 7.26beta4 (README, "`[17]` undo-history
 oracle (plan step 4b)"). Step 5 is done on 7.25 with WinBox 4.4 Linux
 through a decrypting proxy (README, "WinBox 4 Bridge workflow (plan step
-5)", branch `jg-winbox4`). Next: step 5 follow-ups, then step 4c
-(handoff.yaml `next`).
+5)", branch `jg-winbox4`); its recovery cases and the SUBSCRIBE snapshot
+key followed (README, "WinBox 4 recovery cases"). Next: a second WinBox
+build or 7.26beta4, then step 4c (handoff.yaml `next`).
 [`README.md`](README.md) holds the `.jg` format notes and the first diff.
 
 ## Research question

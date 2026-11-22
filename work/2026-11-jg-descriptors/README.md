@@ -601,19 +601,84 @@ direction, route, command, word and typed keys, named from the schema
 
 Open questions and leads:
 
-- **Immediate NOTIFY on first SUBSCRIBE.** On first open, `[20,0]`,
-  `[20,101]`, `[16,2]` and `[20,90]` each answered SUBSCRIBE with a
-  NOTIFY carrying every row, 2 to 3 ms later. WinBox then read nothing
-  until its first timed poll. On reopen there was none for `[16,2]`. The
-  candidate triggers are the defaults GETALL (bit `0x20000000` with
-  `0xfe0004=0`), GETPOLICIES before it, or a first subscription per
-  handler. Native step 4 SUBSCRIBEs (no defaults query) got none. Settle
-  it natively.
+- **Immediate NOTIFY on first SUBSCRIBE: settled** (next section). It is
+  the snapshot that `0xff0017=true` on SUBSCRIBE asks for. The `[16,2]`
+  reopen got none because WinBox left that key off its SUBSCRIBE there.
 - `0xfe000c` bit 29 with `0xfe0004=0` is WinBox's defaults query (reply
   `0xfe001d` STD_FIRST_ROW). This matches the step 2 reading of WebFig's
   "bit 29 + maxobjs 0 for defaults" (`std-keys.yaml` `0xfe000c`).
-- Not run: the recovery path (rejected edit, reconnect), WinBox on
-  7.26beta4, the Mac build, and RoMON or MAC connections.
+- Not run: WinBox on 7.26beta4, the Mac build, and RoMON or MAC
+  connections. The recovery path ran as a follow-up (next section).
+
+## WinBox 4 recovery cases (step 5 follow-up)
+
+Run 2026-11-22 on orca with the same WinBox 4.4 build and twin3 (7.25,
+`routeros` only), through `proxy.ts`. The user drove WinBox; `drive.ts`
+made the REST changes. Fixture:
+[`7.25-winbox4-recovery.json`](../../fixtures/winbox-ipc/7.25-winbox4-recovery.json)
+(390 records, sessions W1 and W2 for the two connections; timed reads
+whose reply did not change are dropped with their request, and
+`provenance.poll_periods` keeps the periods). Test:
+[`winbox4-recovery.test.ts`](../../test/profiles/winbox-ipc/winbox4-recovery.test.ts).
+
+For the drop, `proxy.ts` now closes every relayed connection on SIGUSR1
+and holds new logins for a set time. `drive.ts drop <hold-s> [comment n
+text] [remove n]` sends the signal and makes the REST changes during the
+hold. `drive.ts` also gained `remove` and `readd`. A watcher started each
+removal or drop from the capture itself (dialog opened, window reopened),
+so the operator did not have to time it.
+
+| Case | What WinBox 4.4 did on 7.25 |
+|---|---|
+| Edit dialog reads | While a row's dialog is open, WinBox sends GETOBJ `{0xfe0001=row, 0xfe000c=0x10000007}` every 1.0 s from the list's own handler (`[0,22]`), next to the list's 2.0 s GETALL |
+| R1, rejected write | Moving port `*0` onto m2ir-vl2, which is already a port. Apply or OK sends one SETOBJ with every dialog field the `.jg` does not mark `ro` (35 keys: 30 below f200, plus the Status tab's hidden `nonpublic` numbers `uc8` role and `ud0` status, plus `0xfe0001`, `0xfe0009`, `0xfe000a`). Reply: ERROR_FAILED `0xfe0006` with errstr "device already added as bridge port". WinBox shows it in red in the dialog, resets Interface to the stored value and greys out Apply. It sends no extra read; the 1 s GETOBJ continues. A second OK with nothing changed sends nothing and closes the dialog |
+| R2, row removed under the dialog | 50 ms after the REST remove, the dialog's GETOBJ for row 1 got ERROR_UNKNOWNID `0xfe0004` (no errstr). The removal NOTIFY (`{0xfe0001=1, 0xfe0013=1}`) followed 135 ms later. WinBox closed the dialog, dropped the row from the list and stopped reading it. Which of the two messages closed the dialog is not separable in this run |
+| R3, dropped connection | Disconnect dialog with Retry, Cancel and an automatic retry after 10 s; WinBox logged in again 9.5 s after the drop (after the 8 s hold). It replayed session start (`[13,4]`, `[120]`, `[2,2]` list, no `.jg` downloads), then, for every list still open, the first-open sequence under the same handler ids: defaults GETALL, GETPOLICIES, SUBSCRIBE with `0xff0017`. The snapshot NOTIFY carried one row, `*0` with comment m2ir-r3. The comment change and the removal of `*2` made during the hold were never notified; the snapshot alone rebuilt the list. The Bridge window came back by itself (the operator's workspace setting may be why) |
+
+The list model handles R3 if the snapshot NOTIFY counts as a list read
+and the new connection as a release (`entryEvents(..., { snapshotIsList:
+true })`). With that, one display across both connections matches every
+read.
+
+### SUBSCRIBE snapshot (`0xff0017`)
+
+[`winbox4/first-notify.ts`](winbox4/first-notify.ts) reruns WinBox's
+first-open steps natively, one variant per fresh login, on `[16,2]` and
+`[20,0]`. Fixture:
+[`7.25-native-subscribe-snapshot.json`](../../fixtures/winbox-ipc/7.25-native-subscribe-snapshot.json);
+test:
+[`subscribe-snapshot.test.ts`](../../test/profiles/winbox-ipc/subscribe-snapshot.test.ts).
+
+- SUBSCRIBE with `0xff0017=true` (bool) is answered within a few ms by
+  one CMD_NOTIFY holding every row plus `0xfe0019`, addressed to the
+  subscriber's FROM. It works with or without SYS_REPLYEXP / SYS_REQID.
+- The rows carry the groups the `0xfe000c` word selects, the same keys
+  as GETALL with that word. Without a word they are config-only.
+- A SUBSCRIBE that repeats a live subscription (same session, path and
+  word) sends no snapshot; after UNSUBSCRIBE it sends one again.
+- Without the key nothing comes, whatever precedes it: the defaults
+  GETALL, GETPOLICIES, or another FROM handler. GETALL ignores the key.
+- WinBox's other SUBSCRIBE key, u32 `0xff0012=1000`, changed nothing
+  here. On a SUBSCRIBE it is a u32, unlike SYS_ORIGINATOR's handler path
+  (`0x88`) on 6.49 notifications.
+
+Promoted: `sys-keys.yaml` `0xff0017` (project name SYS_SNAPSHOT) and a
+typed-identity note on `0xff0012`. `std-commands.yaml` SUBSCRIBE
+(snapshot, WinBox's envelope and reconnect), GETOBJ (dialog reads) and
+SETOBJ (WinBox's write). `std-errors.yaml` UNKNOWNID and FAILED
+(evidence).
+
+Leads:
+
+- `uc8` (role) and `ud0` (status) in `[16,2]` are status-group fields
+  that WinBox writes back with every SETOBJ. They are not in
+  `gui-handlers.yaml` yet; whether the router ignores them on SETOBJ is
+  untested.
+- WinBox omitted `0xff0017` on its `[16,2]` reopen in step 5 but sent it
+  on every other SUBSCRIBE, including after the reconnect. The cause (a
+  cached list for that window?) is unknown.
+- R2: a GETOBJ that fails without a removal NOTIFY (an unsubscribed
+  path) would show whether the error alone closes the dialog.
 
 ## Next steps
 
@@ -631,9 +696,9 @@ Open questions and leads:
    against. m2ir does not cover Safe Mode yet. Subscription, notification
    and autorefresh are now recorded (step 3); actions, Safe Mode and
    terminal are not.
-5. Plan step 5 follow-ups: the recovery path (rejected edit, reconnect),
-   the immediate-NOTIFY lead, and a second WinBox build (Mac) or
-   7.26beta4 through the same proxy.
+5. Plan step 5 follow-ups: a second WinBox build (Mac) or 7.26beta4
+   through the same proxy. The recovery path and the immediate-NOTIFY
+   lead are done ("WinBox 4 recovery cases").
 6. Widen the `[17]` oracle past wave 1 (34 menus, 30 routes) toward the
    470 7.25 base-package routes with no handler, then cover extra
    packages (plan step 4c).
