@@ -1,4 +1,4 @@
-# cspell:ignore jsproxy webfig typevalue multibignumber multiraw quickchr
+# cspell:ignore jsproxy webfig typevalue multibignumber multiraw quickchr extrastats refreshfilter autorefresh
 # Declared-schema-first plan: progress handoff. Read plan.md first.
 plan: work/2026-11-jg-descriptors/plan.md
 approved: 2026-11-21
@@ -6,18 +6,23 @@ decisions:
   - "Typed field identity (step 0) lands before any .jg promotion (user, 2026-11-21)."
   - "WebFig instrumentation (step 3) is tried before the MITM proxy (user, 2026-11-21)."
   - "Step 3 uses a headless browser with sessionStorage seeded (name/password) and a hook above the Session cipher; a Bun-native JSProxy client is deferred because it would be our client, not MikroTik's."
+  - "Step 3 adds playwright-core as a devDependency and drives the system Chromium (user, 2026-11-21: OK to install if easier)."
+  - "6.49 WebFig is out of scope for step 3: different architecture (classic-script RC4 client, 2-byte frames, no REST for the second session) (user, 2026-11-21)."
 steps:
   0-typed-identity: done
   1-promote-jg: done
   2-conversation-census: done
-  3-webfig-instrumentation: queued
+  3-webfig-instrumentation: done
   4-acceptance-bridge: queued
   5-mitm-proxy: queued
 open:
   conflicts-before-promotion: "all four resolved in step 1 (see step1-record)"
   evidence-source-for-jg: "decided: source: doc (vendor-authored, machine-readable declaration served by the router); WebFig JS is source: code. Revisit at review if you disagree."
   leads:
-    - ".jg declares Q (u64 array, 0x90) fields on [20,0] interface stats (multibignumber, 148 on 7.25) and R (raw array, 0xb0) fields (multiraw). physical/nv-message.yaml calls 0x90 declared-unwired and has no 0xb0 entry. Confirm on the wire with a native [20,0] stats read."
+    - ".jg declares Q (u64 array, 0x90) fields on [20,0] interface stats (multibignumber, 148 on 7.25) and R (raw array, 0xb0) fields (multiraw). physical/nv-message.yaml calls 0x90 declared-unwired and has no 0xb0 entry. Confirm on the wire with a native [20,0] stats read. Step 3: no Q/R on CHR (ether1 lacks extrastats, which gates the Q480 tab); needs hardware. WebFig's decoder maps only FT_U64_ARRAY (0x90) to letter Q, so a Q key in a WebFig transcript does prove tcode 0x90."
+    - "[17] undo-history notifications embed the native M2 request (m1) and its inverse (m2) for every change, including changes made over REST or CLI (S9 CLI text, Sa inverse, s8 source). This gives REST/CLI -> M2 mappings without probing. Fixture seq 53."
+    - "Key 0x478 is a typed-identity case: .jg declares U478 and Q478 in different dialogs, and CHR ether1 sends U478 (0x88, empty) in [20,0] GETALL."
+    - "GETALL reply bfe000b makes WebFig stop the autorefresh (ObjectMap.block); not seen live."
 lab:
   chr: "quickchr twin3 (7.25), ws3c6 (6.49.23), winbox-beta4 (7.26beta4); stop after use"
   raw-assets: "scratch only (.jg, WebFig JS); never commit"
@@ -62,3 +67,18 @@ step2-record:
   leads:
     - "0xfe0026: WebFig strips mfe0026 when copying a row; no std-keys entry yet"
     - "cross-check commands.yaml private opcodes against conversation-census.md private table"
+step3-record:
+  date: 2026-11-21
+  outputs:
+    - "work/2026-11-jg-descriptors/webfig/: capture.ts (Playwright driver + REST second session), hook.js (CryptoJS.AES + XHR hooks), m2-letters.ts (letter-keyed decoder, all 14 types), transcript.ts (sanitize, digest, --compact), README.md"
+    - "fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl, 7.26beta4-webfig-bridge-workflow.jsonl (sanitized; asset hashes + .jg unique names in provenance)"
+    - "README: WebFig client model table, each prediction marked confirmed/refuted with fixture seq"
+  promoted:
+    - "gui-handlers bridge-port: session f5 unknown-5 -> next-id (STD_NEXTID); client-usage on bridge-port and interface"
+    - "std-commands: CMD_NOOP keepalive, CMD_NOTIFY shape, CMD_SUBSCRIBE/UNSUBSCRIBE client-usage"
+    - "std-keys: 0xfe0005 role, 0xfe000c observed words, 0xfe0013 removal row, 0xfe0019 per-path presence"
+  confirmed: "SUBSCRIBE + GETALL; 0xfe000c = 0x10000005 | refreshfilter (0x1004000f [20,0], 0x10000007 [16,2]); autorefresh 1000/2000 ms; paging via 0xfe0003 ([24,7]); notifications as CMD_NOTIFY on the long poll (~0.2 s after a REST change); ufe0005/ufe0013/ufe0019 in notification rows; typevalue filter applied in the client"
+  refuted: "close sends CMD_UNSUBSCRIBE: not on tab navigation; subscriptions persist and the router keeps notifying closed pages"
+  not-seen: "0xfe0018 (no maxobjs on these dialogs), mfe0015, mfe0026, empty Mfe0002 refetch, GETALL errors, Q/R keys"
+  same-on: "7.25 and 7.26beta4 behave the same at every step"
+  next: "step 4: replay the workflow with the native harness (SUBSCRIBE + GETALL with the observed 0xfe000c words, read CMD_NOTIFY), compare with these fixtures"

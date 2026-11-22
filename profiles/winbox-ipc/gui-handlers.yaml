@@ -511,9 +511,24 @@ handlers:
         9: { name: comment, tcode: string }
         10: { name: disabled, tcode: bool }
         18: { name: unknown-18, tcode: u32, role: "OPEN — 0 on the v7 ether1 row only (t=0x09), absent on lo/v6; schema-mapped STD_VERSION, row role unresolved; meaning UNKNOWN" }
+    client-usage: |
+      WebFig 7.25 and 7.26beta4 (Interfaces, and the Bridge tab, which
+      inherits the iface map: .jg autorefresh:1000, refreshfilter:262154):
+      CMD_SUBSCRIBE 0xfe0012 once per session, then GETALL with
+      0xfe000c = 0x1004000f every 1 s while open. The Bridge tab's
+      typevalue=12 filter is applied in the client: the GETALL returns every
+      interface, and WebFig drops the rows whose 0x10001 does not match. A
+      row dialog (#Interfaces.Ethernet.<id>) reuses the list and sends no GET.
+      CMD_NOTIFY rows hold the config fields only (85 of 126 keys for a
+      bridge); the status and counter groups selected by the refreshfilter
+      bits come only from the timed GETALL. No 0xfe0019 on [20,0], in
+      GETALL replies or notifications. A removal arrives as
+      {0xfe0001, 0xfe0013=1}. Native WinBox not compared (plan step 5).
     evidence:
       - source: doc
         ref: "RouterOS 6.49.23/7.25/7.26beta4 .jg UI descriptors (field names, types, enums, board gates); see work/2026-11-jg-descriptors/gui-handlers-vs-jg.md"
+      - source: sample
+        ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): subscribe/GETALL/notify/remove on [20,0] — fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 97, 98, 103, 155, 614 (same events in the 7.26beta4 file)"
       - source: code
         ref: "RouterOS net interface row-core 0x80f6738 (810 instructions, 75 ops, 6.49.23): all seven mapped fields converge here; entry+0x14/0x1c/0x60 feed row 0x10002/0x10003/0x10001, running = (w & 0x500) == 0x500, dynamic gated on entry+0x14 bit 0x80; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4/§8"
       - source: code
@@ -943,7 +958,7 @@ handlers:
         40: { name: unknown-40, tcode: bool, role: "OPEN — v7-only, false on the 7.25 row (t=0x00); meaning UNKNOWN" }
         215: { name: hw-offload, tcode: bool, cli-alias: "/interface/bridge/port hw-offload", role: "named by .jg Ports bd7 (6.49.23, 7.25, 7.26beta4); false on the port rows both versions (t=0x00)" }
       namespace-session:
-        5: { name: unknown-5, tcode: u32, role: "OPEN — per-row 0xFFFFFFFF on the port rows both versions (t=0x08); sentinel-or-bitmask, no reading claimed" }
+        5: { name: next-id, tcode: u32, role: "STD_NEXTID (std-keys 0xfe0005): row id of the row that follows this one in the ordered list; 0xFFFFFFFF = last row. WebFig re-links each notified row before map[ufe0005] and sends it on MOVE 0xfe0007. 0xFFFFFFFF on the single-row lists observed (t=0x08); not yet seen with two or more ports" }
         7: { name: unknown-7, tcode: bool, role: "OPEN — false on the port rows both versions (t=0x00); documented STD_DYNAMIC elsewhere, local name unassigned" }
         8: { name: inactive, tcode: bool, cli-alias: "/interface/bridge/port inactive", role: "named by .jg Ports bfe0008 (6.49.23, 7.25, 7.26beta4); false on the created rows both versions (t=0x00), true post-SET alongside CLI inactive false->true (single leg); documented STD_INACTIVE elsewhere, local name unassigned" }
         9: { name: comment, tcode: string }
@@ -963,9 +978,23 @@ handlers:
       scope: "table-row path on [16,2]; request carries only 0xfe0001=rowid (here: 0)"
       ack: "bare SYS-only success (same key set as SETOBJ); row gone on GETALL read-back"
       versions: ["7.25"]
+    client-usage: |
+      WebFig 7.25 and 7.26beta4 (Bridge > Ports, .jg autorefresh:2000,
+      refreshfilter:2, ordered:1): CMD_SUBSCRIBE 0xfe0012 once per session,
+      then GETALL with 0xfe000c = 0x10000007 every 2 s while the tab is
+      open. GETALL replies carry 0xfe0019 (count). A change made from REST
+      arrives as CMD_NOTIFY 0xfe000b (TO=[]) on WebFig's long poll about
+      0.2 s later. Its row holds the config fields only (38 of 66 keys) plus
+      0xfe0005. A removal arrives as {0xfe0001, 0xfe0013=1} with 0xfe0019
+      updated. No CMD_UNSUBSCRIBE is sent when the tab closes, and
+      notifications keep arriving. Native WinBox not compared (plan step 5).
     evidence:
       - source: doc
         ref: "RouterOS 6.49.23/7.25/7.26beta4 .jg UI descriptors (field names, types, enums, board gates); see work/2026-11-jg-descriptors/gui-handlers-vs-jg.md"
+      - source: sample
+        ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): subscribe/GETALL/notify/remove on [16,2] — fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 174, 175, 238, 451, 613 (same events in the 7.26beta4 file)"
+      - source: code
+        ref: "RouterOS 7.25 WebFig master.js ObjectMap #listenCb (0xfe0005 -> #linkBefore) and moveObjectAfter (MOVE 0xfe0007 with 0xfe0005); see work/2026-11-jg-descriptors/README.md"
       - source: code
         ref: "RouterOS bridge2 candidate 0x806db62 (38 inserts incl. u32:3, u32:4, u32:19 + ~30 more + meta, 6.49.23) — probable attribution (shape + handler-2-custom consistent); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4"
       - source: sample

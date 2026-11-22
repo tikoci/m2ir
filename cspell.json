@@ -15,6 +15,7 @@
 		"test/fixtures",
 		"work/2026-10-chr-extraction/ws3c/ev/**",
 		"fixtures/mndp/*.json",
+		"fixtures/winbox-ipc/*.jsonl",
 		"work/**/*.json",
 		"work/**/*.jsonl",
 		"work/**/*.sha256",

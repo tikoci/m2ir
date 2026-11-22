@@ -83,7 +83,7 @@ describe("bridge-port [16,2] replay", () => {
 		expect(handler.fields["namespace-user"]["3"]?.name).toBe("interface");
 		expect(handler.fields["namespace-user"]["4"]?.name).toBe("bridge");
 		expect(handler.fields["namespace-user"]["19"]?.name).toBe("pvid");
-		expect(handler.fields["namespace-session"]["5"]?.name).toBe("unknown-5");
+		expect(handler.fields["namespace-session"]["5"]?.name).toBe("next-id");
 		expect(handler.set.cmd.value).toBe(0xfe0003);
 		expect(handler.add.cmd.value).toBe(0xfe0005);
 		expect(handler.remove.cmd.value).toBe(0xfe0006);

@@ -30,7 +30,13 @@ evidence:
     url: "https://github.com/Cisco-Talos/Winbox_Protocol_Dissector/blob/master/Winbox_Dissector.lua#L149-L170"
 
 commands:
-  0xfe0000: { canonical-name: CMD_NOOP,         confidence: documented }
+  0xfe0000:
+    canonical-name: CMD_NOOP
+    confidence: documented
+    client-usage: "WebFig 7.25 and 7.26beta4 send CMD_NOOP to [1] every 20 s as a keepalive (setInterval in start()). The reply is SYS-only."
+    evidence:
+      - source: sample
+        ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 198"
   0xfe0001: { canonical-name: CMD_GETPOLICIES,  confidence: documented }
   0xfe0002:
     canonical-name: CMD_GETOBJ
@@ -151,7 +157,21 @@ commands:
     evidence:
       - source: code
         ref: "RouterOS libumsg.so nv::Handler::handleCmd jump table (6.49.23); see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §1"
-  0xfe000b: { canonical-name: CMD_NOTIFY,       confidence: documented }
+  0xfe000b:
+    canonical-name: CMD_NOTIFY
+    confidence: documented
+    notes: |
+      Server-to-client change notification for a subscribed path. It has
+      TO=[] and FROM=<path>, and Mfe0002 holds the changed rows. A row
+      carries the config fields only (no status or counter groups), plus
+      0xfe0005 on ordered maps; a removed row is {0xfe0001, 0xfe0013=1}.
+      Some paths add 0xfe0019 (the new count) or SYS uff000b at message
+      level. Over /jsproxy it is the reply to WebFig's long poll.
+    evidence:
+      - source: sample
+        ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): [20,0], [16,2] and [17] notifications — fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 155, 238, 613, 614"
+      - source: code
+        ref: "RouterOS 7.25 WebFig master.js receive() / ObjectMap #listenCb; see work/2026-11-jg-descriptors/README.md"
   0xfe000c:
     canonical-name: CMD_SHUTDOWN
     confidence: observed-only
@@ -215,8 +235,22 @@ commands:
   0xfe000f: { canonical-name: CMD_START,        confidence: documented }
   0xfe0010: { canonical-name: CMD_POLL,         confidence: documented }
   0xfe0011: { canonical-name: CMD_CANCEL,       confidence: documented }
-  0xfe0012: { canonical-name: CMD_SUBSCRIBE,    confidence: documented }
-  0xfe0013: { canonical-name: CMD_UNSUBSCRIBE,  confidence: documented }
+  0xfe0012:
+    canonical-name: CMD_SUBSCRIBE
+    confidence: documented
+    client-usage: "WebFig 7.25 and 7.26beta4 subscribe each list path once per session, when it first opens the path, and fetch it with GETALL right after. The ack is SYS-only. Changes then arrive as CMD_NOTIFY 0xfe000b on the long poll, including while the page is closed."
+    evidence:
+      - source: sample
+        ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 97, 174, 448, 451"
+  0xfe0013:
+    canonical-name: CMD_UNSUBSCRIBE
+    confidence: documented
+    client-usage: "WebFig 7.25 posts it only when the last listener for a path goes away. Leaving a list tab did not trigger it in any step 3 run (7.25, 7.26beta4), so the router kept notifying for closed pages."
+    evidence:
+      - source: sample
+        ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): no 0xfe0013 request in fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl or the 7.26beta4 file"
+      - source: code
+        ref: "RouterOS 7.25 WebFig master.js unsubscribe() (Listeners.unlisten); see work/2026-11-jg-descriptors/README.md"
   0xfe0014:
     canonical-name: CMD_DISCONNECTED
     confidence: documented

@@ -2,8 +2,8 @@
 
 <!-- cspell:ignore typevalue nonpublic getcmd roteros athhw igmp mrz webfig -->
 
-Status: exploratory, 2026-11-21. Nothing here has been promoted into
-`profiles/winbox-ipc/*.yaml` yet. [`gui-handlers-vs-jg.md`](gui-handlers-vs-jg.md)
+Status: exploratory, 2026-11-21. Steps 1-3 promoted their stable
+findings into `profiles/winbox-ipc/*.yaml`; the rest stays here. [`gui-handlers-vs-jg.md`](gui-handlers-vs-jg.md)
 is generated output.
 
 ## Why
@@ -156,28 +156,46 @@ declares and classifies every declared command against
 - 96 of 430 list dialogs on 7.25 declare `autorefresh` (1000 ms is the
   most common). `refreshfilter` is a bit field, not a flag.
 
-## WebFig client model (static, 7.25 `master.js`)
+## WebFig client model (7.x `master.js`, tested in step 3)
 
-Read from MikroTik's own client (`source: code`); no live run yet.
-Plan step 3 tests these on the wire.
+First read statically from 7.25 `master.js` (`source: code`), then
+recorded live on 7.25 and 7.26beta4 (plan step 3, [`webfig/`](webfig/README.md)).
+Seq numbers refer to
+[`7.25-webfig-bridge-workflow.jsonl`](../../fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl).
+The 7.26beta4 fixture has the same events at its own seq numbers.
 
-| Operation | Request | Notes |
+| Operation | Static prediction | On the wire (7.25, 7.26beta4) |
 |---|---|---|
-| list | GETALL `getallcmd \|\| 0xfe0004`, `0xfe000c = 0x10000005 \| refetchonopen \| refreshfilter`, `0xfe0018 = maxobjs` | follows `0xfe0003` / `mfe0015` until neither comes back; rows not returned are dropped |
-| list updates | CMD_SUBSCRIBE `0xfe0012` on the path, always | notifications carry `Mfe0002` rows: `_id`, `ufe0005` next id (keeps order), `ufe0013` removed, `ufe0019` count; no rows means GETALL again. `autorefresh` adds timed GETALLs on top |
-| list close | CMD_UNSUBSCRIBE `0xfe0013` | |
-| object | GET `getcmd \|\| 0xfe000d`, same `0xfe000c` word | with `autorefresh`, timed GETs and no subscribe; without it, subscribe and wait for `Mfe0002` |
-| save object | `setcmd \|\| 0xfe000e` | |
-| edit / add row | `0xfe0003` / `0xfe0005` | |
-| remove row | `0xfe0006` | |
-| new-row defaults | GETALL with `0xfe000c = 0x20000000`, `0xfe0018 = 0` | defaults come back in `mfe001d` |
-| action | `startcmd`, then `pollcmd` (default `0xfe0010`) on a timer, `cancelcmd` | |
-| terminal | `0xa0065`-`0xa0068` on `[76]` | |
-| errors | `0xfe0004` on GETALL: clear and refetch; `0xfe000e`: "Failed to get all" | |
+| list | GETALL `getallcmd \|\| 0xfe0004`, `0xfe000c = 0x10000005 \| refetchonopen \| refreshfilter`, `0xfe0018 = maxobjs` | **Confirmed.** Bridge (`[20,0]`, which inherits the iface map: `refreshfilter:262154`) sends `0x1004000f` (seq 98). Bridge Ports (`refreshfilter:2`) sends `0x10000007` (seq 175). `0xfe0018` is absent because neither dialog declares `maxobjs`. The `typevalue=12` filter is applied in the client: the GETALL returns all four interfaces (seq 103) |
+| paging | follow `0xfe0003` / `mfe0015` | **Confirmed** for `0xfe0003`: `[24,7]` returns 586 rows plus `ufe0003=586`, and WebFig repeats the GETALL with `ufe0003=586` (seq 261). `mfe0015` was not seen |
+| list updates | CMD_SUBSCRIBE `0xfe0012` on the path, always | **Confirmed**, once per path per session (seq 97, 174). Updates arrive as `CMD_NOTIFY 0xfe000b` messages with `TO=[]` in the reply to WebFig's long poll, a POST carrying only `Sff001c`. A REST change showed up about 0.2 s later (seq 124 → 155, seq 204 → 238) |
+| notification rows | `_id`, `ufe0005` next id, `ufe0013` removed, `ufe0019` count; no rows → GETALL | **Confirmed.** Rows carry the config fields only: 85 of 126 keys for the bridge and 38 of 66 for the port. The status and counter groups that `refreshfilter` asks for are missing. Ordered maps (`[16,2]`) carry `ufe0005` (0xffffffff = last) and message-level `ufe0019`. Removal sends a row with only `ufe0001` + `ufe0013=1` (seq 613, 614). An empty `Mfe0002` was not seen |
+| autorefresh | timed GETALL on top of notifications | **Confirmed.** GETALL every 1006 ms on Bridge (iface `autorefresh:1000`) and every 2005 ms on Bridge Ports (median). Timers stop when the tab is left |
+| list close | CMD_UNSUBSCRIBE `0xfe0013` | **Refuted for tab navigation.** No `0xfe0013` in any run. Reopening sends no new SUBSCRIBE, and the router keeps notifying for pages that are closed (seq 444 → 448, 451). `unsubscribe()` posts only when the last listener for the path goes away |
+| object | GET `getcmd \|\| 0xfe000d`, same `0xfe000c` word | Seen for `[24,0]` (Clock, `0x10000005`, timed every 1 s). The ether1 dialog (`#Interfaces.Ethernet.2`) made no per-row GET: it reuses the `[20,0]` list |
+| long poll | `post_notification_request()` | **Confirmed.** Each poll stays open until a notification is queued (3 to 20 s in the runs); a quiet poll was still open after 51 s (seq 615). Every poll that returned carried frames |
+| keepalive | not in table | `CMD_NOOP 0xfe0000` to `[1]` every 20 s (`setInterval`, seq 198) |
+| errors | `0xfe0004` on GETALL: clear and refetch; `0xfe000e`: "Failed to get all" | Not exercised. The only errors were `[17]` "nothing to undo/redo" (`0xfe0006`) |
 
-The step 3 hypothesis for Bridge Ports (`[16,2]`, `autorefresh:2000`)
-is therefore subscribe plus GETALL, then a GETALL every 2 s, while
-notifications also arrive. Whether native WinBox does the same is step 5.
+Other findings from the same runs:
+
+- **`[17]` undo history.** After every change WebFig fetches the
+  undo/redo heads with `0x80007` / `0x80008`. `[17]` notifications carry
+  each history entry with the CLI text (`S9`), its inverse (`Sa`), the
+  source (`s8 "api:admin@::"`), and the **native M2 request plus its
+  inverse** (`m1`, `m2`). The REST `add bridge` is recorded as `[20,0]`
+  `0xfe0005` with `u10001=12`, `s10006` name and `sfe0009` comment
+  (seq 53). This is a ready REST/CLI → M2 mapping (lead).
+- **Session id.** Replies address `TO=[n]`, where `n` is the WebFig
+  session's own handler id (3 to 8 across runs).
+- `Sff001c` is a client-tag string array (`"x11-linux-x86-64"`). WebFig
+  appends to it on each send, so a paging request that reuses the
+  previous request object carries the tag twice.
+- **No `Q` or `R` keys, no `mfe0026`.** ether1 on a CHR has no
+  `extrastats`, which gates the `Q480` Tx Packets tab, so the 0x90 lead
+  needs hardware. Key 0x478 is a typed-identity case: `.jg` declares it
+  as `U478` in one dialog and `Q478` in another, and CHR ether1 sends
+  `U478` (tcode 0x88, empty) in its `[20,0]` row (seq 103).
 
 ## Next steps
 
@@ -192,4 +210,8 @@ notifications also arrive. Whether native WinBox does the same is step 5.
    from `work/2026-11-winbox3-patches/README.md`.
 4. Read WebFig's `wfig.js` for the query start/poll/cancel, subscription,
    terminal and Safe Mode behavior that mrz said OldBox was checked
-   against. m2ir does not cover Safe Mode yet.
+   against. m2ir does not cover Safe Mode yet. Subscription, notification
+   and autorefresh are now recorded (step 3); actions, Safe Mode and
+   terminal are not.
+5. Plan step 4: replay the step 3 Bridge workflow with the native harness
+   and compare it with the WebFig fixtures.
