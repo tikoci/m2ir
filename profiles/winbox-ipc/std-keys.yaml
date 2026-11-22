@@ -266,9 +266,11 @@ keys:
       them from 0xfe001d. Seen on the wire (plan step 3, 7.25 and
       7.26beta4): 0x1004000f on [20,0] (iface refreshfilter 0x4000a),
       0x10000007 on [16,2], and 0x10000005 on [20,90], [24,7] and the [24,0] GET.
-      Notification rows lack the status and counter groups that GETALL
-      returns under these bits. Not yet compared with a native WinBox
-      request.
+      Notification rows lack the status and counter groups that these
+      GETALL replies carry. Whether the refreshfilter bits are what select
+      those groups is untested: earlier native legs found 0/5/0x20000000
+      content-identical, but none set 0x4000a or 0x2 (plan step 4). Not
+      yet compared with a native WinBox request.
     revision-history:
       - date: 2026-11-01
         belief: "0xfe000c is a nested message (STD_FILTER), with a conflicting u32-flags reading of unknown context split"

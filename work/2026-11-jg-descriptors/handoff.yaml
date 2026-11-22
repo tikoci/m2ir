@@ -81,4 +81,5 @@ step3-record:
   refuted: "close sends CMD_UNSUBSCRIBE: not on tab navigation; subscriptions persist and the router keeps notifying closed pages"
   not-seen: "0xfe0018 (no maxobjs on these dialogs), mfe0015, mfe0026, empty Mfe0002 refetch, GETALL errors, Q/R keys"
   same-on: "7.25 and 7.26beta4 behave the same at every step"
-  next: "step 4: replay the workflow with the native harness (SUBSCRIBE + GETALL with the observed 0xfe000c words, read CMD_NOTIFY), compare with these fixtures"
+  next: "step 4: replay the workflow with the native harness (SUBSCRIBE + GETALL with the observed 0xfe000c words, read CMD_NOTIFY), compare with these fixtures; prompt in step4-handoff-prompt.md"
+  untested: "whether the refreshfilter bits select the status/counter groups in GETALL (notification rows lack them; earlier native legs found 0/5/0x20000000 content-identical but never set 0x4000a or 0x2)"
