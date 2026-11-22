@@ -210,10 +210,10 @@ keys:
 
   0xff0012:
     canonical-name: SYS_ORIGINATOR
-    physical: { tcodes: [0x88] }
+    physical: { tcodes: [0x88, 0x08] }
     semantic: handler-path
     confidence: documented
-    notes: "Typed-identity case: WinBox 4.4 (7.25) sends a u32 0xff0012 = 1000 (tcode 0x08, letter u), not the 0x88 handler path, on every worded SUBSCRIBE and UNSUBSCRIBE. Natively, SUBSCRIBE with and without it behaved the same (snapshot, acks and notifications); its meaning is open (a 1000 ms notify interval is a guess, not tested)."
+    notes: "Two wire forms, two meanings by type: 0x88 (u32 array) is the SYS_ORIGINATOR handler path (6.49.23 notifications); 0x08 (u32) is the WinBox 4.4 SUBSCRIBE/UNSUBSCRIBE form below, whose meaning is open. Typed-identity case: WinBox 4.4 (7.25) sends a u32 0xff0012 = 1000 (tcode 0x08, letter u), not the 0x88 handler path, on every worded SUBSCRIBE and UNSUBSCRIBE. Natively, SUBSCRIBE with and without it behaved the same (snapshot, acks and notifications); its meaning is open (a 1000 ms notify interval is a guess, not tested)."
     evidence:
       - source: sample
         ref: "WinBox 4.4 (Linux) through the decrypting proxy (plan step 5, 7.25, 2026-11-22): fixtures/winbox-ipc/7.25-winbox4-bridge-workflow.json and 7.25-winbox4-recovery.json (SUBSCRIBE / UNSUBSCRIBE records)"

@@ -262,6 +262,12 @@ describe("typed field identity", () => {
 		});
 	});
 
+	test("0xff0012 accepts both wire forms: handler path (0x88) and WinBox's u32 (0x08)", () => {
+		expect(checkTcode(0xff0012, 0x88).agree).toBe(true);
+		expect(checkTcode(0xff0012, 0x08).agree).toBe(true);
+		expect(checkTcode(0xff0012, 0x21).agree).toBe(false);
+	});
+
 	test("namespace-1 interface fields load", () => {
 		expect(resolveRouteField([20, 0], 0x010006)).toMatchObject({
 			name: "name",
