@@ -88,15 +88,21 @@ let aOpen = true;
 async function restoreState(): Promise<void> {
 	mark = "q1-restore";
 	try {
-		rest(["/ip/firewall/address-list/remove", '[find list="m2ir-q1"]']);
+		const failures: string[] = [];
+		const removed = rest([
+			"/ip/firewall/address-list/remove",
+			'[find list="m2ir-q1"]',
+		]);
+		if (!removed.ok)
+			failures.push(`address-list removal failed: ${removed.error}`);
 		// The restoration contract: a failed restore fails the probe.
 		const restored = rest([
 			"/snmp/set",
 			`contact=${snmpBase["contact"] ?? ""}`,
 			`location=${snmpBase["location"] ?? ""}`,
 		]);
-		if (!restored.ok)
-			throw new Error(`q1: /snmp restore failed: ${restored.error}`);
+		if (!restored.ok) failures.push(`/snmp restore failed: ${restored.error}`);
+		if (failures.length) throw new Error(`q1: ${failures.join("; ")}`);
 	} finally {
 		if (aOpen) await a.stop();
 	}

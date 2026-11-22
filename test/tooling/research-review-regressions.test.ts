@@ -66,13 +66,51 @@ test("a late bridge acknowledgement cannot change the port notification latency"
 	]);
 });
 
-for (const failRestore of [false, true]) {
-	test(`probe cleanup stops the listener when SNMP restore ${failRestore ? "fails" : "succeeds"}`, async () => {
+for (const scenario of [
+	{
+		name: "receive failure",
+		failProbe: true,
+		failRestore: false,
+		failRemove: false,
+	},
+	{
+		name: "SNMP restore failure",
+		failProbe: true,
+		failRestore: true,
+		failRemove: false,
+	},
+	{
+		name: "successful run",
+		failProbe: false,
+		failRestore: false,
+		failRemove: false,
+	},
+	{
+		name: "address-list removal failure",
+		failProbe: false,
+		failRestore: false,
+		failRemove: true,
+	},
+	{
+		name: "both cleanup failures",
+		failProbe: false,
+		failRestore: true,
+		failRemove: true,
+	},
+	{
+		name: "removal failure after receive failure",
+		failProbe: true,
+		failRestore: false,
+		failRemove: true,
+	},
+]) {
+	test(`probe cleanup: ${scenario.name}`, async () => {
+		const { failProbe, failRestore, failRemove } = scenario;
 		const dir = temporaryDirectory();
 		const stopped = join(dir, "stopped");
 		const restored = join(dir, "restored.json");
 		// Module mocks run in a child so they cannot replace real exports
-		// for other tests. The real probe runs until its first receive fails.
+		// for other tests. The actual probe runs with no cap writes.
 		const program = `
 import { mock } from "bun:test";
 mock.module(${JSON.stringify(import.meta.resolve("../../work/2026-11-winbox-attributes/harness/target.ts"))}, () => ({
@@ -85,18 +123,26 @@ mock.module(${JSON.stringify(import.meta.resolve("../../work/2026-11-jg-descript
   centrsExec(_machine, cli) {
     if (cli[0] === "/snmp/print")
       return { ok: true, data: { contact: "original contact", location: "original location" } };
-    if (cli[0] === "/snmp/set") {
+    if (cli[0] === "/ip/dns/print")
+      return { ok: true, data: { "cache-size": "2048" } };
+    if (cli[0] === "/ip/firewall/address-list/print")
+      return { ok: true, data: [] };
+    if (cli[0] === "/ip/firewall/address-list/remove")
+      return { ok: ${!failRemove}, error: "removal rejected" };
+    if (cli[0] === "/snmp/set" && cli.includes("location=original location")) {
       require("node:fs").writeFileSync(${JSON.stringify(restored)}, JSON.stringify(cli));
       return { ok: ${!failRestore}, error: "restore rejected" };
     }
     return { ok: true };
   },
   UndoListener: { async open() { return {
-    async rows() { throw new Error("receive failed"); },
+    async rows() { if (${failProbe}) throw new Error("receive failed"); return []; },
+    async undoCmd() { return { error: false, reply: {} }; },
+    async getall() { return { total: 0, ids: [], pages: 1 }; },
     async stop() { await Bun.write(${JSON.stringify(stopped)}, "closed"); },
   }; } },
 }));
-process.argv = [process.execPath, "undo-q1.ts", "--quickchr", "test", "--out", ${JSON.stringify(dir)}, "--allow-mutations", "--disposable"];
+process.argv = [process.execPath, "undo-q1.ts", "--quickchr", "test", "--out", ${JSON.stringify(dir)}, "--cap-writes", "0", "--allow-mutations", "--disposable"];
 await import(${JSON.stringify(import.meta.resolve("../../work/2026-11-jg-descriptors/undo-q1.ts"))});
 `;
 		const child = Bun.spawn(
@@ -108,19 +154,21 @@ await import(${JSON.stringify(import.meta.resolve("../../work/2026-11-jg-descrip
 			new Response(child.stdout).text(),
 			new Response(child.stderr).text(),
 		]);
-		expect(exitCode).not.toBe(0);
-		expect(stderr).toContain(
-			failRestore
-				? "q1: /snmp restore failed: restore rejected"
-				: "receive failed",
-		);
+		const failed = failProbe || failRestore || failRemove;
+		expect(exitCode === 0).toBe(!failed);
+		if (failRestore)
+			expect(stderr).toContain("/snmp restore failed: restore rejected");
+		if (failRemove)
+			expect(stderr).toContain("address-list removal failed: removal rejected");
+		if (failProbe && !failRestore && !failRemove)
+			expect(stderr).toContain("receive failed");
 		expect(await Bun.file(restored).json()).toEqual([
 			"/snmp/set",
 			"contact=original contact",
 			"location=original location",
 		]);
 		expect(await Bun.file(stopped).text()).toBe("closed");
-		expect(existsSync(join(dir, "q1.json"))).toBe(false);
-		expect(stdout).not.toContain("q1: wrote");
+		expect(existsSync(join(dir, "q1.json"))).toBe(!failed);
+		expect(stdout.includes("q1: wrote")).toBe(!failed);
 	});
 }
