@@ -133,6 +133,15 @@ commands:
       (A#6,B#7 before and after). H-move-1 disproven for this shape; reorder
       parameters (if any) remain UNKNOWN. P-move-2 did not run (static gate
       negative, guessing forbidden).
+      Reorder shape found on [16,2] (plan step 4, 7.25 + 7.26beta4,
+      2026-11-21): MOVEOBJ {0xfe0001=id, 0xfe0005=before-id}, the shape
+      WebFig's moveObjectAfter sends, places the row before before-id
+      (order 0,1,2 -> 2,0,1 on native GETALL and on REST .nextid). Only
+      the moved row is notified, with its new 0xfe0005. 0xfe0005 =
+      0xFFFFFFFF, which WebFig sends for "move to the end", and a
+      rowid-only MOVE are acked no-ops there. 6.49.23 acks the same
+      before-id request but keeps the order; its reorder shape is unknown.
+    client-usage: "WebFig 7.25 moveObjectAfter(obj, after) sends {0xfe0001 = obj id, 0xfe0005 = id of the row after `after`, or 0xFFFFFFFF when `after` is last}. On [16,2] the router honours the before-id form only (step 4)."
     evidence:
       - source: sample
         ref: "live CHR interrogation (phase-C pilot item 4, 7.25, 2026-11-02): MOVEOBJ rowid-only negative — fixtures/winbox-ipc/7.25-moveobj-20-5.json"
@@ -140,6 +149,10 @@ commands:
         ref: "live CHR interrogation (E3-W P-move-1, ws21 7.25, 2026-11-02): dual-surface no-op — work/2026-11-winbox-attributes/proof/E3-W/{step-move-before.jsonl,step-move-p1.jsonl,control-move-p1-read.json}"
       - source: sample
         ref: "live CHR interrogation (E3-W P-move-1, ws21 7.25, 2026-11-02): destination-as-start no-op — fixtures/winbox-ipc/7.25-moveobj-p1-20-5.json"
+      - source: sample
+        ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): [16,2] before-id MOVE, 0xFFFFFFFF and rowid-only no-ops — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json marks q4-move-*"
+      - source: code
+        ref: "RouterOS 7.25 WebFig master.js ObjectMap.moveObjectAfter; see work/2026-11-jg-descriptors/README.md"
   0xfe0008: { canonical-name: CMD_SETFORM,      confidence: documented }
   0xfe0009:
     canonical-name: UNHANDLED_0x09
@@ -161,17 +174,29 @@ commands:
     canonical-name: CMD_NOTIFY
     confidence: documented
     notes: |
-      Server-to-client change notification for a subscribed path. It has
-      TO=[] and FROM=<path>, and Mfe0002 holds the changed rows. A row
-      carries the config fields only (no status or counter groups), plus
-      0xfe0005 on ordered maps; a removed row is {0xfe0001, 0xfe0013=1}.
-      Some paths add 0xfe0019 (the new count) or SYS uff000b at message
-      level. Over /jsproxy it is the reply to WebFig's long poll.
+      Server-to-client change notification for a subscribed path, about
+      0.2 s after the change. FROM=<path>, no SYS_REQID, and Mfe0002 holds
+      the changed rows. TO is the subscriber's own address on the native
+      transport ([0, source id]); WebFig sees TO=[] over /jsproxy, where it
+      is the reply to the long poll. A row carries the config fields only,
+      unless a subscription on the path carries the status bit (see
+      0xfe0012); ordered maps add 0xfe0005, and a removed row is
+      {0xfe0001, 0xfe0013=1}. [16,2] adds 0xfe0019 (the new count), [20,0]
+      adds SYS 0xff000b = 0xFFFFFFFF. An add or a MOVE notifies only the
+      row itself; neighbors whose next-id changed are not re-sent.
+      Status-only changes (a VLAN port coming up) also produce
+      notifications, still with config-only rows.
+      Version drift (plan step 4): 7.25 and 7.26beta4 notify the session
+      that made the change and tag v7 replies with Sff001c msg-proxy-<version>;
+      6.49.23 skips the originating connection and adds SYS_ORIGINATOR
+      0xff0012 = [2, <conn>, 0, <source id>].
     evidence:
       - source: sample
         ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): [20,0], [16,2] and [17] notifications — fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 155, 238, 613, 614"
       - source: code
         ref: "RouterOS 7.25 WebFig master.js receive() / ObjectMap #listenCb; see work/2026-11-jg-descriptors/README.md"
+      - source: sample
+        ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): two SRP sessions, change from session B, notification on subscriber A; rows key-for-key equal to the WebFig rows on 7.x — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json; test/profiles/winbox-ipc/native-bridge-workflow.test.ts"
   0xfe000c:
     canonical-name: CMD_SHUTDOWN
     confidence: observed-only
@@ -238,15 +263,39 @@ commands:
   0xfe0012:
     canonical-name: CMD_SUBSCRIBE
     confidence: documented
-    client-usage: "WebFig 7.25 and 7.26beta4 subscribe each list path once per session, when it first opens the path, and fetch it with GETALL right after. The ack is SYS-only. Changes then arrive as CMD_NOTIFY 0xfe000b on the long poll, including while the page is closed."
+    notes: |
+      Native semantics (plan step 4, 6.49.23 + 7.25 + 7.26beta4): a
+      subscription is keyed by (session, path, 0xfe000c word); an absent
+      word is its own key. SUBSCRIBE with an existing key is a no-op, so a
+      second plain SUBSCRIBE does not double notifications, but a plain and
+      a worded subscription on the same path each get a copy. On 7.x the
+      word also selects the groups that notification rows carry, for every
+      subscriber of the path on the router: while any session holds
+      [16,2] with 0x10000007 (status bit 0x2), plain subscribers also get
+      66-key rows instead of 38. Rows shrink back when that subscription
+      is removed or its session closes. 6.49.23 keeps the key behaviour
+      but always sends config-only rows. The ack is SYS-only.
+    client-usage: "WebFig 7.25 and 7.26beta4 subscribe each list path once per session, without a 0xfe000c word, when it first opens the path, and fetch it with GETALL right after. Changes then arrive as CMD_NOTIFY 0xfe000b on the long poll, including while the page is closed. Without the word the rows are config-only, which is why WebFig also polls with autorefresh GETALL for status."
     evidence:
       - source: sample
         ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 97, 174, 448, 451"
+      - source: sample
+        ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): subscription ladder on session C (marks q3c-1 .. q3c-12) — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json"
   0xfe0013:
     canonical-name: CMD_UNSUBSCRIBE
     confidence: documented
+    notes: |
+      Stops notifications (plan step 4, 6.49.23 + 7.25 + 7.26beta4): after
+      UNSUBSCRIBE [20,0] a change from another session produced nothing
+      for 3 s, while [16,2] kept notifying; SUBSCRIBE again restores them.
+      It removes only the subscription whose 0xfe000c word matches (absent
+      = the plain one); a plain UNSUBSCRIBE leaves a worded one in place.
+      Repeating it is acked ok and changes nothing. Closing the session
+      drops its subscriptions.
     client-usage: "WebFig 7.25 posts it only when the last listener for a path goes away. Leaving a list tab did not trigger it in any step 3 run (7.25, 7.26beta4), so the router kept notifying for closed pages."
     evidence:
+      - source: sample
+        ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): marks q3-unsub-iface, q3-unsub-port, q3c-3 .. q3c-10 — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json"
       - source: sample
         ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): no 0xfe0013 request in fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl or the 7.26beta4 file"
       - source: code

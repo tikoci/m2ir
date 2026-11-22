@@ -156,6 +156,9 @@ keys:
         ref: "RouterOS 7.25 WebFig master.js ObjectMap #listenCb and moveObjectAfter; see work/2026-11-jg-descriptors/README.md"
       - source: sample
         ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 182, 238 ([16,2]) and seq 53 ([17])"
+      - source: sample
+        ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): [16,2] GETALL rows chain id -> 0xfe0005 -> ... -> 0xFFFFFFFF in list order; MOVE before-id — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json marks q4-*"
+    notes: "Confirmed natively (plan step 4, all three versions): every [16,2] GETALL and notification row carries it, and GETALL rows chain in list order to 0xFFFFFFFF. REST shows the same value as .nextid (*FFFFFFFF on the last row). An added row is notified alone with 0xFFFFFFFF; the old tail is not re-sent, so a client must relink. As a MOVE operand it reorders [16,2] on 7.x only (see std-commands.yaml 0xfe0007)."
 
   0xfe0006:
     canonical-name: STD_UNDOID
@@ -221,14 +224,15 @@ keys:
     canonical-name: STD_FILTER
     physical: { tcodes: [0x08, 0x09] }
     semantic: u32
-    role: "GETALL flags word (default 5); per-handler selector word on GET paths"
+    role: "GETALL / SUBSCRIBE flags word (default 5; bit 0x2 adds the status group to rows); per-handler selector word on GET paths"
     confidence: documented
     notes: |
       First-party: ConfigHandler reads flags = get<u32>(0xfe000c,
       default 5) for row assembly, and the [20,0] GETALL worker stores
       the word per version (v6 obj+0x1d8, v7 obj+0x220). Live GETALL
-      legs: values 0/5/0x20000000 return byte-identical replies
-      (ignored for content on 6.49.23/7.25); USER-namespace copies are
+      legs: values 0/5/0x20000000 return byte-identical replies on
+      6.49.23/7.25 (none of them sets bit 0x2, which selects the status
+      group; see client-usage, plan step 4); USER-namespace copies are
       ignored entirely. Per-handler SELECTOR use proven: [24,31] tests
       bit 28 (0x10000000) of a request 0xfe000c word to unfold the
       nested 0xfe0024 mode message (static getter + live differential:
@@ -257,6 +261,8 @@ keys:
         ref: "live CHR interrogation (identity batch, 7.25): [24,31] bit-28 leg ev/7.25-getone-24-31-bit28.json vs bare ev/7.25-getone-24-31.json (no 0xfe0024 either version); see work/2026-10-chr-extraction/ws3c-prober-findings.md §18"
       - source: code
         ref: "RouterOS 7.25 WebFig master.js (served at /webfig/master-<hash>.js): ObjectMap.getall, ObjectItem.fetch, setDefaultConf; see work/2026-11-jg-descriptors/README.md"
+      - source: sample
+        ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): GETALL [20,0] and [16,2] with 6 and 9 words (mark q2-words) — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json; test/profiles/winbox-ipc/native-bridge-workflow.test.ts"
     client-usage: |
       WebFig 7.25 sends 0x10000005 | refetchonopen | refreshfilter on every
       list GETALL and object GET: the documented default 5 plus bit 28,
@@ -267,10 +273,19 @@ keys:
       7.26beta4): 0x1004000f on [20,0] (iface refreshfilter 0x4000a),
       0x10000007 on [16,2], and 0x10000005 on [20,90], [24,7] and the [24,0] GET.
       Notification rows lack the status and counter groups that these
-      GETALL replies carry. Whether the refreshfilter bits are what select
-      those groups is untested: earlier native legs found 0/5/0x20000000
-      content-identical, but none set 0x4000a or 0x2 (plan step 4). Not
-      yet compared with a native WinBox request.
+      GETALL replies carry, because WebFig subscribes without a word.
+      Confirmed natively in plan step 4 (6.49.23, 7.25, 7.26beta4): bit 0x2
+      alone selects the status group on [20,0] and [16,2]. No word, 0, 5,
+      0x10000005, 0x8 and 0x40000 return the same config-only rows (bridge
+      85 keys on 7.25, port 38), and 0x2, 0x4000a, 0x1004000f and 0x10000007
+      return config plus status (bridge 126, port 66), key for key equal to
+      WebFig's rows. Every key the bit adds has a field id >= 0xc8 (200);
+      on [16,2] the split is exact. This is consistent with the earlier
+      0/5/0x20000000 result: none of those words has bit 0x2. 0x8 and
+      0x40000 (the rest of the iface refreshfilter) changed nothing on a
+      CHR; they may gate hardware-only groups. The same word on
+      CMD_SUBSCRIBE selects the groups in notification rows on 7.x (see
+      std-commands.yaml 0xfe0012); 6.49.23 ignores it there.
     revision-history:
       - date: 2026-11-01
         belief: "0xfe000c is a nested message (STD_FILTER), with a conflicting u32-flags reading of unknown context split"
@@ -330,13 +345,23 @@ keys:
 
   0xfe0013:
     canonical-name: STD_DEAD
-    physical: { tcodes: [0x00, 0x01] }
-    semantic: bool
+    physical: { tcodes: [0x08, 0x09] }
+    semantic: u32
     role: "row removed: a CMD_NOTIFY row of only {0xfe0001, 0xfe0013=1}"
     confidence: documented
+    notes: "On the wire a u32 (compact 0x09) = 1, on 6.49.23, 7.25 and 7.26beta4 alike; WebFig's letter key is ufe0013 (u32) and its client sets obj.ufe0013 = 1. Removing a bridge with ports attached does not remove the ports: they are re-notified as rows of the now-missing bridge and stay (REST shows them inactive)."
     evidence:
       - source: sample
         ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): [16,2] and [20,0] removals — fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 613, 614"
+      - source: sample
+        ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): removal rows `0100fe09 02 1300fe09 01` — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json marks q4-remove-*, cleanup"
+    revision-history:
+      - date: 2026-11-21
+        belief: "0xfe0013 is a bool (tcodes 0x00/0x01)"
+        outcome: superseded
+        evidence:
+          - source: sample
+            ref: "native replay (plan step 4): every removal row carries 0xfe0013 with tcode 0x09, value 1; the step 3 entry had read WebFig's =1 as true"
 
   0xfe0014:
     canonical-name: STD_COUNT

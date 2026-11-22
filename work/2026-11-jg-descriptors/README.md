@@ -1,6 +1,6 @@
 # .jg UI descriptors as an attribute source
 
-<!-- cspell:ignore typevalue nonpublic getcmd roteros athhw igmp mrz webfig -->
+<!-- cspell:ignore typevalue nonpublic getcmd roteros athhw igmp mrz webfig nextid -->
 
 Status: exploratory, 2026-11-21. Steps 1-3 promoted their stable
 findings into `profiles/winbox-ipc/*.yaml`; the rest stays here. [`gui-handlers-vs-jg.md`](gui-handlers-vs-jg.md)
@@ -197,6 +197,68 @@ Other findings from the same runs:
   as `U478` in one dialog and `Q478` in another, and CHR ether1 sends
   `U478` (tcode 0x88, empty) in its `[20,0]` row (seq 103).
 
+## Native replay (plan step 4)
+
+[`native-replay.ts`](native-replay.ts) replays the step 3 Bridge workflow
+over the native WinBox transport with three SRP sessions: A subscribes
+and reads, B is the other client (SETOBJ, ADDOBJ, MOVEOBJ, REMOVEOBJ), and
+C probes subscription bookkeeping. centrs (REST on v7, the native API on
+6.49) only creates the lab objects (bridge `m2ir-br`, VLANs `m2ir-vl1..3`
+on ether1, two ports) and removes them. Every message goes through a
+`MessagePump` (`../2026-11-winbox-attributes/harness/pump.ts`): one reader
+loop that captures each frame on arrival, matches replies by SYS_REQID
+and keeps unsolicited frames for timed listen windows.
+
+```sh
+quickchr start twin3          # also winbox-beta4 (7.26beta4), ws3c6 (6.49.23)
+bun native-replay.ts --quickchr twin3 --out <scratch>/n725 --allow-mutations --disposable
+bun native-report.ts <scratch>/n725 ../../fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl
+bun native-fixture.ts <scratch>/n725 ../../fixtures/winbox-ipc/7.25-native-bridge-workflow.json \
+  --iface-words absent,0x5,0x2,0x8,0x40000
+quickchr stop twin3
+```
+
+The fixtures are
+[`6.49`](../../fixtures/winbox-ipc/6.49-native-bridge-workflow.json),
+[`7.25`](../../fixtures/winbox-ipc/7.25-native-bridge-workflow.json) and
+[`7.26beta4`](../../fixtures/winbox-ipc/7.26beta4-native-bridge-workflow.json)
+`-native-bridge-workflow.json`. Records carry `mark` (the driver step,
+cited below), `session` and `tMs`. Messages over 256 bytes keep their hex
+with `entries: null`. [`native-bridge-workflow.test.ts`](../../test/profiles/winbox-ipc/native-bridge-workflow.test.ts)
+decodes every record with the independent replay parser and checks the
+results below, including the key-for-key match with the WebFig fixtures.
+
+| Question | 7.25 and 7.26beta4 | 6.49.23 |
+|---|---|---|
+| q1: unsolicited traffic after SUBSCRIBE | CMD_NOTIFY `0xfe000b` about 200 ms after B's ack, FROM=path, no SYS_REQID, **TO=[0,11]** (the session's own address, not WebFig's TO=[]). Rows equal WebFig's key for key: bridge 85 (87 on beta4), port 38 (`q1-*`). The session that made the change is notified too (`q1-self-change`) | Same shape; rows 58/30 keys. The originating connection is **not** notified, and rows carry SYS_ORIGINATOR `Uff0012=[2,conn,0,11]` |
+| q2: does `0xfe000c` select content? | **Yes, bit `0x2`.** No word, 0, 5, 0x10000005, 0x8 and 0x40000 return config-only rows (= the notification shape). 0x2, 0x4000a, 0x1004000f and 0x10000007 add the status group: bridge 126 (132), port 66 (67), equal to WebFig's GETALL rows (`q2-words`) | Same split (bridge 58 → 97, port 30 → 40) |
+| q2b: word on SUBSCRIBE | Selects the groups in notification rows, for **every** subscriber of the path on the router while that subscription lives (`q3c-5` .. `q3c-11`) | Ignored for content; rows stay config-only |
+| q3: UNSUBSCRIBE `0xfe0013` | Stops notifications for that path (`q3-unsub-*`). A subscription is keyed by (session, path, word): plain SUBSCRIBE is idempotent, plain + worded give two copies, UNSUBSCRIBE removes only the matching word, repeats are acked no-ops, closing the session drops all (`q3c-1` .. `q3c-12`) | Same bookkeeping. Closing session C also sent A a CMD_DISCONNECTED `0xfe0014` pair (FROM `[0xff0003,774]` and `[2,774]`, TO=[]) |
+| q4: ordering | `[16,2]` GETALL rows chain by `0xfe0005` in list order, last = 0xFFFFFFFF. ADDOBJ notifies only the new row (next 0xFFFFFFFF); the old tail is not re-sent. MOVE `{0xfe0001, 0xfe0005=before-id}` reorders (0,1,2 → 2,0,1, REST `.nextid` agrees) and notifies only the moved row. `0xfe0005=0xFFFFFFFF` (WebFig's "to end") and rowid-only MOVE are acked no-ops | Chain and ADDOBJ the same; MOVE with a before-id is acked but **does not reorder** |
+| q4: removal | Row `{0xfe0001, 0xfe0013=1}`, where `0xfe0013` is a **u32** (tcode 0x09), not a bool; `[16,2]` adds the new `0xfe0019`. Removing the bridge leaves its ports (re-notified, REST `inactive`) | Same |
+
+What `.jg` declares: the Ports dialog lists the status fields as f200
+and up (`ud0` Port Status, `uc8` Role, `bcd` Forwarding, ...). Every key
+that bit `0x2` adds has a field id >= 0xc8 on both routes and all three
+versions, and on `[16,2]` the split is exact. `.jg` does not mark the
+group; the dialog's `refreshfilter` asks for it, and its other bits (0x8,
+0x40000 on iface) changed nothing on a CHR.
+
+Step 3 statements, rechecked natively:
+
+- Confirmed: SUBSCRIBE then GETALL; notifications as CMD_NOTIFY about
+  0.2 s after the change; config-only notification rows (85/126 bridge,
+  38/66 port); `ufe0005` on ordered maps; removal rows; `ufe0019` on
+  `[16,2]`; 7.25 and 7.26beta4 alike.
+- Refined: TO=[] is the /jsproxy form; natively TO is the subscriber's
+  address. "Notification rows lack the status groups" holds only while no
+  subscription on the path carries bit 0x2 (7.x).
+- Answered (was untested): the refreshfilter bit 0x2 selects the status
+  group; 0x8 and 0x40000 do nothing on a CHR.
+- Refuted in the schema: `0xfe0013` is u32, not bool.
+- Still untested: an empty `Mfe0002` refetch, `mfe0015` paging, GETALL
+  errors, Q/R keys (hardware), and what WinBox 4 itself sends (step 5).
+
 ## Next steps
 
 1. Promote the named unknowns and enum values into `gui-handlers.yaml`
@@ -213,5 +275,5 @@ Other findings from the same runs:
    against. m2ir does not cover Safe Mode yet. Subscription, notification
    and autorefresh are now recorded (step 3); actions, Safe Mode and
    terminal are not.
-5. Plan step 4: replay the step 3 Bridge workflow with the native harness
-   and compare it with the WebFig fixtures.
+5. Plan step 5: the decrypting MITM proxy, to see what WinBox 4 itself
+   sends (subscribe words, MOVE shape, polling).

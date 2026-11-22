@@ -457,6 +457,9 @@ safepkgs # nv::SafePkgs class-name fragment, lowercase key form
 testb # x86 test-byte mnemonic in objdump listings
 tostr # nv::SafePkgs::tostr() version-floor-list renderer (v7 sys2 handler 31)
 ack # acknowledgement shorthand (empty SET reply)
+acked # past tense of ack: the router answered ok
+acks # plural of ack
+unsub # mark-name shorthand for CMD_UNSUBSCRIBE 0xfe0013 (step 4 native replay fixtures, e.g. q3-unsub-iface)
 ffhunt # transcript tag for the 0xff001e exotic-row hunt (batch §19)
 macvlan # MAC-level virtual LAN interface type (RouterOS /interface/macvlan)
 noncross # analytic shorthand: a neighbor NOT strictly between old and new names (no rename-fixup crossing)

@@ -3,7 +3,8 @@
 <!-- cspell:ignore typevalue jsproxy mrz webfig pollcmd cancelcmd startcmd getallcmd refreshfilter autorefresh -->
 
 Status: approved 2026-11-21 after a review that combined Claude's and
-Codex's proposals. [`handoff.yaml`](handoff.yaml) tracks progress.
+Codex's proposals. [`handoff.yaml`](handoff.yaml) tracks progress; steps
+0-4 are done (step 4 results: README, "Native replay (plan step 4)").
 [`README.md`](README.md) holds the `.jg` format notes and the first diff.
 
 ## Research question

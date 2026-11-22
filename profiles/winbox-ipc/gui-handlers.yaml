@@ -521,15 +521,22 @@ handlers:
       row dialog (#Interfaces.Ethernet.<id>) reuses the list and sends no GET.
       CMD_NOTIFY rows hold the config fields only (85 of 126 keys for a
       bridge); the status and counter groups reach WebFig only through the
-      timed GETALL. Whether the refreshfilter bits (0x4000a) select those
-      groups is untested (plan step 4). No 0xfe0019 on [20,0], in
-      GETALL replies or notifications. A removal arrives as
-      {0xfe0001, 0xfe0013=1}. Native WinBox not compared (plan step 5).
+      timed GETALL. No 0xfe0019 on [20,0], in GETALL replies or
+      notifications. A removal arrives as {0xfe0001, 0xfe0013=1}.
+      Native harness (plan step 4, 6.49.23 + 7.25 + 7.26beta4): bit 0x2 of
+      the refreshfilter word is what selects the status group (bridge 126
+      keys on 7.25, 132 on 7.26beta4, 97 on 6.49.23; config-only 85, 87,
+      58); 0x8 and 0x40000 change nothing on a CHR. The native rows match
+      WebFig's key for key. Notifications carry SYS 0xff000b = 0xFFFFFFFF.
+      Removing a bridge notifies the bridge as dead plus the VLAN rows it
+      affected. WinBox 4 itself is not compared yet (plan step 5).
     evidence:
       - source: doc
         ref: "RouterOS 6.49.23/7.25/7.26beta4 .jg UI descriptors (field names, types, enums, board gates); see work/2026-11-jg-descriptors/gui-handlers-vs-jg.md"
       - source: sample
         ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): subscribe/GETALL/notify/remove on [20,0] — fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 97, 98, 103, 155, 614 (same events in the 7.26beta4 file)"
+      - source: sample
+        ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): subscribe/words/notify/remove on [20,0] — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json; test/profiles/winbox-ipc/native-bridge-workflow.test.ts"
       - source: code
         ref: "RouterOS net interface row-core 0x80f6738 (810 instructions, 75 ops, 6.49.23): all seven mapped fields converge here; entry+0x14/0x1c/0x60 feed row 0x10002/0x10003/0x10001, running = (w & 0x500) == 0x500, dynamic gated on entry+0x14 bit 0x80; see work/2026-10-chr-extraction/net-bridge2-handler-tables.md §4/§8"
       - source: code
@@ -988,12 +995,24 @@ handlers:
       0.2 s later. Its row holds the config fields only (38 of 66 keys) plus
       0xfe0005. A removal arrives as {0xfe0001, 0xfe0013=1} with 0xfe0019
       updated. No CMD_UNSUBSCRIBE is sent when the tab closes, and
-      notifications keep arriving. Native WinBox not compared (plan step 5).
+      notifications keep arriving.
+      Native harness (plan step 4, 6.49.23 + 7.25 + 7.26beta4): bit 0x2
+      selects the status group (66 keys on 7.25, 67 on 7.26beta4, 40 on
+      6.49.23; config-only 38, 38, 30), and every added key is a field id
+      >= 0xc8 (the .jg Ports f200+ status fields). GETALL rows chain by
+      0xfe0005 in list order. MOVE {0xfe0001, 0xfe0005=before-id}
+      reorders on 7.x; 0xFFFFFFFF and rowid-only are no-ops, and 6.49.23
+      keeps the order. ADDOBJ {u3 interface, u4 bridge, 0xfe0009} acks with
+      the new 0xfe0001. Removing the parent bridge leaves the ports in
+      place (re-notified, REST shows them inactive). WinBox 4 itself is not
+      compared yet (plan step 5).
     evidence:
       - source: doc
         ref: "RouterOS 6.49.23/7.25/7.26beta4 .jg UI descriptors (field names, types, enums, board gates); see work/2026-11-jg-descriptors/gui-handlers-vs-jg.md"
       - source: sample
         ref: "WebFig plaintext transcripts (plan step 3, 7.25 + 7.26beta4, 2026-11-21): subscribe/GETALL/notify/remove on [16,2] — fixtures/winbox-ipc/7.25-webfig-bridge-workflow.jsonl seq 174, 175, 238, 451, 613 (same events in the 7.26beta4 file)"
+      - source: sample
+        ref: "native replay (plan step 4, 6.49.23 + 7.25 + 7.26beta4, 2026-11-21): subscribe/words/notify/move/remove on [16,2] — fixtures/winbox-ipc/{6.49,7.25,7.26beta4}-native-bridge-workflow.json; test/profiles/winbox-ipc/native-bridge-workflow.test.ts"
       - source: code
         ref: "RouterOS 7.25 WebFig master.js ObjectMap #listenCb (0xfe0005 -> #linkBefore) and moveObjectAfter (MOVE 0xfe0007 with 0xfe0005); see work/2026-11-jg-descriptors/README.md"
       - source: code

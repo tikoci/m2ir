@@ -138,6 +138,22 @@ describe("m2 nesting and arrays", () => {
 		const m = decodeM2(bx("4d32" + "05000009" + "01" + "05000009" + "02"));
 		expect(m.entries.map((e) => e.value)).toEqual([1, 2]);
 	});
+
+	test("0x90 u64 array decodes (decode-only, .jg Q)", () => {
+		const m = decodeM2(
+			bx(
+				"4d32" + "80040090" + "0200" + "0100000000000000" + "ffffffffffffffff",
+			),
+		);
+		expect(m.entries[0]?.fullKey).toBe(0x480);
+		expect(m.entries[0]?.value).toEqual([1n, 0xffffffffffffffffn]);
+	});
+
+	test("0xb0 bytes array decodes (decode-only, .jg R)", () => {
+		const m = decodeM2(bx("4d32" + "010000b0" + "0200" + "0100aa" + "0000"));
+		const v = m.entries[0]?.value as Uint8Array[];
+		expect(v.map((b) => [...b])).toEqual([[0xaa], []]);
+	});
 });
 
 describe("m2 explicit failures", () => {

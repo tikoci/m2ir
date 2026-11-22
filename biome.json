@@ -43,6 +43,12 @@
 			"formatter": {
 				"enabled": false
 			}
+		},
+		{
+			"includes": ["fixtures/winbox-ipc/*-native-bridge-workflow.json"],
+			"formatter": {
+				"enabled": false
+			}
 		}
 	]
 }

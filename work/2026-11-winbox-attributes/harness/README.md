@@ -13,6 +13,14 @@ until the interface settles; the old `probe.ts` entrypoint is preserved.
 - `correlate.ts` — reqid-matched request/reply, async separation, bounded
   timeouts, explicit retries. Outcomes: `ok | router-error | timeout |
   decode-error | async-overflow`. Absent status stays absent, never assumed.
+  It reads only while a request is pending, and a timed-out read stays
+  pending on the socket, so it is not for sessions that subscribe.
+- `pump.ts` — `MessagePump` for sessions that receive unsolicited traffic
+  (CMD_NOTIFY after CMD_SUBSCRIBE): a single reader loop captures each frame
+  on arrival with a shared timeline (`tMs`), `request()` waits for its
+  SYS_REQID, and `listen(ms)` / `listenFor(pred, max, settle)` drain what
+  arrived unsolicited. Used by `../../2026-11-jg-descriptors/native-replay.ts`
+  (plan step 4).
 - `paging.ts` — GETALL token-chain walker (`0xfe0003` follow, bare first
   page, never `count=0`), loop detection, page bound, explicit
   complete/incomplete results.
@@ -35,14 +43,18 @@ Fixed in the existing prober (`work/2026-10-chr-extraction/ws3c/`):
 
 - `m2.ts` — encoder now covers every decoded tcode (`u64`, `bytes16`,
   nested `msg`, `bytes16`/`string`/`msg` arrays) with range validation;
-  `0x80`/`0x90` refused as declared-unwired. No value masking.
+  `0x80`/`0x90` refused as declared-unwired. No value masking. The decoder
+  also reads `0x90` (u64 array) and `0xb0` (bytes array), which `.jg`
+  declares as `Q` and `R` (decode only).
+- `probe.ts` `resolveQuickchr` — falls back to the native-api credentials
+  when quickchr reports no REST service (6.49).
 - `probe.ts` — quickchr pinned (`QUICKCHR_PIN`, PATH binary,
   major.minor-checked; never `@latest`); `buildRequest` and `CMD_*`
   exported for reuse. CLI behavior unchanged.
 
 ## Checks
 
-- `bun test ./work/2026-11-winbox-attributes/harness/` — 61 offline tests
+- `bun test ./work/2026-11-winbox-attributes/harness/` — 70 offline tests
   (hand-written byte fixtures, socket framing, correlation/paging fakes,
   schema naming, pilot replay). No CHR needed.
 - `bun run lint` and `bun run test` — repo gates must stay green.
